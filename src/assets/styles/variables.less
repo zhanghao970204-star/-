@@ -1,0 +1,543 @@
+blockquote,
+body,
+button,
+dd,
+dl,
+dt,
+fieldset,
+form,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+input,
+legend,
+li,
+ol,
+p,
+pre,
+td,
+textarea,
+th,
+ul {
+  margin: 0;
+  padding: 0;
+  vertical-align: baseline;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+* {
+  box-sizing: border-box;
+}
+
+// 阿里字体图标设置
+.icon,
+.iconfont {
+  font-family: 'iconfont' !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-stroke-width: 0.2px;
+  -moz-osx-font-smoothing: grayscale;
+}
+.van-cell::after {
+  border-bottom: none;
+}
+.van-loading {
+  width: 100%;
+  height: 100%;
+  padding-top: 45%;
+  background-color: @cont-bg; /* 设置背景颜色 */
+}
+@import './theme-tokens.less';
+
+// 模板 / 行内样式：var(--primary-color)
+:root {
+  --icon-color: @icon-color;
+  --primary-color: @primary-color;
+  --primary-color2: @primary-color2;
+  --primary-color3: @primary-color3;
+  --sucees-color: @sucees-color;
+  --background-color: @background-color;
+  --info-color: @info-color;
+  --info2-color: @info2-color;
+  --error-color: @error-color;
+  --gary-color: @gary-color;
+  --cont-bg: @cont-bg;
+  --popup-bg: @popup-bg;
+  --cell-bg: @cell-bg;
+  --font-color: @font-color;
+  --title-color: @title-color;
+  --wihte-color: @wihte-color;
+  --black-color: @black-color;
+  --border-color: @border-color;
+  --record-card-bg: @record-card-bg;
+  --record-card-border: @record-card-border;
+  --primary-gradient: @primary-gradient;
+  --primary-gradient-h: @primary-gradient-h;
+  --primary-text-on: @primary-text-on;
+
+  /* Vant 主题对齐 y7 */
+  --van-primary-color: @primary-color;
+  --van-success-color: @sucees-color;
+  --van-danger-color: @error-color;
+  --van-warning-color: @info-color;
+  --van-button-primary-background: @primary-gradient;
+  --van-button-primary-border-color: transparent;
+  --van-button-primary-color: @primary-text-on;
+  --van-background: @background-color;
+  --van-background-2: @cell-bg;
+  --van-background-3: @popup-bg;
+  --van-text-color: @font-color;
+  --van-border-color: fade(@border-color, 45%);
+  --van-cell-background: @cell-bg;
+  --van-dialog-background: @popup-bg;
+  --van-popup-background: @popup-bg;
+  --van-nav-bar-background: @cont-bg;
+  --van-nav-bar-height: 55px;
+  --van-tabbar-background: #050400;
+  --van-image-placeholder-background: linear-gradient(
+    96.6deg,
+    #694e3b63 2.01%,
+    #332b248a 97.14%
+  );
+}
+
+.popup-bg {
+  background: @popup-bg;
+}
+.icon-color {
+  color: @icon-color;
+}
+.border-color {
+  color: @border-color;
+}
+.sucees-color {
+  color: @sucees-color;
+}
+.wihte-color {
+  color: @wihte-color;
+}
+.cont-bg {
+  background: @cont-bg;
+}
+.title-color {
+  color: @title-color;
+}
+.font-color {
+  color: @font-color;
+}
+.gary-color {
+  color: @gary-color;
+}
+.error-color {
+  color: @error-color;
+}
+.primary-color {
+  color: @primary-color;
+}
+.primary-color2 {
+  color: @primary-color2;
+}
+.primary-color3 {
+  color: @primary-color3;
+}
+.info-color {
+  color: @info-color;
+}
+.info2-color {
+  color: @info2-color;
+}
+.m-l-5 {
+  margin-left: 5px;
+}
+.m-l-10 {
+  margin-left: 10px;
+}
+.m-l-15 {
+  margin-left: 15px;
+}
+.m-l-20 {
+  margin-left: 20px;
+}
+.m-r-5 {
+  margin-right: 5px;
+}
+.m-r-10 {
+  margin-right: 10px;
+}
+.m-t-5 {
+  margin-top: 5px;
+}
+.m-t-10 {
+  margin-top: 10px;
+}
+.m-t-12 {
+  margin-top: 12px;
+}
+.m-t-15 {
+  margin-top: 15px;
+}
+.m-t-20 {
+  margin-top: 20px;
+}
+.m-t-30 {
+  margin-top: 30px;
+}
+.m-b-5 {
+  margin-bottom: 5px;
+}
+.m-b-10 {
+  margin-bottom: 10px;
+}
+.m-b-15 {
+  margin-bottom: 15px;
+}
+.m-b-18 {
+  margin-bottom: 18px;
+}
+.m-b-20 {
+  margin-bottom: 20px;
+}
+.f-t-10 {
+  font-size: 10px;
+}
+.f-t-12 {
+  font-size: 12px;
+}
+.f-t-13 {
+  font-size: 13px;
+}
+.f-t-14 {
+  font-size: 14px;
+}
+.f-t-15 {
+  font-size: 15px;
+}
+.f-t-16 {
+  font-size: 16px;
+}
+.f-t-18 {
+  font-size: 18px;
+}
+.f-t-20 {
+  font-size: 20px;
+}
+.f-t-25 {
+  font-size: 25px;
+}
+.f-w {
+  font-weight: bold;
+}
+.t-c {
+  text-align: center;
+}
+.d-flex {
+  display: flex;
+  align-items: center;
+}
+.d-flex-s {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.d-flex-c-s {
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+}
+.underline {
+  text-decoration: underline; /* 添加下划线 */
+}
+.l-h-20 {
+  line-height: 20px;
+}
+.l-h-18 {
+  line-height: 18px;
+}
+// 气泡相关修改
+.van-popover__arrow {
+  color: @primary-color !important;
+}
+.van-popover--light .van-popover__content {
+  background: transparent;
+}
+// toast相关修改（y7）
+.van-toast {
+  min-width: 220px;
+  background: linear-gradient(
+    96.86deg,
+    #453f28 -1.07%,
+    #0d0c0a 97.68%
+  ) !important;
+  color: @wihte-color !important;
+  border: 0.5px solid fade(@info2-color, 20%);
+}
+
+// 标题栏相关（与 --van-nav-bar-height 保持一致，避免内容贴顶）
+.van-nav-bar {
+  --van-nav-bar-height: 55px;
+  background-color: @cont-bg;
+  height: var(--van-nav-bar-height);
+  background-size: 100% 100%;
+  color: @wihte-color !important;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid fade(#e9a843, 30%);
+}
+.van-nav-bar__content {
+  height: var(--van-nav-bar-height);
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.van-nav-bar__title {
+  color: @wihte-color;
+  font-weight: bold;
+  line-height: 1.2;
+}
+.van-nav-bar__left,
+.van-nav-bar__right {
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+}
+
+.van-field__value {
+  caret-color: @wihte-color; /* 输入框光标颜色 */
+  padding-left: 10px;
+}
+// 输入框（y7：深棕金边）
+.custom-field {
+  border-radius: 10px;
+  background: linear-gradient(96.49deg, #1d1400 2.73%, #000000 97.68%);
+  border: 1px solid fade(#e9b65a, 20%);
+  display: flex;
+  align-items: center;
+  color: @wihte-color;
+  input.van-field__control::-webkit-input-placeholder {
+    font-family: 'Roboto', sans-serif !important;
+    font-weight: 100;
+    font-size: 12px;
+    color: fade(@gary-color, 85%) !important;
+  }
+  .van-field__left-icon {
+    display: flex;
+    align-items: center;
+  }
+  .van-field__right-icon {
+    display: flex;
+    align-items: center;
+  }
+  .van-field__control {
+    color: @wihte-color !important;
+  }
+}
+
+// 轮播图指示器隐藏
+// .van-swipe__indicators {
+//   display: none;
+// }
+
+.van-button--large {
+  height: 43px;
+}
+
+.text-eli {
+  white-space: nowrap; /* 禁止文本换行 */
+  overflow: hidden; /* 隐藏超出部分 */
+  text-overflow: ellipsis; /* 使用省略号表示被截断的文本 */
+}
+.custom-button {
+  background: @primary-gradient;
+  border-radius: 22px;
+  font-weight: 700;
+  border: none;
+  color: @primary-text-on;
+}
+
+.van-button--primary {
+  background: @primary-gradient !important;
+  border: none !important;
+  color: @primary-text-on !important;
+  font-weight: 700;
+}
+
+.van-dialog {
+  background: @popup-bg;
+  border: 1px solid @border-color;
+  border-radius: 8px;
+
+  .van-dialog__header {
+    color: @info2-color;
+  }
+
+  .van-dialog__message {
+    color: @wihte-color;
+  }
+
+  .van-button--default {
+    background: @primary-gradient;
+    border: none;
+    border-radius: 20px;
+    color: @black-color;
+  }
+
+  .van-dialog__confirm {
+    background: transparent;
+    color: @border-color;
+    border: 1px solid @border-color;
+  }
+}
+
+.custom-popup {
+  background: @popup-bg;
+}
+.p-r {
+  position: relative;
+}
+.p-a {
+  position: absolute;
+}
+
+// 密码输入框相关
+
+.van-key {
+  background-color: @cont-bg !important;
+}
+.van-number-keyboard {
+  background-color: @black-color !important;
+}
+.van-password-input {
+  margin: 0;
+
+  .van-password-input__error-info {
+    margin-top: 5px;
+    font-size: 12px;
+    text-align: left;
+  }
+  .van-password-input__security {
+    // border: 1px solid @border-color;
+    border: none !important;
+    border-radius: 10px;
+  }
+
+  .van-password-input__security li {
+    background-color: @cont-bg !important;
+  }
+  .van-password-input__item {
+    i {
+      border: none !important;
+      border-radius: 50% !important;
+    }
+  }
+  .van-password-input__security i {
+    background-color: @wihte-color;
+  }
+  .van-password-input__security :first-child {
+    // border-radius: 10px 0 0 10px;
+    // border-right: 1px solid @border-color;
+  }
+  .van-password-input__security :nth-child(2) {
+    // border-right: 1px solid @border-color;
+  }
+  .van-password-input__security :nth-child(3) {
+    // border-right: 1px solid @border-color;
+  }
+  .van-password-input__security :nth-child(4) {
+    // border-right: 1px solid @border-color;
+  }
+  .van-password-input__security :nth-child(5) {
+    // border-right: 1px solid @border-color;
+  }
+  .van-password-input__security :nth-child(6) {
+    // border-radius: 0 10px 10px 0;
+  }
+}
+.content-c5--cash {
+  margin-left: 5px;
+  margin-top: 10px;
+  line-height: 20px;
+}
+.content-c5-sign {
+  margin-top: 10px;
+  line-height: 20px;
+}
+.content-c5-team {
+  margin-left: 5px;
+  margin-top: 10px;
+  line-height: 20px;
+}
+.flex-w-r {
+  flex-flow: wrap row;
+}
+.van-empty__image {
+  width: 230px;
+}
+.share-bot-l {
+  width: 20%;
+  height: 2px;
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.65) 100%
+  );
+  margin-right: 3%;
+}
+.share-bot-r {
+  height: 2px;
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.65) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  width: 20%;
+  margin-left: 3%;
+}
+&::-webkit-scrollbar {
+  display: none;
+}
+.van-overlay {
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+.ins-cont {
+  font-size: 18px;
+  margin: 5px 0;
+  font-weight: 800;
+}
+
+/* ===== 全局空状态 van-empty：公共图为横向，避免被压成 160 方图变形 ===== */
+.van-empty {
+  padding: 48px 16px 64px;
+  background: transparent;
+}
+
+.van-empty__image {
+  width: 80% !important;
+  max-width: 320px;
+  height: auto !important;
+
+  img {
+    display: block;
+    width: 100% !important;
+    height: auto !important;
+    object-fit: contain;
+  }
+}
+
+.van-empty__description {
+  margin-top: 12px;
+  color: #a89b7c;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+

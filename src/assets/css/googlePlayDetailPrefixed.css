@@ -1,0 +1,553 @@
+/* Generated from h5-nrly-dev2/src/assets/css/common.css — only applies inside .gp-detail-root */
+
+.gp-detail-root {
+  display: flow-root;
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  /* 与 h5-nrly-dev2 一致：页面内部固定 16px 基准，不依赖 html/body */
+  font-size: 16px;
+  line-height: 20px;
+  color: #5f6368;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial,
+    'PingFang SC', 'Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
+  background-color: #ffffff;
+  -webkit-text-size-adjust: 100%;
+}
+
+.gp-detail-root * {
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.gp-detail-root .f-s-1 {
+  font-size: 16px;
+}
+.gp-detail-root .f-s-2 {
+  font-size: 19.2px;
+  font-weight: bold;
+  color: #202124;
+}
+.gp-detail-root .f-c-1 {
+  color: #96989c;
+}
+.gp-detail-root .d-f-s {
+  display: flex;
+  align-items: center;
+}
+.gp-detail-root .d-f-c {
+  display: flex;
+  flex-flow: column;
+}
+.gp-detail-root .flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.gp-detail-root .flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.gp-detail-root .justify-start {
+  justify-content: flex-start;
+}
+
+.gp-detail-root .justify-end {
+  justify-content: flex-end;
+}
+
+.gp-detail-root .justify-center {
+  justify-content: center;
+}
+
+.gp-detail-root .justify-between {
+  justify-content: space-between;
+}
+
+.gp-detail-root .justify-around {
+  justify-content: space-around;
+}
+
+.gp-detail-root .justify-evenly {
+  justify-content: space-evenly;
+}
+
+.gp-detail-root .items-start {
+  align-items: flex-start;
+}
+
+.gp-detail-root .items-end {
+  align-items: flex-end;
+}
+
+.gp-detail-root .items-center {
+  align-items: center;
+}
+
+.gp-detail-root .items-baseline {
+  align-items: baseline;
+}
+
+.gp-detail-root .items-stretch {
+  align-items: stretch;
+}
+
+.gp-detail-root .self-start {
+  align-self: flex-start;
+}
+
+.gp-detail-root .self-end {
+  align-self: flex-end;
+}
+
+.gp-detail-root .self-center {
+  align-self: center;
+}
+
+.gp-detail-root .self-baseline {
+  align-self: baseline;
+}
+
+.gp-detail-root .self-stretch {
+  align-self: stretch;
+}
+
+.gp-detail-root .flex-1 {
+  flex: 1 1 0%;
+}
+
+.gp-detail-root .flex-auto {
+  flex: 1 1 auto;
+}
+
+.gp-detail-root .grow {
+  flex-grow: 1;
+}
+
+.gp-detail-root .grow-0 {
+  flex-grow: 0;
+}
+
+.gp-detail-root .shrink {
+  flex-shrink: 1;
+}
+
+.gp-detail-root .shrink-0 {
+  flex-shrink: 0;
+}
+
+.gp-detail-root .relative {
+  position: relative;
+}
+
+.gp-detail-root .ml-2 {
+  margin-left: 2.08px;
+}
+
+.gp-detail-root .mt-2 {
+  margin-top: 2.08px;
+}
+
+.gp-detail-root .ml-4 {
+  margin-left: 4px;
+}
+
+.gp-detail-root .mt-4 {
+  margin-top: 4px;
+}
+
+.gp-detail-root .ml-6 {
+  margin-left: 6.08px;
+}
+
+.gp-detail-root .mt-6 {
+  margin-top: 6.08px;
+}
+
+.gp-detail-root .ml-8 {
+  margin-left: 8px;
+}
+
+.gp-detail-root .mt-8 {
+  margin-top: 8px;
+}
+
+.gp-detail-root .ml-10 {
+  margin-left: 10.08px;
+}
+
+.gp-detail-root .mt-10 {
+  margin-top: 10.08px;
+}
+
+.gp-detail-root .ml-12 {
+  margin-left: 12px;
+}
+
+.gp-detail-root .mt-12 {
+  margin-top: 12px;
+}
+
+.gp-detail-root .ml-14 {
+  margin-left: 14.08px;
+}
+
+.gp-detail-root .mt-14 {
+  margin-top: 14.08px;
+}
+
+.gp-detail-root .ml-16 {
+  margin-left: 16px;
+}
+
+.gp-detail-root .mt-16 {
+  margin-top: 16px;
+}
+
+.gp-detail-root .ml-18 {
+  margin-left: 18.08px;
+}
+
+.gp-detail-root .mt-18 {
+  margin-top: 18.08px;
+}
+
+.gp-detail-root .ml-20 {
+  margin-left: 20px;
+}
+
+.gp-detail-root .mt-20 {
+  margin-top: 20px;
+}
+
+.gp-detail-root .ml-22 {
+  margin-left: 22.08px;
+}
+
+.gp-detail-root .mt-22 {
+  margin-top: 22.08px;
+}
+
+.gp-detail-root .ml-24 {
+  margin-left: 24px;
+}
+
+.gp-detail-root .mt-24 {
+  margin-top: 24px;
+}
+
+.gp-detail-root .ml-26 {
+  margin-left: 26.08px;
+}
+
+.gp-detail-root .mt-26 {
+  margin-top: 26.08px;
+}
+
+.gp-detail-root .ml-28 {
+  margin-left: 28px;
+}
+
+.gp-detail-root .mt-28 {
+  margin-top: 28px;
+}
+
+.gp-detail-root .ml-30 {
+  margin-left: 30.08px;
+}
+
+.gp-detail-root .mt-30 {
+  margin-top: 30.08px;
+}
+
+.gp-detail-root .ml-32 {
+  margin-left: 32px;
+}
+
+.gp-detail-root .mt-32 {
+  margin-top: 32px;
+}
+
+.gp-detail-root .ml-34 {
+  margin-left: 34.08px;
+}
+
+.gp-detail-root .mt-34 {
+  margin-top: 34.08px;
+}
+
+.gp-detail-root .ml-36 {
+  margin-left: 36px;
+}
+
+.gp-detail-root .mt-36 {
+  margin-top: 36px;
+}
+
+.gp-detail-root .ml-38 {
+  margin-left: 38.08px;
+}
+
+.gp-detail-root .mt-38 {
+  margin-top: 38.08px;
+}
+
+.gp-detail-root .ml-40 {
+  margin-left: 40px;
+}
+
+.gp-detail-root .mt-40 {
+  margin-top: 40px;
+}
+
+.gp-detail-root .ml-42 {
+  margin-left: 42.08px;
+}
+
+.gp-detail-root .mt-42 {
+  margin-top: 42.08px;
+}
+
+.gp-detail-root .ml-44 {
+  margin-left: 44px;
+}
+
+.gp-detail-root .mt-44 {
+  margin-top: 44px;
+}
+
+.gp-detail-root .ml-46 {
+  margin-left: 46.08px;
+}
+
+.gp-detail-root .mt-46 {
+  margin-top: 46.08px;
+}
+
+.gp-detail-root .ml-48 {
+  margin-left: 48px;
+}
+
+.gp-detail-root .mt-48 {
+  margin-top: 48px;
+}
+
+.gp-detail-root .ml-50 {
+  margin-left: 50.08px;
+}
+
+.gp-detail-root .mt-50 {
+  margin-top: 50.08px;
+}
+
+.gp-detail-root .ml-52 {
+  margin-left: 52px;
+}
+
+.gp-detail-root .mt-52 {
+  margin-top: 52px;
+}
+
+.gp-detail-root .ml-54 {
+  margin-left: 54.08px;
+}
+
+.gp-detail-root .mt-54 {
+  margin-top: 54.08px;
+}
+
+.gp-detail-root .ml-56 {
+  margin-left: 56px;
+}
+
+.gp-detail-root .mt-56 {
+  margin-top: 56px;
+}
+
+.gp-detail-root .ml-58 {
+  margin-left: 58.08px;
+}
+
+.gp-detail-root .mt-58 {
+  margin-top: 58.08px;
+}
+
+.gp-detail-root .ml-60 {
+  margin-left: 60px;
+}
+
+.gp-detail-root .mt-60 {
+  margin-top: 60px;
+}
+
+.gp-detail-root .ml-62 {
+  margin-left: 62.08px;
+}
+
+.gp-detail-root .mt-62 {
+  margin-top: 62.08px;
+}
+
+.gp-detail-root .ml-64 {
+  margin-left: 64px;
+}
+
+.gp-detail-root .mt-64 {
+  margin-top: 64px;
+}
+
+.gp-detail-root .ml-66 {
+  margin-left: 66.08px;
+}
+
+.gp-detail-root .mt-66 {
+  margin-top: 66.08px;
+}
+
+.gp-detail-root .ml-68 {
+  margin-left: 68px;
+}
+
+.gp-detail-root .mt-68 {
+  margin-top: 68px;
+}
+
+.gp-detail-root .ml-70 {
+  margin-left: 70.08px;
+}
+
+.gp-detail-root .mt-70 {
+  margin-top: 70.08px;
+}
+
+.gp-detail-root .ml-72 {
+  margin-left: 72px;
+}
+
+.gp-detail-root .mt-72 {
+  margin-top: 72px;
+}
+
+.gp-detail-root .ml-74 {
+  margin-left: 74.08px;
+}
+
+.gp-detail-root .mt-74 {
+  margin-top: 74.08px;
+}
+
+.gp-detail-root .ml-76 {
+  margin-left: 76px;
+}
+
+.gp-detail-root .mt-76 {
+  margin-top: 76px;
+}
+
+.gp-detail-root .ml-78 {
+  margin-left: 78.08px;
+}
+
+.gp-detail-root .mt-78 {
+  margin-top: 78.08px;
+}
+
+.gp-detail-root .ml-80 {
+  margin-left: 80px;
+}
+
+.gp-detail-root .mt-80 {
+  margin-top: 80px;
+}
+
+.gp-detail-root .ml-82 {
+  margin-left: 82.08px;
+}
+
+.gp-detail-root .mt-82 {
+  margin-top: 82.08px;
+}
+
+.gp-detail-root .ml-84 {
+  margin-left: 84px;
+}
+
+.gp-detail-root .mt-84 {
+  margin-top: 84px;
+}
+
+.gp-detail-root .ml-86 {
+  margin-left: 86.08px;
+}
+
+.gp-detail-root .mt-86 {
+  margin-top: 86.08px;
+}
+
+.gp-detail-root .ml-88 {
+  margin-left: 88px;
+}
+
+.gp-detail-root .mt-88 {
+  margin-top: 88px;
+}
+
+.gp-detail-root .ml-90 {
+  margin-left: 90.08px;
+}
+
+.gp-detail-root .mt-90 {
+  margin-top: 90.08px;
+}
+
+.gp-detail-root .ml-92 {
+  margin-left: 92px;
+}
+
+.gp-detail-root .mt-92 {
+  margin-top: 92px;
+}
+
+.gp-detail-root .ml-94 {
+  margin-left: 94.08px;
+}
+
+.gp-detail-root .mt-94 {
+  margin-top: 94.08px;
+}
+
+.gp-detail-root .ml-96 {
+  margin-left: 96px;
+}
+
+.gp-detail-root .mt-96 {
+  margin-top: 96px;
+}
+
+.gp-detail-root .ml-98 {
+  margin-left: 98.08px;
+}
+
+.gp-detail-root .mt-98 {
+  margin-top: 98.08px;
+}
+
+.gp-detail-root .ml-100 {
+  margin-left: 100px;
+}
+
+.gp-detail-root .mt-100 {
+  margin-top: 100px;
+}
+
+/* 与 OT 全局 a / button 样式隔离（仅本根节点内） */
+.gp-detail-root a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.gp-detail-root .button,
+.gp-detail-root button.button {
+  font-family: inherit;
+}

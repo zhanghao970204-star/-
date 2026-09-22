@@ -1,0 +1,36 @@
+// 公共主题色（对齐 y7：暗金 / 深棕黑）
+// 仅 Less 变量，供 Vue SFC additionalData 注入
+@icon-color: #a89b7c;
+@primary-color: #ffa300; // 主色：金
+@primary-color2: #df8a1b; // 主色加深（按钮底部）
+@primary-color3: #f7dd9a; // 主色浅金
+@sucees-color: #e9a843;
+@background-color: #1f1c17; // 页面背景
+@info-color: #ffd467;
+@info2-color: #f3c059;
+@error-color: #ea4e3d;
+@gary-color: #a89b7c;
+@cont-bg: #1f1c17; // 内容背景
+@popup-bg: #0e0d0b;
+@cell-bg: #2e2d2b;
+@font-color: #ffffff;
+@title-color: #f3c059;
+@wihte-color: #ffffff;
+@black-color: #000000;
+@border-color: #e9a843;
+
+// 记录列表卡片（比页面底略亮 + 金色描边，适配暗金主题）
+@record-card-bg: linear-gradient(0deg, #1d1814 13.46%, #252020 100%);
+@record-card-border: fade(@border-color, 35%);
+
+.record-list-card() {
+  background: @record-card-bg;
+  border: 1px solid @record-card-border;
+  border-radius: 13px;
+  box-sizing: border-box;
+}
+
+// 常用渐变（按钮 / 高亮）
+@primary-gradient: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
+@primary-gradient-h: linear-gradient(90deg, #f7dd9a 0%, #ffa300 100%);
+@primary-text-on: #573900; // 金色底上的文字

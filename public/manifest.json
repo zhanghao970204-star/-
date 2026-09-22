@@ -1,0 +1,20 @@
+{
+  "name": "BISONFUN",
+  "short_name": "BISONFUN",
+  "icons": [
+    {
+      "src": "img/icons/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "img/icons/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/home",
+  "display": "standalone",
+  "background_color": "#1f1c17",
+  "theme_color": "#1f1c17"
+}
