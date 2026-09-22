@@ -322,7 +322,6 @@
       </div>
     </div>
 
-    <!-- <menu-home></menu-home> -->
     <login v-model="showPopup" overlay></login>
     <lucky-roulette v-model="isShowPopup" overlay></lucky-roulette>
 

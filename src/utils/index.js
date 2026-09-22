@@ -6,10 +6,10 @@ import router from "../router";
 // 好处：不会污染原始的 axios 实例
 const instance = axios.create({
   // 基地址
-  baseURL: window.location.origin.includes("192.168")
-    ? "https://us.ot.game/a/"
-    : window.location.origin + "/a/",
-  // baseURL: "https://us.ot.game/a/",
+  // baseURL: window.location.origin.includes("192.168")
+  //   ? "https://us.ot.game/a/"
+  //   : window.location.origin + "/a/",
+  baseURL: "https://us.ot.game/a/",
   //   超时时间
   timeout: 60000,
   headers: {
