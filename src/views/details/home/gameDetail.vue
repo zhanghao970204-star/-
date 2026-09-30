@@ -319,14 +319,14 @@ export default {
 .game-detail-page {
   min-height: 100vh;
   padding-top: 55px;
-  background: #1f1c17;
+  background: #1a0a28;
   padding-bottom: 80px;
 }
 .game-detail-content {
   padding: 16px 12px 24px;
 }
 .game-info-card {
-  background: #2a2418;
+  background: #2d1545;
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 24px;
@@ -366,7 +366,7 @@ export default {
 }
 .game-meta {
   font-size: 12px;
-  color: #a89b7c;
+  color: #b8a8d4;
   margin: 4px 0 0;
 }
 .play-btn-wrap {

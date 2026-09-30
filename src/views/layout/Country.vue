@@ -24,21 +24,18 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-/* y7 黑金风格背景 */
 .country-page {
   min-height: 100vh;
-  background: #1f1c17;
+  background-color: #27033C;
+  background-image: url(@/assets/img/common/page_bg.png);
+  background-repeat: repeat;
+  background-size: auto;
+  background-position: top center;
 }
 
 .country-page__mask {
   min-height: 100vh;
-  background: #1f1c17 url(@/assets/img/login/loginPageBg.png) center top no-repeat;
-  background-image: image-set(
-    url('@/assets/img/login/loginPageBg.webp') type('image/webp'),
-    url('@/assets/img/login/loginPageBg.png') type('image/png')
-  );
-  background-size: cover;
-  background-position: center top;
+  background: transparent;
   overflow: auto;
 }
 </style>

@@ -212,14 +212,14 @@ export default {
 
 <style lang="less" scoped>
 /* y7 黑金风格 */
-@bg: #1f1c17;
+@bg: #1a0a28;
 @gold: #ffa300;
 @gold-soft: #ffe4b5;
 @gold-deep: #e9a843;
 @gold-grad: linear-gradient(90deg, #f7dd9a 0%, #ffa300 100%);
 @btn-grad: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
-@muted: #a89b7c;
-@card-bg: linear-gradient(0deg, #1d1814 13.46%, #252020 100%);
+@muted: #b8a8d4;
+@card-bg: linear-gradient(0deg, #1a0a28 13.46%, #2d1545 100%);
 
 .activity-page {
   padding: 0 16px 100px;
@@ -364,7 +364,7 @@ export default {
     align-items: center;
     justify-content: center;
     border: 1px solid fade(@gold-deep, 40%);
-    background: #15110a;
+    background: #12021a;
     position: relative;
     overflow: hidden;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);

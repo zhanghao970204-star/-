@@ -264,7 +264,7 @@ export default {
 .search-game-page {
   min-height: 100vh;
   padding-top: 55px;
-  background: #1f1c17;
+  background: @background-color;
 }
 .search-game-content {
   padding: 12px 12px 60px;
@@ -273,18 +273,36 @@ export default {
   margin-bottom: 20px;
 }
 .search-field {
-  background: #2a2418;
+  background: @cell-bg;
   border-radius: 10px;
-  border: 1px solid fade(#e9a843, 30%);
+  border: 1px solid fade(@border-color, 30%);
   padding: 10px 12px;
+  display: flex;
+  align-items: center;
+
+  :deep(.van-field__body) {
+    align-items: center;
+  }
+
   :deep(.van-field__control) {
     color: @wihte-color;
   }
+
   :deep(.van-field__left-icon) {
-    padding-right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+    margin-right: 8px;
+    padding: 0;
+    line-height: 0;
   }
 }
 .search-icon {
+  display: block;
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
   opacity: 0.9;
 }
 .section {
@@ -300,7 +318,7 @@ export default {
   align-items: center;
   .clear-all {
     font-size: 12px;
-    color: #a89b7c;
+    color: @gary-color;
     cursor: pointer;
   }
 }
@@ -310,8 +328,8 @@ export default {
   gap: 8px;
 }
 .tag {
-  background: #15110a;
-  border: 1px solid fade(#e9a843, 25%);
+  background: @popup-bg;
+  border: 1px solid fade(@border-color, 25%);
   color: @wihte-color;
   padding: 8px 14px;
   border-radius: 8px;
@@ -346,7 +364,7 @@ export default {
   max-height: 160px;
   border-radius: 13px;
   overflow: hidden;
-  background: #2a2418;
+  background: @cell-bg;
   line-height: 0;
 
   img {

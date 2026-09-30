@@ -35,7 +35,7 @@
         <div class="ep-field__input ep-field__input--readonly">
           <span>ID: {{ inviteCode }}</span>
           <button class="ep-field__copy" @click="copyId">
-            <van-icon name="records" size="16" color="#a89b7c" />
+            <van-icon name="records" size="16" color="#b8a8d4" />
           </button>
         </div>
       </div>
@@ -56,10 +56,10 @@
           style="cursor: pointer"
           @click="showBirthdayPicker = true"
         >
-          <span :style="{ color: birthday ? 'var(--wihte-color)' : '#a89b7c' }">
+          <span :style="{ color: birthday ? 'var(--wihte-color)' : '#b8a8d4' }">
             {{ birthday || ($lang.editProfile_birthday_ph || 'Select birthday') }}
           </span>
-          <van-icon name="calendar-o" size="16" color="#a89b7c" />
+          <van-icon name="calendar-o" size="16" color="#b8a8d4" />
         </div>
       </div>
     </div>
@@ -175,7 +175,7 @@ export default {
 
 <style lang="less" scoped>
 .edit-profile-page {
-  background-color: #1f1c17;
+  background-color: #1a0a28;
   min-height: 100vh;
   color: @wihte-color;
 }
@@ -189,7 +189,7 @@ export default {
   align-items: center;
   justify-content: space-between;
   padding: 16px;
-  background-color: #1f1c17;
+  background-color: #1a0a28;
   z-index: 999;
 
   &__back {
@@ -274,7 +274,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 3px solid #1f1c17;
+    border: 3px solid #1a0a28;
   }
 }
 
@@ -287,12 +287,12 @@ export default {
     font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: #a89b7c;
+    color: #b8a8d4;
     margin-bottom: 8px;
   }
 
   &__input {
-    background-color: #15110a;
+    background-color: #12021a;
     border: 1px solid rgba(233, 168, 67, 0.35);
     border-radius: 10px;
     padding: 14px 16px;
@@ -329,7 +329,7 @@ export default {
     margin: 0;
 
     &::placeholder {
-      color: #a89b7c;
+      color: #b8a8d4;
     }
   }
 

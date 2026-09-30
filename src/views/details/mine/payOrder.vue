@@ -302,7 +302,7 @@ export default {
 @gold-soft: #ffe4b5;
 @gold-deep: #e9a843;
 @gold-grad: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
-@card-bg: linear-gradient(0deg, #1d1814 13.46%, #252020 100%);
+@card-bg: linear-gradient(0deg, #1a0a28 13.46%, #2d1545 100%);
 
 .pay-order {
   min-height: 100%;
@@ -438,7 +438,7 @@ export default {
   gap: 14px;
   margin-top: 26px;
   padding: 16px;
-  background: #2a2418;
+  background: #2d1545;
   border: 1px solid fade(@gold-deep, 40%);
   border-radius: 16px;
   color: @gold-soft;
@@ -472,7 +472,7 @@ export default {
 
   &__url {
     margin: 0;
-    background: #15110a;
+    background: #12021a;
     border: 1px solid fade(@gold-deep, 35%);
     border-radius: 8px;
     padding: 8px 10px;

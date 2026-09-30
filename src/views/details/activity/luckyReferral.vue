@@ -356,8 +356,8 @@ export default {
 <style lang="less" scoped>
 @primary: #ffa300;
 @gold: #ffa300;
-@bg-dark: #1f1c17;
-@card-bg: #15110a;
+@bg-dark: #1a0a28;
+@card-bg: #12021a;
 @red: #dc2626;
 
 .lucky-referral {
@@ -642,7 +642,7 @@ export default {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 3px;
-    color: #a89b7c;
+    color: #b8a8d4;
     padding-left: 4px;
     margin-bottom: 8px;
     display: block;
@@ -693,7 +693,7 @@ export default {
   &__text {
     font-size: 12px;
     line-height: 1.6;
-    color: #a89b7c;
+    color: #b8a8d4;
   }
 
   &__highlight {
@@ -728,7 +728,7 @@ export default {
     background: rgba(107, 114, 128, 0.3);
     padding: 4px 8px;
     border-radius: 4px;
-    color: #a89b7c;
+    color: #b8a8d4;
   }
 
   &__table {
@@ -743,7 +743,7 @@ export default {
     padding: 8px 16px;
     font-size: 10px;
     text-transform: uppercase;
-    color: #a89b7c;
+    color: #b8a8d4;
     font-weight: 600;
   }
 
@@ -827,7 +827,7 @@ export default {
 
   &__desc {
     font-size: 14px;
-    color: #a89b7c;
+    color: #b8a8d4;
     text-align: center;
     padding: 0 16px;
   }
@@ -865,7 +865,7 @@ export default {
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 2px;
-      color: #a89b7c;
+      color: #b8a8d4;
       margin-bottom: 8px;
       padding-left: 4px;
     }
@@ -873,7 +873,7 @@ export default {
     &-row {
       display: flex;
       align-items: center;
-      background: #15110a;
+      background: #12021a;
       border-radius: 10px;
       padding: 4px;
       border: 1px solid rgba(255, 162, 0, 0.45);

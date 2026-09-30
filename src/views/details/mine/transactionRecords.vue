@@ -201,7 +201,7 @@ export default {
 <style lang="less" scoped>
 .tx-records-page {
   min-height: 100vh;
-  background: #1f1c17;
+  background: #1a0a28;
 }
 
 /* ===== Filter ===== */
@@ -213,7 +213,7 @@ export default {
 }
 
 :deep(.van-dropdown-menu__bar) {
-  background: #15110a;
+  background: #12021a;
   height: 30px !important;
   border-radius: 20px;
   border: none;
@@ -257,7 +257,7 @@ export default {
     background-color: transparent !important;
   }
   .van-cell {
-    background-color: #2a2418;
+    background-color: #2d1545;
     color: @wihte-color;
     padding: 5px 16px;
   }
@@ -293,7 +293,7 @@ export default {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #a89b7c;
+  color: #b8a8d4;
   background: rgba(31, 28, 23, 0.92);
   backdrop-filter: blur(8px);
 }
@@ -326,7 +326,7 @@ export default {
 
 .tx-item__time {
   font-size: 12px;
-  color: #a89b7c;
+  color: #b8a8d4;
   margin: 4px 0 0;
 }
 

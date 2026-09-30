@@ -61,7 +61,7 @@
           class="content-c3--t2"
           v-for="(item, index) in InitDate"
           :key="index"
-          :style="(index + 1) % 2 === 0 ? {} : { backgroundColor: '#2a2418' }"
+          :style="(index + 1) % 2 === 0 ? {} : { backgroundColor: '#2d1545' }"
         >
           <p class="f-w">VIP{{ item.vipLevel }}</p>
           <p class="f-w">
@@ -144,7 +144,7 @@ export default {
   position: relative;
   border-radius: 15px;
   width: 100%;
-  background: linear-gradient(0deg, #1d1814 13.46%, #252020 100%);
+  background: linear-gradient(0deg, #1a0a28 13.46%, #2d1545 100%);
   border: 1px solid rgba(255, 162, 0, 0.45);
   height: 155px;
 }

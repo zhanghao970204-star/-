@@ -65,6 +65,7 @@ ul {
   --primary-color3: @primary-color3;
   --sucees-color: @sucees-color;
   --background-color: @background-color;
+  --header-bg: @header-bg;
   --info-color: @info-color;
   --info2-color: @info2-color;
   --error-color: @error-color;
@@ -99,13 +100,16 @@ ul {
   --van-cell-background: @cell-bg;
   --van-dialog-background: @popup-bg;
   --van-popup-background: @popup-bg;
-  --van-nav-bar-background: @cont-bg;
+  --van-nav-bar-background: @header-bg;
   --van-nav-bar-height: 55px;
-  --van-tabbar-background: #050400;
+  --van-tabbar-background: transparent;
+  /* 底部 Tab 占位：栏高 66 + 间距 + 全面屏安全区 */
+  --tabbar-safe-bottom: calc(86px + env(safe-area-inset-bottom, 0px));
+  --tabbar-bar-height: 66px;
   --van-image-placeholder-background: linear-gradient(
     96.6deg,
-    #694e3b63 2.01%,
-    #332b248a 97.14%
+    fade(#512275, 40%) 2.01%,
+    fade(#1a0a28, 55%) 97.14%
   );
 }
 
@@ -273,8 +277,8 @@ ul {
   min-width: 220px;
   background: linear-gradient(
     96.86deg,
-    #453f28 -1.07%,
-    #0d0c0a 97.68%
+    #3a2260 -1.07%,
+    #12021a 97.68%
   ) !important;
   color: @wihte-color !important;
   border: 0.5px solid fade(@info2-color, 20%);
@@ -283,13 +287,14 @@ ul {
 // 标题栏相关（与 --van-nav-bar-height 保持一致，避免内容贴顶）
 .van-nav-bar {
   --van-nav-bar-height: 55px;
-  background-color: @cont-bg;
+  background-color: @header-bg;
   height: var(--van-nav-bar-height);
   background-size: 100% 100%;
   color: @wihte-color !important;
   display: flex;
   align-items: center;
-  border-bottom: 1px solid fade(#e9a843, 30%);
+  border-top: 1px solid fade(#9159fe, 45%);
+  border-bottom: 1px solid fade(#486dfe, 45%);
 }
 .van-nav-bar__content {
   height: var(--van-nav-bar-height);
@@ -314,10 +319,10 @@ ul {
   caret-color: @wihte-color; /* 输入框光标颜色 */
   padding-left: 10px;
 }
-// 输入框（y7：深棕金边）
+// 输入框（紫底金边）
 .custom-field {
   border-radius: 10px;
-  background: linear-gradient(96.49deg, #1d1400 2.73%, #000000 97.68%);
+  background: linear-gradient(96.49deg, #2d1545 2.73%, #12021a 97.68%);
   border: 1px solid fade(#e9b65a, 20%);
   display: flex;
   align-items: center;
@@ -361,6 +366,19 @@ ul {
   font-weight: 700;
   border: none;
   color: @primary-text-on;
+}
+
+/* 公共立体胶囊按钮 */
+.btn-3d-green {
+  .btn-3d-green();
+}
+
+.btn-3d-blue {
+  .btn-3d-blue();
+}
+
+.btn-press {
+  .btn-press();
 }
 
 .van-button--primary {
@@ -535,7 +553,7 @@ ul {
 
 .van-empty__description {
   margin-top: 12px;
-  color: #a89b7c;
+  color: #b8a8d4;
   font-size: 16px;
   font-weight: 600;
   line-height: 1.4;

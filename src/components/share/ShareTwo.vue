@@ -263,7 +263,7 @@ export default {
 .tab-item {
   display: inline-block;
   padding: 8px 10px 10px;
-  color: #a89b7c;
+  color: #b8a8d4;
   cursor: pointer;
   font-size: 14px;
   position: relative;

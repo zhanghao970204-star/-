@@ -818,9 +818,9 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-@cell: #2a2418;
-@card-solid: #15110a;
-@muted: #a89b7c;
+@cell: #2d1545;
+@card-solid: #12021a;
+@muted: #b8a8d4;
 @gold-soft: #ffe4b5;
 
 .content {
@@ -1192,7 +1192,7 @@ export default {
   opacity: 0.7;
 }
 .lot-reslut {
-  background: linear-gradient(0deg, #1d1814 13.46%, #252020 100%);
+  background: linear-gradient(0deg, #1a0a28 13.46%, #2d1545 100%);
   border: 1px solid fade(@border-color, 30%);
   border-radius: 10px;
   padding: 10px 10px;

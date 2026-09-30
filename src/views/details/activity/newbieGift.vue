@@ -444,9 +444,9 @@ export default {
 <style lang="less" scoped>
 @primary: #ffa300;
 @secondary: #ffa300;
-@bg-dark: #1f1c17;
-@navy-800: #15110a;
-@navy-700: #2a2418;
+@bg-dark: #1a0a28;
+@navy-800: #12021a;
+@navy-700: #2d1545;
 @red: #dc2626;
 
 .newbie-gift {
@@ -686,7 +686,7 @@ export default {
 
   &__desc {
     font-size: 12px;
-    color: #a89b7c;
+    color: #b8a8d4;
     margin-top: 4px;
     line-height: 1.4;
 
@@ -721,16 +721,16 @@ export default {
     }
 
     &--disabled {
-      background: fade(#2a2418, 80%);
-      color: #a89b7c;
+      background: fade(#2d1545, 80%);
+      color: #b8a8d4;
       cursor: not-allowed;
       border: 1px solid rgba(255, 162, 0, 0.2);
       box-shadow: none;
     }
 
     &--locked {
-      background: fade(#2a2418, 80%);
-      color: #a89b7c;
+      background: fade(#2d1545, 80%);
+      color: #b8a8d4;
       cursor: not-allowed;
       border: 1px solid rgba(255, 162, 0, 0.2);
     }
@@ -750,8 +750,8 @@ export default {
   }
 
   &--claimed {
-    color: #a89b7c;
-    background: #15110a;
+    color: #b8a8d4;
+    background: #12021a;
   }
 }
 
@@ -786,7 +786,7 @@ export default {
 
     &-label {
       font-size: 10px;
-      color: #a89b7c;
+      color: #b8a8d4;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 2px;
@@ -807,7 +807,7 @@ export default {
 
     &-original {
       font-size: 14px;
-      color: #a89b7c;
+      color: #b8a8d4;
       text-decoration: line-through;
     }
   }
@@ -823,7 +823,7 @@ export default {
 
     &-label {
       font-size: 10px;
-      color: #a89b7c;
+      color: #b8a8d4;
       font-weight: 700;
     }
   }
@@ -850,7 +850,7 @@ export default {
   &__disclaimer {
     text-align: center;
     font-size: 10px;
-    color: #a89b7c;
+    color: #b8a8d4;
     margin-top: 12px;
     font-weight: 500;
   }

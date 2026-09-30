@@ -155,15 +155,15 @@ export default {
 
 <style lang="less" scoped>
 /* y7 黑金风格 */
-@bg: #1f1c17;
+@bg: #1a0a28;
 @gold: #ffa300;
 @gold-soft: #ffe4b5;
 @gold-deep: #e9a843;
 @gold-grad: linear-gradient(90deg, #f7dd9a 0%, #ffa300 100%);
 @btn-grad: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
-@muted: #a89b7c;
-@card: #15110a;
-@cell: #2a2418;
+@muted: #b8a8d4;
+@card: #12021a;
+@cell: #2d1545;
 
 .lang-popup {
   width: 85% !important;
@@ -196,7 +196,7 @@ export default {
 }
 
 .lang-popup__panel {
-  background: linear-gradient(180deg, #2a2418 0%, #1f1c17 40%, #15110a 100%);
+  background: linear-gradient(180deg, #2d1545 0%, #1a0a28 40%, #12021a 100%);
   border: 1px solid fade(@gold-deep, 50%);
   border-radius: 16px;
   min-height: auto;

@@ -2,6 +2,10 @@ import axios from "axios";
 import { getFingerprint } from "@/utils/common";
 import bus from "@/utils/eventBus";
 import router from "../router";
+import {
+  emitHeaderRefresh,
+  shouldRefreshHeader,
+} from "@/utils/headerRefresh";
 // 创建 axios 实例，将来对创建出来的实例，进行自定义配置
 // 好处：不会污染原始的 axios 实例
 const instance = axios.create({
@@ -9,7 +13,7 @@ const instance = axios.create({
   // baseURL: window.location.origin.includes("192.168")
   //   ? "https://us.ot.game/a/"
   //   : window.location.origin + "/a/",
-  baseURL: "https://us.ot.game/a/",
+  baseURL: "https://us.luckyhubx.cc/a/",
   //   超时时间
   timeout: 60000,
   headers: {
@@ -120,6 +124,13 @@ instance.interceptors.response.use(
             }
           });
       }
+    } else if (
+      response.data &&
+      response.data.status === "ok" &&
+      localStorage.getItem("token") &&
+      shouldRefreshHeader(response.config && response.config.url)
+    ) {
+      emitHeaderRefresh();
     }
     return response.data; // 直接返回响应数据
   },

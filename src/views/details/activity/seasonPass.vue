@@ -233,11 +233,11 @@ export default {
 @primary: #ffa300;
 @gold: #ffa300;
 @silver: #C0C0C0;
-@bg-dark: #1f1c17;
+@bg-dark: #1a0a28;
 @surface: rgba(255, 255, 255, 0.05);
 @btn-grad: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
-@muted: #a89b7c;
-@card-solid: #15110a;
+@muted: #b8a8d4;
+@card-solid: #12021a;
 
 .season-page {
   min-height: 100vh;
@@ -304,7 +304,7 @@ export default {
     font-size: 10px;
     text-transform: uppercase;
     letter-spacing: -0.02em;
-    color: #a89b7c;
+    color: #b8a8d4;
     font-weight: 700;
   }
 
@@ -325,7 +325,7 @@ export default {
 
   &__next {
     font-size: 10px;
-    color: #a89b7c;
+    color: #b8a8d4;
   }
 
   &__bar {
@@ -389,7 +389,7 @@ export default {
   }
 
   &__subtitle {
-    color: #a89b7c;
+    color: #b8a8d4;
     font-size: 10px;
     text-transform: uppercase;
     font-weight: 700;
@@ -460,7 +460,7 @@ export default {
   }
 
   &__desc {
-    color: #a89b7c;
+    color: #b8a8d4;
     font-size: 10px;
     line-height: 1.3;
     margin-top: 4px;
@@ -542,7 +542,7 @@ export default {
   &__col {
     font-size: 10px;
     font-weight: 700;
-    color: #a89b7c;
+    color: #b8a8d4;
     text-transform: uppercase;
     text-align: center;
 
@@ -587,7 +587,7 @@ export default {
 
   &__pts-label {
     font-size: 8px;
-    color: #a89b7c;
+    color: #b8a8d4;
     text-transform: uppercase;
   }
 
@@ -645,7 +645,7 @@ export default {
 
   &--locked {
     background: rgba(255, 255, 255, 0.1);
-    color: #a89b7c;
+    color: #b8a8d4;
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
 }
@@ -658,7 +658,7 @@ export default {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #15110a;
+  background: #12021a;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -894,7 +894,7 @@ export default {
     top: -12px;
     width: 8px;
     height: 44px;
-    background: linear-gradient(to right, #ffe4b5, @wihte-color, #a89b7c);
+    background: linear-gradient(to right, #ffe4b5, @wihte-color, #b8a8d4);
     border-left: 1px solid rgba(168, 155, 124, 0.5);
     border-right: 1px solid rgba(168, 155, 124, 0.5);
     box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);

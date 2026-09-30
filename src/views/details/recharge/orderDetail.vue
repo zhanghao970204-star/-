@@ -202,7 +202,7 @@ export default {
   color: @primary-color !important;
 }
 .p-line {
-  background: #2a2418;
+  background: #2d1545;
   opacity: 0.23;
   height: 2px;
   width: 100%;

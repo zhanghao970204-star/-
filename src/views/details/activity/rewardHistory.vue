@@ -69,7 +69,7 @@
 
       <!-- Empty State -->
       <div v-if="groupedRewards.length === 0" class="reward-empty">
-        <van-icon name="search" size="48" color="#a89b7c" />
+        <van-icon name="search" size="48" color="#b8a8d4" />
         <p>{{ $lang.reward_no_data || "No rewards found" }}</p>
       </div>
     </main>
@@ -260,8 +260,8 @@ export default {
 
 <style lang="less" scoped>
 @primary: #ffa300;
-@bg-dark: #1f1c17;
-@surface: #15110a;
+@bg-dark: #1a0a28;
+@surface: #12021a;
 
 .reward-page-wrap {
   min-height: 100vh;
@@ -358,7 +358,7 @@ export default {
     z-index: 10;
 
     h3 {
-      color: #a89b7c;
+      color: #b8a8d4;
       font-size: 13px;
       font-weight: bold;
       letter-spacing: 0.05em;
@@ -432,7 +432,7 @@ export default {
   }
 
   &__date {
-    color: #a89b7c;
+    color: #b8a8d4;
     font-size: 12px;
     font-weight: 500;
     margin-top: 4px;
@@ -458,7 +458,7 @@ export default {
   padding: 60px 0;
 
   p {
-    color: #a89b7c;
+    color: #b8a8d4;
     font-size: 14px;
   }
 }

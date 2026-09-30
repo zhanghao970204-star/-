@@ -257,7 +257,7 @@
       v-model:show="showHistory"
       round
       position="bottom"
-      style="height: 60%; background: #1f1c17"
+      style="height: 60%; background: #1a0a28"
       @open="fetchHistory"
     >
       <div class="rp-history">
@@ -269,7 +269,7 @@
           <van-loading size="36" color="#ff4d4f" />
         </div>
         <div v-else-if="historyList.length === 0" class="rp-history__empty">
-          <van-icon name="orders-o" size="48" color="#a89b7c" />
+          <van-icon name="orders-o" size="48" color="#b8a8d4" />
           <p>{{ $lang.rp_no_history || "No records yet" }}</p>
         </div>
         <div v-else class="rp-history__list">
@@ -699,8 +699,8 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@rp-bg: #1f1c17;
-@rp-card: #15110a;
+@rp-bg: #1a0a28;
+@rp-card: #12021a;
 @rp-red: #ff4d4f;
 @rp-gold: #ffa300;
 @rp-green: #ffa300;
@@ -844,7 +844,7 @@ export default {
 
   &__desc {
     font-size: 13px;
-    color: #a89b7c;
+    color: #b8a8d4;
     line-height: 1.5;
     max-width: 280px;
     margin-bottom: 24px;
@@ -852,7 +852,7 @@ export default {
 
   &__sub {
     font-size: 12px;
-    color: #a89b7c;
+    color: #b8a8d4;
     margin-top: 16px;
   }
 }
@@ -910,7 +910,7 @@ export default {
 
   &__label {
     font-size: 9px;
-    color: #a89b7c;
+    color: #b8a8d4;
     font-weight: 700;
     text-transform: uppercase;
     margin-top: 2px;
@@ -956,7 +956,7 @@ export default {
 
     &-label {
       font-size: 10px;
-      color: #a89b7c;
+      color: #b8a8d4;
       text-transform: uppercase;
       font-weight: 700;
       letter-spacing: 1px;
@@ -1054,7 +1054,7 @@ export default {
 
   &__label {
     font-size: 11px;
-    color: #a89b7c;
+    color: #b8a8d4;
     text-transform: uppercase;
     letter-spacing: 2px;
     font-weight: 700;
@@ -1078,7 +1078,7 @@ export default {
 
   &__label {
     font-size: 11px;
-    color: #a89b7c;
+    color: #b8a8d4;
     text-transform: uppercase;
     letter-spacing: 2px;
     font-weight: 700;
@@ -1113,7 +1113,7 @@ export default {
 
   &__label {
     font-size: 12px;
-    color: #a89b7c;
+    color: #b8a8d4;
     font-weight: 600;
   }
 
@@ -1157,7 +1157,7 @@ export default {
     align-items: flex-start;
     gap: 10px;
     font-size: 12px;
-    color: #a89b7c;
+    color: #b8a8d4;
     line-height: 1.4;
   }
 
@@ -1212,7 +1212,7 @@ export default {
 
     p {
       font-size: 13px;
-      color: #a89b7c;
+      color: #b8a8d4;
     }
   }
 
@@ -1250,12 +1250,12 @@ export default {
 
   &__time {
     font-size: 11px;
-    color: #a89b7c;
+    color: #b8a8d4;
   }
 
   &__order {
     font-size: 10px;
-    color: #a89b7c;
+    color: #b8a8d4;
     word-break: break-all;
   }
 
@@ -1275,7 +1275,7 @@ export default {
 
   &__status {
     font-size: 10px;
-    color: #a89b7c;
+    color: #b8a8d4;
   }
 
   &__more {

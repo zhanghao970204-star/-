@@ -369,7 +369,7 @@ export default {
     .cot-cont-li {
       // font-weight: bold;
       text-align: center;
-      background: #2a2418;
+      background: #2d1545;
       border: 1px solid rgba(233, 168, 67, 0.25);
       border-radius: 8px;
       margin: 0 10px 12px 10px;
@@ -407,7 +407,7 @@ export default {
   // width: 100%;
   // max-width: 365px;
   .cot-cont-rti {
-    background: #2a2418;
+    background: #2d1545;
     border: 1px solid rgba(233, 168, 67, 0.25);
     color: #ffe4b5;
     border-radius: 6px;
@@ -440,7 +440,7 @@ export default {
   max-height: 160px;
   border-radius: 13px;
   overflow: hidden;
-  background: #2a2418;
+  background: #2d1545;
   line-height: 0;
 
   img {

@@ -47,7 +47,7 @@
     <template v-else>
       <!-- Locked state for daily/weekly when newbie not completed -->
       <div v-if="activeTab !== 'newbie' && !newbieCompleted" class="mc-locked">
-        <van-icon name="lock" size="48" color="#a89b7c" />
+        <van-icon name="lock" size="48" color="#b8a8d4" />
         <p class="mc-locked__title">{{ $lang.mc_locked_title || 'Locked' }}</p>
         <p class="mc-locked__desc">{{ $lang.mc_locked_desc || 'Complete all newbie tasks to unlock' }}</p>
         <button class="mc-locked__btn" @click="switchTab('newbie')">{{ $lang.mc_go_newbie || 'Go to Newbie Tasks' }}</button>
@@ -59,7 +59,7 @@
         <div class="mc-cumulative__header">
           <p class="mc-cumulative__label">{{ $lang.mc_activity_points }}</p>
           <div class="mc-cumulative__reset">
-            <van-icon name="clock-o" size="12" color="#a89b7c" />
+            <van-icon name="clock-o" size="12" color="#b8a8d4" />
             <span>{{ $lang.mc_reset_in }} {{ resetCountdown }}</span>
           </div>
         </div>
@@ -399,8 +399,8 @@ export default {
 <style lang="less" scoped>
 @primary: #ffa300;
 @gold: #ffa300;
-@bg: #1f1c17;
-@card: #15110a;
+@bg: #1a0a28;
+@card: #12021a;
 
 .mc-page {
   min-height: 100vh;
@@ -465,7 +465,7 @@ export default {
     letter-spacing: 1px;
     border: none;
     background: none;
-    color: #a89b7c;
+    color: #b8a8d4;
     cursor: pointer;
     transition: all 0.2s;
 
@@ -476,7 +476,7 @@ export default {
     }
 
     &--locked {
-      color: #a89b7c;
+      color: #b8a8d4;
       cursor: not-allowed;
       opacity: 0.5;
     }
@@ -502,7 +502,7 @@ export default {
 
   &__desc {
     font-size: 13px;
-    color: #a89b7c;
+    color: #b8a8d4;
     margin-bottom: 24px;
     line-height: 1.5;
   }
@@ -546,7 +546,7 @@ export default {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 2px;
-    color: #a89b7c;
+    color: #b8a8d4;
   }
 
   &__reset {
@@ -554,7 +554,7 @@ export default {
     align-items: center;
     gap: 4px;
     font-size: 11px;
-    color: #a89b7c;
+    color: #b8a8d4;
   }
 
   &__score {
@@ -569,13 +569,13 @@ export default {
 
   &__sep {
     font-size: 18px;
-    color: #a89b7c;
+    color: #b8a8d4;
     margin: 0 2px;
   }
 
   &__total {
     font-size: 18px;
-    color: #a89b7c;
+    color: #b8a8d4;
   }
 }
 
@@ -632,7 +632,7 @@ export default {
   &__pts {
     font-size: 10px;
     font-weight: 700;
-    color: #a89b7c;
+    color: #b8a8d4;
   }
 
   &__reward {
@@ -679,7 +679,7 @@ export default {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 2px;
-    color: #a89b7c;
+    color: #b8a8d4;
     margin-bottom: 12px;
     padding-left: 4px;
   }
@@ -737,7 +737,7 @@ export default {
 
   &__progress {
     font-size: 11px;
-    color: #a89b7c;
+    color: #b8a8d4;
   }
 
   &__right {
@@ -792,7 +792,7 @@ export default {
     &--claimed {
       background: rgba(255,255,255,0.05);
       border-color: transparent;
-      color: #a89b7c;
+      color: #b8a8d4;
       cursor: not-allowed;
     }
 
@@ -818,7 +818,7 @@ export default {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 2px;
-    color: #a89b7c;
+    color: #b8a8d4;
     margin-bottom: 12px;
   }
 
@@ -828,7 +828,7 @@ export default {
 
     li {
       font-size: 12px;
-      color: #a89b7c;
+      color: #b8a8d4;
       line-height: 1.8;
     }
   }

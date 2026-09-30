@@ -274,12 +274,12 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@bg: #1f1c17;
+@bg: #1a0a28;
 @gold: #ffa300;
 @gold-soft: #ffe4b5;
 @gold-deep: #e9a843;
 @btn-grad: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
-@card-bg: linear-gradient(0deg, #1d1814 13.46%, #252020 100%);
+@card-bg: linear-gradient(0deg, #1a0a28 13.46%, #2d1545 100%);
 @card-border: 0.25px solid #ffebc0;
 /* 图一吸色：左暖橄榄 → 右近黑 */
 @fx-bg: linear-gradient(
@@ -291,7 +291,7 @@ export default {
   #13120d 100%
 );
 @fx-border: 1px solid #877d60;
-@muted: #a89b7c;
+@muted: #b8a8d4;
 
 .invite {
   padding: 4px 12px 80px;

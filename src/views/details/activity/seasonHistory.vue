@@ -117,7 +117,7 @@
 
       <!-- Empty State -->
       <div v-if="pastSeasons.length === 0" class="sh-empty">
-        <van-icon name="records" size="48" color="#a89b7c" />
+        <van-icon name="records" size="48" color="#b8a8d4" />
         <p>{{ $lang.season_history_empty || 'No past seasons yet' }}</p>
       </div>
     </section>
@@ -183,10 +183,10 @@ export default {
 @primary: #ffa300;
 @gold: #ffa300;
 @silver: #C0C0C0;
-@bg-dark: #1f1c17;
+@bg-dark: #1a0a28;
 @surface: rgba(255, 255, 255, 0.05);
 @btn-grad: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
-@muted: #a89b7c;
+@muted: #b8a8d4;
 
 .sh-page {
   min-height: 100vh;
@@ -272,7 +272,7 @@ export default {
 
   &__date {
     font-size: 11px;
-    color: #a89b7c;
+    color: #b8a8d4;
     margin-top: 4px;
   }
 
@@ -317,7 +317,7 @@ export default {
 
   &__target {
     font-size: 10px;
-    color: #a89b7c;
+    color: #b8a8d4;
     margin-top: 6px;
     text-align: right;
   }
@@ -346,7 +346,7 @@ export default {
 
   &__reward-label {
     font-size: 9px;
-    color: #a89b7c;
+    color: #b8a8d4;
     text-transform: uppercase;
     font-weight: 700;
   }
@@ -424,7 +424,7 @@ export default {
 
   &__date {
     font-size: 10px;
-    color: #a89b7c;
+    color: #b8a8d4;
     margin-top: 2px;
   }
 
@@ -474,7 +474,7 @@ export default {
   &__pts {
     font-size: 10px;
     font-weight: 700;
-    color: #a89b7c;
+    color: #b8a8d4;
     white-space: nowrap;
   }
 
@@ -494,7 +494,7 @@ export default {
     span {
       font-size: 11px;
       font-weight: 700;
-      color: #a89b7c;
+      color: #b8a8d4;
     }
   }
 
@@ -590,7 +590,7 @@ export default {
   padding: 60px 0;
 
   p {
-    color: #a89b7c;
+    color: #b8a8d4;
     font-size: 14px;
   }
 }

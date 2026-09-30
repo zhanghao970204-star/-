@@ -126,7 +126,7 @@ export default {
 
 <style lang="less" scoped>
 @primary: #ffa300;
-@bg-dark: #1f1c17;
+@bg-dark: #1a0a28;
 
 .dp {
   background: @bg-dark;
@@ -156,7 +156,7 @@ export default {
   }
 
   &__subtitle {
-    color: #a89b7c;
+    color: #b8a8d4;
     font-size: 12px;
     text-align: center;
     margin-bottom: 12px;
@@ -193,7 +193,7 @@ export default {
   &__cancel {
     background: transparent;
     border: none;
-    color: #a89b7c;
+    color: #b8a8d4;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
@@ -208,7 +208,7 @@ export default {
 
 <style lang="less">
 .date-picker-popup {
-  background: #1f1c17 !important;
+  background: #1a0a28 !important;
   overflow: hidden;
 
   .van-picker,
@@ -217,7 +217,7 @@ export default {
   }
 
   .van-picker-column__item {
-    color: #a89b7c !important;
+    color: #b8a8d4 !important;
     font-size: 16px;
     font-weight: 500;
 

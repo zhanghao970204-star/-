@@ -283,8 +283,8 @@ export default {
 @primary: #ffa300;
 @yellow: #ffa300;
 @red: #dc2626;
-@bg-dark: #1f1c17;
-@card-dark: #15110a;
+@bg-dark: #1a0a28;
+@card-dark: #12021a;
 
 .first-deposit {
   min-height: 100vh;
@@ -531,7 +531,7 @@ export default {
 
   &__text {
     font-size: 8px;
-    color: #a89b7c;
+    color: #b8a8d4;
     text-transform: uppercase;
     font-weight: 700;
     letter-spacing: 2px;
@@ -649,7 +649,7 @@ export default {
 
   &__limit {
     font-size: 11px;
-    color: #a89b7c;
+    color: #b8a8d4;
   }
 }
 
@@ -859,7 +859,7 @@ export default {
 
     &-text {
       font-size: 9px;
-      color: #a89b7c;
+      color: #b8a8d4;
       text-transform: uppercase;
       font-weight: 900;
       letter-spacing: 2px;

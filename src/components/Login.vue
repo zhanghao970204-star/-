@@ -27,64 +27,60 @@
         <div class="title">
           <div class="left">
             <img
+              v-if="selectIndex === 0"
               class="logo"
-              src="@/assets/img/login/logo.webp"
-              alt="WOLF KING"
+              src="@/assets/img/login/left.png"
+              alt=""
+            />
+            <img
+              v-else
+              class="logo"
+              src="@/assets/img/login/right.png"
+              alt=""
             />
           </div>
         </div>
 
         <div class="centent">
-          <div class="bg"></div>
-          <div
-            class="cententBox"
-            :class="{
-              bgLeft: selectIndex === 0,
-              bgRight: selectIndex !== 0,
-            }"
-          >
+          <div class="cententBox">
             <div class="tab">
               <div
+                class="tab__item"
+                :class="{ 'is-active': selectIndex === 0 }"
                 @click="selectTab(0)"
-                :style="
-                  selectIndex === 0
-                    ? 'font-weight: 700;color: #fff;font-size: 18px;'
-                    : 'color: #fff;'
-                "
               >
                 {{ $lang.Entrar || "Sign In" }}
               </div>
               <div
+                class="tab__item"
+                :class="{ 'is-active': selectIndex === 1 }"
                 @click="selectTab(1)"
-                :style="
-                  selectIndex === 1
-                    ? 'font-weight: 700;color: #fff;font-size: 18px;'
-                    : 'color: #fff;'
-                "
               >
                 {{ $lang.Registro || "Register" }}
               </div>
             </div>
 
             <div class="login-popup__form">
-              <div class="login-popup__field-row" style="position: relative">
-                <div class="login-popup__area-code" @click="getLangT">
+              <p class="login-popup__label">
+                {{ $lang.login_phone_label || "Phone" }}
+              </p>
+              <div
+                class="login-popup__field-row"
+                :class="{
+                  'login-popup__field-row--focus': isFocused,
+                  'login-popup__field-row--error': vError1,
+                }"
+                style="position: relative"
+              >
+                <div class="login-popup__area-code">
                   <img
-                    v-if="displayIcon"
                     class="login-popup__flag"
-                    :src="displayIcon"
-                    width="22"
-                    alt=""
+                    src="@/assets/img/login/us_flag.png"
+                    alt="US"
                   />
-                  <span class="login-popup__area-code-text">{{
-                    displayAreaCode
-                  }}</span>
-                  <van-icon
-                    :name="showCountryDrop ? 'arrow-up' : 'arrow-down'"
-                    size="10"
-                    color="#ffe4b5"
-                  />
+                  <span class="login-popup__area-code-text">+1</span>
                 </div>
+                <!-- 国家下拉先关掉，写死美国 +1
                 <div v-if="showCountryDrop" class="login-popup__dropdown">
                   <div
                     v-for="(item, idx) in countryList"
@@ -106,14 +102,11 @@
                     {{ $lang.common_loading || "Loading..." }}
                   </div>
                 </div>
+                -->
                 <van-field
                   :model-value="account"
-                  :placeholder="$lang.login_txt || 'Enter mobile number'"
+                  :placeholder="$lang.login_txt || 'Phone Number'"
                   class="login-popup__input"
-                  :class="{
-                    'login-popup__input--focus': isFocused,
-                    'login-popup__input--error': vError1,
-                  }"
                   @focus="isFocused = true"
                   @blur="isFocused = false"
                   @update:model-value="getError3"
@@ -126,6 +119,9 @@
               </p>
 
               <div v-if="showCaptchaField" class="login-popup__field">
+                <p class="login-popup__label">
+                  {{ $lang.login_captcha_label || "Code" }}
+                </p>
                 <van-field
                   :model-value="captcha"
                   :placeholder="
@@ -159,15 +155,21 @@
                   </template>
                 </van-field>
               </div>
-              <p v-if="showCaptchaField && vErrorCaptcha" class="login-popup__error">
+              <p
+                v-if="showCaptchaField && vErrorCaptcha"
+                class="login-popup__error"
+              >
                 <van-icon name="warning" color="#ef4444" size="12" />
                 {{ vErrorCaptcha }}
               </p>
 
               <div v-if="showPasswordField" class="login-popup__field">
+                <p class="login-popup__label">
+                  {{ $lang.login_txt4 || "Password" }}
+                </p>
                 <van-field
                   :model-value="passwd"
-                  :placeholder="$lang.login_txt4 || 'Password'"
+                  :placeholder="$lang.login_pwd_placeholder || 'Enter Password'"
                   class="login-popup__input login-popup__input--icon"
                   :class="{
                     'login-popup__input--focus': isFocused2,
@@ -178,14 +180,19 @@
                   :type="!isShowMm ? 'password' : 'text'"
                   @update:model-value="getError"
                 >
-                  <template #left-icon>
-                    <van-icon name="lock" size="18" color="#ffe4b5" />
-                  </template>
                   <template #right-icon>
-                    <van-icon
-                      :name="isShowMm ? 'eye-o' : 'closed-eye'"
-                      size="18"
-                      color="#ffe4b5"
+                    <img
+                      v-if="isShowMm"
+                      class="login-popup__eye"
+                      src="@/assets/img/login/eye.png"
+                      alt=""
+                      @click="isShowMm = !isShowMm"
+                    />
+                    <img
+                      v-else
+                      class="login-popup__eye"
+                      src="@/assets/img/login/eye_off.png"
+                      alt=""
                       @click="isShowMm = !isShowMm"
                     />
                   </template>
@@ -197,9 +204,12 @@
               </p>
 
               <div v-if="showConfirmPasswordField" class="login-popup__field">
+                <p class="login-popup__label">
+                  {{ $lang.login_txt6 || "Confirm Password" }}
+                </p>
                 <van-field
                   :model-value="conPasswd"
-                  :placeholder="$lang.login_txt6 || 'Confirm your password'"
+                  :placeholder="$lang.login_pwd_placeholder || 'Enter Password'"
                   class="login-popup__input login-popup__input--icon"
                   :class="{
                     'login-popup__input--focus': isFocused3,
@@ -210,14 +220,19 @@
                   :type="!isShowMm2 ? 'password' : 'text'"
                   @update:model-value="getError2"
                 >
-                  <template #left-icon>
-                    <van-icon name="lock" size="18" color="#ffe4b5" />
-                  </template>
                   <template #right-icon>
-                    <van-icon
-                      :name="isShowMm2 ? 'eye-o' : 'closed-eye'"
-                      size="18"
-                      color="#ffe4b5"
+                    <img
+                      v-if="isShowMm2"
+                      class="login-popup__eye"
+                      src="@/assets/img/login/eye.png"
+                      alt=""
+                      @click="isShowMm2 = !isShowMm2"
+                    />
+                    <img
+                      v-else
+                      class="login-popup__eye"
+                      src="@/assets/img/login/eye_off.png"
+                      alt=""
                       @click="isShowMm2 = !isShowMm2"
                     />
                   </template>
@@ -232,6 +247,9 @@
               </p>
 
               <div v-if="showEmailField" class="login-popup__field">
+                <p class="login-popup__label">
+                  {{ $lang.login_email_label || "Email" }}
+                </p>
                 <van-field
                   :model-value="email"
                   :placeholder="
@@ -247,12 +265,12 @@
                   @update:model-value="getEmailError"
                   type="text"
                 >
-                  <template #left-icon>
-                    <van-icon name="envelop-o" size="18" color="#ffe4b5" />
-                  </template>
                 </van-field>
               </div>
-              <p v-if="showEmailField && vErrorEmail" class="login-popup__error">
+              <p
+                v-if="showEmailField && vErrorEmail"
+                class="login-popup__error"
+              >
                 <van-icon name="warning" color="#ef4444" size="12" />
                 {{ vErrorEmail }}
               </p>
@@ -261,7 +279,7 @@
                 <van-radio-group
                   :model-value="loginMode"
                   direction="horizontal"
-                  checked-color="#e9b65a"
+                  checked-color="#ffd400"
                   @update:model-value="setLoginMode"
                 >
                   <van-radio name="password" icon-size="16px">
@@ -286,10 +304,29 @@
               >
                 {{
                   selectIndex === 0
-                    ? $lang.Entrar || "Sign In"
+                    ? $lang.Entrar || "LOG IN"
                     : $lang.Registro || "Register"
                 }}
               </button>
+
+              <!-- 仅登录页展示；谷歌登录逻辑先注释，改展示 Play as Guest，无点击 -->
+              <div v-if="selectIndex === 0" class="sg">
+                <button
+                  type="button"
+                  class="login-popup__google button kj"
+                >
+                  <span>Play as Guest</span>
+                </button>
+                <!--
+                <button
+                  class="login-popup__google button kj"
+                  @click="handleGoogleLogin"
+                  :disabled="googleLoading"
+                >
+                  <span>{{ $lang.google_login || "Sign in with Google" }}</span>
+                </button>
+                -->
+              </div>
 
               <div class="login-popup__agree">
                 <van-checkbox
@@ -303,34 +340,6 @@
                     "Agree or disagree with the Service Policy and Privacy Policy"
                   }}</span>
                 </van-checkbox>
-              </div>
-
-              <div class="sg">
-                <button
-                  class="login-popup__google button kj"
-                  @click="handleGoogleLogin"
-                  :disabled="googleLoading"
-                >
-                  <svg viewBox="0 0 48 48" width="18" height="18">
-                    <path
-                      fill="#EA4335"
-                      d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
-                    />
-                    <path
-                      fill="#4285F4"
-                      d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"
-                    />
-                    <path
-                      fill="#FBBC05"
-                      d="M10.53 28.59A14.5 14.5 0 0 1 9.5 24c0-1.59.28-3.14.76-4.59l-7.98-6.19A23.99 23.99 0 0 0 0 24c0 3.77.9 7.35 2.56 10.52l7.97-5.93z"
-                    />
-                    <path
-                      fill="#34A853"
-                      d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 5.93C6.51 42.62 14.62 48 24 48z"
-                    />
-                  </svg>
-                  <span>{{ $lang.google_login || "Sign in with Google" }}</span>
-                </button>
               </div>
             </div>
           </div>
@@ -353,16 +362,11 @@
         <div class="login-popup__field-row">
           <div class="login-popup__area-code" @click="showGoogleRegisterLang">
             <img
-              v-if="displayIcon"
               class="login-popup__flag"
-              :src="displayIcon"
-              width="22"
-              alt=""
+              src="@/assets/img/login/us_flag.png"
+              alt="US"
             />
-            <span class="login-popup__area-code-text">{{
-              displayAreaCode
-            }}</span>
-            <van-icon name="arrow-down" size="10" color="#ffe4b5" />
+            <van-icon name="arrow-down" size="10" color="#c9b3ff" />
           </div>
           <van-field
             :model-value="googlePhoneNo"
@@ -500,7 +504,7 @@ export default {
       const style = {
         width: "100%",
         height: "100%",
-        background: "#1f1c17",
+        background: "#27033C",
       };
       if (typeof window !== "undefined" && window.innerWidth >= 769) {
         style.left = "unset";
@@ -518,11 +522,7 @@ export default {
     isUsSite() {
       const currency = localStorage.getItem("currency");
       const platform = localStorage.getItem("platform");
-      return (
-        currency === "USD" ||
-        currency === "usd" ||
-        platform === "usbet"
-      );
+      return currency === "USD" || currency === "usd" || platform === "usbet";
     },
     /** 美国区号 +1 / 国家 US：注册走美国手机号规则 */
     isUsPhoneArea() {
@@ -574,9 +574,7 @@ export default {
       return this.selectIndex === 1 && this.showPasswordField;
     },
     showEmailField() {
-      return (
-        this.selectIndex === 1 && (this.isUsSite || this.isMxSite)
-      );
+      return this.selectIndex === 1 && (this.isUsSite || this.isMxSite);
     },
     isEmailValid() {
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(this.email || "").trim());
@@ -628,7 +626,9 @@ export default {
       }
 
       if (this.isRegisterCaptchaRequired) {
-        return baseEnable && /^\d{6}$/.test(this.captcha) && !this.vErrorCaptcha;
+        return (
+          baseEnable && /^\d{6}$/.test(this.captcha) && !this.vErrorCaptcha
+        );
       }
 
       return baseEnable;
@@ -739,8 +739,7 @@ export default {
         }
         const list = data.content.list;
         this.countryList = list;
-        const match =
-          list.find((i) => i && i.country === country) || list[0];
+        const match = list.find((i) => i && i.country === country) || list[0];
         if (!match) return;
         if (match.iconUrl) {
           this.selectedIcon = match.iconUrl;
@@ -1347,7 +1346,7 @@ export default {
     font-size: 12px;
 
     span {
-      color: #e9b65a;
+      color: #31ff6f;
       padding: 0 3px;
     }
   }
@@ -1362,7 +1361,7 @@ export default {
   color: #fff;
 
   & > span {
-    color: #e9b65a !important;
+    color: #31ff6f !important;
   }
 }
 
@@ -1398,20 +1397,11 @@ export default {
   min-height: 100dvh;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
-  background: #1f1c17 url(@/assets/img/login/loginPageBg.png) 0 0 no-repeat;
-  background-image: image-set(
-    url("@/assets/img/login/loginPageBg.webp") type("image/webp"),
-    url("@/assets/img/login/loginPageBg.png") type("image/png")
-  );
-  background-size: 100% 100%;
-
-  .bgLeft {
-    background: url(@/assets/img/login/left.svg) center top no-repeat;
-  }
-
-  .bgRight {
-    background: url(@/assets/img/login/right.svg) center top no-repeat;
-  }
+  background-color: #27033c;
+  background-image: url(@/assets/img/common/page_bg.png);
+  background-repeat: repeat;
+  background-size: auto;
+  background-position: top center;
 
   .centent {
     width: 100%;
@@ -1423,104 +1413,160 @@ export default {
     .cententBox {
       position: relative;
       z-index: 1;
-      background-size: 100% 346.5px;
       height: 100%;
-      padding-top: 8px;
+      padding-top: 4px;
       box-sizing: border-box;
 
       .tab {
         display: flex;
-        justify-content: space-around;
+        align-items: center;
+        margin: 8px 24px 0;
         height: 44px;
-        line-height: 44px;
+        padding: 3px;
+        box-sizing: border-box;
+        background: #000;
+        border-radius: 999px;
 
-        & > div {
-          text-align: center;
-          width: 50%;
-          font-size: 16px;
+        .tab__item {
+          flex: 1;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 15px;
+          font-weight: 700;
+          color: #c9b3ff;
+          border-radius: 999px;
           cursor: pointer;
+          transition:
+            background 0.2s,
+            color 0.2s;
+
+          &.is-active {
+            background: #ffd400;
+            color: #111;
+          }
         }
       }
-    }
-
-    .bg {
-      height: calc(346.5px - 8px);
-      position: absolute;
-      background: #e9b65a1a;
-      top: 8px;
-      left: 0;
-      width: 100%;
-      z-index: 0;
-      box-sizing: border-box;
     }
   }
 
   .title {
     width: 100%;
     box-sizing: border-box;
-    padding: 0 15px;
-    padding-right: 52px;
+    padding: 28px 18px 0;
     display: flex;
+    justify-content: center;
     z-index: 1;
 
     .left {
       display: flex;
       align-items: center;
+      justify-content: center;
+      width: 100%;
 
       .logo {
-        // height: 40px;
-        max-width: 120px;
-        width: auto;
-        margin: auto;
+        width: 86%;
+        max-width: 320px;
+        height: auto;
         display: block;
+        margin: 0 auto;
+        object-fit: contain;
       }
     }
   }
 }
 
 .login-popup__form {
-  padding: 25px 15px;
+  padding: 18px 22px 28px;
   box-sizing: border-box;
 }
 
+.login-popup__label {
+  margin: 0 0 8px;
+  padding: 0 2px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
 .login-popup__field-row {
+  position: relative;
   display: flex;
-  gap: 8px;
+  align-items: stretch;
+  gap: 0;
   margin-bottom: 4px;
+  background: #000;
+  border-radius: 25px;
+  overflow: hidden;
+  box-sizing: border-box;
+
+  /* 选中边框叠在子元素之上，避免被黑底盖住 */
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 25px;
+    border: 1px solid transparent;
+    pointer-events: none;
+    z-index: 5;
+    box-sizing: border-box;
+  }
+
+  &--focus::after {
+    border-color: #ffd400;
+  }
+
+  &--error::after {
+    border-color: #ef4444;
+  }
 }
 
 .login-popup__field {
-  margin-top: 16px;
+  margin-top: 14px;
   margin-bottom: 4px;
 }
 
 .login-popup__flag {
-  width: 22px;
-  height: auto;
+  width: 24px;
+  height: 16px;
   flex-shrink: 0;
   display: block;
+  object-fit: cover;
+  border-radius: 2px;
 }
 
 .login-popup__area-code {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 0 10px;
+  gap: 6px;
+  padding: 0 12px;
   height: 48px;
-  min-width: 86px;
-  background: linear-gradient(96.49deg, #1d1400 2.73%, #000000 97.68%);
-  border: 1px solid #e9b65a33;
-  border-radius: 10px;
-  cursor: pointer;
+  min-width: 64px;
+  background: transparent;
+  border: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 0;
   flex-shrink: 0;
   position: relative;
+  pointer-events: none;
+  transition: border-color 0.2s;
 
   &-text {
     color: #fff;
-    font-size: 13px;
-    font-weight: 600;
+    font-size: 14px;
+    font-weight: 700;
     white-space: nowrap;
   }
+}
+
+.login-popup__field-row--focus .login-popup__area-code {
+  border-right-color: #ffd400;
+}
+
+.login-popup__field-row--error .login-popup__area-code {
+  border-right-color: #ef4444;
 }
 
 .login-popup__dropdown {
@@ -1529,12 +1575,12 @@ export default {
   left: 0;
   right: 0;
   z-index: 100;
-  background: linear-gradient(96.49deg, #1d1400 2.73%, #000000 97.68%);
-  border: 1px solid #e9b65a33;
-  border-radius: 10px;
+  background: #12001f;
+  border: 1px solid rgba(201, 179, 255, 0.25);
+  border-radius: 12px;
   max-height: 200px;
   overflow-y: auto;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
 
   &-item {
     display: flex;
@@ -1551,13 +1597,13 @@ export default {
     }
 
     &:active {
-      background: rgba(233, 182, 90, 0.12);
+      background: rgba(201, 179, 255, 0.12);
     }
   }
 
   &-code {
     margin-left: auto;
-    color: #e9b65a;
+    color: #c9b3ff;
     font-weight: 600;
     font-size: 12px;
   }
@@ -1565,23 +1611,27 @@ export default {
 
 .login-popup__input {
   height: 48px;
-  background: linear-gradient(
-    96.49deg,
-    #1d1400 2.73%,
-    #000000 97.68%
-  ) !important;
-  border: 1px solid #e9b65a33 !important;
-  border-radius: 10px !important;
+  background: #000 !important;
+  border: none !important;
+  border-radius: 25px !important;
   color: #fff;
   font-size: 14px;
-  transition: border-color 0.2s;
+  transition: box-shadow 0.2s;
+
+  .login-popup__field-row & {
+    border-radius: 0 !important;
+    flex: 1;
+    /* 手机号整行边框由 field-row 负责，输入框本身不再画边 */
+    box-shadow: none !important;
+  }
 
   &--focus {
-    border-color: #e9b65a !important;
+    /* 外描边不被内部黑底遮挡 */
+    box-shadow: 0 0 0 1px #ffd400 !important;
   }
 
   &--error {
-    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 1px #ef4444 !important;
   }
 
   :deep(.van-field__control) {
@@ -1589,7 +1639,7 @@ export default {
   }
 
   :deep(.van-field__control::placeholder) {
-    color: rgba(255, 255, 255, 0.45);
+    color: #9b86c9;
   }
 
   :deep(.van-field__left-icon),
@@ -1597,6 +1647,14 @@ export default {
     display: flex;
     align-items: center;
   }
+}
+
+.login-popup__eye {
+  width: 22px;
+  height: 22px;
+  display: block;
+  cursor: pointer;
+  object-fit: contain;
 }
 
 .login-popup__mode-switch {
@@ -1618,12 +1676,12 @@ export default {
   }
 
   :deep(.van-radio__icon .van-icon) {
-    border-color: #e9b65a66;
+    border-color: #c9b3ff66;
   }
 }
 
 .login-popup__captcha-send {
-  color: #e9b65a;
+  color: #ffd400;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -1645,50 +1703,49 @@ export default {
 }
 
 .button {
-  color: #000;
+  color: #fff;
   width: 100% !important;
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 800;
   height: 48px;
   line-height: 48px;
   border: none;
-  border-radius: 24px;
+  border-radius: 999px;
   cursor: pointer;
+  letter-spacing: 0.5px;
+  -webkit-tap-highlight-color: transparent;
 }
 
+/* Sign In / Register：公共绿色立体按钮 */
 .dlzc {
-  background: url(@/assets/img/login/dlzc.png) 0 0 no-repeat;
-  background-size: cover;
+  .btn-3d-green();
+  font-size: 16px;
 }
 
+/* Play as Guest：公共蓝色立体按钮 */
 .kj {
-  background: linear-gradient(
-    90deg,
-    #0000007e 0%,
-    #b58e4656 38.46%,
-    #0000007c 100%
-  );
-  border: 0.25px solid #ffe4b54d;
-  backdrop-filter: blur(40px);
-  color: #ffe4b5;
+  .btn-3d-blue();
+  font-size: 16px;
+  backdrop-filter: none;
 }
 
 .login-popup__submit {
-  margin-top: 38px;
+  margin-top: 22px;
+  margin-bottom: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
 
   &--disabled {
-    opacity: 0.45;
+    opacity: 0.55;
     cursor: not-allowed;
-    filter: grayscale(0.3);
+    filter: none;
   }
 }
 
 .login-popup__agree {
   margin: 0 5px;
-  margin-top: 30px;
+  margin-top: 18px;
 
   &-text {
     font-size: 12px;
@@ -1720,30 +1777,18 @@ export default {
 
 .sg {
   position: relative;
-  overflow: hidden;
-  border-radius: 20px;
-  margin-top: 18px;
+  overflow: visible;
+  border-radius: 999px;
+  margin-top: 14px;
 }
 
 .sg .login-popup__google {
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .sg .login-popup__google:after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 80%;
-  height: 120%;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.274) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  animation: glow-login-btn 4s infinite;
+  display: none;
 }
 
 .login-popup__google {
@@ -1751,6 +1796,8 @@ export default {
   align-items: center;
   justify-content: center;
   gap: 8px;
+  cursor: default;
+  pointer-events: none;
 
   &:disabled {
     opacity: 0.6;
@@ -1761,15 +1808,18 @@ export default {
 .google-reg-popup {
   width: 93%;
   max-width: 420px;
-  background: #1f1c17 !important;
-  border: 1px solid #e9b65a33;
+  background: #27033c !important;
+  background-image: url(@/assets/img/common/page_bg.png);
+  background-repeat: repeat;
+  background-size: auto;
+  border: 1px solid rgba(201, 179, 255, 0.25);
   border-radius: 16px !important;
   padding: 24px 20px;
 }
 
 .google-reg {
   &__title {
-    color: #e9b65a;
+    color: #ffd400;
     font-size: 18px;
     font-weight: 700;
     text-align: center;

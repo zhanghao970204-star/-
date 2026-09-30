@@ -54,7 +54,7 @@ export default {
   border-radius: 8px;
   border: 1px solid fade(#e9a843, 35%);
   padding: 15px 10px;
-  background: #15110a;
+  background: #12021a;
   font-size: 16px;
 }
 </style>

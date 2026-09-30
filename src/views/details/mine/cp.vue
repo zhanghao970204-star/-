@@ -87,7 +87,7 @@ export default {
   }
 }
 .cp-bootom {
-  background-image: linear-gradient(180deg, #2a2418 0%, #15110a 100%);
+  background-image: linear-gradient(180deg, #2d1545 0%, #12021a 100%);
   box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.08);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);

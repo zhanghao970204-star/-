@@ -818,15 +818,15 @@ export default {
 
 <style lang="less" scoped>
 /* y7 黑金风格 */
-@bg: #1f1c17;
+@bg: #1a0a28;
 @gold: #ffa300;
 @gold-soft: #ffe4b5;
 @gold-deep: #e9a843;
 @gold-grad: linear-gradient(90deg, #f7dd9a 0%, #ffa300 100%);
 @btn-grad: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
-@muted: #a89b7c;
-@card-bg: #15110a;
-@cell: #2a2418;
+@muted: #b8a8d4;
+@card-bg: #12021a;
+@cell: #2d1545;
 
 .rc-page {
   min-height: 100vh;
@@ -1085,7 +1085,7 @@ export default {
 }
 
 .deposit_share {
-  background: linear-gradient(0deg, #1d1814 13.46%, #252020 100%);
+  background: linear-gradient(0deg, #1a0a28 13.46%, #2d1545 100%);
   border: 1px solid fade(@gold, 35%);
   border-radius: 10px;
   padding: 12px 10px;
@@ -1154,7 +1154,7 @@ export default {
     flex: 0 0 auto;
     min-width: 72px;
     height: 72px;
-    background: linear-gradient(180deg, #332c22 0%, #2a2418 100%);
+    background: linear-gradient(180deg, #332c22 0%, #2d1545 100%);
     border: 1px solid rgba(233, 168, 67, 0.22);
     border-radius: 8px;
     display: flex;

@@ -5,7 +5,7 @@
     <!-- Empty State -->
     <div v-if="!BankList.length" class="bank-empty">
       <div class="bank-empty__icon">
-        <svg width="64" height="64" viewBox="0 0 24 24" fill="#a89b7c"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="#b8a8d4"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
       </div>
       <p class="bank-empty__title">{{ $lang.bank_empty || 'No Bank Card' }}</p>
       <p class="bank-empty__desc">{{ $lang.bank_empty_desc || 'Add a bank card for withdrawals' }}</p>
@@ -28,7 +28,7 @@
           </div>
           <span class="bank-card__name">{{ item.bankName }}</span>
           <button class="bank-card__delete" @click="showDeletePopup(item.cardId)">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="#a89b7c"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#b8a8d4"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
           </button>
         </div>
 
@@ -37,11 +37,11 @@
           <span v-else class="bank-card__masked">{{ formatCardNumber(item.bankCard) }}</span>
           <div class="bank-card__actions">
             <button class="bank-card__action" @click="copyText(item.bankCard)">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="#a89b7c"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#b8a8d4"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
             </button>
             <button class="bank-card__action" @click="toggleSee(item)">
               <svg v-if="item.isSee" width="18" height="18" viewBox="0 0 24 24" fill="#ffa300"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
-              <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="#a89b7c"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46A11.804 11.804 0 001 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg>
+              <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="#b8a8d4"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46A11.804 11.804 0 001 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg>
             </button>
           </div>
         </div>
@@ -69,7 +69,7 @@
         <div class="delete-popup__field">
           <label>{{ $lang.bank_txt2 || 'Withdrawal Password' }}</label>
           <div class="delete-popup__input" :class="{ 'delete-popup__input--focus': focus }">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="#a89b7c"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM9 8V6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9z"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#b8a8d4"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM9 8V6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9z"/></svg>
             <input
               v-model="privacyPwd"
               type="password"
@@ -113,7 +113,7 @@
           <label>{{ $lang.bank_title || 'Bank' }}</label>
           <div class="add-popup__input add-popup__input--select" @click="toggleBankSelect">
             <span :class="{ 'add-popup__placeholder': !addBankName }">{{ addBankName || 'Select bank' }}</span>
-            <van-icon :name="showBankSelect ? 'arrow-up' : 'arrow-down'" size="14" color="#a89b7c" />
+            <van-icon :name="showBankSelect ? 'arrow-up' : 'arrow-down'" size="14" color="#b8a8d4" />
           </div>
           <div v-if="showBankSelect" class="add-popup__dropdown">
             <div
@@ -411,10 +411,10 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@bg: #1f1c17;
-@card: #15110a;
+@bg: #1a0a28;
+@card: #12021a;
 @neon: #ffa300;
-@muted: #a89b7c;
+@muted: #b8a8d4;
 @border: rgba(255, 162, 0, 0.45);
 
 .bank-page {
@@ -463,7 +463,7 @@ export default {
 }
 
 .bank-card {
-  background: linear-gradient(135deg, #2a2418 0%, #1d1814 50%, #15110a 100%);
+  background: linear-gradient(135deg, #2d1545 0%, #1a0a28 50%, #12021a 100%);
   border-radius: 14px;
   padding: 18px 20px;
   margin-bottom: 14px;
@@ -675,7 +675,7 @@ export default {
       outline: none;
 
       &::placeholder {
-        color: #a89b7c;
+        color: #b8a8d4;
       }
     }
   }
@@ -765,7 +765,7 @@ export default {
       outline: none;
 
       &::placeholder {
-        color: #a89b7c;
+        color: #b8a8d4;
       }
 
       &[readonly] {
@@ -800,7 +800,7 @@ export default {
   }
 
   &__placeholder {
-    color: #a89b7c !important;
+    color: #b8a8d4 !important;
   }
 
   &__dropdown {
@@ -808,7 +808,7 @@ export default {
     top: 100%;
     left: 0;
     right: 0;
-    background: #2a2418;
+    background: #2d1545;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 10px;
     max-height: 160px;

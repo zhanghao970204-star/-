@@ -1,19 +1,22 @@
 <template>
   <div id="app">
-    <div id="app-content">
+    <div
+      id="app-content"
+      @pointerdown.passive="onRouteSwipeStart"
+      @pointerup.passive="onRouteSwipeEnd"
+      @pointercancel="clearRouteSwipe"
+    >
       <router-view v-slot="{ Component, route }">
-        <keep-alive>
+        <transition :name="route.meta.routeTransition || 'route-motion-forward'" mode="out-in">
+          <keep-alive v-if="Component && isRootKeepAlive(route)">
+            <component :is="Component" :key="rootKeepAliveKey(route)" />
+          </keep-alive>
           <component
             :is="Component"
-            v-if="Component && isRootKeepAlive(route)"
-            :key="rootKeepAliveKey(route)"
+            v-else-if="Component"
+            :key="route.fullPath"
           />
-        </keep-alive>
-        <component
-          :is="Component"
-          v-if="Component && !isRootKeepAlive(route)"
-          :key="route.fullPath"
-        />
+        </transition>
       </router-view>
 
       <!-- Global Bouncing Red Envelope -->
@@ -209,6 +212,7 @@ import {
   getFirstCsLinkByScene,
   getCsItemUrl,
 } from "@/utils/csLink";
+import { requestRouteMotion } from "@/utils/routeMotion";
 
 export default {
   name: "App",
@@ -254,6 +258,8 @@ export default {
       floaterXY: { red: null, tb: null, fr: null, tg: null },
       floaterDrag: null,
       floaterSkipClick: false,
+      routeSwipe: null,
+      historyNavigationPending: false,
     };
   },
   computed: {
@@ -348,6 +354,7 @@ export default {
   watch: {
     // 切换路由到首页时重新拉宝箱 / 转盘入口状态
     $route(to, from) {
+      this.historyNavigationPending = false;
       if (to.path !== from.path && to.path.includes("/home")) {
         this.checkTreasureBox();
         this.checkLuckyReferral();
@@ -380,6 +387,65 @@ export default {
         return route.matched[0].path || "app-layout";
       }
       return route.name || route.fullPath;
+    },
+    isRouteSwipeIgnored(target) {
+      if (!target || !target.closest) return true;
+      return !!target.closest(
+        "input, textarea, select, button, a, [role='button'], [data-route-swipe-ignore], .van-swipe, .van-slider, .van-tabs, .van-popup, .van-overlay, .van-picker, .van-action-sheet, .global-red-envelope, .global-treasure-box, .global-first-recharge, .global-tg-float",
+      );
+    },
+    onRouteSwipeStart(event) {
+      if (
+        !event.isPrimary ||
+        (event.pointerType && event.pointerType !== "touch") ||
+        this.isRouteSwipeIgnored(event.target)
+      ) {
+        this.routeSwipe = null;
+        return;
+      }
+      this.routeSwipe = {
+        x: event.clientX,
+        y: event.clientY,
+        time: performance.now(),
+      };
+    },
+    onRouteSwipeEnd(event) {
+      const swipe = this.routeSwipe;
+      this.routeSwipe = null;
+      if (!swipe || !event.isPrimary || this.historyNavigationPending) return;
+
+      const distanceX = event.clientX - swipe.x;
+      const distanceY = event.clientY - swipe.y;
+      const elapsed = performance.now() - swipe.time;
+      const isHorizontal =
+        Math.abs(distanceX) >= 72 &&
+        Math.abs(distanceX) > Math.abs(distanceY) * 1.5;
+
+      if (!isHorizontal || elapsed > 650) return;
+      this.navigateHistory(distanceX > 0 ? "back" : "forward");
+    },
+    clearRouteSwipe() {
+      this.routeSwipe = null;
+    },
+    canNavigateHistory(direction) {
+      if (typeof window === "undefined") return false;
+      const state = window.history.state || {};
+      return !!state[direction === "back" ? "back" : "forward"];
+    },
+    navigateHistory(direction) {
+      if (
+        this.historyNavigationPending ||
+        !this.canNavigateHistory(direction)
+      ) {
+        return;
+      }
+      this.historyNavigationPending = true;
+      requestRouteMotion(direction);
+      if (direction === "back") this.$router.back();
+      else this.$router.forward();
+      window.setTimeout(() => {
+        this.historyNavigationPending = false;
+      }, 500);
     },
     async checkRedPacket() {
       if (!localStorage.getItem("token")) return;
@@ -758,6 +824,44 @@ export default {
 };
 </script>
 <style>
+.route-motion-forward-enter-active,
+.route-motion-forward-leave-active,
+.route-motion-back-enter-active,
+.route-motion-back-leave-active {
+  will-change: transform, opacity;
+}
+.route-motion-forward-enter-active,
+.route-motion-back-enter-active {
+  transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1), opacity 160ms ease-out;
+}
+.route-motion-forward-leave-active,
+.route-motion-back-leave-active {
+  transition: transform 150ms ease-in, opacity 120ms ease-in;
+}
+.route-motion-forward-enter-from {
+  transform: translate3d(18px, 0, 0);
+  opacity: 0;
+}
+.route-motion-forward-leave-to {
+  transform: translate3d(-10px, 0, 0);
+  opacity: 0;
+}
+.route-motion-back-enter-from {
+  transform: translate3d(-18px, 0, 0);
+  opacity: 0;
+}
+.route-motion-back-leave-to {
+  transform: translate3d(10px, 0, 0);
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .route-motion-forward-enter-active,
+  .route-motion-forward-leave-active,
+  .route-motion-back-enter-active,
+  .route-motion-back-leave-active {
+    transition: none !important;
+  }
+}
 html,
 body {
   margin: 0;
@@ -771,25 +875,35 @@ h3 {
   margin: 0;
   padding: 0;
 }
-/* #app-content {
-  background-color: #0e131c;
-} */
+
+/* 全局页面背景：原图尺寸平铺拼接，不拉伸 */
+#app,
+#app-content {
+  background-color: var(--background-color, #27033C);
+  background-image: url(./assets/img/common/page_bg.png);
+  background-repeat: repeat;
+  background-size: auto;
+  background-position: top center;
+}
+
 /* 基础样式 */
 #app {
   width: 100%;
   max-width: 450px;
   margin: 0 auto;
   transition: all 0.3s ease;
-  background-color: var(--background-color, #1f1c17);
   color: var(--font-color, #fff);
 }
 
 /* 移动端样式 */
 @media (max-width: 768px) {
   body {
-    background-color: var(--background-color, #1f1c17);
+    background-color: var(--background-color, #27033C);
+    background-image: url(./assets/img/common/page_bg.png);
+    background-repeat: repeat;
+    background-size: auto;
+    background-position: top center;
     min-height: 100vh;
-    background-size: cover;
     height: 100vh;
     overflow-y: scroll;
   }
@@ -799,7 +913,6 @@ h3 {
     padding: 0;
     height: 100vh;
     overflow: scroll;
-    background-color: var(--background-color, #1f1c17);
   }
 }
 
@@ -807,7 +920,7 @@ h3 {
 @media (min-width: 769px) {
   html,
   body {
-    background-color: #0a0908;
+    background-color: #0a0212;
     height: 100%;
     overflow: hidden;
   }
@@ -819,7 +932,6 @@ h3 {
     height: 100vh;
     overflow: hidden;
     position: relative;
-    background-color: var(--background-color, #1f1c17);
     box-shadow: 0 0 40px rgba(0, 0, 0, 0.45);
   }
 
@@ -831,8 +943,6 @@ h3 {
     height: 100vh;
     overflow-x: hidden;
     overflow-y: auto;
-    background-color: var(--background-color, #1f1c17);
-    background-size: cover;
     -webkit-overflow-scrolling: touch;
   }
 

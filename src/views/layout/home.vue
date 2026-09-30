@@ -149,38 +149,36 @@
           </div>
         </div>
       </div> -->
-      <div class="content-serach" @click="$jumpTo('/searchGame')">
-        <div class="search-entry-wrap">
-          <img
-            src="../../assets/img/common/ssk_com.png"
-            width="18"
-            class="search-entry-icon"
-          />
-          <span class="search-entry-placeholder">{{
-            $lang.menu_search_placeholder
-          }}</span>
-        </div>
-      </div>
       <div v-if="pgDate.dataList" class="content-tab" ref="targetElement">
         <div class="content-tab--s">
           <van-loading v-if="loading" color="#ffa300" vertical> </van-loading>
         </div>
-        <van-tabs
-          class="home-category-tabs"
-          type="card"
-          @click-tab="tabSelect"
-          v-model:active="activeTab"
-          title-inactive-color="#fff"
-          title-active-color="#573900"
-          :ellipsis="false"
-          swipe-threshold="3"
-          lazy-render
-        >
-          <van-tab v-for="(item, index) in pgDate.dataList" :key="index + 'xx'">
-            <template #title>
-              <img :src="item.icon" class="tab-icon" />
-              <span class="tab-text">{{ item.name }}</span>
-            </template>
+        <div class="home-cat-bar">
+          <div class="home-cat-bar__search" @click="$jumpTo('/searchGame')">
+            <img
+              class="home-cat-bar__search-icon"
+              src="@/assets/img/home/top_search.png"
+              alt=""
+            />
+          </div>
+          <van-tabs
+            class="home-category-tabs"
+            type="card"
+            @click-tab="tabSelect"
+            v-model:active="activeTab"
+            title-inactive-color="#fff"
+            title-active-color="#fff"
+            :ellipsis="false"
+            swipe-threshold="3"
+            lazy-render
+          >
+            <van-tab
+              v-for="(item, index) in pgDate.dataList"
+              :key="index + 'xx'"
+            >
+              <template #title>
+                <span class="tab-text">{{ item.name }}</span>
+              </template>
 
             <div
               class="content-tab--c"
@@ -318,7 +316,8 @@
               <home-support-footer />
             </div>
           </div>
-        </van-tabs>
+          </van-tabs>
+        </div>
       </div>
     </div>
 
@@ -1242,31 +1241,153 @@ export default {
   padding: 0 15px;
 }
 .content-serach {
-  margin: 10px auto 10px;
-  width: 94%;
-  scroll-margin-top: 32px; /* 向上偏移 50px */
+  display: none;
 }
 .search-entry-wrap {
-  display: flex;
-  align-items: center;
-  padding: 10px 12px;
-  background: linear-gradient(96.49deg, #1d1400 2.73%, #000000 97.68%);
-  border: 1px solid rgba(233, 182, 90, 0.2);
-  border-radius: 10px;
-  cursor: pointer;
-  .search-entry-icon {
-    flex-shrink: 0;
-    margin-right: 8px;
-    opacity: 0.9;
+  display: none;
+}
+
+.home-cat-bar {
+  position: relative;
+  margin: 8px 0 0;
+  box-sizing: border-box;
+
+  /* 分类栏整宽上下边框（含左侧搜索） */
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    pointer-events: none;
+    z-index: 5;
   }
-  .search-entry-placeholder {
-    color: rgba(168, 155, 124, 0.9);
+
+  &::before {
+    top: 0;
+    background: linear-gradient(90deg, #ed3bfe 0%, #9159fe 100%);
+  }
+
+  &::after {
+    top: 46px;
+    background: linear-gradient(90deg, #ac65f9 0%, #486dfe 100%);
+  }
+
+  &__search {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 3;
+    width: 44px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: #512275;
+    box-sizing: border-box;
+    /* 与分类栏同色，避免压住 Tab 文字 */
+    pointer-events: auto;
+  }
+
+  &__search-icon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    display: block;
+  }
+}
+
+.content-tab {
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* 图二：紫底分类栏 + 选中黑底金边胶囊 */
+.home-category-tabs {
+  width: 100%;
+  margin: 0;
+
+  .tab-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 88px;
+    line-height: 1;
+  }
+
+  :deep(.van-tabs__nav--card) {
+    margin: 0 !important;
+    border: none;
+  }
+
+  :deep(.van-tab__text) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: max-content;
     font-size: 14px;
+    line-height: 1;
+  }
+
+  :deep(.van-tabs__nav) {
+    height: 48px;
+    box-sizing: border-box;
+    background: none;
+    align-items: center;
+    /* 给左侧搜索留空，避免挡住第一个 Tab */
+    padding-left: 44px;
+  }
+
+  :deep(.van-tabs__content) {
+    padding-top: 12px;
+  }
+
+  :deep(.van-tabs__wrap) {
+    position: relative;
+    height: 48px;
+    border-radius: 0;
+    border: none;
+    padding: 0 6px 0 0;
+    box-sizing: border-box;
+    background: #512275;
+    overflow: hidden;
+  }
+
+  :deep(.van-tab) {
+    height: 32px;
+    line-height: 1;
+    border-radius: 999px;
+    padding: 0 14px;
+    margin: auto 4px;
+    flex: none;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    border-right: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+  }
+
+  :deep(.van-tab--active) {
+    font-size: 14px;
+    font-weight: 700;
+    background: #1a0a2e;
+    color: #fff !important;
+    border: 1.5px solid #ffd400;
+    box-sizing: border-box;
+  }
+
+  :deep(.van-tabs__line) {
+    display: none;
   }
 }
 .custom-field {
   padding: 5px;
-  background: linear-gradient(96.49deg, #1d1400 2.73%, #000000 97.68%);
+  background: linear-gradient(96.49deg, #2d1545 2.73%, #000000 97.68%);
   border-radius: 10px;
   border: 1px solid rgba(233, 182, 90, 0.2);
   :deep(.van-field__control) {
@@ -1336,85 +1457,6 @@ export default {
   object-position: center;
   flex-shrink: 0;
   display: block;
-}
-
-.content-tab {
-  margin: 0 auto;
-  width: 100%;
-}
-
-/* y7 风格分类 tab */
-.home-category-tabs {
-  width: 100%;
-  margin: 8px auto 0;
-
-  .tab-text {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 72px;
-    line-height: 1;
-  }
-
-  :deep(.van-tabs__nav--card) {
-    margin: 0 !important;
-    border: none;
-  }
-
-  :deep(.van-tab__text) {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: max-content;
-    font-size: 13px;
-    line-height: 1;
-  }
-
-  :deep(.van-tabs__nav) {
-    height: 50px;
-    box-sizing: border-box;
-    background: none;
-    align-items: center;
-  }
-
-  :deep(.van-tabs__content) {
-    padding-top: 12px;
-  }
-
-  :deep(.van-tabs__wrap) {
-    height: 51px;
-    border-radius: 30px 0 0 30px;
-    border: 1px solid #ffa20071;
-    padding: 0 5px;
-    box-sizing: border-box;
-    background: #2e2d2b;
-  }
-
-  :deep(.van-tab) {
-    height: 40px;
-    line-height: 1;
-    border-radius: 30px;
-    padding: 0 12px;
-    margin: auto;
-    flex: none;
-    color: #fff;
-    font-size: 12px;
-    border-right: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  :deep(.van-tab--active) {
-    font-size: 13px;
-    font-weight: 700;
-    background: linear-gradient(90deg, #f7dd9a 0%, #ffa300 100%);
-    color: #573900 !important;
-  }
-
-  :deep(.van-tabs__line) {
-    display: none;
-  }
 }
 
 :deep(.van-sticky--fixed) {
@@ -1491,7 +1533,7 @@ export default {
   height: 100%;
   border-radius: 12px;
   object-fit: contain;
-  background: #2a2418;
+  background: #2d1545;
 }
 .vendor-grid__name {
   margin-top: 6px;
@@ -1551,7 +1593,7 @@ export default {
   margin: 15px auto;
   width: 100%;
   height: 1px;
-  background: #2a2418;
+  background: #2d1545;
   opacity: 0.7;
 }
 .home-tg-list {
@@ -1772,7 +1814,7 @@ export default {
 .jackt-temp2 {
   width: 94%;
   margin: 5px auto 0;
-  background: #2a2418;
+  background: #2d1545;
   border-radius: 7px;
   padding: 8px 10px;
 }

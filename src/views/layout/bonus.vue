@@ -32,11 +32,11 @@
                 class="m-b-10"
                 v-html="item.tex1"
               ></p>
-              <p style="color: #a89b7c" v-html="item.text2"></p>
+              <p style="color: #b8a8d4" v-html="item.text2"></p>
             </div>
             <div class="d-flex">
               <img :src="item.img2" width="33" />
-              <p class="m-l-10 f-w" style="color: #a89b7c">{{ item.name }}</p>
+              <p class="m-l-10 f-w" style="color: #b8a8d4">{{ item.name }}</p>
             </div>
           </div>
           <!-- <van-button size="large" class="popup-button1">Detalhes </van-button> -->
@@ -51,7 +51,7 @@
           </div>
           <p
             style="
-              background: #2a2418;
+              background: #2d1545;
               padding: 10px 7px;
               border-radius: 8px;
               color: var(--wihte-color);

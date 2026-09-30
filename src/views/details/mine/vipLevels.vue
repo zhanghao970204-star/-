@@ -353,7 +353,7 @@ const VIP_BADGE_H = 110;
 const LV_BADGE_H = 55;
 
 const vipCardBgs = [
-  "#15110A",
+  "#12021a",
   "#241404",
   "#04061B",
   "#13161B",
@@ -1069,7 +1069,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@bg: #1f1c17;
+@bg: #1a0a28;
 @gold-deep: #e9a843;
 @gold-grad: linear-gradient(90deg, #f7dd9a 0%, #ffa300 100%);
 @btn-grad: linear-gradient(180deg, #ffd220 0%, #e9a843 100%);
@@ -1140,7 +1140,7 @@ export default {
   min-height: 128px;
   border-radius: 12px;
   border: 1px solid @gold-deep;
-  background: #15110a;
+  background: #12021a;
   padding: 0 6px;
   box-sizing: border-box;
   overflow: hidden;

@@ -40,7 +40,7 @@
           <van-progress
             class="progress-bg"
             :percentage="parseInt(percentage)"
-            track-color="#2a2418"
+            track-color="#2d1545"
             stroke-width="14"
             :show-pivot="false"
           />
@@ -113,7 +113,7 @@
         class="content-c3--t2"
         v-for="(item, index) in InitDate"
         :key="index"
-        :style="(index + 1) % 2 === 0 ? {} : { backgroundColor: '#2a2418' }"
+        :style="(index + 1) % 2 === 0 ? {} : { backgroundColor: '#2d1545' }"
       >
         <div class="d-flex" style="width: 20%">
           <div class="d-flex">
@@ -234,7 +234,7 @@ export default {
   position: relative;
   border-radius: 13px;
   padding: 16px 10px;
-  background: linear-gradient(0deg, #1d1814 13.46%, #252020 100%);
+  background: linear-gradient(0deg, #1a0a28 13.46%, #2d1545 100%);
   border: 1px solid rgba(233, 168, 67, 0.35);
   box-shadow: 0 0px 7px black;
   margin-bottom: 19px;
@@ -327,7 +327,7 @@ export default {
 //   margin-left: -10px;
 // }
 .vip-tag2 {
-  background: #2a2418 !important;
+  background: #2d1545 !important;
   border: 1px solid rgba(233, 168, 67, 0.4);
   padding: 1px 10px;
   border-radius: 0 3px 6px 0px;
@@ -338,7 +338,7 @@ export default {
   font-weight: bold;
 }
 .vip-tag3 {
-  background: #2a2418 !important;
+  background: #2d1545 !important;
   border: 1px solid rgba(233, 168, 67, 0.4);
   border-radius: 0 5px 8px 0px !important;
   padding: 2px 5px 2px 8px;

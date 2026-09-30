@@ -1,7 +1,7 @@
 <template>
   <div
     class="content"
-    style="background: #1f1c17; color: #ffe4b5; min-height: 100vh"
+    style="background: #1a0a28; color: #ffe4b5; min-height: 100vh"
   >
     <div class="lottery-bg">
       <div class="lottery-title">
@@ -593,7 +593,7 @@ export default {
 .bet-bg-t {
   // background: url(../../../assets/img/lottery/lotty-debg.png) no-repeat;
   // background: @cont-bg;
-  background: linear-gradient(0deg, #1d1814 13.46%, #252020 100%);
+  background: linear-gradient(0deg, #1a0a28 13.46%, #2d1545 100%);
   border: 1px solid rgba(233, 168, 67, 0.35);
   border-radius: 20px;
   background-size: 100% 100%;
@@ -633,7 +633,7 @@ export default {
   padding: 15px;
   border-radius: 13px;
   // background: linear-gradient(to right, #425031, #394234, #323738);
-  background: #15110a;
+  background: #12021a;
   border: 1px solid rgba(233, 168, 67, 0.35);
   color: #ffe4b5;
 }
@@ -641,7 +641,7 @@ export default {
   padding: 15px 0 0;
   border-radius: 13px;
   // background: linear-gradient(to right, #4b4030, #3d3b34, #313637);
-  background: #15110a;
+  background: #12021a;
   border: 1px solid rgba(233, 168, 67, 0.35);
   color: #ffe4b5;
   margin-bottom: 12px;
@@ -727,7 +727,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #15110a;
+  background: #12021a;
   border-bottom: 1px solid rgba(233, 168, 67, 0.3);
   padding: 0 16px;
   // box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
@@ -737,7 +737,7 @@ export default {
   top: 55px;
   z-index: 9;
   right: 0;
-  background: #15110a;
+  background: #12021a;
   border: 1px solid rgba(233, 168, 67, 0.35);
   color: #ffe4b5;
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.6);

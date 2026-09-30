@@ -145,8 +145,8 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@cell: #2a2418;
-@muted: #a89b7c;
+@cell: #2d1545;
+@muted: #b8a8d4;
 @gold-soft: #ffe4b5;
 
 .support-header {

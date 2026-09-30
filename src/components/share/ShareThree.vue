@@ -326,12 +326,12 @@ export default {
 
 .share-sub-filter-item .van-dropdown-item__content {
   max-height: 280px;
-  background: #252020 !important;
+  background: #2d1545 !important;
   position: relative !important;
 }
 
 .share-sub-filter-item .van-cell {
-  background: #252020 !important;
+  background: #2d1545 !important;
   color: #fff !important;
   padding: 10px 16px;
   font-size: 13px;

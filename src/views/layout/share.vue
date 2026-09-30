@@ -64,7 +64,7 @@ export default {
   min-height: 100vh;
   background: @bg;
   color: #fff;
-  padding-bottom: 80px;
+  padding-bottom: 20px;
 }
 
 /* 图一：banner 圆角卡片，非通栏 */

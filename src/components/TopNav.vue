@@ -7,99 +7,64 @@
   >
     <div class="d-flex-s" style="width: 100%">
       <div class="nav--coo">
+        <!-- 未登录：仅 logo（默认美国，不再选国家） -->
         <img
+          v-if="!token"
           class="nav-logo"
           src="@/assets/img/login/logo.webp"
-          alt="WOLF KING"
+          alt=""
         />
-        <!-- <div
-          @click="show = !show"
-          class="m-r-10"
-          style="background: #33363d; border-radius: 8px; padding: 6px 7px"
-        > -->
-        <!-- <div
-          @click="goOpen()"
-          class="nav--gn m-r-10"
-          :class="{ 'tran-xz': show }"
-        ></div> -->
-        <!-- 
-        <div v-if="token" class="sidedrawer-top">
-          <img
-            :src="vipImg(`V${InitDate.vipLevel ? InitDate.vipLevel : 0}`)"
-            height="28"
-            style="position: absolute"
-          />
-          <img
-            src="../assets/img/otgame/vipgif.gif"
-            height="28"
-            style="position: absolute"
-          />
-        </div> -->
 
-        <div v-if="!token" class="topnav-country-wrap">
-          <div class="d-flex topnav-country-trigger" @click="toggleCountryDrop">
-            <img :src="GET_ICONURL" width="25" />
-            <span class="m-l-5 m-r-5">{{ GET_COUNTRYNAME }}</span>
-            <van-icon :name="showCountryDrop ? 'arrow-up' : 'arrow-down'" />
-          </div>
-          <div v-if="showCountryDrop" class="topnav-country-dropdown">
-            <div
-              v-for="(item, idx) in countryList"
-              :key="idx"
-              class="topnav-country-dropdown__item"
-              @click="selectCountryNav(item)"
-            >
-              <img :src="item.iconUrl" width="24" />
-              <span>{{ item.countryName }}</span>
-              <span class="topnav-country-dropdown__code">{{
-                item.areaCode
-              }}</span>
-            </div>
-            <div
-              v-if="countryList.length === 0"
-              class="topnav-country-dropdown__item"
-              style="justify-content: center; color: #a89b7c"
-            >
-              Loading...
-            </div>
+        <!-- 已登录：头像 + VIP（与「我的」页同源） -->
+        <div v-else class="nav-user" @click="$jumpTo('/editProfile')">
+          <div class="nav-user__avatar">
+            <img
+              v-if="avatarSrc"
+              class="nav-user__avatar-img"
+              :src="avatarSrc"
+              alt=""
+            />
+            <div v-else class="nav-user__avatar-placeholder"></div>
+            <img
+              v-if="InitDate.vipLevel != null"
+              class="nav-user__vip"
+              :src="vipBadgeSrc"
+              alt=""
+              @click.stop="$jumpTo('/vipLevels')"
+            />
           </div>
         </div>
-        <!-- </div> -->
-
-        <!-- <img src="../assets/img/common/logo_h.png" height="46" /> -->
-        <!-- <div class="nav--log"></div> -->
       </div>
       <div class="nav--coe" :key="timer">
-        <div v-if="token" class="nav--ct">
-          <div class="d-flex nav-coe-ll nav-balance">
-            <div class="balance-text d-flex">
-              {{ GET_CURRENCYUNIT }}
-              <div class="m-l-10 m-r-5">
-                <p class="nav-balance__main">
-                  {{ $formatNumberWithCommas(InitDate2.balance) }}
-                </p>
-              </div>
-            </div>
+        <div class="nav--ct">
+          <div class="nav-balance">
             <img
-              :class="{ rotating: isRotating }"
+              class="nav-balance__coin"
+              src="@/assets/img/home/top_coin.png"
+              alt=""
               @click="toggleRotation"
-              src="../assets/img/otgame/xz-xx.png"
-              class="nav-refresh"
             />
-            <div class="nav-deposit-btn m-l-10" @click="gotoDep">
-              <van-icon name="shopping-cart-o" size="16" color="#573900" />
+            <span class="nav-balance__num" @click="toggleRotation">{{
+              $formatNumberWithCommas(token ? InitDate2.balance || 0 : 0)
+            }}</span>
+            <div class="nav-balance__add btn-press" @click="gotoDep">
+              <img
+                class="nav-balance__add-img"
+                src="@/assets/img/home/top_add.png"
+                alt="deposit"
+              />
             </div>
           </div>
-          <div class="nav-mail-btn" @click="gotoShare">
-            <van-icon name="envelop-o" size="18" color="#ffe4b5" />
+          <div v-if="token" class="nav-mail-btn btn-press" @click="gotoShare">
+            <img
+              class="nav-mail-btn__icon"
+              src="@/assets/img/home/top_mail.png"
+              alt=""
+            />
+            <span v-if="mailBadgeCount > 0" class="nav-mail-btn__badge">{{
+              mailBadgeCount > 99 ? "99+" : mailBadgeCount
+            }}</span>
           </div>
-        </div>
-
-        <div v-if="!token" class="xg-btn2" @click="goLogin(0)">
-          {{ $lang.Entrar }}
-        </div>
-        <div v-if="!token" class="xg-btn" @click="goLogin(1)">
-          {{ $lang.Registro }}
         </div>
       </div>
     </div>
@@ -187,7 +152,7 @@
 
             <div
               style="
-                background: #2a2418;
+                background: #2d1545;
                 border-radius: 6px;
                 padding: 10px 5px;
                 margin-top: 15px;
@@ -212,7 +177,7 @@
 
             <div
               style="
-                background: #2a2418;
+                background: #2d1545;
                 border-radius: 6px;
                 padding: 10px 5px;
                 margin-top: 10px;
@@ -249,7 +214,7 @@
 
             <div
               style="
-                background: #2a2418;
+                background: #2d1545;
                 border-radius: 6px;
                 padding: 0 10px;
                 margin-top: 15px;
@@ -271,7 +236,7 @@
             <div
               class="d-flex-s"
               style="
-                background: #2a2418;
+                background: #2d1545;
                 border-radius: 6px;
                 padding: 10px;
                 margin-top: 15px;
@@ -328,12 +293,14 @@ import {
   fbReportSuccess,
   GetLotteryList,
   GetPlatformList,
+  NoticeList,
 } from "@/api/common";
 import {
   logoutIfReloginRequiredWithToken,
   clearTokenIfReloginRequired,
 } from "@/utils/platformAuth";
 import { vipImg } from "@/utils/vipAssets";
+import { avatarImg } from "@/utils/avatarAssets";
 import { normalizeHomeDataList } from "@/utils/homeGameList";
 import { applyCountryLanguage } from "@/utils/locale";
 export default {
@@ -395,21 +362,36 @@ export default {
       whatList: [],
       pgDate: {},
       selectMenIndex: 0,
+      mailBadgeCount: 0,
     };
+  },
+  computed: {
+    avatarSrc() {
+      if (this.InitDate.headUrl == null || this.InitDate.headUrl === "") {
+        return "";
+      }
+      return avatarImg(this.InitDate.headUrl);
+    },
+    vipBadgeSrc() {
+      const lv = this.InitDate.vipLevel != null ? this.InitDate.vipLevel : 0;
+      return vipImg(`V${lv}`);
+    },
   },
   mounted() {
     this._scrollRaf = 0;
     window.addEventListener("scroll", this.handleScroll, { passive: true });
 
+    this._onHeaderRefresh = () => {
+      this.refreshHeaderInfo();
+    };
+    this.$bus.on("refsh-amount", this._onHeaderRefresh);
+
     if (this.token) {
-      this.Init();
-      this.GetGameBalanceList();
-      this.$bus.on("refsh-amount", () => {
-        this.GetGameBalanceList();
-      });
+      this.refreshHeaderInfo();
     }
     this.ensureCountryInfo();
     document.addEventListener("click", this.handleOutsideClick);
+    document.addEventListener("visibilitychange", this._onVisibilityRefresh);
   },
   beforeUnmount() {
     window.removeEventListener("scroll", this.handleScroll);
@@ -418,14 +400,62 @@ export default {
       this._scrollRaf = 0;
     }
 
-    // this.$bus.off('tab-list')
-    this.$bus.off("srefh-amount");
+    if (this._onHeaderRefresh) {
+      this.$bus.off("refsh-amount", this._onHeaderRefresh);
+      this._onHeaderRefresh = null;
+    }
+    document.removeEventListener("visibilitychange", this._onVisibilityRefresh);
 
     // 解绑全局点击事件
     document.removeEventListener("click", this.handleOutsideClick);
   },
   methods: {
     vipImg,
+    _onVisibilityRefresh() {
+      if (
+        document.visibilityState === "visible" &&
+        localStorage.getItem("token")
+      ) {
+        this.refreshHeaderInfo();
+      }
+    },
+    /** 余额 / VIP·头像 / 未读邮件 — 领取、充值后由 bus 触发，无需整页重载 */
+    async refreshHeaderInfo() {
+      if (!localStorage.getItem("token")) return;
+      if (this._headerRefreshing) {
+        this._headerRefreshQueued = true;
+        return;
+      }
+      this._headerRefreshing = true;
+      try {
+        await Promise.all([
+          this.Init(),
+          this.GetGameBalanceList(),
+          this.fetchMailBadge(),
+        ]);
+      } finally {
+        this._headerRefreshing = false;
+        if (this._headerRefreshQueued) {
+          this._headerRefreshQueued = false;
+          this.refreshHeaderInfo();
+        }
+      }
+    },
+    async fetchMailBadge() {
+      try {
+        const data = await NoticeList({
+          messageType: "systemNotice",
+          pageIndex: 0,
+          pageSize: 50,
+        });
+        if (data.status === "ok" && data.content) {
+          const list = data.content.noticeList || [];
+          this.mailBadgeCount = list.filter((n) => !n.read).length;
+        }
+      } catch (e) {
+        /* ignore */
+      }
+    },
     toggleCountryDrop() {
       this.showCountryDrop = !this.showCountryDrop;
       if (this.showCountryDrop && this.countryList.length === 0) {
@@ -912,7 +942,18 @@ export default {
     //     icon: 'success'
     //   })
     // },
+    gotoDep() {
+      if (!this.token) {
+        this.goLogin(0);
+        return;
+      }
+      this.$jumpTo("/rechargeCont");
+    },
     toggleRotation() {
+      if (!this.token) {
+        this.goLogin(0);
+        return;
+      }
       if (this.isRotating) return; // 如果已经在旋转，直接返回
       this.isRotating = true;
       // 动画结束后重置状态
@@ -921,9 +962,6 @@ export default {
       }, 1000); // 动画持续时间
       this.GetGameBalanceList();
       this.timer++;
-    },
-    gotoDep() {
-      this.$jumpTo("/rechargeCont");
     },
   },
   watch: {
@@ -940,7 +978,7 @@ export default {
 }
 .topnav-country-trigger {
   justify-content: center;
-  background: linear-gradient(96.49deg, #1d1400 2.73%, #000000 97.68%);
+  background: linear-gradient(96.49deg, #2d1545 2.73%, #000000 97.68%);
   border: 1px solid rgba(233, 182, 90, 0.28);
   border-radius: 8px;
   padding: 7px 10px;
@@ -952,7 +990,7 @@ export default {
   left: 0;
   min-width: 200px;
   z-index: 200;
-  background: linear-gradient(96.49deg, #1d1400 2.73%, #000000 97.68%);
+  background: linear-gradient(96.49deg, #2d1545 2.73%, #000000 97.68%);
   border: 1px solid rgba(233, 182, 90, 0.25);
   border-radius: 8px;
   max-height: 220px;
@@ -986,7 +1024,7 @@ export default {
   }
 }
 .selector-content {
-  background: #15110a;
+  background: #12021a;
   padding: 0 10px;
   border-radius: 6px;
   border: 1px solid fade(#e9a843, 30%);
@@ -1012,8 +1050,9 @@ export default {
   width: 100%;
   max-width: 450px;
   height: 60px;
-  background: #1f1c17;
-  border-bottom: 1px solid #e9b65a4d;
+  background: #27033c url(@/assets/img/home/top_nav_bg.png) center / 100% 100%
+    no-repeat;
+  border-bottom: none;
   display: flex;
   align-items: center;
   position: fixed;
@@ -1047,7 +1086,7 @@ export default {
   flex-shrink: 0;
   // height: 34px;
   width: auto;
-  max-width: 120px;
+  max-width: 95px;
   object-fit: contain;
   display: block;
 }
@@ -1112,16 +1151,51 @@ export default {
 }
 
 .nav-balance {
-  background: rgba(29, 20, 0, 0.65);
-  border: 1px solid fade(#e9a843, 35%);
-  border-radius: 20px;
-  padding: 2px 6px 2px 10px;
+  position: relative;
+  display: flex;
   align-items: center;
+  gap: 6px;
+  min-width: 0;
+  height: 40px;
+  padding: 0 4px 0 8px;
+  box-sizing: border-box;
+  background: rgba(20, 0, 45, 0.72);
+  border: 1px solid #6837e3;
+  border-radius: 999px;
 
-  &__main {
-    color: #ffa300;
-    font-weight: 600;
-    line-height: 1.2;
+  &__coin {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  &__num {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  &__add {
+    position: relative;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    margin-left: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__add-img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    display: block;
   }
 }
 
@@ -1132,39 +1206,88 @@ export default {
 }
 
 .nav-deposit-btn {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(255, 163, 0, 0.35);
-  flex-shrink: 0;
-
-  &:active {
-    transform: scale(0.94);
-    opacity: 0.92;
-  }
+  display: none;
 }
 
 .nav-mail-btn {
-  background: rgba(29, 20, 0, 0.65);
-  border: 1px solid fade(#e9a843, 35%);
-  border-radius: 50%;
+  position: relative;
+  background: rgba(20, 0, 45, 0.72);
+  border: 1px solid #6837e3;
+  border-radius: 12px;
   width: 40px;
   height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  margin-left: 6px;
+  margin-left: 8px;
   flex-shrink: 0;
+  box-sizing: border-box;
 
-  &:active {
-    opacity: 0.85;
+  &__icon {
+    width: 30px;
+    object-fit: contain;
+    display: block;
   }
+
+  &__badge {
+    position: absolute;
+    top: -6px;
+    right: -8px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: #ff3b4a;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 16px;
+    text-align: center;
+    box-sizing: border-box;
+  }
+}
+
+.nav-user {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.nav-user__avatar {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid #c084fc;
+  box-sizing: border-box;
+  overflow: visible;
+  background: #2a0a4a;
+}
+
+.nav-user__avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.nav-user__avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #3a1560;
+}
+
+.nav-user__vip {
+  position: absolute;
+  right: -6px;
+  bottom: -4px;
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  z-index: 1;
 }
 /* 定义旋转动画 */
 @keyframes rotate-and-back {
@@ -1183,7 +1306,7 @@ export default {
 }
 .custom-popup {
   padding-bottom: 3%;
-  background-color: #1f1c17;
+  background-color: #1a0a28;
   background-size: 100% 100%;
   height: 100%;
   width: 100%;
@@ -1236,7 +1359,7 @@ export default {
 }
 .content-three-list {
   font-weight: bold;
-  background: #2a2418;
+  background: #2d1545;
   border-radius: 10px;
   margin-bottom: 5px;
   color: @font-color;
@@ -1279,7 +1402,7 @@ export default {
   // color: #ffcd28; /* 设置文字颜色 */
   font-size: 13px; /* 设置文字大小 */
   margin-right: 6px;
-  // color: #2a2418;
+  // color: #2d1545;
 }
 
 .tran-xz {
@@ -1289,11 +1412,11 @@ export default {
   width: 100%;
   padding: 10px 45px 10px 20px;
   border-radius: 5px;
-  background: #2a2418;
+  background: #2d1545;
   box-shadow: 0 0px 1px 1px rgba(0, 0, 0, 0.2); /* 四周黑色阴影 */
 }
 .activi-hd {
-  background: #2a2418;
+  background: #2d1545;
   padding: 5px;
   border-radius: 5px;
 }
@@ -1371,7 +1494,7 @@ export default {
 }
 .nav-cont-t {
   margin-top: 20px;
-  background: #2a2418;
+  background: #2d1545;
   padding: 10px;
   border-radius: 12px;
 }
@@ -1404,7 +1527,7 @@ export default {
 .men-i {
   width: 48%;
   text-align: center;
-  color: #a89b7c;
+  color: #b8a8d4;
   font-weight: bold;
   background: @wihte-color;
   border-radius: 10px;

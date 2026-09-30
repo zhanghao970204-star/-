@@ -1,5 +1,5 @@
 <template>
-  <div class="content" style="background: #1f1c17; min-height: 100vh">
+  <div class="content" style="background: #1a0a28; min-height: 100vh">
     <title-bar :title="$lang.common_txt193"> </title-bar>
     <div class="bet-bg d-flex-s">
       <p
@@ -174,11 +174,11 @@ export default {
 </script>
 <style lang="less" scoped>
 .bet-bg {
-  background: #1f1c17;
+  background: #1a0a28;
   text-align: center;
   font-size: 15px;
   font-weight: bold;
-  color: #a89b7c;
+  color: #b8a8d4;
   padding: 8px 60px 0;
   line-height: 35px;
   position: sticky;
@@ -199,7 +199,7 @@ export default {
   padding: 3%;
   overflow-y: auto; /* 垂直方向可滚动 */
   height: 86vh;
-  background: #1f1c17;
+  background: #1a0a28;
 }
 .bet-scroll-i {
   .record-list-card();
@@ -212,14 +212,14 @@ export default {
   background: transparent;
 }
 :deep(.van-nav-bar__content) {
-  background: #15110a !important;
-  color: #ffe4b5 !important;
+  background: @header-bg !important;
+  color: @wihte-color !important;
 }
 :deep(.van-nav-bar__title) {
-  color: #ffe4b5 !important;
+  color: @wihte-color !important;
 }
 :deep(.van-icon-arrow-left) {
-  color: #ffe4b5 !important;
+  color: @wihte-color !important;
 }
 .empt-bg {
   height: 78vh;
@@ -227,7 +227,7 @@ export default {
   flex-flow: column;
   align-items: center;
   justify-content: center;
-  color: #a89b7c;
+  color: #b8a8d4;
 }
 :deep(.van-nav-bar) {
   box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.1) !important;

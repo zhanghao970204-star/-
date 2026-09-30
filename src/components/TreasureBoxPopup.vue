@@ -249,8 +249,8 @@ export default {
 @tb-primary: @primary-color;
 @tb-yellow: @primary-color3;
 @tb-red: #dc2626;
-@tb-bg: #15110a;
-@muted: #a89b7c;
+@tb-bg: #12021a;
+@muted: #b8a8d4;
 
 .tb-popup-wrapper {
   background: transparent !important;
@@ -431,7 +431,7 @@ export default {
     &-track {
       width: 100%;
       height: 10px;
-      background: #1f1c17;
+      background: #1a0a28;
       border-radius: 999px;
       padding: 2px;
       border: 1px solid fade(@border-color, 20%);

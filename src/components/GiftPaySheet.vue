@@ -14,7 +14,7 @@
           {{ $lang.gift_pay_title || $lang.common_txt363 || "Payment" }}
         </h3>
         <button class="gps__close" type="button" :disabled="paying" @click="close">
-          <van-icon name="cross" size="18" color="#a89b7c" />
+          <van-icon name="cross" size="18" color="#b8a8d4" />
         </button>
       </div>
 
@@ -289,14 +289,14 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@cell: #2a2418;
-@muted: #a89b7c;
+@cell: #2d1545;
+@muted: #b8a8d4;
 @gold: #ffa300;
 @gold-soft: #ffe4b5;
 @gold-deep: #e9a843;
 
 .gift-pay-sheet {
-  background: #1f1c17 !important;
+  background: #1a0a28 !important;
   max-height: 78vh;
 }
 
@@ -367,7 +367,7 @@ export default {
   padding: 6px 8px;
   border-radius: 8px;
   border: 1px solid fade(@gold-deep, 22%);
-  background: linear-gradient(180deg, #332c22 0%, #2a2418 100%);
+  background: linear-gradient(180deg, #332c22 0%, #2d1545 100%);
   display: flex;
   flex-direction: column;
   align-items: center;

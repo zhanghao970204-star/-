@@ -60,7 +60,7 @@ export default {
 <style lang="less" scoped>
 .bankAdd-cont {
   padding-top: 13px;
-  background: #1f1c17;
+  background: #1a0a28;
   border-bottom: 1px solid @border-color;
   position: sticky;
   top: 0;

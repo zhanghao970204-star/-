@@ -241,7 +241,7 @@
               color="#fbbf24"
             />
             <template v-else>
-              <van-icon name="lock" size="20" color="#a89b7c" />
+              <van-icon name="lock" size="20" color="#b8a8d4" />
             </template>
           </div>
           <div class="checkin-card__locked-amounts">
@@ -413,7 +413,7 @@ export default {
 
 <style lang="less" scoped>
 @primary: #ffa300;
-@bg-dark: #1f1c17;
+@bg-dark: #1a0a28;
 @surface: rgba(255, 255, 255, 0.03);
 @btn-grad: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
 
@@ -486,7 +486,7 @@ export default {
   }
 
   &__desc {
-    color: #a89b7c;
+    color: #b8a8d4;
     font-size: 12px;
     line-height: 1.5;
   }
@@ -516,7 +516,7 @@ export default {
     font-size: 10px;
     font-weight: bold;
     text-transform: uppercase;
-    color: #a89b7c;
+    color: #b8a8d4;
   }
 
   // Claimed (regular only - Day 1 style)
@@ -630,7 +630,7 @@ export default {
 
   &__amount-small {
     font-size: 8px;
-    color: #a89b7c;
+    color: #b8a8d4;
     font-weight: 500;
   }
 
@@ -677,7 +677,7 @@ export default {
 
   &__status {
     font-size: 10px;
-    color: #a89b7c;
+    color: #b8a8d4;
     text-transform: uppercase;
     font-weight: bold;
     margin-top: 4px;
@@ -824,8 +824,8 @@ export default {
   .checkin-page-wrap {
     max-width: 450px;
     margin: 0 auto;
-    border-left: 1px solid fade(#2a2418, 50%);
-    border-right: 1px solid fade(#2a2418, 50%);
+    border-left: 1px solid fade(#2d1545, 50%);
+    border-right: 1px solid fade(#2d1545, 50%);
   }
 }
 </style>

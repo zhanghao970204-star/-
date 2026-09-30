@@ -54,7 +54,7 @@ export default {
 <style lang="less" scoped>
 .pwd-success-page {
   min-height: 100vh;
-  background-color: #1f1c17;
+  background-color: #1a0a28;
   color: @wihte-color;
 }
 
@@ -67,7 +67,7 @@ export default {
   align-items: center;
   justify-content: center;
   padding: 16px;
-  background-color: #1f1c17;
+  background-color: #1a0a28;
   z-index: 999;
 
   &__back {
@@ -149,7 +149,7 @@ export default {
 
 .pwd-success-desc {
   font-size: 14px;
-  color: #a89b7c;
+  color: #b8a8d4;
   line-height: 1.6;
   margin: 0 0 40px 0;
   max-width: 300px;
@@ -178,6 +178,6 @@ export default {
 .pwd-success-footer {
   margin-top: 32px;
   font-size: 12px;
-  color: #a89b7c;
+  color: #b8a8d4;
 }
 </style>

@@ -94,7 +94,7 @@
           >
             <div class="settings-item__left">
               <div class="settings-item__icon-round">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="#a89b7c">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#b8a8d4">
                   <path
                     d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95a15.65 15.65 0 00-1.38-3.56A8.03 8.03 0 0118.92 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56A7.987 7.987 0 015.08 16zm2.95-8H5.08a7.987 7.987 0 014.33-3.56A15.65 15.65 0 008.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2s.07-1.35.16-2h4.68c.09.65.16 1.32.16 2s-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 01-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"
                   />
@@ -106,7 +106,7 @@
             </div>
             <div class="settings-item__right">
               <span class="settings-item__hint">{{ currentLangLabel }}</span>
-              <van-icon name="arrow" size="14" color="#a89b7c" />
+              <van-icon name="arrow" size="14" color="#b8a8d4" />
             </div>
           </div>
 
@@ -117,7 +117,7 @@
           >
             <div class="settings-item__left">
               <div class="settings-item__icon-round">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="#a89b7c">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#b8a8d4">
                   <path
                     d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 002 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
                   />
@@ -141,7 +141,7 @@
           <div class="settings-item">
             <div class="settings-item__left">
               <div class="settings-item__icon-round">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="#a89b7c">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#b8a8d4">
                   <path
                     d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0014 8.14v7.72c1.48-.73 2.5-2.25 2.5-3.86zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"
                   />
@@ -184,7 +184,7 @@
           <van-icon
             name="cross"
             size="20"
-            color="#a89b7c"
+            color="#b8a8d4"
             @click="showLangPopup = false"
           />
         </div>
@@ -234,7 +234,7 @@
           <van-icon
             name="cross"
             size="20"
-            color="#a89b7c"
+            color="#b8a8d4"
             @click="showEmailPopup = false"
           />
         </div>
@@ -376,7 +376,7 @@ export default {
           name: "X",
           svgPath:
             '<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>',
-          color: "#2a2418",
+          color: "#2d1545",
         },
       ],
     };
@@ -516,12 +516,12 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@settings-bg: #1f1c17;
-@settings-card: #15110a;
+@settings-bg: #1a0a28;
+@settings-card: #12021a;
 @settings-neon: #ffa300;
-@settings-muted: #a89b7c;
+@settings-muted: #b8a8d4;
 @settings-border: rgba(255, 162, 0, 0.45);
-@settings-gray-btn: #2a2418;
+@settings-gray-btn: #2d1545;
 
 .settings-page {
   min-height: 100vh;
@@ -665,7 +665,7 @@ export default {
 
     &--gold {
       background: #fff;
-      color: #1f1c17;
+      color: #1a0a28;
     }
   }
 }
@@ -855,7 +855,7 @@ export default {
   }
 
   &__input {
-    background: #2a2418 !important;
+    background: #2d1545 !important;
     border: 1px solid @settings-border !important;
     border-radius: 10px !important;
     overflow: hidden;

@@ -342,8 +342,8 @@ export default {
 @fr-yellow: @primary-color3;
 @fr-green: @primary-color;
 @fr-red: #dc2626;
-@fr-bg: #15110a;
-@muted: #a89b7c;
+@fr-bg: #12021a;
+@muted: #b8a8d4;
 @gold-soft: #ffe4b5;
 
 .fr-popup-wrapper {

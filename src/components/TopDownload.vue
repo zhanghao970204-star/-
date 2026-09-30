@@ -273,7 +273,7 @@ export default {
 </script>
 <style lang="less" scoped>
 /* y7 黑金 */
-@bg: #1f1c17;
+@bg: #1a0a28;
 @gold: #ffa300;
 @gold-soft: #ffe4b5;
 @gold-deep: #e9a843;
@@ -294,7 +294,7 @@ export default {
   align-items: center;
   gap: 8px;
   padding: 8px 10px 8px 8px;
-  background: linear-gradient(90deg, #2a2418 0%, #1f1c17 55%, #15110a 100%);
+  background: linear-gradient(90deg, #2d1545 0%, #1a0a28 55%, #12021a 100%);
   border-bottom: 1px solid fade(@gold-deep, 40%);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
 }

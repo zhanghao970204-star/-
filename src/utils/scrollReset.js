@@ -9,6 +9,7 @@ const KNOWN_SCROLL_SELECTORS = [
   '.share-page',
   '.activity-page',
   '.lucky-referral',
+  '.content-main',
   '.content',
   '.van-popup__content',
   '[data-scroll-root]'

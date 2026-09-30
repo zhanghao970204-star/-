@@ -1,21 +1,22 @@
 <template>
-  <div class="content">
-    <div id="md-hddb"></div>
-    <top-download @layout-change="handleTopDownloadLayout"></top-download>
-    <top-nav
-      ref="topNav"
-      v-if="isTopNavVisible"
-      :key="timer"
-      :top-offset="topDownloadHeight"
-      @getLoging="getLoging"
-    ></top-nav>
+  <div class="content" :class="{ 'has-tabbar': showTabbarSafeGap }">
+    <div class="content-main">
+      <div id="md-hddb"></div>
+      <!-- <top-download @layout-change="handleTopDownloadLayout"></top-download> -->
+      <top-nav
+        ref="topNav"
+        v-if="isTopNavVisible"
+        :key="timer"
+        :top-offset="topDownloadHeight"
+        @getLoging="getLoging"
+      ></top-nav>
 
-    <div
-      v-if="topNavPlaceholderHeight"
-      :style="{ height: `${topNavPlaceholderHeight}px` }"
-    ></div>
+      <div
+        v-if="topNavPlaceholderHeight"
+        :style="{ height: `${topNavPlaceholderHeight}px` }"
+      ></div>
 
-    <!-- <div v-if="$route.path.includes('/home')" class="otag-gg" @click="showNoticePopup = true">
+      <!-- <div v-if="$route.path.includes('/home')" class="otag-gg" @click="showNoticePopup = true">
       <van-notice-bar class="notice-bar-style">
         <template #left-icon>
           <img
@@ -30,91 +31,93 @@
       </van-notice-bar>
     </div> -->
 
-    <van-popup
-      v-model:show="showNoticePopup"
-      round
-      :close-on-click-overlay="true"
-      class="notice-popup"
-    >
-      <div class="notice-popup__content">
-        <div class="notice-popup__header">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffa300">
-            <path
-              d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 002 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
-            />
-          </svg>
-          <span>{{ $lang.notice_title || "Notice" }}</span>
-          <van-icon
-            name="cross"
-            size="18"
-            color="#a89b7c"
-            @click="showNoticePopup = false"
-          />
-        </div>
-        <div class="notice-popup__body">
-          {{ $lang.common_txt357 }}
-        </div>
-      </div>
-    </van-popup>
-
-    <div
-      v-if="$route.path.includes('/home') && bannerList.length"
-      class="content-swiper-bg"
-      style="margin-top: 10px"
-    >
-      <van-swipe
-        ref="bannerSwipe"
-        :autoplay="3500"
-        class="swipe-fixed-height"
-        :show-indicators="false"
-        @change="onBannerChange"
+      <van-popup
+        v-model:show="showNoticePopup"
+        round
+        :close-on-click-overlay="true"
+        class="notice-popup"
       >
-        <van-swipe-item
-          v-for="(item, index) in bannerList"
-          :key="item.advertisementImg || index"
-          @click="onBannerClick(item)"
+        <div class="notice-popup__content">
+          <div class="notice-popup__header">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffa300">
+              <path
+                d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 002 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
+              />
+            </svg>
+            <span>{{ $lang.notice_title || "Notice" }}</span>
+            <van-icon
+              name="cross"
+              size="18"
+              color="#b8a8d4"
+              @click="showNoticePopup = false"
+            />
+          </div>
+          <div class="notice-popup__body">
+            {{ $lang.common_txt357 }}
+          </div>
+        </div>
+      </van-popup>
+
+      <div
+        v-if="$route.path.includes('/home') && bannerList.length"
+        class="content-swiper-bg"
+        style="margin-top: 10px"
+      >
+        <van-swipe
+          ref="bannerSwipe"
+          :autoplay="3500"
+          class="swipe-fixed-height"
+          :show-indicators="false"
+          @change="onBannerChange"
         >
-          <img
-            class="content-swiper--img"
-            :src="item.advertisementImg"
-            alt=""
-            loading="lazy"
-            decoding="async"
-            @error="onBannerImgError"
+          <van-swipe-item
+            v-for="(item, index) in bannerList"
+            :key="item.advertisementImg || index"
+            @click="onBannerClick(item)"
+          >
+            <img
+              class="content-swiper--img"
+              :src="item.advertisementImg"
+              alt=""
+              loading="lazy"
+              decoding="async"
+              @error="onBannerImgError"
+            />
+          </van-swipe-item>
+        </van-swipe>
+        <div class="banner-arrow-wrap">
+          <div class="banner-arrow banner-arrow-left" @click="bannerPrev">
+            <van-icon name="arrow-left" size="16" color="var(--wihte-color)" />
+          </div>
+          <div class="banner-arrow banner-arrow-right" @click="bannerNext">
+            <van-icon name="arrow" size="16" color="var(--wihte-color)" />
+          </div>
+        </div>
+        <div class="banner-indicators">
+          <span
+            v-for="(item, index) in bannerList.length"
+            :key="index"
+            class="banner-dot"
+            :class="{ active: currentBannerIndex === index }"
+          ></span>
+        </div>
+      </div>
+      <router-view v-slot="{ Component, route }">
+        <transition
+          :name="route.meta.routeTransition || 'route-motion-forward'"
+          mode="out-in"
+        >
+          <keep-alive v-if="Component && route.meta.keepAlive">
+            <component :is="Component" :key="route.name" />
+          </keep-alive>
+          <component
+            :is="Component"
+            v-else-if="Component"
+            :key="route.fullPath"
           />
-        </van-swipe-item>
-      </van-swipe>
-      <div class="banner-arrow-wrap">
-        <div class="banner-arrow banner-arrow-left" @click="bannerPrev">
-          <van-icon name="arrow-left" size="16" color="var(--wihte-color)" />
-        </div>
-        <div class="banner-arrow banner-arrow-right" @click="bannerNext">
-          <van-icon name="arrow" size="16" color="var(--wihte-color)" />
-        </div>
-      </div>
-      <div class="banner-indicators">
-        <span
-          v-for="(item, index) in bannerList.length"
-          :key="index"
-          class="banner-dot"
-          :class="{ active: currentBannerIndex === index }"
-        ></span>
-      </div>
+        </transition>
+      </router-view>
     </div>
-    <router-view v-slot="{ Component, route }">
-      <keep-alive>
-        <component
-          :is="Component"
-          v-if="Component && route.meta.keepAlive"
-          :key="route.name"
-        />
-      </keep-alive>
-      <component
-        :is="Component"
-        v-if="Component && !route.meta.keepAlive"
-        :key="route.fullPath"
-      />
-    </router-view>
 
     <Tabbar @need-login="handleOpenLogin" />
 
@@ -192,7 +195,7 @@
 </template>
 
 <script>
-import TopDownload from "../../components/TopDownload.vue"; //顶部下载
+// import TopDownload from "../../components/TopDownload.vue"; //顶部下载
 import TopNav from "../../components/TopNav.vue"; //顶部导航栏
 import Tabbar from "../../components/Tabbar.vue";
 import {
@@ -207,7 +210,7 @@ import {
 import { consumeOpenLoginAfterPlatformSwitch } from "@/utils/platformAuth";
 export default {
   components: {
-    TopDownload,
+    // TopDownload,
     TopNav,
     Tabbar,
   },
@@ -222,6 +225,14 @@ export default {
     // 获取当前路由前缀，确保 tabbar 路径正确匹配
     routePrefix() {
       return this.$route.params.prefix || localStorage.getItem("country") || "";
+    },
+    showTabbarSafeGap() {
+      const path = this.$route.path;
+      return (
+        !path.includes("/Country") &&
+        !path.includes("/Crowdfunding") &&
+        !path.includes("/appDetail")
+      );
     },
   },
   data() {
@@ -723,13 +734,42 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.content {
+  box-sizing: border-box;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+
+  &.has-tabbar {
+    /* 内容区与 Tab 分栏：滚动只发生在 Tab 上方，不会钻到 Tab 下面 */
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+  }
+}
+
+.content-main {
+  flex: 1;
+  min-height: 0;
+  overflow-x: clip;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.has-tabbar .content-main {
+  /* 给中间凸起 logo 留一点呼吸，内容仍在 Tab 顶边之上 */
+  padding-bottom: 20px;
+  box-sizing: border-box;
+}
+
 /* 公告栏 - 图中样式：深色背景、圆角、阴影、白字 */
 .otag-gg {
   padding: 0 15px;
   margin-bottom: 4px;
 }
 :deep(.van-notice-bar.notice-bar-style) {
-  background-color: #1f1c17 !important;
+  background-color: #1a0a28 !important;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   padding: 5px 15px;
@@ -924,7 +964,7 @@ export default {
 }
 /* 公告弹窗 */
 .notice-popup {
-  background: #15110a !important;
+  background: #12021a !important;
   width: 85%;
   max-width: 400px;
   border-radius: 12px !important;
@@ -947,7 +987,7 @@ export default {
   }
 }
 .notice-popup__body {
-  color: #a89b7c;
+  color: #b8a8d4;
   font-size: 14px;
   line-height: 1.6;
   max-height: 50vh;

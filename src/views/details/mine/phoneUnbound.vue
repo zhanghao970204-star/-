@@ -23,7 +23,7 @@
         <div class="phone-area-code" @click="toggleCountry">
           <img :src="selectedIcon || GET_ICONURL" width="22" />
           <span class="phone-area-code__text">{{ selectedAreaCode || GET_AREACODE }}</span>
-          <van-icon :name="showCountryDrop ? 'arrow-up' : 'arrow-down'" size="10" color="#a89b7c" />
+          <van-icon :name="showCountryDrop ? 'arrow-up' : 'arrow-down'" size="10" color="#b8a8d4" />
         </div>
         <van-field
           v-model="phoneNo"
@@ -46,7 +46,7 @@
           <span>{{ item.countryName }}</span>
           <span class="phone-dropdown__code">{{ item.areaCode }}</span>
         </div>
-        <div v-if="countryList.length === 0" class="phone-dropdown__item" style="justify-content: center; color: #a89b7c;">
+        <div v-if="countryList.length === 0" class="phone-dropdown__item" style="justify-content: center; color: #b8a8d4;">
           {{ $lang.common_loading || 'Loading...' }}
         </div>
       </div>
@@ -175,8 +175,8 @@ export default {
 
 <style lang="less" scoped>
 @primary: #ffa300;
-@bg: #1f1c17;
-@input-bg: #2a2418;
+@bg: #1a0a28;
+@input-bg: #2d1545;
 @border: rgba(255, 162, 0, 0.45);
 
 .phone-page {
@@ -240,7 +240,7 @@ export default {
 .phone-desc {
   text-align: center;
   font-size: 14px;
-  color: #a89b7c;
+  color: #b8a8d4;
   line-height: 1.6;
   max-width: 320px;
   margin-bottom: 32px;
@@ -285,12 +285,12 @@ export default {
     color: @wihte-color;
   }
   :deep(.van-field__control::placeholder) {
-    color: #a89b7c;
+    color: #b8a8d4;
   }
 }
 
 .phone-dropdown {
-  background: #2a2418;
+  background: #2d1545;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   max-height: 200px;
@@ -349,8 +349,8 @@ export default {
   &:active { transform: scale(0.97); }
 
   &--disabled {
-    background: #2a2418;
-    color: #a89b7c;
+    background: #2d1545;
+    color: #b8a8d4;
     box-shadow: none;
     cursor: not-allowed;
   }

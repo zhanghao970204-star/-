@@ -27,7 +27,7 @@
         <div
           style="
             width: 32%;
-            background: #2a2418;
+            background: #2d1545;
             border-radius: 12px;
             margin-bottom: 10px;
             border: 1px solid rgba(255, 162, 0, 0.35);
@@ -84,7 +84,7 @@
           class="content-c3--t2 f-w"
           v-for="(item, index) in InitDate"
           :key="index"
-          :style="(index + 1) % 2 === 0 ? {} : { backgroundColor: '#2a2418' }"
+          :style="(index + 1) % 2 === 0 ? {} : { backgroundColor: '#2d1545' }"
         >
           <p>VIP{{ item.vipLevel }}</p>
           <p>{{ item.reward }}</p>

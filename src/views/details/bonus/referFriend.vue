@@ -1064,7 +1064,7 @@ export default {
 }
 .chest-people {
   font-size: 10px;
-  color: #a89b7c;
+  color: #b8a8d4;
   text-align: center;
   margin: 0;
   line-height: 1.3;

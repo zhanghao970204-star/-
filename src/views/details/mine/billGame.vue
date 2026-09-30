@@ -170,10 +170,10 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@bg: #1f1c17;
-@card: #15110a;
+@bg: #1a0a28;
+@card: #12021a;
 @neon: #ffa300;
-@muted: #a89b7c;
+@muted: #b8a8d4;
 @border: rgba(255, 162, 0, 0.45);
 
 .game-records-page {
@@ -321,7 +321,7 @@ export default {
 
   &__time {
     font-size: 11px;
-    color: #a89b7c;
+    color: #b8a8d4;
   }
 
   &__right {

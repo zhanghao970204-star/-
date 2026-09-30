@@ -3,11 +3,11 @@
     <title-bar :title="$lang.common_txt293"></title-bar>
 
     <div v-if="noticeList.length > 0" class="d-flex-s" style="padding: 8px 5px">
-      <p style="color: #a89b7c; font-size: 12px" @click="readAll">
+      <p style="color: #b8a8d4; font-size: 12px" @click="readAll">
         <van-icon name="browsing-history-o" size="14" />
         {{ $lang.mc_read_all || "Read All" }}
       </p>
-      <p style="color: #a89b7c; font-size: 12px" @click="deleteRead">
+      <p style="color: #b8a8d4; font-size: 12px" @click="deleteRead">
         <van-icon name="delete-o" size="14" />
         {{ $lang.mc_delete_read || "Delete Read" }}
       </p>
@@ -17,7 +17,7 @@
       v-for="(item, index) in noticeList"
       :key="index"
       style="
-        background: #15110a;
+        background: #12021a;
         padding: 12px;
         margin: 0 0 10px;
         border-radius: 8px;
@@ -41,7 +41,7 @@
           ></span>
           <p
             :style="{
-              color: item.read ? '#a89b7c' : '#ffe4b5',
+              color: item.read ? '#b8a8d4' : '#ffe4b5',
               fontSize: '14px',
               fontWeight: 'bold',
             }"
@@ -49,13 +49,13 @@
             {{ item.title }}
           </p>
         </div>
-        <p style="color: #a89b7c; font-size: 12px; flex-shrink: 0">
+        <p style="color: #b8a8d4; font-size: 12px; flex-shrink: 0">
           {{ item.sendTime }}
         </p>
       </div>
       <p
         :style="{
-          color: item.read ? '#6b6250' : '#a89b7c',
+          color: item.read ? '#6b6250' : '#b8a8d4',
           fontSize: '12px',
           marginTop: '5px',
           overflow: 'hidden',
@@ -77,7 +77,7 @@
       v-model:show="showDetail"
       position="bottom"
       closeable
-      style="background: #1f1c17; border-radius: 16px 16px 0 0; height: 70%"
+      style="background: #1a0a28; border-radius: 16px 16px 0 0; height: 70%"
     >
       <div
         style="padding: 20px 16px; overflow-y: auto; height: 100%"
@@ -93,7 +93,7 @@
         >
           {{ currentNotice.title }}
         </h3>
-        <p style="color: #a89b7c; font-size: 12px; margin-bottom: 16px">
+        <p style="color: #b8a8d4; font-size: 12px; margin-bottom: 16px">
           {{ currentNotice.sendTime }}
         </p>
         <div

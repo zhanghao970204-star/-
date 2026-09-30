@@ -1,7 +1,7 @@
 <template>
   <div
     class="content"
-    style="background: #1f1c17 !important; color: #ffe4b5; min-height: 100vh"
+    style="background: #1a0a28 !important; color: #ffe4b5; min-height: 100vh"
   >
     <div class="lottery-bg">
       <div class="lottery-title">
@@ -30,13 +30,13 @@
           <div class="d-flex-s m-t-10" style="width: 100%; flex-flow: wrap row">
             <div
               style="
-                background: #2a2418;
+                background: #2d1545;
                 width: 31.5%;
                 padding: 12px 0;
                 border-radius: 8px;
                 text-align: center;
                 margin-bottom: 10px;
-                color: #a89b7c;
+                color: #b8a8d4;
                 border: 1px solid rgba(233, 168, 67, 0.35);
               "
               v-for="(item2, index2) in item.list"
@@ -99,7 +99,7 @@
                 <p
                   style="
                     position: absolute;
-                    background: #15110a;
+                    background: #12021a;
                     border-radius: 10px 10px 10px 0px;
                     top: -8px;
                     font-size: 10px;
@@ -126,7 +126,7 @@
                   <p
                     style="
                       position: absolute;
-                      background: #15110a;
+                      background: #12021a;
                       border-radius: 10px 10px 10px 0px;
                       top: -8px;
                       font-size: 11px;
@@ -277,7 +277,7 @@
                 margin: 0 auto;
                 justify-content: space-around;
                 border: 1px solid rgba(233, 168, 67, 0.35);
-                background: #15110a;
+                background: #12021a;
                 padding: 12px 0;
                 border-radius: 12px;
               "
@@ -295,7 +295,7 @@
                 <div
                   class="d-flex"
                   style="
-                    background: #2a2418;
+                    background: #2d1545;
                     color: #ffe4b5;
                     font-size: 20px;
                     font-weight: bold;
@@ -336,7 +336,7 @@
               </p>
               <div
                 style="
-                  background: #2a2418;
+                  background: #2d1545;
                   border: 1px solid rgba(233, 168, 67, 0.35);
                   margin-bottom: 10px;
                   border-radius: 15px;
@@ -354,7 +354,7 @@
                 >
                   <div
                     style="
-                      background: #15110a;
+                      background: #12021a;
                       border: 1px solid rgba(233, 168, 67, 0.35);
                       color: #ffe4b5;
                       padding: 8px 0;
@@ -452,7 +452,7 @@
                 v-for="(lastItem, lastIndex) in lastOrderListItem"
                 :key="lastIndex"
                 style="
-                  background: #15110a;
+                  background: #12021a;
                   padding: 10px;
                   border-radius: 10px;
                   margin-bottom: 15px;
@@ -648,7 +648,7 @@
       <div v-if="lines > 0">
         <div
           style="
-            background: #15110a;
+            background: #12021a;
             box-shadow: 1px -6px 4px -7px rgba(0, 0, 0, 0.5);
           "
         >
@@ -767,7 +767,7 @@
     <div
       v-if="showStepper"
       style="
-        background: #15110a;
+        background: #12021a;
         box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
         position: fixed;
         bottom: 60px;
@@ -2544,7 +2544,7 @@ export default {
   justify-content: space-between;
 }
 .lot-cont--i {
-  // background: #15110a;
+  // background: #12021a;
   // color: @title-color;
   border: 1px solid #e9a843;
   padding: 7px 6px;
@@ -2562,7 +2562,7 @@ export default {
 .lot-mid {
   width: 100%;
   border-radius: 13px;
-  // background: #15110a;
+  // background: #12021a;
 }
 .lot-mid--top {
   // background: linear-gradient(to right, #333838, #3a4435, #415031);
@@ -2586,7 +2586,7 @@ export default {
 //   padding: 12px 0;
 // }
 .lot-mid--b {
-  background: #2a2418;
+  background: #2d1545;
   border: 1px solid rgba(233, 168, 67, 0.35);
   width: 100%;
   margin: 0 auto 0;
@@ -2605,7 +2605,7 @@ export default {
   border-radius: 50%;
   width: 38px;
   height: 38px;
-  background: #15110a;
+  background: #12021a;
   border: 1px solid rgba(233, 168, 67, 0.4);
   color: #ffe4b5;
   display: flex;
@@ -2664,7 +2664,7 @@ export default {
   height: 38px;
 }
 .lot-mid--b3is2 {
-  background: #15110a;
+  background: #12021a;
   border: 1px solid rgba(233, 168, 67, 0.35);
   color: #ffe4b5;
   font-size: 15px;
@@ -2702,7 +2702,7 @@ export default {
   position: relative;
   margin-top: 20px;
   width: 100%;
-  background: linear-gradient(0deg, #1d1814 13.46%, #252020 100%);
+  background: linear-gradient(0deg, #1a0a28 13.46%, #2d1545 100%);
   border-radius: 13px 13px 0 0;
   padding: 12px;
   line-height: 18px;
@@ -2716,11 +2716,11 @@ export default {
   height: 1px; /* 边框高度 */
   background: linear-gradient(
     to right,
-    #1d1814,
+    #1a0a28,
     #e9a843,
     #ffa300,
     #e9a843,
-    #1d1814
+    #1a0a28
   );
 }
 .lot-bto-t2 {
@@ -2735,7 +2735,7 @@ export default {
 }
 .lot-bto-t3 {
   position: relative;
-  background: #15110a;
+  background: #12021a;
   padding: 20px 0 15px;
   // border-bottom: 1px solid #797b7b;
 }
@@ -2748,11 +2748,11 @@ export default {
   height: 1px; /* 边框高度 */
   background: linear-gradient(
     to right,
-    #1d1814,
+    #1a0a28,
     #e9a843,
     #ffa300,
     #e9a843,
-    #1d1814
+    #1a0a28
   );
 }
 .lot-bto-t3y {
@@ -2763,7 +2763,7 @@ export default {
 }
 .lot-bto-t3t {
   width: 100%;
-  background: #2a2418;
+  background: #2d1545;
   padding: 15px;
   :deep(.van-field__control) {
     text-align: center;
@@ -2781,7 +2781,7 @@ export default {
   }
 }
 .lot-bto-t3tl {
-  background: #2a2418;
+  background: #2d1545;
   border-radius: 20px;
   width: 100%;
   margin-top: 5px;
@@ -2799,7 +2799,7 @@ export default {
   margin-top: 20px;
 }
 .lot-bto-t4t {
-  background: linear-gradient(0deg, #1d1814 13.46%, #252020 100%);
+  background: linear-gradient(0deg, #1a0a28 13.46%, #2d1545 100%);
   padding: 12px;
   border-top: 1px solid #797b7b;
   margin-top: 3px;
@@ -2817,17 +2817,17 @@ export default {
   height: 1px; /* 边框高度 */
   background: linear-gradient(
     to right,
-    #1d1814,
+    #1a0a28,
     #e9a843,
     #ffa300,
     #e9a843,
-    #1d1814
+    #1a0a28
   );
 }
 .lot-bto-t4b {
   font-weight: bold;
   padding: 12px;
-  background: linear-gradient(0deg, #1d1814 13.46%, #252020 100%);
+  background: linear-gradient(0deg, #1a0a28 13.46%, #2d1545 100%);
   position: relative;
 }
 .lot-bto-t4b::before {
@@ -2839,27 +2839,27 @@ export default {
   height: 1px; /* 边框高度 */
   background: linear-gradient(
     to right,
-    #1d1814,
+    #1a0a28,
     #e9a843,
     #ffa300,
     #e9a843,
-    #1d1814
+    #1a0a28
   );
 }
 .lot-bto-t4bc {
-  background: #2a2418;
+  background: #2d1545;
   padding: 5px 10px;
   border-radius: 20px;
 }
 .lot-bto-t5 {
   margin-top: 5px;
   border-top: 1px solid #797b7b;
-  background: #15110a;
+  background: #12021a;
   padding: 15px 0;
   border-radius: 0 0 13px 13px;
 }
 .lot-bto-t5c {
-  background: #2a2418;
+  background: #2d1545;
   padding: 12px;
 }
 .lot-bto-t5ct {
@@ -2921,7 +2921,7 @@ export default {
     height: 35px;
     align-items: center;
     justify-content: center;
-    background: #2a2418;
+    background: #2d1545;
     border: 1px solid rgba(233, 168, 67, 0.35);
     width: 100px;
 
@@ -2942,10 +2942,10 @@ export default {
   width: 100vw;
   padding: 10px 15px;
   border-radius: 15px 15px 0 0;
-  background: #15110a;
+  background: #12021a;
   border-top: 1px solid rgba(233, 168, 67, 0.35);
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
-  // border-top: 1px solid #a89b7c;
+  // border-top: 1px solid #b8a8d4;
 }
 .loot-bot--by {
   position: relative;
@@ -2959,18 +2959,18 @@ export default {
   }
 }
 .loot-bot--t {
-  background: #15110a;
+  background: #12021a;
   // box-shadow: 1px -6px 4px -7px rgba(0, 0, 0, 0.5);
   font-weight: bold;
   padding: 10px 15px;
   flex-flow: wrap row;
   justify-content: space-between;
   font-size: 13px;
-  color: #a89b7c;
+  color: #b8a8d4;
 }
 .loot-bot--tb {
   border-radius: 12px;
-  border: 1px solid #a89b7c;
+  border: 1px solid #b8a8d4;
   padding: 2px 15px;
   margin: 0 5px;
   color: #007524;
@@ -2991,7 +2991,7 @@ export default {
   margin-bottom: 10px;
 }
 .custom-rule {
-  background: #15110a;
+  background: #12021a;
   color: #ffe4b5;
   border-radius: 20px 20px 0 0;
   padding: 20px 20px 30px;
@@ -3017,7 +3017,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #15110a;
+  background: #12021a;
   border-bottom: 1px solid rgba(233, 168, 67, 0.3);
   padding: 0 16px;
   // background: url(../../../assets/img/toubu.png) no-repeat;
@@ -3029,7 +3029,7 @@ export default {
   top: 55px;
   z-index: 9;
   right: 0;
-  background: #15110a;
+  background: #12021a;
   border: 1px solid rgba(233, 168, 67, 0.35);
   color: #ffe4b5;
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.6);
@@ -3037,7 +3037,7 @@ export default {
 }
 .custom-top {
   border-radius: 0 0 15px 15px;
-  background: #15110a;
+  background: #12021a;
   margin-top: 55px;
 }
 // :deep(.van-overlay) {
@@ -3046,7 +3046,7 @@ export default {
 .custom-top--bg {
   position: absolute;
   padding: 15px 20px 5px;
-  background: #15110a;
+  background: #12021a;
   color: #ffe4b5;
   border: 1px solid rgba(233, 168, 67, 0.35);
   border-radius: 0 0 15px 15px;
@@ -3073,7 +3073,7 @@ export default {
   background: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%) !important;
 }
 .lot-mid--b2 {
-  background: #2a2418;
+  background: #2d1545;
   border: 1px solid rgba(233, 168, 67, 0.35);
   margin: 10px auto 0;
   padding: 10px 10px;

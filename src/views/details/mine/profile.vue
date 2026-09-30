@@ -12,7 +12,7 @@
         <span class="profile-list__label">{{ item.label }}</span>
         <div class="profile-list__right">
           <span v-if="item.value" class="profile-list__value">{{ item.value }}</span>
-          <van-icon name="arrow" size="16" color="#a89b7c" />
+          <van-icon name="arrow" size="16" color="#b8a8d4" />
         </div>
       </div>
     </div>
@@ -109,7 +109,7 @@ export default {
 
   &__value {
     font-size: 13px;
-    color: #a89b7c;
+    color: #b8a8d4;
     font-weight: normal;
   }
 }

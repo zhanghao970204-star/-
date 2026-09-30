@@ -4,21 +4,17 @@
       <div
         v-if="gamesList.length > 0"
         class="game_title-ss d-flex-s"
-        style="align-items: flex-start"
       >
-        <div class="d-flex m-t-5">
+        <div class="d-flex m-t-5 game_title-ss__left">
           <img :src="siderData.icon" class="m-l-5" height="28px" />
           <span class="m-l-5">{{ siderData.name }}</span>
         </div>
 
-        <div class="d-flex">
-          <div
-            @click="openAll()"
-            class="resher-i--bg m-r-5"
-            style="padding: 6px 5px"
-          >
-            {{ $lang.common_txt60 }} {{ gamesList.length }}
+        <div class="d-flex game_title-ss__right">
+          <div @click="openAll()" class="resher-view-all">
+            {{ $lang.home_view_all || "View All" }}
           </div>
+          <!-- 图三第四处：左右箭头暂时注释
           <div class="resher-i--bg2 m-r-5">
             <van-icon @click="prevPage()" name="arrow-left" size="15" />
           </div>
@@ -26,13 +22,7 @@
           <div class="resher-i--bg2 m-r-10">
             <van-icon @click="nextPage()" name="arrow" size="15" />
           </div>
-          <!-- <div
-            @click="openAll()"
-            class="resher-i--bg"
-            style="padding: 6px 10px"
-          >
-            {{ $lang.common_txt61 }}
-          </div> -->
+          -->
         </div>
       </div>
 
@@ -246,12 +236,24 @@ export default {
   white-space: nowrap;
 }
 
+.resher-view-all {
+  padding: 6px 4px;
+  margin-right: 8px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+}
+
 .resher-i--bg2 {
   padding: 5px;
-  background: rgba(233, 182, 90, 0.1);
-  border: 1px solid rgba(233, 182, 90, 0.28);
+  background: rgba(104, 55, 227, 0.22);
+  border: 1px solid rgba(192, 132, 252, 0.35);
   border-radius: 6px;
-  color: #f3c059;
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -280,25 +282,26 @@ export default {
 }
 .game_title-ss {
   position: relative;
-  height: 138px;
-  margin-bottom: -93px;
+  height: auto;
+  margin-bottom: 8px;
   background: none;
   border: none;
   box-shadow: none;
   padding: 0;
-  align-items: flex-start;
+  align-items: center;
 
+  /* 图三第三处：去掉标题条背景图
   &::before {
     content: '';
     position: absolute;
     inset: 0;
     background: url(../../assets/img/otgame/beijin_12.png) no-repeat;
     background-size: 100% 100%;
-    /* 原图偏蓝紫(~234°) → 金色(~40°) */
     filter: hue-rotate(166deg) saturate(1.2) brightness(1.05);
     pointer-events: none;
     z-index: 0;
   }
+  */
 
   > * {
     position: relative;

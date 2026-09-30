@@ -333,7 +333,7 @@ export default {
 .content {
   width: 100%;
   height: 100vh;
-  background: #1f1c17 !important;
+  background: #1a0a28 !important;
 }
 .close-img {
   position: fixed;

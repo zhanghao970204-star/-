@@ -102,7 +102,7 @@ export default {
 }
 .active {
   // box-shadow: 0 4px 1px #4a4a4a !important; /* 阴影效果 */
-  background: #2a2418 !important;
+  background: #2d1545 !important;
   border-bottom: 0px solid #e9a843 !important;
 }
 </style>

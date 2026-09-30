@@ -75,14 +75,14 @@ export default {
 <style lang="less" scoped>
 .content {
   padding: 60px 3% 0 3%;
-  background: #1f1c17;
+  background: #1a0a28;
 }
 
 .custom-field2 {
   margin-top: 10px;
   padding: 11px 15px;
   font-size: 15px;
-  background: #2a2418;
+  background: #2d1545;
   border-radius: 13px;
   border: 1px solid fade(#e9a843, 35%);
   font-weight: normal !important; // 👈 添加这句确保外层不加粗
@@ -92,7 +92,7 @@ export default {
     font-weight: normal !important; // 👈 添加这句确保外层不加粗
 
     &::placeholder {
-      color: #a89b7c !important;
+      color: #b8a8d4 !important;
       font-weight: normal !important; // 👈 添加这句确保外层不加粗
     }
   }

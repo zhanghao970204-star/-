@@ -1,6 +1,7 @@
 <template>
   <van-tabbar
     v-if="visible"
+    :fixed="false"
     :safe-area-inset-bottom="true"
     v-model="active"
     :before-change="onBeforeChange"
@@ -8,12 +9,6 @@
     class="y7-tabbar"
   >
     <van-tabbar-item @click="toTop">
-      <img
-        class="tabbarimg"
-        v-show="active === 0"
-        src="@/assets/img/tabbar/tabbar.png"
-        alt=""
-      />
       <span :class="{ activeSpan: active === 0 }">{{
         $lang.tab_game || "Game"
       }}</span>
@@ -23,12 +18,6 @@
     </van-tabbar-item>
 
     <van-tabbar-item>
-      <img
-        class="tabbarimg"
-        v-show="active === 1"
-        src="@/assets/img/tabbar/tabbar.png"
-        alt=""
-      />
       <span :class="{ activeSpan: active === 1 }">{{
         $lang.tab_invite || "Invite"
       }}</span>
@@ -38,12 +27,6 @@
     </van-tabbar-item>
 
     <van-tabbar-item>
-      <img
-        class="tabbarimg"
-        v-show="active === 2"
-        src="@/assets/img/tabbar/tabbar.png"
-        alt=""
-      />
       <span
         class="wallet-label"
         :class="{ activeSpan: active === 2 }"
@@ -52,39 +35,11 @@
       <template #icon>
         <div class="boxBg">
           <img class="tabqb" src="@/assets/img/tabbar/tabqb.png" alt="" />
-          <picture>
-            <source
-              srcset="@/assets/img/tabbar/jinb_effect.webp"
-              type="image/webp"
-            />
-            <img
-              class="jinb_effect"
-              src="@/assets/img/tabbar/jinb_effect.png"
-              alt=""
-            />
-          </picture>
-          <picture>
-            <source
-              srcset="@/assets/img/tabbar/cash_effect.webp"
-              type="image/webp"
-            />
-            <img
-              class="cash_effect"
-              src="@/assets/img/tabbar/cash_effect.png"
-              alt=""
-            />
-          </picture>
         </div>
       </template>
     </van-tabbar-item>
 
     <van-tabbar-item>
-      <img
-        class="tabbarimg"
-        v-show="active === 3"
-        src="@/assets/img/tabbar/tabbar.png"
-        alt=""
-      />
       <span :class="{ activeSpan: active === 3 }">{{
         $lang.tab_reward || $lang.tab_promotions || "Reward"
       }}</span>
@@ -97,12 +52,6 @@
     </van-tabbar-item>
 
     <van-tabbar-item>
-      <img
-        class="tabbarimg"
-        v-show="active === 4"
-        src="@/assets/img/tabbar/tabbar.png"
-        alt=""
-      />
       <span :class="{ activeSpan: active === 4 }">{{
         $lang.tab_account || "Account"
       }}</span>
@@ -199,113 +148,96 @@ export default {
 
 <style scoped lang="less">
 .boxBg {
-  width: 51px;
-  height: 51px;
-  background: linear-gradient(90deg, #f7dd9a 0%, #ffa200 100%);
+  width: 58px;
+  height: 48px;
   display: flex;
-  border-radius: 50%;
   margin-top: -18px;
   position: relative;
   align-items: center;
   justify-content: center;
+  z-index: 2;
+  background: transparent !important;
+  box-shadow: none !important;
 
   .tabqb {
-    width: 32px;
-    height: 32px;
-  }
-
-  @keyframes blink {
-    0%,
-    75% {
-      opacity: 1;
-    }
-    75%,
-    100% {
-      opacity: 0;
-    }
-  }
-
-  .cash_effect,
-  .jinb_effect {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 51px;
+    width: 54px;
     height: auto;
-    transform: translate(-50%, -50%);
-    animation: blink 4s infinite;
-  }
-
-  .cash_effect {
-    aspect-ratio: 154 / 171;
-  }
-
-  .jinb_effect {
-    aspect-ratio: 192 / 195;
+    object-fit: contain;
+    display: block;
+    background: transparent;
   }
 }
 
 .y7-tabbar {
+  position: relative;
+  flex-shrink: 0;
+  width: 100%;
   max-width: 450px;
-  margin: auto;
+  margin: 0 auto;
   z-index: 999;
-  height: 70px;
+  height: calc(var(--tabbar-bar-height, 66px) + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
   box-sizing: border-box;
-  left: 50%;
-  bottom: 0;
-  transform: translate(-50%, 0);
   text-align: center;
-  border-top: 1px solid #f7dd9a7c;
-  background: #050400;
+  border-top: none;
+  background-color: transparent !important;
+  background-image: url(@/assets/img/tabbar/tabbar.png);
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: 100% var(--tabbar-bar-height, 66px);
+  overflow: visible;
 
   :deep(.van-tabbar-item) {
     position: relative;
-    bottom: 5px;
-    color: #ffe0a3c0;
+    bottom: 0;
+    padding-top: 8px;
+    padding-bottom: 6px;
+    color: rgba(255, 255, 255, 0.75);
+    background: transparent !important;
   }
 
-  .tabbarimg {
-    width: 62px;
-    height: 27px;
-    position: absolute;
-    left: 50%;
-    bottom: -9px;
-    transform: translate(-50%, 0);
+  /* 中间项：不要任何颜色填充 */
+  :deep(.van-tabbar-item:nth-child(3)),
+  :deep(.van-tabbar-item:nth-child(3) .van-tabbar-item__icon),
+  :deep(.van-tabbar-item:nth-child(3) .van-badge__wrapper) {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  :deep(.van-tabbar-item__icon) {
+    margin-bottom: 4px;
+    background: transparent !important;
   }
 
   .img {
-    width: 41px;
-    height: 41px;
-    background-image: url(@/assets/img/tabbar/tabs.png);
-    background-image: image-set(
-      url('@/assets/img/tabbar/tabs.webp') type('image/webp'),
-      url('@/assets/img/tabbar/tabs.png') type('image/png')
-    );
+    width: 26px;
+    height: 26px;
     background-repeat: no-repeat;
-    background-size: 245px 92px;
-    margin-bottom: -8px;
+    background-position: center;
+    background-size: contain;
+    margin-bottom: 0;
   }
 
   .img1A {
-    background-position: 0 -0.5px;
+    background-image: url(@/assets/img/tabbar/img1A.png);
   }
   .img2A {
-    background-position: -51px -0.5px;
+    background-image: url(@/assets/img/tabbar/img2A.png);
   }
   .img4A {
-    background-position: -152px -1.5px;
+    background-image: url(@/assets/img/tabbar/img4A.png);
   }
   .img5A {
-    background-position: -204px -1px;
+    background-image: url(@/assets/img/tabbar/img5A.png);
   }
   .img1 {
-    background-position: 0 -51.5px;
+    background-image: url(@/assets/img/tabbar/img1.png);
   }
   .img2 {
-    background-position: -51px -51.5px;
+    background-image: url(@/assets/img/tabbar/img2.png);
   }
   .img4 {
-    background-position: -152px -51.5px;
+    background-image: url(@/assets/img/tabbar/img4.png);
   }
   .reward-tab-icon {
     position: relative;
@@ -313,36 +245,39 @@ export default {
     &::after {
       content: '';
       position: absolute;
-      top: 1px;
-      right: -2px;
-      width: 12px;
-      height: 12px;
-      border: 1.5px solid #050400;
+      top: -1px;
+      right: -3px;
+      width: 8px;
+      height: 8px;
+      border: 1.5px solid #430063;
       border-radius: 50%;
       background: #ff4b55;
       box-sizing: border-box;
     }
   }
   .img5 {
-    background-position: -204px -51.5px;
+    background-image: url(@/assets/img/tabbar/img5.png);
   }
 
   span {
-    font-size: 12px;
-    color: #ffe0a3c0;
+    display: block;
+    font-size: 11px;
+    line-height: 1.2;
+    margin-top: 1px;
+    color: rgba(255, 255, 255, 0.85);
   }
 
   .wallet-label {
     display: block;
-    margin-bottom: -3px;
+    margin-bottom: 0;
   }
 
   :deep(.van-tabbar-item--active) {
-    background: transparent;
+    background: transparent !important;
   }
 
   .activeSpan {
-    color: #ffda91;
+    color: #fff;
   }
 }
 

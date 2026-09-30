@@ -15,7 +15,7 @@
       <div class="pwd-field">
         <div class="pwd-field__input" :class="{ 'pwd-field__input--error': error }">
           <div class="pwd-field__icon">
-            <van-icon name="lock" size="18" color="#a89b7c" />
+            <van-icon name="lock" size="18" color="#b8a8d4" />
           </div>
           <input
             v-model="oldLoginPwd"
@@ -24,7 +24,7 @@
             class="pwd-field__text"
           />
           <button class="pwd-field__toggle" @click="isSee = !isSee">
-            <van-icon :name="isSee ? 'eye-o' : 'closed-eye'" size="18" :color="isSee ? '#ffa300' : '#a89b7c'" />
+            <van-icon :name="isSee ? 'eye-o' : 'closed-eye'" size="18" :color="isSee ? '#ffa300' : '#b8a8d4'" />
           </button>
         </div>
         <p v-if="errorText" class="pwd-field__error">{{ errorText }}</p>
@@ -34,7 +34,7 @@
       <div class="pwd-field">
         <div class="pwd-field__input" :class="{ 'pwd-field__input--error': error2 }">
           <div class="pwd-field__icon">
-            <van-icon name="lock" size="18" color="#a89b7c" />
+            <van-icon name="lock" size="18" color="#b8a8d4" />
           </div>
           <input
             v-model="newLoginPwd"
@@ -43,7 +43,7 @@
             class="pwd-field__text"
           />
           <button class="pwd-field__toggle" @click="isSee2 = !isSee2">
-            <van-icon :name="isSee2 ? 'eye-o' : 'closed-eye'" size="18" :color="isSee2 ? '#ffa300' : '#a89b7c'" />
+            <van-icon :name="isSee2 ? 'eye-o' : 'closed-eye'" size="18" :color="isSee2 ? '#ffa300' : '#b8a8d4'" />
           </button>
         </div>
         <p v-if="errorText2" class="pwd-field__error">{{ errorText2 }}</p>
@@ -53,7 +53,7 @@
       <div class="pwd-field">
         <div class="pwd-field__input" :class="{ 'pwd-field__input--error': error3 }">
           <div class="pwd-field__icon">
-            <van-icon name="passed" size="18" color="#a89b7c" />
+            <van-icon name="passed" size="18" color="#b8a8d4" />
           </div>
           <input
             v-model="confirmPwd"
@@ -62,7 +62,7 @@
             class="pwd-field__text"
           />
           <button class="pwd-field__toggle" @click="isSee3 = !isSee3">
-            <van-icon :name="isSee3 ? 'eye-o' : 'closed-eye'" size="18" :color="isSee3 ? '#ffa300' : '#a89b7c'" />
+            <van-icon :name="isSee3 ? 'eye-o' : 'closed-eye'" size="18" :color="isSee3 ? '#ffa300' : '#b8a8d4'" />
           </button>
         </div>
         <p v-if="errorText3" class="pwd-field__error">{{ errorText3 }}</p>
@@ -144,10 +144,10 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@bg: #1f1c17;
-@card: #15110a;
+@bg: #1a0a28;
+@card: #12021a;
 @neon: #ffa300;
-@muted: #a89b7c;
+@muted: #b8a8d4;
 @border: rgba(255, 162, 0, 0.45);
 
 .pwd-page {
@@ -261,7 +261,7 @@ export default {
     outline: none;
 
     &::placeholder {
-      color: #a89b7c;
+      color: #b8a8d4;
     }
   }
 

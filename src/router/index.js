@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { resetPageScroll, resetPageScrollAfterRoute } from '@/utils/scrollReset'
 import bus from '@/utils/eventBus'
 import { normalizeCountryCode, readCountryCode } from '@/utils/country'
+import { consumeRouteMotion } from '@/utils/routeMotion'
 
 // 禁止浏览器自动恢复滚动位置（从长页进二级页停在半截的根因之一）
 try {
@@ -368,6 +369,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  to.meta.routeTransition = consumeRouteMotion()
   const urlSearch = new URLSearchParams(window.location.search)
   const rawCode = to.query.code || urlSearch.get('code')
   if (rawCode) {
@@ -375,8 +377,24 @@ router.beforeEach((to, from, next) => {
     return next()
   }
 
-  const defaultCountry = 'NG'
-  const savedCountry = readCountryCode()
+  // 写死美国；中间页选国家逻辑先关掉
+  const defaultCountry = 'US'
+  // 强制美国，忽略本地已存国家（中间页逻辑关闭期间）
+  localStorage.setItem('country', defaultCountry)
+  if (!localStorage.getItem('platform')) {
+    localStorage.setItem('platform', 'usbet')
+  }
+  if (!localStorage.getItem('currency')) {
+    localStorage.setItem('currency', 'usd')
+  }
+  if (!localStorage.getItem('areaCode')) {
+    localStorage.setItem('areaCode', '+1')
+  }
+  if (!localStorage.getItem('defaultLanguage')) {
+    localStorage.setItem('defaultLanguage', 'en')
+  }
+  // const savedCountry = readCountryCode()
+  const savedCountry = defaultCountry
   const rawRoutePrefix = to.params.prefix || ''
   const routePrefix = normalizeCountryCode(rawRoutePrefix)
   const pathSegments = to.path.split('/').filter(Boolean)
@@ -419,10 +437,12 @@ router.beforeEach((to, from, next) => {
       return next(correctPath)
     }
   } else {
-    finalPrefix = routePrefix || ''
-    if (finalPrefix) {
-      localStorage.setItem('country', finalPrefix)
-    }
+    // finalPrefix = routePrefix || ''
+    // if (finalPrefix) {
+    //   localStorage.setItem('country', finalPrefix)
+    // }
+    finalPrefix = defaultCountry
+    localStorage.setItem('country', defaultCountry)
   }
 
   const validSubPaths = [
@@ -440,20 +460,32 @@ router.beforeEach((to, from, next) => {
   ]
 
   if (pathSegments.length === 0) {
-    if (localStorage.getItem('googleAuthCode') && savedCountry) {
-      window.location.href = `/${savedCountry}/home`
-      return
-    }
-    return next('/Country')
+    // 中间页逻辑注释掉，直接进美国首页
+    // if (localStorage.getItem('googleAuthCode') && savedCountry) {
+    //   window.location.href = `/${savedCountry}/home`
+    //   return
+    // }
+    // return next('/Country')
+    return next(`/${defaultCountry}/home`)
   } else if (
     pathSegments.length === 1 &&
     !validSubPaths.includes(pathSegments[0])
   ) {
-    const prefix = pathSegments[0]
-    localStorage.setItem('country', prefix)
-    const targetPath = `/${prefix}/home`
-    window.location.href = targetPath
-    return
+    // const prefix = pathSegments[0]
+    // localStorage.setItem('country', prefix)
+    // const targetPath = `/${prefix}/home`
+    // window.location.href = targetPath
+    // return
+    localStorage.setItem('country', defaultCountry)
+    return next(`/${defaultCountry}/home`)
+  } else if (pathSegments[0] === 'Country') {
+    // 直接访问中间页也跳美国首页
+    return next(`/${defaultCountry}/home`)
+  }
+
+  // /US/Country 等带前缀的中间页也跳过
+  if (to.name === 'Country' || pathSegments.includes('Country')) {
+    return next(`/${defaultCountry}/home`)
   }
 
   // 底部 Deposit / Mine 及分享页需登录；未登录回首页并弹登录框

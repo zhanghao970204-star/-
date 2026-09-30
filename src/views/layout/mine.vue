@@ -1,143 +1,122 @@
 <template>
   <div class="mine-page">
-    <div class="mine-top">
-      <img
-        class="mine-top__logo"
-        src="@/assets/img/login/logo.png"
-        alt="BISON FUN"
-      />
-    </div>
-
-    <div class="mine-panel">
-      <div class="mine-panel__glow"></div>
-
-      <button class="mine-settings" type="button" @click="$jumpTo('/settings')">
-        <van-icon name="setting-o" size="20" color="#FFE4B5" />
-      </button>
-
-      <div class="mine-user">
-        <div class="mine-user__avatar" @click="$jumpTo('/editProfile')">
-          <img
-            v-if="avatarSrc"
-            :src="avatarSrc"
-            class="mine-user__avatar-img"
-            alt=""
-          />
-          <div v-else class="mine-user__avatar-placeholder"></div>
-        </div>
-
-        <div class="mine-user__main">
-          <div class="mine-user__row">
-            <div class="mine-user__name" @click="copyText(InitDate.account)">
-              <span>{{ InitDate.account || "--" }}</span>
-              <van-icon name="column" size="14" color="#FFE4B5" />
-            </div>
-            <div
-              v-if="InitDate.vipLevel != null"
-              class="mine-user__vip"
-              @click="$jumpTo('/vipLevels')"
-            >
-              <div class="mine-user__vip-badge" :style="vipBadgeStyle"></div>
-              <span class="mine-user__vip-text"
-                >VIP {{ InitDate.vipLevel || 0 }}</span
-              >
-              <van-icon name="arrow" size="14" color="#FFE4B5" />
-            </div>
-          </div>
-          <!-- <div class="mine-user__id" @click="copyText(InitDate.inviteCode)">
-            <span>ID: {{ InitDate.inviteCode || "--" }}</span>
-            <van-icon name="column" size="14" color="#FFE4B5" />
-          </div> -->
-        </div>
+    <div class="mine-user">
+      <div class="mine-user__avatar" @click="$jumpTo('/editProfile')">
+        <img
+          v-if="avatarSrc"
+          :src="avatarSrc"
+          class="mine-user__avatar-img"
+          alt=""
+        />
+        <div v-else class="mine-user__avatar-placeholder"></div>
+        <img
+          v-if="InitDate.vipLevel != null"
+          class="mine-user__vip-badge"
+          :src="vipBadgeSrc"
+          alt=""
+          @click.stop="$jumpTo('/vipLevels')"
+        />
       </div>
 
-      <div class="mine-balance">
-        <div class="mine-balance__label">
-          {{ $lang.common_txt259 || "ACCOUNT BALANCE" }}
+      <div class="mine-user__main">
+        <div class="mine-user__name" @click="copyText(InitDate.account)">
+          <span>{{ InitDate.account || "--" }}</span>
+          <img
+            class="mine-user__copy"
+            src="@/assets/img/mine/copy.png"
+            alt=""
+          />
         </div>
-        <div class="mine-balance__amount">
-          {{ getCurrency
-          }}{{
+        <div class="mine-user__progress" @click="$jumpTo('/vipLevels')">
+          <div class="mine-user__progress-track">
+            <div
+              class="mine-user__progress-fill"
+              :style="{
+                width: 'calc((100% - 6px) * ' + vipProgressPercent + ' / 100)',
+              }"
+            ></div>
+            <span class="mine-user__progress-text">{{ vipProgressText }}</span>
+          </div>
+          <img class="mine-user__progress-gem" :src="vipPairIconSrc" alt="" />
+        </div>
+      </div>
+    </div>
+
+    <div class="mine-balance">
+      <div class="mine-balance__amount">
+        {{ getCurrency }}
+        <span style="margin-left: 5px">
+          {{
             $formatNumberWithCommas(
               InitDate2.totalBalance || InitDate2.balance || 0,
             )
           }}
-        </div>
+        </span>
+      </div>
 
-        <div class="mine-balance__stats">
-          <div class="mine-balance__stat">
-            <div class="lab">{{ $lang.mine_main || "Main" }}</div>
-            <div class="val">
-              {{ getCurrency
-              }}{{ $formatNumberWithCommas(InitDate2.balance || 0) }}
-            </div>
+      <div class="mine-balance__stats">
+        <div class="mine-balance__stat">
+          <div class="lab">{{ $lang.mine_main || "Main" }}</div>
+          <div class="val">
+            {{ getCurrency }}
+            <span class="m-l-2">
+              {{ $formatNumberWithCommas(InitDate2.balance || 0) }}
+            </span>
           </div>
-          <div class="mine-balance__stat is-green">
-            <div class="lab">{{ $lang.mine_cashback || "Cashback" }}</div>
-            <div class="val">
-              {{ getCurrency
-              }}{{ $formatNumberWithCommas(InitDate2.cashback || 0) }}
-            </div>
+        </div>
+        <div class="mine-balance__stat is-green">
+          <div class="lab">{{ $lang.mine_cashback || "Cashback" }}</div>
+          <div class="val">
+            {{ getCurrency }}
+            <span class="m-l-2">
+              {{ $formatNumberWithCommas(InitDate2.cashback || 0) }}
+            </span>
           </div>
         </div>
       </div>
+    </div>
 
-      <div class="mine-qb">
-        <div class="mine-qb__cz" @click="goToDesposit(0)">
-          <div class="mine-qb__text">
-            <p class="mine-qb__title">
-              {{ $lang.mine_deposit_title || $lang.Depósito || "Deposit" }}
-            </p>
-            <p class="mine-qb__sub">
-              {{ $lang.mine_deposit_sub || "Big rewards await!" }}
-            </p>
-          </div>
-        </div>
-        <div class="mine-qb__tx" @click="goToDesposit(1)">
-          <div class="mine-qb__text">
-            <p class="mine-qb__title">
-              {{ $lang.mine_withdraw_title || "Withdraw" }}
-            </p>
-            <p class="mine-qb__sub">
-              {{ $lang.mine_withdraw_sub || "Fast & Reliable" }}
-            </p>
-          </div>
-        </div>
+    <div class="mine-qb">
+      <div class="mine-qb__btn btn-press" @click="goToDesposit(1)">
+        <div class="mine-qb__tx"></div>
       </div>
+      <div class="mine-qb__btn btn-press" @click="goToDesposit(0)">
+        <div class="mine-qb__cz"></div>
+      </div>
+    </div>
 
-      <div class="mine-records">
-        <div class="mine-records__item" @click="$jumpTo('/recordOrder')">
-          <picture class="mine-records__icon">
-            <source
-              srcset="@/assets/img/mine/record_deposit.webp"
-              type="image/webp"
-            />
-            <img src="@/assets/img/mine/record_deposit.png" alt="" />
-          </picture>
+    <div class="mine-records">
+      <div class="mine-records__item" @click="$jumpTo('/recordOrder')">
+        <div class="mine-records__tile">
+          <img
+            class="mine-records__icon"
+            src="@/assets/img/mine/record_deposit.png"
+            alt=""
+          />
           <div class="mine-records__label">
             {{ $lang.mine_deposit_record || "Deposit Record" }}
           </div>
         </div>
-        <div class="mine-records__item" @click="$jumpTo('/transactionRecords')">
-          <picture class="mine-records__icon">
-            <source
-              srcset="@/assets/img/mine/record_withdraw.webp"
-              type="image/webp"
-            />
-            <img src="@/assets/img/mine/record_withdraw.png" alt="" />
-          </picture>
+      </div>
+      <div class="mine-records__item" @click="$jumpTo('/transactionRecords')">
+        <div class="mine-records__tile">
+          <img
+            class="mine-records__icon"
+            src="@/assets/img/mine/record_withdraw.png"
+            alt=""
+          />
           <div class="mine-records__label">
             {{ $lang.mine_withdraw_record || "Withdrawal Record" }}
           </div>
         </div>
-        <div class="mine-records__item" @click="$jumpTo('/billGame')">
-          <picture class="mine-records__icon">
-            <source
-              srcset="@/assets/img/mine/record_game.webp"
-              type="image/webp"
-            />
-            <img src="@/assets/img/mine/record_game.png" alt="" />
-          </picture>
+      </div>
+      <div class="mine-records__item" @click="$jumpTo('/billGame')">
+        <div class="mine-records__tile">
+          <img
+            class="mine-records__icon"
+            src="@/assets/img/mine/record_game.png"
+            alt=""
+          />
           <div class="mine-records__label">
             {{ $lang.common_txt261 || "Game Records" }}
           </div>
@@ -148,58 +127,69 @@
     <section class="mine-menu">
       <div class="mine-menu__item" @click="$jumpTo('/rewardRecord')">
         <div class="mine-menu__left">
-          <div class="mine-menu__icon-wrap">
-            <van-icon name="gift-o" size="18" color="#FFE4B5" />
-          </div>
+          <img
+            class="mine-menu__icon"
+            src="@/assets/img/mine/menu_reward.png"
+            alt=""
+          />
           <span>{{ $lang.rewardRecord_title || "Reward Record" }}</span>
         </div>
       </div>
       <div class="mine-menu__item" @click="$jumpTo('/passwordLogin')">
         <div class="mine-menu__left">
-          <div class="mine-menu__icon-wrap">
-            <van-icon name="lock" size="18" color="#FFE4B5" />
-          </div>
+          <img
+            class="mine-menu__icon"
+            src="@/assets/img/mine/menu_lock.png"
+            alt=""
+          />
           <span>{{ $lang.mine_txt9 || "Change Login Password" }}</span>
         </div>
       </div>
       <div class="mine-menu__item" @click="goToBank">
         <div class="mine-menu__left">
-          <div class="mine-menu__icon-wrap">
-            <van-icon name="credit-pay" size="18" color="#FFE4B5" />
-          </div>
+          <img
+            class="mine-menu__icon"
+            src="@/assets/img/mine/menu_bank.png"
+            alt=""
+          />
           <span>{{ $lang.bank_title || "Bank Card" }}</span>
         </div>
       </div>
       <div class="mine-menu__item" @click="$jumpTo('/setPassWord')">
         <div class="mine-menu__left">
-          <div class="mine-menu__icon-wrap">
-            <van-icon name="shield-o" size="18" color="#FFE4B5" />
-          </div>
+          <img
+            class="mine-menu__icon"
+            src="@/assets/img/mine/menu_shield.png"
+            alt=""
+          />
           <span>{{ $lang.mine_txt10 || "Change Withdrawal Password" }}</span>
         </div>
       </div>
       <div class="mine-menu__item" @click="$jumpTo('/settings')">
         <div class="mine-menu__left">
-          <div class="mine-menu__icon-wrap">
-            <van-icon name="setting-o" size="18" color="#FFE4B5" />
-          </div>
+          <img
+            class="mine-menu__icon"
+            src="@/assets/img/mine/menu_settings.png"
+            alt=""
+          />
           <span>{{ $lang.settings_title || "Settings" }}</span>
         </div>
       </div>
       <div class="mine-menu__item" @click="$jumpTo('/Support')">
         <div class="mine-menu__left">
-          <div class="mine-menu__icon-wrap">
-            <van-icon name="service-o" size="18" color="#FFE4B5" />
-          </div>
+          <img
+            class="mine-menu__icon"
+            src="@/assets/img/mine/menu_service.png"
+            alt=""
+          />
           <span>{{ $lang.common_txt291 || "Online Customer Service" }}</span>
         </div>
       </div>
     </section>
 
-    <!-- Logout -->
     <div class="mine-logout">
       <button
-        class="mine-logout__btn"
+        class="mine-logout__btn btn-3d-green"
         type="button"
         @click="showLogoutPopup = true"
       >
@@ -237,15 +227,44 @@
 </template>
 
 <script>
-import { Init, GameBalanceList, Logout } from "@/api/common";
+import { Init, GameBalanceList, Logout, VipInit } from "@/api/common";
 import { avatarImg } from "@/utils/avatarAssets";
 import { resetPageScroll } from "@/utils/scrollReset";
 
-// viptb.png：VIP0–VIP20 共 21 帧（与 vipLevels 一致）
-const VIP_SPRITE_W = 4636;
-const VIP_SPRITE_H = 280;
-const VIP_BADGE_FRAMES = 21;
-const VIP_MY_BADGE_H = 30;
+const vipBadgeModules = import.meta.glob("@/assets/img/vip/V*.png", {
+  eager: true,
+  import: "default",
+});
+const vipPairModules = import.meta.glob("@/assets/img/vip/*_*.png", {
+  eager: true,
+  import: "default",
+});
+
+function resolveVipBadge(level) {
+  const lv = Math.max(0, Math.min(13, Number(level) || 0));
+  const hit = Object.keys(vipBadgeModules).find((k) =>
+    k.endsWith(`/V${lv}.png`),
+  );
+  if (hit) return vipBadgeModules[hit];
+  const fallback = Object.keys(vipBadgeModules).find((k) =>
+    k.endsWith("/V0.png"),
+  );
+  return fallback ? vipBadgeModules[fallback] : "";
+}
+
+/** 两级共用一张：1-2 / 3-4 ... 13-14 */
+function resolveVipPairIcon(level) {
+  const lv = Math.max(0, Number(level) || 0);
+  const start = lv <= 0 ? 1 : Math.floor((lv - 1) / 2) * 2 + 1;
+  const clampedStart = Math.min(start, 13);
+  const name = `${clampedStart}_${clampedStart + 1}.png`;
+  const hit = Object.keys(vipPairModules).find((k) => k.endsWith(`/${name}`));
+  if (hit) return vipPairModules[hit];
+  const fallback = Object.keys(vipPairModules).find((k) =>
+    k.endsWith("/1_2.png"),
+  );
+  return fallback ? vipPairModules[fallback] : "";
+}
 
 export default {
   name: "Mine",
@@ -265,6 +284,8 @@ export default {
         cashback: 0,
         totalBalance: 0,
       },
+      vipRechargeAmount: 0,
+      vipNextRechargeAmount: 0,
     };
   },
   computed: {
@@ -274,24 +295,41 @@ export default {
       }
       return avatarImg(this.InitDate.headUrl);
     },
-    vipBadgeStyle() {
-      const lv = Math.max(0, Number(this.InitDate.vipLevel) || 0);
-      const idx = Math.min(lv, VIP_BADGE_FRAMES - 1);
-      const scale = VIP_MY_BADGE_H / VIP_SPRITE_H;
-      const spriteW = VIP_SPRITE_W * scale;
-      const frameW = spriteW / VIP_BADGE_FRAMES;
-      return {
-        width: `${frameW}px`,
-        height: `${VIP_MY_BADGE_H}px`,
-        backgroundSize: `${spriteW}px ${VIP_MY_BADGE_H}px`,
-        backgroundPosition: `-${idx * frameW}px 0`,
-      };
+    vipBadgeSrc() {
+      return resolveVipBadge(this.InitDate.vipLevel);
+    },
+    vipPairIconSrc() {
+      return resolveVipPairIcon(this.InitDate.vipLevel);
+    },
+    vipProgressPercent() {
+      const cur = Number(this.vipRechargeAmount) || 0;
+      const need = Number(this.vipNextRechargeAmount) || 0;
+      if (need > 0) {
+        return Math.max(0, Math.min(100, (cur / need) * 100));
+      }
+      return cur > 0 ? 100 : 0;
+    },
+    vipProgressText() {
+      const cur = Number(this.vipRechargeAmount) || 0;
+      const need = Number(this.vipNextRechargeAmount) || 0;
+      const fmt = (n) => this.$formatNumberWithCommas(n);
+      if (need > 0) {
+        return `${fmt(cur)}/${fmt(need)}`;
+      }
+      return `${fmt(cur)}`;
     },
   },
   mounted() {
     resetPageScroll();
     this.Init();
     this.GetGameBalanceList();
+    this.loadVipInit();
+    this._onHeaderRefresh = () => {
+      this.Init();
+      this.GetGameBalanceList();
+      this.loadVipInit();
+    };
+    this.$bus.on("refsh-amount", this._onHeaderRefresh);
   },
   activated() {
     resetPageScroll();
@@ -301,6 +339,13 @@ export default {
     });
     this.Init();
     this.GetGameBalanceList();
+    this.loadVipInit();
+  },
+  beforeUnmount() {
+    if (this._onHeaderRefresh) {
+      this.$bus.off("refsh-amount", this._onHeaderRefresh);
+      this._onHeaderRefresh = null;
+    }
   },
   methods: {
     async Init() {
@@ -321,6 +366,21 @@ export default {
         }
       } catch (e) {
         console.error("GetGameBalanceList error", e);
+      }
+    },
+    async loadVipInit() {
+      try {
+        const data = await VipInit();
+        if (data.status === "ok" && data.content) {
+          const c = data.content;
+          if (c.vipLevel != null) {
+            this.InitDate = { ...this.InitDate, vipLevel: c.vipLevel };
+          }
+          this.vipRechargeAmount = c.rechargeAmount || 0;
+          this.vipNextRechargeAmount = c.nextRechargeAmount || 0;
+        }
+      } catch (e) {
+        console.error("loadVipInit error", e);
       }
     },
     async goToDesposit(i) {
@@ -375,118 +435,46 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@gold: #ffa300;
-@gold-soft: #ffe4b5;
-@gold-deep: #e9b65a;
-@gold-grad: linear-gradient(90deg, #f7dd9a 0%, #ffa300 100%);
-@btn-grad: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
-@card-bg: rgba(70, 52, 4, 0.1);
-@card-border: rgba(255, 228, 181, 0.39);
+@purple: #5b1aa8;
+@purple-deep: #3a0a6e;
+@purple-card: #4c1490;
+@green: #31ff6f;
+@gold: #ffd400;
 
 .mine-page {
   position: relative;
-  min-height: 100vh;
-  background: #1f1c17;
+  min-height: 100%;
   color: #fff;
-  padding-bottom: 100px;
+  padding: 16px 12px 20px;
+  box-sizing: border-box;
   overflow-x: clip;
   overflow-y: visible;
-}
-
-/* ① 顶部背景层（y7 mabg） */
-.mine-top {
-  position: relative;
-  height: 197px;
-  padding-top: 10px;
-  box-sizing: border-box;
-  overflow: visible;
-  background: url(@/assets/img/mine/mabg.png) 0 0 no-repeat;
-  background-image: image-set(
-    url("@/assets/img/mine/mabg.webp") type("image/webp"),
-    url("@/assets/img/mine/mabg.png") type("image/png")
-  );
-  background-size: 100% auto;
+  background-color: #27033c;
+  background-image: url(@/assets/img/common/page_bg.png);
+  background-repeat: repeat;
+  background-size: auto;
   background-position: top center;
 }
 
-.mine-top__logo {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 168px;
-  max-width: 48%;
-  height: auto;
-  display: block;
-  pointer-events: none;
-  z-index: 2;
-  object-fit: contain;
-  object-position: center top;
-}
-
-/* ② 主面板：上浮叠在背景上（金边圆角卡片） */
-.mine-panel {
-  position: relative;
-  z-index: 1;
-  margin: -100px 10px 0;
-  padding: 14px 12px 16px;
-  box-sizing: border-box;
-  background: linear-gradient(0deg, #1d1814 13.46%, #252020 100%);
-  border: 1px solid rgba(255, 162, 0, 0.45);
-  border-radius: 16px;
-  overflow: hidden;
-}
-
-.mine-panel__glow {
-  width: 100%;
-  height: 108px;
-  background: radial-gradient(
-    50% 50% at 50% 50%,
-    rgba(255, 221, 0, 0.17) 0%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  position: absolute;
-  top: -58px;
-  left: 0;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.mine-settings {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 2;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border: none;
-  background: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-/* 用户区 */
 .mine-user {
-  position: relative;
-  z-index: 1;
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 8px 28px 8px 4px;
+  padding: 4px 2px 10px;
 }
 
 .mine-user__avatar {
-  width: 65px;
-  height: 65px;
+  position: relative;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  overflow: hidden;
-  border: 1px solid #ffcc00;
-  box-shadow: 0 0 5px 1px #ffc404;
+  overflow: visible;
+  border: 2px solid #c084fc;
+  box-shadow: 0 0 10px rgba(192, 132, 252, 0.55);
   flex-shrink: 0;
   cursor: pointer;
   box-sizing: border-box;
+  background: #2a0a4a;
 }
 
 .mine-user__avatar-img {
@@ -494,12 +482,28 @@ export default {
   height: 100%;
   object-fit: cover;
   display: block;
+  border-radius: 50%;
 }
 
 .mine-user__avatar-placeholder {
   width: 100%;
   height: 100%;
-  background: #2a2418;
+  border-radius: 50%;
+  background: #2a0a4a;
+}
+
+.mine-user__vip-badge {
+  position: absolute;
+  right: -6px;
+  bottom: -4px;
+  z-index: 2;
+  width: 25px;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  pointer-events: auto;
+  cursor: pointer;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
 }
 
 .mine-user__main {
@@ -507,190 +511,223 @@ export default {
   min-width: 0;
 }
 
-.mine-user__row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
 .mine-user__name {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
   min-width: 0;
   cursor: pointer;
+  margin-bottom: 10px;
 
   span {
     font-size: 16px;
     font-weight: 700;
-    background: @gold-grad;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
+    color: #fff;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    line-height: 1.2;
   }
 }
 
-.mine-user__vip {
+.mine-user__copy {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  flex-shrink: 0;
+  display: block;
+}
+
+.mine-user__progress {
+  position: relative;
+  cursor: pointer;
+  padding-right: 8px;
+}
+
+.mine-user__progress-track {
+  position: relative;
   display: flex;
   align-items: center;
-  flex-shrink: 0;
-  cursor: pointer;
+  width: 100%;
+  height: 27px;
+  border-radius: 999px;
+  background: #000;
+  border: 1px solid #5d2e8c;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 3px 22px 3px 3px;
 }
 
-.mine-user__vip-badge {
-  flex-shrink: 0;
-  background-image: url(@/assets/img/vip/viptb.png);
-  background-image: image-set(
-    url("@/assets/img/vip/viptb.webp") type("image/webp"),
-    url("@/assets/img/vip/viptb.png") type("image/png")
-  );
-  background-repeat: no-repeat;
+.mine-user__progress-fill {
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  bottom: 3px;
+  height: auto;
+  border-radius: 999px;
+  /* 设计稿：#FAFAA3 → #E96807 */
+  background: linear-gradient(180deg, #fafaa3 0%, #e96807 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  max-width: calc(100% - 6px);
+  pointer-events: none;
 }
 
-.mine-user__vip-text {
-  font-size: 18px;
-  font-weight: 700;
-  transform: skew(-10deg);
-  padding: 0 4px;
-  background: @gold-grad;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
-  line-height: 1;
-}
-
-.mine-user__id {
-  margin-top: 8px;
-  font-size: 12px;
-  color: @gold-soft;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  cursor: pointer;
-}
-
-/* 余额 */
-.mine-balance {
+.mine-user__progress-text {
   position: relative;
   z-index: 1;
-  margin-top: 10px;
-  text-align: center;
+  flex-shrink: 0;
+  margin-left: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 21px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+  white-space: nowrap;
+  pointer-events: none;
 }
 
-.mine-balance__label {
-  font-size: 11px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.75);
-  margin-bottom: 6px;
+.mine-user__progress-gem {
+  position: absolute;
+  right: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  z-index: 2;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+}
+
+.mine-balance {
+  position: relative;
+  margin-top: 6px;
+  padding: 0 12px 14px;
+  box-sizing: border-box;
+  min-height: 137px;
+  background: url(@/assets/img/mine/mabg.png) center / 100% 100% no-repeat;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 .mine-balance__amount {
-  font-size: 30px;
+  /* 对齐图一：金额落在金色顶盖正中 */
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 7px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
   font-weight: 800;
-  line-height: 1.15;
-  background: @gold-grad;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  text-decoration: none;
-  border: none;
-  user-select: none;
-  -webkit-user-select: none;
+  line-height: 1;
+  letter-spacing: 0.5px;
+  color: #fff;
+  /* 图一：白字 + 深蓝描边 + 下沉立体；纯 text-shadow，兼容性好 */
+  text-shadow:
+    -2px -2px 0 #1a3d8e,
+    -2px 0 0 #1a3d8e,
+    -2px 2px 0 #1a3d8e,
+    0 -2px 0 #1a3d8e,
+    0 2px 0 #1a3d8e,
+    2px -2px 0 #1a3d8e,
+    2px 0 0 #1a3d8e,
+    2px 2px 0 #1a3d8e,
+    -1px -2px 0 #1a3d8e,
+    1px -2px 0 #1a3d8e,
+    -1px 2px 0 #1a3d8e,
+    1px 2px 0 #1a3d8e,
+    -2px -1px 0 #1a3d8e,
+    2px -1px 0 #1a3d8e,
+    -2px 1px 0 #1a3d8e,
+    2px 1px 0 #1a3d8e,
+    0 3px 0 #152f6e,
+    0 4px 0 #152f6e;
+  margin: 0;
+  z-index: 1;
+  pointer-events: none;
 }
 
 .mine-balance__stats {
-  position: relative;
-  margin-top: 14px;
+  margin-top: 0;
+  margin-bottom: 8px;
   display: flex;
-  background: @card-bg;
-  border: 1px solid @card-border;
-  border-radius: 8px;
-  padding: 14px 0 12px;
-  overflow: hidden;
-
-  &::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    bottom: 0;
-    transform: translateX(-50%);
-    width: 75%;
-    height: 1px;
-    box-shadow: 0 0 40px 6px @gold;
-    pointer-events: none;
-  }
+  justify-content: space-around;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+  padding: 0 20px;
+  box-sizing: border-box;
 }
 
 .mine-balance__stat {
-  flex: 1;
-  position: relative;
+  width: 124px;
+  height: 50px;
+  min-width: 124px;
+  min-height: 50px;
+  flex: none;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-
-  &:not(:last-child)::after {
-    content: "";
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: 1px;
-    background: linear-gradient(
-      180deg,
-      rgba(255, 228, 181, 0) 0%,
-      #ffe4b5 48%,
-      #ffe4b5 52%,
-      rgba(255, 228, 181, 0) 100%
-    );
-  }
+  justify-content: center;
+  gap: 2px;
+  padding: 0 6px;
+  box-sizing: border-box;
+  border-radius: 10px;
+  background: #430063;
 
   .lab {
     font-size: 11px;
-    color: rgba(255, 255, 255, 0.7);
+    color: #e7deff;
+    font-weight: 700;
+    line-height: 1.2;
   }
 
   .val {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
-    color: #fff;
+    color: #ffee00;
+    line-height: 1.2;
+    white-space: nowrap;
   }
 
   &.is-green .val {
-    color: #31ff6f;
+    color: #99ff00;
   }
 }
 
-/* 充提按钮（y7 切图 + 文案叠加） */
 .mine-qb {
-  position: relative;
-  z-index: 1;
-  width: 98%;
-  margin: 14px auto 0;
+  margin: 12px auto 0;
+  padding: 12px 10px;
+  box-sizing: border-box;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
+  align-items: center;
   gap: 10px;
+  border-radius: 18px;
+  background: url(@/assets/img/mine/qb_wrap.png) center / 100% 100% no-repeat;
+}
+
+.mine-qb__btn {
+  width: 45%;
+  padding: 2px;
+  box-sizing: border-box;
+  border-radius: 26px;
+  background: #430063;
+  border: 1px solid #6837e3;
 }
 
 .mine-qb__cz,
 .mine-qb__tx {
-  position: relative;
-  width: 48.5%;
-  height: 70px;
+  width: 100%;
+  height: 47px;
   background-position: center;
   background-repeat: no-repeat;
   background-size: 100% 100%;
-  cursor: pointer;
-  overflow: visible;
 }
 
 .mine-qb__cz {
@@ -701,111 +738,56 @@ export default {
   background-image: url(@/assets/img/mine/txmy.png);
 }
 
-.mine-qb__text {
-  position: absolute;
-  left: 38%;
-  right: 4%;
-  top: 50%;
-  transform: translateY(-50%);
-  text-align: left;
-  pointer-events: none;
-}
-
-.mine-qb__title {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 800;
-  line-height: 1.15;
-  letter-spacing: 0.01em;
-  background: linear-gradient(180deg, #ffe9b0 0%, #ffa300 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  white-space: nowrap;
-}
-
-.mine-qb__sub {
-  margin: 2px 0 0;
-  font-size: 9px;
-  font-weight: 500;
-  line-height: 1.25;
-  color: #f5efe3;
-  opacity: 0.95;
-  white-space: normal;
-  word-break: break-word;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
-}
-
-/* 记录入口 */
 .mine-records {
-  position: relative;
-  z-index: 1;
-  margin-top: 12px;
+  margin-top: 14px;
   display: flex;
-  background: @card-bg;
-  border: 1px solid @card-border;
-  border-radius: 8px;
-  padding: 14px 0 12px;
-  overflow: hidden;
-
-  &::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    bottom: 0;
-    transform: translateX(-50%);
-    width: 75%;
-    height: 1px;
-    box-shadow: 0 0 40px 6px @gold;
-    pointer-events: none;
-  }
+  gap: 8px;
 }
 
 .mine-records__item {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  min-width: 0;
   cursor: pointer;
 }
 
-.mine-records__icon {
-  width: 48px;
-  height: 48px;
+.mine-records__tile {
+  width: 100%;
+  min-height: 98px;
+  padding: 8px 4px 10px;
+  box-sizing: border-box;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 8px;
-  line-height: 0;
-  flex-shrink: 0;
+  gap: 4px;
+  border-radius: 16px;
+  background: url(@/assets/img/mine/record_tile.png) center / 100% 100%
+    no-repeat;
+}
 
-  img {
-    width: 48px;
-    height: 48px;
-    object-fit: contain;
-    object-position: center;
-    display: block;
-  }
+.mine-records__icon {
+  width: 58%;
+  max-width: 64px;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  flex-shrink: 0;
 }
 
 .mine-records__label {
-  font-size: 11px;
+  font-size: 10px;
+  font-weight: 700;
   color: #fff;
   text-align: center;
-  line-height: 1.25;
+  line-height: 1.2;
   padding: 0 2px;
   word-break: break-word;
 }
 
-/* 菜单 */
 .mine-menu {
-  margin: 12px 10px 0;
-  background: linear-gradient(0deg, #1d1814 13.46%, #252020 100%);
-  border: 1px solid rgba(255, 162, 0, 0.45);
-  border-radius: 16px;
+  margin-top: 14px;
+  background: #512275;
+  border-radius: 25px;
   overflow: hidden;
 }
 
@@ -813,9 +795,9 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 14px;
+  padding: 14px 16px;
   cursor: pointer;
-  border-bottom: 1px solid rgba(255, 228, 181, 0.12);
+  border-bottom: 1px solid #250339;
 
   &:last-child {
     border-bottom: none;
@@ -835,47 +817,28 @@ export default {
   }
 }
 
-.mine-menu__icon-wrap {
+.mine-menu__icon {
   width: 22px;
   height: 22px;
+  object-fit: contain;
   flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
+  display: block;
 }
 
-/* Logout */
 .mine-logout {
-  padding: 18px 10px 0;
+  padding: 18px 0 4px;
 }
 
 .mine-logout__btn {
+  /* 样式走公共 .btn-3d-green */
   width: 100%;
-  height: 46px;
-  border: none;
-  border-radius: 23px;
-  background: @btn-grad;
-  color: #573900;
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  box-shadow: 0 4px 16px rgba(255, 163, 0, 0.28);
-  cursor: pointer;
-
-  &:active {
-    transform: scale(0.98);
-    opacity: 0.92;
-  }
 }
 
-/* Logout popup */
 .logout-popup {
   width: 300px;
-  background: #1f1c17 !important;
-  border: 1px solid @gold-deep !important;
-  border-radius: 12px !important;
+  background: #27033c !important;
+  border: 1px solid rgba(192, 132, 252, 0.45) !important;
+  border-radius: 16px !important;
 
   &__content {
     padding: 24px 20px 20px;
@@ -888,7 +851,7 @@ export default {
   &__title {
     font-size: 16px;
     font-weight: 700;
-    color: @gold-soft;
+    color: #fff;
     text-align: center;
     line-height: 1.4;
   }
@@ -913,13 +876,13 @@ export default {
 
     &--cancel {
       background: transparent;
-      color: @gold-deep;
-      border: 1px solid @gold-deep;
+      color: #c9b3ff;
+      border: 1px solid rgba(201, 179, 255, 0.5);
     }
 
     &--confirm {
-      background: @btn-grad;
-      color: #573900;
+      background: linear-gradient(180deg, #4ade80 0%, #16a34a 100%);
+      color: #fff;
     }
 
     &:active {

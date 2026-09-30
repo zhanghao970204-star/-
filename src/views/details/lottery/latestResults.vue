@@ -2,7 +2,7 @@
   <div
     class="content"
     style="
-      background: #1f1c17;
+      background: #1a0a28;
       min-height: 100vh;
       padding-top: 55px;
       color: #ffe4b5;
@@ -160,7 +160,7 @@
       style="
         max-width: 450px;
         width: 100%;
-        background: #15110a;
+        background: #12021a;
         position: fixed;
         bottom: 0;
         padding: 10px 0;
@@ -318,16 +318,16 @@ export default {
   font-weight: bold;
 }
 :deep(.van-nav-bar__content) {
-  background: #15110a !important;
-  color: #ffe4b5 !important;
+  background: @header-bg !important;
+  color: @wihte-color !important;
 }
 :deep(.van-nav-bar__title) {
-  color: #ffe4b5 !important;
+  color: @wihte-color !important;
 }
 :deep(.van-loading) {
   width: 100%;
   height: 100%;
   padding-top: 45%;
-  background-color: #1f1c17; /* 设置背景颜色 */
+  background-color: #1a0a28; /* 设置背景颜色 */
 }
 </style>

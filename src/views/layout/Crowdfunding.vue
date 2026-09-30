@@ -375,13 +375,13 @@ export default {
 
 <style lang="less" scoped>
 /* y7 黑金风格 */
-@bg: #1f1c17;
+@bg: #1a0a28;
 @gold: #ffa300;
 @gold-soft: #ffe4b5;
 @gold-deep: #e9a843;
-@muted: #a89b7c;
-@card: #15110a;
-@cell: #2a2418;
+@muted: #b8a8d4;
+@card: #12021a;
+@cell: #2d1545;
 
 .content {
   min-height: 100vh;
@@ -435,7 +435,7 @@ export default {
   color: @gold-soft;
 }
 .scroll_ranking {
-  background: linear-gradient(0deg, #1d1814 13.46%, #252020 100%);
+  background: linear-gradient(0deg, #1a0a28 13.46%, #2d1545 100%);
   border: 1px solid fade(@gold, 35%);
   border-radius: 12px;
   color: @muted;
