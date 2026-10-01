@@ -8,6 +8,8 @@ node_modules
 /adminweb
 /sql
 /har
+/flutter_app
+/flutter_bridge
 # local env files
 .env.local
 .env.*.local

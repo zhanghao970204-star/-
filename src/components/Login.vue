@@ -309,13 +309,19 @@
                 }}
               </button>
 
-              <!-- 仅登录页展示；谷歌登录逻辑先注释，改展示 Play as Guest，无点击 -->
+              <!-- 仅登录页：游客登录（deviceId 由 Flutter 注入） -->
               <div v-if="selectIndex === 0" class="sg">
                 <button
                   type="button"
                   class="login-popup__google button kj"
+                  :disabled="guestLoading"
+                  @click="handleGuestLogin"
                 >
-                  <span>Play as Guest</span>
+                  <span>{{
+                    guestLoading
+                      ? "..."
+                      : $lang.play_as_guest || "Play as Guest"
+                  }}</span>
                 </button>
                 <!--
                 <button
@@ -409,6 +415,7 @@ import Vcode from "vue3-puzzle-vcode";
 
 import {
   Login,
+  GuestLogin,
   Register,
   GetIsFbReport,
   GetInvitationID,
@@ -423,6 +430,8 @@ import { logoutIfReloginRequiredWithToken } from "@/utils/platformAuth";
 import md5 from "@/utils/md5";
 import { applyCountryLanguage } from "@/utils/locale";
 import { isUsAreaCode, isValidUsPhone } from "@/utils/phoneValidate";
+import { getClientId } from "@/utils/nativeDevice";
+import { reloadAppEntry, saveLoginSession } from "@/utils/guestAuth";
 export default {
   components: { Vcode },
   name: "Login",
@@ -490,6 +499,8 @@ export default {
       selectIndex: 0,
       // Google login
       googleLoading: false,
+      guestLoading: false,
+      _guestLoginAt: 0,
       showGoogleRegister: false,
       googlePhoneNo: "",
       googleThirdUuid: "",
@@ -815,7 +826,7 @@ export default {
       this.showCountryDrop = false;
       // Reload to apply the new language
       setTimeout(() => {
-        window.location.reload();
+        reloadAppEntry();
       }, 200);
     },
     goToActive() {
@@ -1066,10 +1077,9 @@ export default {
       const data = await Register(this.registerParames);
       if (data.status === "ok") {
         this.visible = false;
-        localStorage.setItem("token", data.content.accessToken); // 将 Token 保存到 localStorage
-        // localStorage.setItem('currency', data.content._currency) // 将 Token 保存到 localStorage
+        saveLoginSession(data.content || {}, { clearGuest: true });
         setTimeout(() => {
-          window.location.reload();
+          reloadAppEntry();
         }, 200);
         localStorage.setItem("isRegister", "isRegister");
         this.$emit("close-key");
@@ -1087,9 +1097,9 @@ export default {
       });
       if (data.status === "ok") {
         this.visible = false;
-        localStorage.setItem("token", data.content.accessToken);
+        saveLoginSession(data.content || {}, { clearGuest: true });
         setTimeout(() => {
-          window.location.reload();
+          reloadAppEntry();
         }, 200);
         this.$emit("close-key");
       } else {
@@ -1106,15 +1116,85 @@ export default {
       });
       if (data.status === "ok") {
         this.visible = false;
-        localStorage.setItem("token", data.content.accessToken); // 将 Token 保存到 localStorage
-        // localStorage.setItem('currency', data.content._currency) // 将 Token 保存到 localStorage
+        saveLoginSession(data.content || {}, { clearGuest: true });
         setTimeout(() => {
-          window.location.reload();
+          reloadAppEntry();
         }, 200);
         this.$emit("close-key");
       } else {
         this.apiError = data.msg || this.$lang.network_error || "Error";
         this.showFormToast(this.apiError);
+      }
+    },
+    /**
+     * 游客登录：POST /login/guestLogin
+     * 只需 uuid（+ 拦截器自动 platform/currency 等）；不要传 account/passwd
+     */
+    async handleGuestLogin() {
+      if (this.guestLoading) return;
+      if (!this.agree) {
+        this.showFormToast(this.$lang.login_txt22, "info");
+        return;
+      }
+      // 文档：同一 uuid+platform 10 秒内只能请求 1 次
+      const now = Date.now();
+      if (now - this._guestLoginAt < 10000) {
+        this.showFormToast(
+          this.$lang.guest_login_too_frequent ||
+            "Too frequent, please try again later",
+        );
+        return;
+      }
+
+      this.guestLoading = true;
+      this.apiError = "";
+      try {
+        console.log("[GuestLogin] start");
+        let uuid = (await getClientId(3000)) || "";
+        uuid = String(uuid).trim();
+        console.log("[GuestLogin] uuid=", uuid);
+        if (!uuid || uuid.length > 128) {
+          this.apiError =
+            this.$lang.guest_device_id_missing ||
+            "Device ID unavailable. Please open in the App.";
+          this.showFormToast(this.apiError);
+          return;
+        }
+
+        const payload = { uuid };
+        const inviteId = localStorage.getItem("id");
+        if (inviteId) {
+          payload.id = inviteId;
+          const fbExpand = localStorage.getItem("fbExpand");
+          if (fbExpand) payload.fbExpand = fbExpand;
+        }
+        const invitationCode = localStorage.getItem("invitationCode");
+        if (invitationCode) payload.invitationCode = invitationCode;
+
+        this._guestLoginAt = Date.now();
+        console.log("[GuestLogin] request", payload);
+        const data = await GuestLogin(payload);
+        console.log("[GuestLogin] response", data);
+        if (data.status === "ok" && data.content && data.content.accessToken) {
+          this.visible = false;
+          saveLoginSession(data.content, { uuid });
+          setTimeout(() => {
+            reloadAppEntry();
+          }, 200);
+          this.$emit("close-key");
+        } else {
+          this.apiError = data.msg || this.$lang.network_error || "Error";
+          this.showFormToast(this.apiError);
+        }
+      } catch (e) {
+        console.error("[GuestLogin] error:", e);
+        this.apiError =
+          (e && (e.message || e.msg)) ||
+          this.$lang.network_error ||
+          "Network error";
+        this.showFormToast(this.apiError);
+      } finally {
+        this.guestLoading = false;
       }
     },
     // 登录
@@ -1293,12 +1373,12 @@ export default {
         }
         const data = await GoogleRegister(params);
         if (data.status === "ok" && data.content) {
-          localStorage.setItem("token", data.content.accessToken);
+          saveLoginSession(data.content, { clearGuest: true });
           localStorage.removeItem("googleToUrl");
           this.showGoogleRegister = false;
           localStorage.setItem("isRegister", "isRegister");
           setTimeout(() => {
-            window.location.reload();
+            reloadAppEntry();
           }, 200);
         } else {
           this.googleRegError = data.msg || this.$lang.google_register_failed;
@@ -1796,12 +1876,13 @@ export default {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  cursor: default;
-  pointer-events: none;
+  cursor: pointer;
+  pointer-events: auto;
 
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+    pointer-events: none;
   }
 }
 

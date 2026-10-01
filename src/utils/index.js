@@ -2,16 +2,15 @@ import axios from "axios";
 import { getFingerprint } from "@/utils/common";
 import bus from "@/utils/eventBus";
 import router from "../router";
-import {
-  emitHeaderRefresh,
-  shouldRefreshHeader,
-} from "@/utils/headerRefresh";
+import { emitHeaderRefresh, shouldRefreshHeader } from "@/utils/headerRefresh";
+import { resolveClientIdSync } from "@/utils/nativeDevice";
+import { clearGuestFlags } from "@/utils/guestAuth";
 // 创建 axios 实例，将来对创建出来的实例，进行自定义配置
 // 好处：不会污染原始的 axios 实例
 const instance = axios.create({
   // 基地址
   // baseURL: window.location.origin.includes("192.168")
-  //   ? "https://us.ot.game/a/"
+  //   ? "ttps://us.luckyhubx.cc/a/"
   //   : window.location.origin + "/a/",
   baseURL: "https://us.luckyhubx.cc/a/",
   //   超时时间
@@ -26,15 +25,14 @@ const instance = axios.create({
     (data, headers) => {
       // 检测是否为 POST 请求
       if (headers["Content-Type"] === "application/json") {
-        // console.log(window.fingerprint, '-')
-        // 获取指纹（异步操作）
-        // 添加固定参数
+        // 优先级：Flutter uuid → Vue 本地 uuid
+        const clientId = resolveClientIdSync() || window.fingerprint || "";
         data = {
           mode: 2, // 固定模式
           code: 2,
           timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, //客户端时区
           platform: localStorage.getItem("platform") || "usbet", //平台名称
-          uuid: window.fingerprint || "", // 客户端的uuid ，网页端要自己生成
+          uuid: clientId,
           online: true, //是否在线
           currency: localStorage.getItem("currency") || "usd", //币种
           isWap: true, //是否手机端
@@ -52,8 +50,11 @@ const instance = axios.create({
 // 请求拦截器
 instance.interceptors.request.use(
   async (config) => {
-    // 指纹：有缓存立刻用；没有则后台算，不阻塞本轮请求（避免首屏 API 全卡 FingerprintJS）
-    if (!window.fingerprint) {
+    // 设备标识：Flutter uuid → Vue 本地指纹
+    const clientId = resolveClientIdSync();
+    if (clientId) {
+      window.fingerprint = clientId;
+    } else if (!window.fingerprint) {
       const cached =
         typeof localStorage !== "undefined"
           ? localStorage.getItem("ot_fp_vid")
@@ -62,7 +63,7 @@ instance.interceptors.request.use(
         window.fingerprint = cached;
       } else if (!window.__fpPromise) {
         window.__fpPromise = getFingerprint().then((id) => {
-          if (id) window.fingerprint = id;
+          if (id && !resolveClientIdSync()) window.fingerprint = id;
           return id;
         });
       }
@@ -84,6 +85,7 @@ instance.interceptors.response.use(
     // 对响应数据做点什么
     if (response.data.status === "need_login") {
       localStorage.removeItem("token");
+      clearGuestFlags();
       const currentPath =
         router.currentRoute &&
         (router.currentRoute.value

@@ -18,20 +18,50 @@ import toast from './utils/toast'
 import { getFingerprint } from '@/utils/common'
 import { readCountryCode } from '@/utils/country'
 import { resetPageScrollAfterRoute } from '@/utils/scrollReset'
+import {
+  resolveClientIdSync,
+  getClientId,
+  peekFlutterUuid,
+} from '@/utils/nativeDevice'
+import VConsole from 'vconsole'
 
-// 尽早后台预热指纹，不阻塞首屏；有缓存时立刻可用
+// App / 调试：打开 vConsole（?vconsole=0 可关）
+;(function initVConsole() {
+  try {
+    const q = new URLSearchParams(location.search || '')
+    if (q.get('vconsole') === '0') return
+    // eslint-disable-next-line no-new
+    new VConsole({ theme: 'dark' })
+  } catch (e) {
+    /* ignore */
+  }
+})()
+
+// 传后端 uuid：Flutter uuid → Vue 本地指纹
 ;(function warmFingerprint() {
   try {
+    const id = resolveClientIdSync()
+    if (id) {
+      window.fingerprint = id
+      if (peekFlutterUuid()) return
+    }
     const cached = localStorage.getItem('ot_fp_vid')
-    if (cached) {
+    if (cached && !window.fingerprint) {
       window.fingerprint = cached
-      return
     }
   } catch (e) {
     /* ignore */
   }
-  getFingerprint().then((id) => {
-    if (id) window.fingerprint = id
+  getClientId(1500).then((id) => {
+    if (id) {
+      window.fingerprint = id
+      return
+    }
+    getFingerprint().then((fp) => {
+      if (fp && !peekFlutterUuid()) {
+        window.fingerprint = fp
+      }
+    })
   })
 })()
 

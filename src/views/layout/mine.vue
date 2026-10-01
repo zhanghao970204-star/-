@@ -228,6 +228,7 @@
 
 <script>
 import { Init, GameBalanceList, Logout, VipInit } from "@/api/common";
+import { clearGuestFlags } from "@/utils/guestAuth";
 import { avatarImg } from "@/utils/avatarAssets";
 import { resetPageScroll } from "@/utils/scrollReset";
 
@@ -419,6 +420,7 @@ export default {
         const data = await Logout();
         if (data.status === "ok") {
           localStorage.removeItem("token");
+          clearGuestFlags();
           this.$jumpTo("/home", {}, { replace: true });
           setTimeout(() => {
             window.location.reload();

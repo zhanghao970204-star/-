@@ -5,6 +5,14 @@ import { normalizeCountryCode } from "@/utils/country";
 export function Login(data) {
   return request.post("/login/login", data);
 }
+/** 游客登录 POST /login/guestLogin（只需 uuid；platform/currency 由拦截器带） */
+export function GuestLogin(data) {
+  return request.post("/login/guestLogin", data);
+}
+/** 游客升级绑定 POST /profile/bindGuest（必须已登录且 isGuest=true） */
+export function BindGuest(data) {
+  return request.post("/profile/bindGuest", data);
+}
 export function Register(data) {
   return request.post("/register/register", data);
 }

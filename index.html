@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content"
     />
     <meta
       name="description"
@@ -50,6 +50,39 @@
     />
     <link rel="manifest" href="/manifest.json" />
     <title>BISONFUN</title>
+    <!-- Flutter 注入 uuid：window.setNativeUuid('...') -->
+    <script>
+      (function () {
+        window.__NATIVE_UUID__ = window.__NATIVE_UUID__ || "";
+        function notify(id) {
+          if (id) window.fingerprint = id;
+          if (typeof window.__onNativeClientId === "function") {
+            try {
+              window.__onNativeClientId(id);
+            } catch (e) {}
+          }
+        }
+        window.setNativeUuid = function (uuid) {
+          uuid = uuid == null ? "" : String(uuid).trim();
+          if (!uuid) return "";
+          window.__NATIVE_UUID__ = uuid;
+          window.nativeUuid = uuid;
+          window.flutterUuid = uuid;
+          notify(uuid);
+          return uuid;
+        };
+        // 兼容旧名：按 uuid 处理
+        window.setNativeDeviceId = function (id) {
+          return window.setNativeUuid(id);
+        };
+        window.setNativeClientIds = function (payload) {
+          payload = payload || {};
+          var uuid = payload.uuid || payload.deviceId || "";
+          if (uuid) return window.setNativeUuid(uuid);
+          return window.__NATIVE_UUID__ || "";
+        };
+      })();
+    </script>
     <meta
       name="keywords"
       content="BISONFUN,BISONFUN, BISONFUN,pg,slots,mini,casino,sport,fishing,jili,fc,spade,spribe,jdb,tada,cq9"
