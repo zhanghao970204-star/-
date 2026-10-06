@@ -1285,7 +1285,7 @@ export default {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    background: #512275;
+    background: linear-gradient(180deg, #7400ae 0%, #53027b 100%);
     box-sizing: border-box;
     /* 与分类栏同色，避免压住 Tab 文字 */
     pointer-events: auto;
@@ -1351,7 +1351,7 @@ export default {
     border: none;
     padding: 0 6px 0 0;
     box-sizing: border-box;
-    background: #512275;
+    background: linear-gradient(180deg, #7400ae 0%, #53027b 100%);
     overflow: hidden;
   }
 

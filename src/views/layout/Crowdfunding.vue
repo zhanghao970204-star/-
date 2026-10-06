@@ -379,7 +379,7 @@ export default {
 @gold: #ffa300;
 @gold-soft: #ffe4b5;
 @gold-deep: #e9a843;
-@muted: #b8a8d4;
+@muted: #d7a2fa;
 @card: #12021a;
 @cell: #2d1545;
 

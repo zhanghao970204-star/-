@@ -23,7 +23,7 @@
                 @click="copyText(1)"
                 class="m-l-10 content-c3--copy"
                 width="20px"
-                src="../../../assets/img/drawer/drawer_copy.png"
+                src="@/assets/img/mine/copy.png"
               />
             </div>
             <p class="m-t-5">
@@ -33,7 +33,7 @@
                 @click="copyText(2)"
                 class="m-l-5 content-c3--copy"
                 width="11px"
-                src="../../../assets/img/drawer/drawer_copy.png"
+                src="@/assets/img/mine/copy.png"
               />
             </p>
           </div>
@@ -41,7 +41,7 @@
         <div>
           <img
             class="m-t-20"
-            src="../../../assets/img/share/share_list2.png"
+            src="../../../assets/img/share/share-fx.png"
             style="width: 100%"
           />
         </div>

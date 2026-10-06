@@ -5,7 +5,9 @@
       <button class="pwd-header__back" @click="$router.go(-1)">
         <van-icon name="arrow-left" size="20" color="var(--wihte-color)" />
       </button>
-      <h1 class="pwd-header__title">{{ $lang.passwordLogin_title || 'CHANGE PASSWORD' }}</h1>
+      <h1 class="pwd-header__title">
+        {{ $lang.passwordLogin_title || "CHANGE PASSWORD" }}
+      </h1>
       <div class="pwd-header__spacer"></div>
     </header>
     <div class="pwd-header-pad"></div>
@@ -13,7 +15,10 @@
     <div class="pwd-form">
       <!-- Old Password -->
       <div class="pwd-field">
-        <div class="pwd-field__input" :class="{ 'pwd-field__input--error': error }">
+        <div
+          class="pwd-field__input"
+          :class="{ 'pwd-field__input--error': error }"
+        >
           <div class="pwd-field__icon">
             <van-icon name="lock" size="18" color="#b8a8d4" />
           </div>
@@ -24,7 +29,11 @@
             class="pwd-field__text"
           />
           <button class="pwd-field__toggle" @click="isSee = !isSee">
-            <van-icon :name="isSee ? 'eye-o' : 'closed-eye'" size="18" :color="isSee ? '#ffa300' : '#b8a8d4'" />
+            <van-icon
+              :name="isSee ? 'eye-o' : 'closed-eye'"
+              size="18"
+              :color="isSee ? '#ffa300' : '#b8a8d4'"
+            />
           </button>
         </div>
         <p v-if="errorText" class="pwd-field__error">{{ errorText }}</p>
@@ -32,7 +41,10 @@
 
       <!-- New Password -->
       <div class="pwd-field">
-        <div class="pwd-field__input" :class="{ 'pwd-field__input--error': error2 }">
+        <div
+          class="pwd-field__input"
+          :class="{ 'pwd-field__input--error': error2 }"
+        >
           <div class="pwd-field__icon">
             <van-icon name="lock" size="18" color="#b8a8d4" />
           </div>
@@ -43,7 +55,11 @@
             class="pwd-field__text"
           />
           <button class="pwd-field__toggle" @click="isSee2 = !isSee2">
-            <van-icon :name="isSee2 ? 'eye-o' : 'closed-eye'" size="18" :color="isSee2 ? '#ffa300' : '#b8a8d4'" />
+            <van-icon
+              :name="isSee2 ? 'eye-o' : 'closed-eye'"
+              size="18"
+              :color="isSee2 ? '#ffa300' : '#b8a8d4'"
+            />
           </button>
         </div>
         <p v-if="errorText2" class="pwd-field__error">{{ errorText2 }}</p>
@@ -51,7 +67,10 @@
 
       <!-- Confirm Password -->
       <div class="pwd-field">
-        <div class="pwd-field__input" :class="{ 'pwd-field__input--error': error3 }">
+        <div
+          class="pwd-field__input"
+          :class="{ 'pwd-field__input--error': error3 }"
+        >
           <div class="pwd-field__icon">
             <van-icon name="passed" size="18" color="#b8a8d4" />
           </div>
@@ -62,7 +81,11 @@
             class="pwd-field__text"
           />
           <button class="pwd-field__toggle" @click="isSee3 = !isSee3">
-            <van-icon :name="isSee3 ? 'eye-o' : 'closed-eye'" size="18" :color="isSee3 ? '#ffa300' : '#b8a8d4'" />
+            <van-icon
+              :name="isSee3 ? 'eye-o' : 'closed-eye'"
+              size="18"
+              :color="isSee3 ? '#ffa300' : '#b8a8d4'"
+            />
           </button>
         </div>
         <p v-if="errorText3" class="pwd-field__error">{{ errorText3 }}</p>
@@ -71,83 +94,88 @@
       <p class="pwd-form__tip">{{ $lang.passwordLogin_txt4 }}</p>
 
       <button class="pwd-form__submit" @click="submit">
-        {{ $lang.Enviar || 'Submit' }}
+        {{ $lang.Enviar || "Submit" }}
       </button>
     </div>
   </div>
 </template>
 
 <script>
-import { ChangeLoginPwd } from '@/api/common'
-import md5 from '@/utils/md5'
+import { ChangeLoginPwd } from "@/api/common";
+import md5 from "@/utils/md5";
 
 export default {
-  name: 'PasswordLogin',
+  name: "PasswordLogin",
   data() {
     return {
-      oldLoginPwd: '',
-      newLoginPwd: '',
-      confirmPwd: '',
+      oldLoginPwd: "",
+      newLoginPwd: "",
+      confirmPwd: "",
       error: false,
       error2: false,
       error3: false,
-      errorText: '',
-      errorText2: '',
-      errorText3: '',
+      errorText: "",
+      errorText2: "",
+      errorText3: "",
       isSee: false,
       isSee2: false,
-      isSee3: false
-    }
+      isSee3: false,
+    };
   },
   methods: {
     async submit() {
-      this.error = false
-      this.error2 = false
-      this.error3 = false
-      this.errorText = ''
-      this.errorText2 = ''
-      this.errorText3 = ''
+      this.error = false;
+      this.error2 = false;
+      this.error3 = false;
+      this.errorText = "";
+      this.errorText2 = "";
+      this.errorText3 = "";
 
       if (!this.oldLoginPwd) {
-        this.error = true
-        this.errorText = this.$lang.passwordLogin_txt5 || 'Enter the old password'
+        this.error = true;
+        this.errorText =
+          this.$lang.passwordLogin_txt5 || "Enter the old password";
       }
       if (!this.newLoginPwd) {
-        this.error2 = true
-        this.errorText2 = this.$lang.passwordLogin_txt6 || 'Enter the new password'
+        this.error2 = true;
+        this.errorText2 =
+          this.$lang.passwordLogin_txt6 || "Enter the new password";
       } else if (this.oldLoginPwd === this.newLoginPwd) {
-        this.error2 = true
-        this.errorText2 = this.$lang.passwordLogin_txt7 || 'The new password is the same as the old one'
+        this.error2 = true;
+        this.errorText2 =
+          this.$lang.passwordLogin_txt7 ||
+          "The new password is the same as the old one";
       }
       if (!this.confirmPwd) {
-        this.error3 = true
-        this.errorText3 = this.$lang.pwdConfirm_ph || 'Confirm new password'
+        this.error3 = true;
+        this.errorText3 = this.$lang.pwdConfirm_ph || "Confirm new password";
       } else if (this.newLoginPwd !== this.confirmPwd) {
-        this.error3 = true
-        this.errorText3 = this.$lang.pwdConfirm_mismatch || 'Passwords do not match'
+        this.error3 = true;
+        this.errorText3 =
+          this.$lang.pwdConfirm_mismatch || "Passwords do not match";
       }
 
-      if (this.error || this.error2 || this.error3) return
+      if (this.error || this.error2 || this.error3) return;
 
       const data = await ChangeLoginPwd({
         oldLoginPwd: md5(this.oldLoginPwd),
-        newLoginPwd: md5(this.newLoginPwd)
-      })
-      if (data.status === 'ok') {
-        this.$jumpTo('/passwordSuccess')
+        newLoginPwd: md5(this.newLoginPwd),
+      });
+      if (data.status === "ok") {
+        this.$jumpTo("/passwordSuccess");
       } else {
-        this.$toast({ message: data.msg, icon: 'cross' })
+        this.$toast({ message: data.msg, icon: "cross" });
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style lang="less" scoped>
 @bg: #1a0a28;
 @card: #12021a;
 @neon: #ffa300;
-@muted: #b8a8d4;
+@muted: #d7a2fa;
 @border: rgba(255, 162, 0, 0.45);
 
 .pwd-page {
@@ -234,7 +262,9 @@ export default {
     border-radius: 10px;
     padding: 0 14px;
     height: 50px;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s;
 
     &:focus-within {
       border-color: @neon;

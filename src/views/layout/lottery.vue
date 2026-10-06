@@ -55,7 +55,7 @@
               {{ item.currIssueNo }}
             </p>
             <p class="lot-countdown-badge">
-              {{ item.countdown || '00:00' }}
+              {{ item.countdown || "00:00" }}
             </p>
           </div>
         </div>
@@ -93,7 +93,7 @@
             </div>
             <div class="lottery-tab2--i2-x">
               <div class="lottery-tab2--i2">
-                {{ item3.countdown || '00:00' }}
+                {{ item3.countdown || "00:00" }}
               </div>
             </div>
             <img class="lottery-tab2--i8" :src="item3.iconUrl" />
@@ -217,7 +217,7 @@
                   'bnb16x660',
                   'bnb16x6180',
                   'bnb16x6300',
-                  'bnb16x6600'
+                  'bnb16x6600',
                 ].includes(item.lotteryType)
               "
             >
@@ -250,7 +250,7 @@
                 'bnb16x660',
                 'bnb16x6180',
                 'bnb16x6300',
-                'bnb16x6600'
+                'bnb16x6600',
               ].includes(item.lotteryType)
             "
             class="d-flex"
@@ -263,10 +263,7 @@
             >
               {{ item2 }}
             </p>
-            <p
-              class="lot-bin-btn"
-              @click="goToBin(item.resultBasedOn)"
-            >
+            <p class="lot-bin-btn" @click="goToBin(item.resultBasedOn)">
               {{ $lang.common_txt181 }}
             </p>
           </div>
@@ -277,7 +274,7 @@
                 <p
                   class="lot-ball"
                   v-for="(item2, index) in JSON.parse(
-                    item.lotteryResult
+                    item.lotteryResult,
                   ).winning.split(',')"
                   :key="index"
                 >
@@ -291,7 +288,7 @@
                 <p
                   class="lot-ball"
                   v-for="(item2, index) in JSON.parse(
-                    item.lotteryResult
+                    item.lotteryResult,
                   ).machine.split(',')"
                   :key="index"
                 >
@@ -315,7 +312,7 @@
               'bnb16x660',
               'bnb16x6180',
               'bnb16x6300',
-              'bnb16x6600'
+              'bnb16x6600',
             ].includes(item.lotteryType)
           "
         >
@@ -374,39 +371,39 @@ import {
   GetBRDrawHistory,
   GetServerDateTime,
   GetHomeWinningLottoList,
-  FreshIssueInfo
-} from '@/api/common'
-import { avatarImg } from '@/utils/avatarAssets'
-import { lotteryImg } from '@/utils/lotteryAssets'
+  FreshIssueInfo,
+} from "@/api/common";
+import { avatarImg } from "@/utils/avatarAssets";
+import { lotteryImg } from "@/utils/lotteryAssets";
 export default {
-  name: 'Lottery',
+  name: "Lottery",
   data() {
     return {
       lotTabList: [
         {
-          img: require('@/assets/img/lottery/xxx_lot6.png'),
-          name: this.$lang.common_txt189
+          img: require("@/assets/img/lottery/xxx_lot6.png"),
+          name: this.$lang.common_txt189,
         },
         {
-          img: require('@/assets/img/lottery/xx_lot.png'),
-          name: this.$lang.common_txt190
+          img: require("@/assets/img/lottery/xx_lot.png"),
+          name: this.$lang.common_txt190,
         },
         {
-          img: require('@/assets/img/lottery/xxx_lot2.png'),
-          name: this.$lang.common_txt191
+          img: require("@/assets/img/lottery/xxx_lot2.png"),
+          name: this.$lang.common_txt191,
         },
         {
-          img: require('@/assets/img/lottery/xxx_lot3.png'),
-          name: 'TRON'
+          img: require("@/assets/img/lottery/xxx_lot3.png"),
+          name: "TRON",
         },
         {
-          img: require('@/assets/img/lottery/xxx_lot4.png'),
-          name: 'ETH'
+          img: require("@/assets/img/lottery/xxx_lot4.png"),
+          name: "ETH",
         },
         {
-          img: require('@/assets/img/lottery/xxx_lot5.png'),
-          name: 'BNB'
-        }
+          img: require("@/assets/img/lottery/xxx_lot5.png"),
+          name: "BNB",
+        },
       ],
       scrollTop: 0,
       timer2: null,
@@ -423,46 +420,46 @@ export default {
         this.$lang.common_txt107,
         this.$lang.common_txt108,
         this.$lang.common_txt109,
-        this.$lang.common_txt110
+        this.$lang.common_txt110,
       ],
       MenList: [
         {
-          img: require('@/assets/img/home/men_1.png'),
-          name: this.$lang.common_txt138
+          img: require("@/assets/img/home/men_1.png"),
+          name: this.$lang.common_txt138,
         },
         {
-          img: require('@/assets/img/home/men_2.png'),
-          name: this.$lang.common_txt139
-        }
+          img: require("@/assets/img/home/men_2.png"),
+          name: this.$lang.common_txt139,
+        },
       ],
       ListLot: [
         {
-          img: require('@/assets/img/lottery/lot_ico1.png'),
+          img: require("@/assets/img/lottery/lot_ico1.png"),
           cot1: this.$lang.common_txt149,
-          cot2: this.$lang.common_txt150
+          cot2: this.$lang.common_txt150,
         },
         {
-          img: require('@/assets/img/lottery/lot_ico2.png'),
+          img: require("@/assets/img/lottery/lot_ico2.png"),
           cot1: this.$lang.common_txt151,
-          cot2: this.$lang.common_txt152
+          cot2: this.$lang.common_txt152,
         },
         {
-          img: require('@/assets/img/lottery/lot_ico3.png'),
+          img: require("@/assets/img/lottery/lot_ico3.png"),
           cot1: this.$lang.common_txt153,
-          cot2: this.$lang.common_txt154
-        }
+          cot2: this.$lang.common_txt154,
+        },
       ],
-      gameValue: '',
+      gameValue: "",
       showPopup3: false,
       pList: [],
       dayList: [
-        { id: 7, name: 'Sun' },
-        { id: 1, name: 'Mon' },
-        { id: 2, name: 'Tue' },
-        { id: 3, name: 'Wed' },
-        { id: 4, name: 'Thu' },
-        { id: 5, name: 'Fri' },
-        { id: 6, name: 'Sat' }
+        { id: 7, name: "Sun" },
+        { id: 1, name: "Mon" },
+        { id: 2, name: "Tue" },
+        { id: 3, name: "Wed" },
+        { id: 4, name: "Thu" },
+        { id: 5, name: "Fri" },
+        { id: 6, name: "Sat" },
       ],
       SelectiTab: 0,
       SelectiTab2: 0,
@@ -471,10 +468,10 @@ export default {
       lotList2: [],
       copyLotList2: [],
       tabList: [
-        { icon: require('@/assets/img/lottery/tab4.png') },
-        { icon: require('@/assets/img/lottery/tab1.png') },
-        { icon: require('@/assets/img/lottery/tab2.png') },
-        { icon: require('@/assets/img/lottery/tab3.png') }
+        { icon: require("@/assets/img/lottery/tab4.png") },
+        { icon: require("@/assets/img/lottery/tab1.png") },
+        { icon: require("@/assets/img/lottery/tab2.png") },
+        { icon: require("@/assets/img/lottery/tab3.png") },
       ],
       timer: null,
       lastList: [],
@@ -483,230 +480,230 @@ export default {
       globalTimer: null, // 全局定时器
       refreshing: new Map(), // 存储正在刷新的彩票类型（key: lotteryType, value: boolean）
       selectLotIndex: 0,
-      hsTime2: null
-    }
+      hsTime2: null,
+    };
   },
   computed: {
     fullList() {
-      return this.pList.concat(this.pList[0])
-    }
+      return this.pList.concat(this.pList[0]);
+    },
   },
   async mounted() {
-    await this.GetServerDateTime()
-    await this.MainInit()
-    this.GetHomeWinningLottoList()
-    this.GetBRDrawHistory()
-    this.startScroll()
-    this.startGlobalTimer()
+    await this.GetServerDateTime();
+    await this.MainInit();
+    this.GetHomeWinningLottoList();
+    this.GetBRDrawHistory();
+    this.startScroll();
+    this.startGlobalTimer();
   },
   beforeUnmount() {
-    this.stopScroll()
+    this.stopScroll();
     if (this.globalTimer) {
-      clearInterval(this.globalTimer)
-      this.globalTimer = null
+      clearInterval(this.globalTimer);
+      this.globalTimer = null;
     }
   },
   methods: {
     avatarImg,
     lotteryImg,
     goToBin(v) {
-      window.open(v, '_blank')
+      window.open(v, "_blank");
     },
     // 启动全局定时器
     startGlobalTimer() {
       if (this.globalTimer) {
-        clearInterval(this.globalTimer)
+        clearInterval(this.globalTimer);
       }
       // 立即更新一次
-      this.updateAllCountdowns()
+      this.updateAllCountdowns();
       // 每秒更新一次
       this.globalTimer = setInterval(() => {
         if (this.dateStr) {
-          this.dateStr += 1000
+          this.dateStr += 1000;
         }
-        this.updateAllCountdowns()
-      }, 1000)
+        this.updateAllCountdowns();
+      }, 1000);
     },
 
     // 更新所有倒计时
     updateAllCountdowns() {
-      if (!this.dateStr) return
+      if (!this.dateStr) return;
 
       // 更新数字彩票列表
       this.lotList.forEach((item) => {
-        this.updateSingleCountdown(item)
-      })
+        this.updateSingleCountdown(item);
+      });
 
       // 更新货币彩票列表
       this.lotList2.forEach((item) => {
-        this.updateSingleCountdown(item)
-      })
+        this.updateSingleCountdown(item);
+      });
     },
 
     // 更新单个倒计时
     updateSingleCountdown(item) {
       // 无效数据处理
       if (isNaN(item.currBetEndTime) || !this.dateStr) {
-        item.countdown = '00:00'
-        return
+        item.countdown = "00:00";
+        return;
       }
 
-      const endTime = item.currBetEndTime
-      const currentTime = this.dateStr
-      const countdown = endTime - currentTime
+      const endTime = item.currBetEndTime;
+      const currentTime = this.dateStr;
+      const countdown = endTime - currentTime;
 
       // 倒计时未结束
       if (countdown > 0) {
-        item.countdown = this.formatCountdown(countdown)
-        return
+        item.countdown = this.formatCountdown(countdown);
+        return;
       }
 
       // 倒计时已结束且不在刷新中
       if (countdown <= 0 && !this.refreshing.has(item.lotteryType)) {
-        item.countdown = '00:00'
-        this.refreshSingleItem(item) // 只刷新当前过期项
+        item.countdown = "00:00";
+        this.refreshSingleItem(item); // 只刷新当前过期项
       }
     },
 
     // 只刷新指定的过期项
     async refreshSingleItem(item) {
-      const { lotteryType } = item
+      const { lotteryType } = item;
       // 标记为正在刷新
-      this.refreshing.set(lotteryType, true)
+      this.refreshing.set(lotteryType, true);
 
       try {
-        let old = Math.floor(Date.now() / 1000)
+        let old = Math.floor(Date.now() / 1000);
         // 1. 先获取最新服务器时间（确保时间准确性）
-        await this.GetServerDateTime()
+        await this.GetServerDateTime();
         // 2. 只获取当前彩票类型的最新期数信息
-        const result = await FreshIssueInfo({ lotteryType })
-        let olds = Math.floor(Date.now() / 1000)
-        this.hsTime2 = olds - old
+        const result = await FreshIssueInfo({ lotteryType });
+        let olds = Math.floor(Date.now() / 1000);
+        this.hsTime2 = olds - old;
         // 3. 验证返回数据并更新
-        if (result && result.status === 'ok' && result.content) {
-          const { currBetEndTime, currIssueNo } = result.content
-          const newEndTime = new Date(currBetEndTime).getTime()
+        if (result && result.status === "ok" && result.content) {
+          const { currBetEndTime, currIssueNo } = result.content;
+          const newEndTime = new Date(currBetEndTime).getTime();
 
           if (!isNaN(newEndTime)) {
             // 更新当前项的结束时间和期号
-            item.currBetEndTime = newEndTime
-            item.currIssueNo = currIssueNo // 同步更新期号
+            item.currBetEndTime = newEndTime;
+            item.currIssueNo = currIssueNo; // 同步更新期号
             // 立即计算新的倒计时
-            this.updateSingleCountdown(item)
+            this.updateSingleCountdown(item);
           }
         }
       } catch (error) {
         // console.error(`刷新${item.lotteryName}失败:`, error)
-        console.log(error)
+        console.log(error);
       } finally {
         // 无论成功失败，都移除刷新标记
-        this.refreshing.delete(lotteryType)
+        this.refreshing.delete(lotteryType);
       }
     },
 
     // 格式化倒计时（小时为00时不显示，有值时显示）
     // 格式化倒计时（小时为00时不显示，有值时显示；1分钟时从59秒开始倒计时）
     formatCountdown(ms) {
-      const totalSeconds = Math.floor(ms / 1000) // 总秒数（向下取整，避免毫秒导致的误差）
-      const days = Math.floor(totalSeconds / 86400)
-      const hours = Math.floor((totalSeconds % 86400) / 3600)
-      const minutes = Math.floor((totalSeconds % 3600) / 60)
-      const seconds = totalSeconds % 60 // 修正：直接取余，无需额外加减（totalSeconds已经是向下取整的总秒数）
+      const totalSeconds = Math.floor(ms / 1000); // 总秒数（向下取整，避免毫秒导致的误差）
+      const days = Math.floor(totalSeconds / 86400);
+      const hours = Math.floor((totalSeconds % 86400) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60; // 修正：直接取余，无需额外加减（totalSeconds已经是向下取整的总秒数）
 
-      const parts = []
+      const parts = [];
 
       // 处理天数
       if (days > 0) {
-        parts.push(`${days}d`)
+        parts.push(`${days}d`);
       }
 
       // 处理小时（只有当小时大于0时才显示，且补零为两位）
       if (hours > 0) {
-        parts.push(hours.toString().padStart(2, '0'))
+        parts.push(hours.toString().padStart(2, "0"));
       }
 
       // 处理分钟（始终显示，补零为两位）
-      parts.push(minutes.toString().padStart(2, '0'))
+      parts.push(minutes.toString().padStart(2, "0"));
 
       // 处理秒数（始终显示，补零为两位；1分钟时自然显示59秒）
-      parts.push(seconds.toString().padStart(2, '0'))
+      parts.push(seconds.toString().padStart(2, "0"));
 
-      return parts.join(':')
+      return parts.join(":");
     },
 
     // 获取服务器时间
     async GetServerDateTime() {
       try {
-        const data = await GetServerDateTime()
-        const timeStr = data.content.dateStr
-        const newDateStr = new Date(timeStr).getTime()
+        const data = await GetServerDateTime();
+        const timeStr = data.content.dateStr;
+        const newDateStr = new Date(timeStr).getTime();
         if (!isNaN(newDateStr)) {
-          this.dateStr = newDateStr
+          this.dateStr = newDateStr;
         }
       } catch (error) {
-        console.error('获取服务器时间失败：', error)
+        console.error("获取服务器时间失败：", error);
       }
     },
 
     // 其他业务方法
     getLotC(i) {
-      this.selectLotIndex = i
+      this.selectLotIndex = i;
       if (i === 3) {
         this.lotList2 = this.copyLotList2.filter((i) =>
-          ['tron16x660', 'tron16x6180', 'tron16x6300', 'tron16x6600'].includes(
-            i.lotteryType
-          )
-        )
+          ["tron16x660", "tron16x6180", "tron16x6300", "tron16x6600"].includes(
+            i.lotteryType,
+          ),
+        );
       } else if (i === 4) {
         this.lotList2 = this.copyLotList2.filter((i) =>
-          ['eth16x660', 'eth16x6180', 'eth16x6300', 'eth16x6600'].includes(
-            i.lotteryType
-          )
-        )
+          ["eth16x660", "eth16x6180", "eth16x6300", "eth16x6600"].includes(
+            i.lotteryType,
+          ),
+        );
       } else if (i === 5) {
         this.lotList2 = this.copyLotList2.filter((i) =>
-          ['bnb16x660', 'bnb16x6180', 'bnb16x6300', 'bnb16x6600'].includes(
-            i.lotteryType
-          )
-        )
+          ["bnb16x660", "bnb16x6180", "bnb16x6300", "bnb16x6600"].includes(
+            i.lotteryType,
+          ),
+        );
       } else {
-        this.lotList2 = this.copyLotList2.filter((i) => i.freqType === 'H')
+        this.lotList2 = this.copyLotList2.filter((i) => i.freqType === "H");
       }
     },
 
     getToalMout() {
       return this.$formatNumberWithCommas(
-        this.pList.reduce((sum, item) => sum + parseInt(item.amount), 0) * 878
-      )
+        this.pList.reduce((sum, item) => sum + parseInt(item.amount), 0) * 878,
+      );
     },
 
     startScroll() {
       this.timer2 = setInterval(() => {
-        this.scrollTop--
+        this.scrollTop--;
         if (Math.abs(this.scrollTop) >= this.pList.length * this.itemHeight) {
-          this.scrollTop = 0
+          this.scrollTop = 0;
         }
-      }, 45)
+      }, 45);
     },
 
     stopScroll() {
-      clearInterval(this.timer2)
+      clearInterval(this.timer2);
     },
 
     getFixedAvatarIndex(item, index) {
-      const uniqueKey = item.id || index
-      return uniqueKey % 8
+      const uniqueKey = item.id || index;
+      return uniqueKey % 8;
     },
 
     async GetHomeWinningLottoList() {
-      const data = await GetHomeWinningLottoList()
-      this.pList = data.content.dataList
+      const data = await GetHomeWinningLottoList();
+      this.pList = data.content.dataList;
     },
 
     getMon(i) {
       const map = {
-        '06': 2.2,
-        'club-master': 3,
+        "06": 2.2,
+        "club-master": 3,
         super: 2.2,
         metro: 3,
         msp: 2.5,
@@ -718,7 +715,7 @@ export default {
         fairchance: 2.5,
         midweek: 3,
         fortune: 2.7,
-        'premier-king': 2.6,
+        "premier-king": 2.6,
         national: 2.8,
         royal: 2.2,
         bonanza: 2.3,
@@ -727,100 +724,100 @@ export default {
         diamond: 2.5,
         international: 2.6,
         peoples: 2.7,
-        'lucky-g': 2.8
-      }
-      return map[i.lotteryType] || 0
+        "lucky-g": 2.8,
+      };
+      return map[i.lotteryType] || 0;
     },
 
     goToTyepe(v) {
-      this.$jumpTo('/lotteryDetail', {
+      this.$jumpTo("/lotteryDetail", {
         lotteryType: v.lotteryType,
-        lotteryName: v.gameName
-      })
+        lotteryName: v.gameName,
+      });
     },
 
     goToDetail3(v, v2) {
-      this.$jumpTo('/latestResults', {
+      this.$jumpTo("/latestResults", {
         lotteryType: v,
         lotteryName: v2,
-        isFrom: '1'
-      })
+        isFrom: "1",
+      });
     },
 
     async GetBRDrawHistory() {
-      const data = await GetBRDrawHistory()
-      if (data.status === 'ok') {
-        this.lotResultList = data.content.list
+      const data = await GetBRDrawHistory();
+      if (data.status === "ok") {
+        this.lotResultList = data.content.list;
       }
     },
 
     async GetNGNDrawHistory() {
-      const data = await GetNGNDrawHistory()
-      if (data.status === 'ok') {
-        this.lastList = data.content.list
+      const data = await GetNGNDrawHistory();
+      if (data.status === "ok") {
+        this.lastList = data.content.list;
       }
     },
 
     goToDetail(v, v2) {
       if (!this.token) {
-        this.showPopup3 = true
+        this.showPopup3 = true;
       } else {
-        this.$jumpTo('/lotteryDetail', { lotteryType: v, lotteryName: v2 })
+        this.$jumpTo("/lotteryDetail", { lotteryType: v, lotteryName: v2 });
       }
     },
 
     getSelectTab(i) {
-      this.SelectiTab = i
+      this.SelectiTab = i;
       if ([1, 2, 3].includes(i)) {
-        this.$toast({ message: 'Stay tuned!', icon: 'fail' })
+        this.$toast({ message: "Stay tuned!", icon: "fail" });
       }
     },
 
     async MainInit() {
-      const data = await MainInit()
-      if (data.status === 'ok') {
+      const data = await MainInit();
+      if (data.status === "ok") {
         // 处理数字彩票列表
         this.lotList = data.content.allLotteryList
-          .filter((i) => i.freqType === 'L')
+          .filter((i) => i.freqType === "L")
           .map((item) => {
-            const endTime = new Date(item.currBetEndTime).getTime()
+            const endTime = new Date(item.currBetEndTime).getTime();
             return {
               ...item,
               currBetEndTime: isNaN(endTime) ? null : endTime,
-              countdown: '00:00'
-            }
-          })
+              countdown: "00:00",
+            };
+          });
 
         // 处理货币彩票列表
         this.lotList2 = data.content.allLotteryList
-          .filter((i) => i.freqType === 'H')
+          .filter((i) => i.freqType === "H")
           .map((item) => {
-            const endTime = new Date(item.currBetEndTime).getTime()
+            const endTime = new Date(item.currBetEndTime).getTime();
             return {
               ...item,
               currBetEndTime: isNaN(endTime) ? null : endTime,
-              countdown: '00:00'
-            }
-          })
+              countdown: "00:00",
+            };
+          });
 
-        this.copyLotList2 = [...this.lotList2]
-        this.updateAllCountdowns()
+        this.copyLotList2 = [...this.lotList2];
+        this.updateAllCountdowns();
       }
     },
 
     goToHistory(v) {
-      this.$jumpTo('/latestResults', {
+      this.$jumpTo("/latestResults", {
         lotteryType: v.lotteryType,
-        lotteryName: v.lotteryName
-      })
-    }
-  }
-}
+        lotteryName: v.lotteryName,
+      });
+    },
+  },
+};
 </script>
 <style lang="less" scoped>
 @cell: #2d1545;
 @card-solid: #12021a;
-@muted: #b8a8d4;
+@muted: #d7a2fa;
 @gold-soft: #ffe4b5;
 
 .content {
@@ -1040,7 +1037,7 @@ export default {
   left: 20px;
   bottom: 18px;
   p {
-    background: url('../../assets/img/lottery/select-q.png') no-repeat;
+    background: url("../../assets/img/lottery/select-q.png") no-repeat;
     background-size: 100% 100%;
     width: 32px;
     height: 32px;
@@ -1109,7 +1106,7 @@ export default {
   left: 20px;
   bottom: 97px;
   p {
-    background: url('../../assets/img/lottery/select-q.png') no-repeat;
+    background: url("../../assets/img/lottery/select-q.png") no-repeat;
     background-size: 100% 100%;
     width: 40px;
     height: 40px;
@@ -1168,7 +1165,7 @@ export default {
   height: 400px;
 }
 .lot-qbg {
-  background: url('../../assets/img/lottery/select-q.png') no-repeat;
+  background: url("../../assets/img/lottery/select-q.png") no-repeat;
   background-size: 100% 100%;
   width: 25px;
   height: 25px;
@@ -1201,7 +1198,7 @@ export default {
   color: @wihte-color;
 }
 .lot-ball {
-  background: url('../../assets/img/lottery/select-q.png') no-repeat;
+  background: url("../../assets/img/lottery/select-q.png") no-repeat;
   border-radius: 20px;
   background-size: 100% 100%;
   width: 32px;

@@ -66,7 +66,7 @@
               @click="copyText"
               width="13px"
               height="15px"
-              src="../../../assets/img/drawer/drawer_copy.png"
+              src="@/assets/img/mine/copy.png"
             />
           </div>
         </div>

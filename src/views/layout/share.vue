@@ -10,12 +10,12 @@
     <van-tabs
       class="share-tabs"
       v-model:active="activeTab"
-      title-inactive-color="#c4b59a"
-      title-active-color="#573900"
+      title-inactive-color="#d2c4f0"
+      title-active-color="#ffffff"
       :ellipsis="false"
       :swipeable="false"
       sticky
-      :offset-top="0"
+      :offset-top="60"
     >
       <van-tab
         v-for="(item, index) in [
@@ -54,11 +54,12 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@bg: #0f0d0b;
-@gold: #ffa300;
-@gold-deep: #e9a843;
-@btn-grad: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
-@muted: #c4b59a;
+@bg: #15031d;
+@muted: #d7a2fa;
+/* 设计稿：外框渐变边 / 激活按钮渐变 */
+@tab-nav-fill: #1d022c;
+@tab-border-grad: linear-gradient(90deg, #e93dfe 0%, #3245a2 100%);
+@tab-btn-grad: linear-gradient(135deg, #9f24c9 0%, #3b4edc 100%);
 
 .share-page {
   min-height: 100vh;
@@ -67,13 +68,10 @@ export default {
   padding-bottom: 20px;
 }
 
-/* 图一：banner 圆角卡片，非通栏 */
 .share-page__banner-wrap {
   margin: 8px 12px 0;
   border-radius: 14px;
   overflow: hidden;
-  border: 1px solid fade(@gold-deep, 35%);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
 }
 
 .share-page__banner {
@@ -82,7 +80,6 @@ export default {
   vertical-align: top;
 }
 
-/* tab 单独一行，上下留白 */
 .share-tabs {
   margin-top: 12px;
   position: relative;
@@ -92,13 +89,17 @@ export default {
     height: auto !important;
   }
 
+  /* 外框：1px 渐变边 #E93DFE → #3245A2，底 #1D022C，圆角 22.5 */
   :deep(.van-tabs__nav--line) {
     margin: 0 12px 12px;
-    padding: 4px !important;
-    background: #1a1612;
-    border: 1px solid fade(@gold-deep, 40%);
-    border-radius: 12px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+    padding: 1px !important;
+    min-height: 37px;
+    border-radius: 22.5px;
+    border: 1px solid transparent;
+    background:
+      linear-gradient(@tab-nav-fill, @tab-nav-fill) padding-box,
+      @tab-border-grad border-box;
+    box-shadow: 0 0 12px fade(#e93dfe, 28%);
   }
 
   :deep(.van-tabs--line .van-tabs__wrap) {
@@ -108,7 +109,7 @@ export default {
 
   :deep(.van-tab) {
     flex: 1;
-    padding: 0 !important;
+    padding: 0 2px !important;
     border: none !important;
   }
 
@@ -118,8 +119,10 @@ export default {
     padding-bottom: 2px;
 
     .van-tabs__nav--line {
-      background: rgba(26, 22, 18, 0.98);
       margin-bottom: 8px;
+      background:
+        linear-gradient(@tab-nav-fill, @tab-nav-fill) padding-box,
+        @tab-border-grad border-box;
     }
   }
 
@@ -130,6 +133,7 @@ export default {
   :deep(.van-tabs__content),
   :deep(.van-tab__panel) {
     background: @bg !important;
+    overflow: visible;
   }
 
   :deep(.van-tab__text) {
@@ -146,21 +150,24 @@ export default {
     align-items: center;
     justify-content: center;
     width: 100%;
-    padding: 8px 4px;
+    height: 31px;
+    padding: 0 6px;
     box-sizing: border-box;
     color: @muted;
     font-size: 12px;
     font-weight: 600;
     line-height: 1.15;
     text-align: center;
-    border-radius: 9px;
+    border-radius: 16px;
     white-space: nowrap;
   }
 
+  /* 激活按钮：#9F24C9 → #3B4EDC，圆角 16 */
   .tab-text.active {
-    background: @btn-grad;
-    color: #3d2a00 !important;
+    background: @tab-btn-grad;
+    color: #fff !important;
     font-weight: 800;
+    box-shadow: 0 2px 10px fade(#9f24c9, 45%);
   }
 }
 </style>

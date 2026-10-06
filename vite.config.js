@@ -9,7 +9,8 @@ import { fileURLToPath } from 'url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
-  base: './',
+  // App 本地 HTTP 服务与 CDN 均按绝对 /assets/... 解析（勿用 file://）
+  base: '/',
   plugins: [
     vue(),
     Components({
@@ -37,7 +38,16 @@ export default defineConfig({
   },
   server: {
     host: true,
-    port: 8080
+    port: 8080,
+    // 本地备用代理（优先直连 us 域名；若仍走 /a 则转到 us）
+    proxy: {
+      '/a': {
+        target: 'https://us.luckyhubx.cc',
+        changeOrigin: true,
+        secure: false,
+        timeout: 60000
+      }
+    }
   },
   optimizeDeps: {
     include: ['js-md5']

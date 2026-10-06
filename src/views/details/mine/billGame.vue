@@ -6,39 +6,66 @@
     <div class="gr-subheader">
       <div class="gr-balance">
         <span class="gr-balance__label">{{ getCurrency }}</span>
-        <span class="gr-balance__amount">{{ $formatNumberWithCommas(balance) }}</span>
+        <span class="gr-balance__amount">{{
+          $formatNumberWithCommas(balance)
+        }}</span>
       </div>
       <div class="gr-filter">
         <van-dropdown-menu>
-          <van-dropdown-item v-model="filterValue" :options="filterOptions" @change="onFilterChange" />
+          <van-dropdown-item
+            v-model="filterValue"
+            :options="filterOptions"
+            @change="onFilterChange"
+          />
         </van-dropdown-menu>
       </div>
     </div>
 
     <!-- Game List -->
-    <van-list v-model:loading="loading" :finished="finished" loading-text=" " @load="loadMore" class="gr-list">
-      <template v-for="(group, gIdx) in groupedList" :key="'d'+gIdx">
+    <van-list
+      v-model:loading="loading"
+      :finished="finished"
+      loading-text=" "
+      @load="loadMore"
+      class="gr-list"
+    >
+      <template v-for="(group, gIdx) in groupedList" :key="'d' + gIdx">
         <div class="gr-date">{{ group.label }}</div>
         <div
           v-for="(item, idx) in group.items"
-          :key="'g'+gIdx+'-'+idx"
+          :key="'g' + gIdx + '-' + idx"
           class="gr-card"
         >
           <div class="gr-card__left">
             <div class="gr-card__thumb">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="#ffa300"><path d="M21.58 16.09l-1.09-7.66C20.21 6.46 18.52 5 16.53 5H7.47C5.48 5 3.79 6.46 3.51 8.43l-1.09 7.66C2.2 17.63 3.39 19 4.94 19h0c.68 0 1.32-.27 1.8-.75L9 16h6l2.25 2.25c.48.48 1.13.75 1.8.75h0c1.55 0 2.74-1.37 2.53-2.91zM11 11H9v2H8v-2H6v-1h2V8h1v2h2v1zm4 2c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm2-3c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="#ffa300">
+                <path
+                  d="M21.58 16.09l-1.09-7.66C20.21 6.46 18.52 5 16.53 5H7.47C5.48 5 3.79 6.46 3.51 8.43l-1.09 7.66C2.2 17.63 3.39 19 4.94 19h0c.68 0 1.32-.27 1.8-.75L9 16h6l2.25 2.25c.48.48 1.13.75 1.8.75h0c1.55 0 2.74-1.37 2.53-2.91zM11 11H9v2H8v-2H6v-1h2V8h1v2h2v1zm4 2c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm2-3c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"
+                />
+              </svg>
             </div>
             <div class="gr-card__info">
               <p class="gr-card__name">{{ item.gameName }}</p>
               <p class="gr-card__meta">
-                <span class="gr-card__bet">{{ $lang.billGame_txt2 || 'Bet:' }} {{ getCurrency }}{{ $formatNumberWithCommas(item.betAmount) }}</span>
+                <span class="gr-card__bet"
+                  >{{ $lang.billGame_txt2 || "Bet:" }} {{ getCurrency
+                  }}{{ $formatNumberWithCommas(item.betAmount) }}</span
+                >
               </p>
               <p class="gr-card__time">{{ formatTime(item.createDate) }}</p>
             </div>
           </div>
           <div class="gr-card__right">
-            <p class="gr-card__profit" :class="getProfit(item) >= 0 ? 'gr-card__profit--win' : 'gr-card__profit--loss'">
-              {{ getCurrency }} {{ profitSign(item) }}{{ $formatNumberWithCommas(Math.abs(getProfit(item))) }}
+            <p
+              class="gr-card__profit"
+              :class="
+                getProfit(item) >= 0
+                  ? 'gr-card__profit--win'
+                  : 'gr-card__profit--loss'
+              "
+            >
+              {{ getCurrency }} {{ profitSign(item)
+              }}{{ $formatNumberWithCommas(Math.abs(getProfit(item))) }}
             </p>
           </div>
         </div>
@@ -54,10 +81,10 @@
 </template>
 
 <script>
-import { GetUserGameRecordList, GameBalanceList } from '@/api/common'
+import { GetUserGameRecordList, GameBalanceList } from "@/api/common";
 
 export default {
-  name: 'BillGame',
+  name: "BillGame",
   data() {
     return {
       balance: 0,
@@ -67,113 +94,113 @@ export default {
       page: 0,
       filterValue: 6,
       filterOptions: [
-        { text: this.$lang.billGame_txt4 || 'Today', value: 0 },
-        { text: this.$lang.billGame_txt5 || 'Yesterday', value: 1 },
-        { text: this.$lang.billGame_txt6 || 'This Week', value: 2 },
-        { text: this.$lang.billGame_txt7 || 'Last Week', value: 3 },
-        { text: this.$lang.billGame_txt8 || 'This Month', value: 4 },
-        { text: this.$lang.billGame_txt9 || 'Last Month', value: 5 },
-        { text: this.$lang.billGame_txt10 || 'All', value: 6 }
+        { text: this.$lang.billGame_txt4 || "Today", value: 0 },
+        { text: this.$lang.billGame_txt5 || "Yesterday", value: 1 },
+        { text: this.$lang.billGame_txt6 || "This Week", value: 2 },
+        { text: this.$lang.billGame_txt7 || "Last Week", value: 3 },
+        { text: this.$lang.billGame_txt8 || "This Month", value: 4 },
+        { text: this.$lang.billGame_txt9 || "Last Month", value: 5 },
+        { text: this.$lang.billGame_txt10 || "All", value: 6 },
       ],
-      params: {}
-    }
+      params: {},
+    };
   },
   computed: {
     groupedList() {
-      const groups = {}
-      const today = this.$dayjs().format('YYYY-MM-DD')
-      this.userList.forEach(item => {
-        const date = this.$dayjs(item.createDate).format('YYYY-MM-DD')
+      const groups = {};
+      const today = this.$dayjs().format("YYYY-MM-DD");
+      this.userList.forEach((item) => {
+        const date = this.$dayjs(item.createDate).format("YYYY-MM-DD");
         if (!groups[date]) {
           groups[date] = {
             date,
-            label: date === today ? (this.$lang.billGame_txt4 || 'Today') : date,
-            items: []
-          }
+            label: date === today ? this.$lang.billGame_txt4 || "Today" : date,
+            items: [],
+          };
         }
-        groups[date].items.push(item)
-      })
-      return Object.values(groups)
-    }
+        groups[date].items.push(item);
+      });
+      return Object.values(groups);
+    },
   },
   mounted() {
-    this.getBalance()
+    this.getBalance();
   },
   methods: {
     async getBalance() {
       try {
-        const data = await GameBalanceList()
-        if (data.status === 'ok') {
-          this.balance = data.content.balance || 0
+        const data = await GameBalanceList();
+        if (data.status === "ok") {
+          this.balance = data.content.balance || 0;
         }
       } catch (e) {
-        console.error(e)
+        console.error(e);
       }
     },
     formatTime(d) {
-      return this.$dayjs(d).format('HH:mm')
+      return this.$dayjs(d).format("HH:mm");
     },
     getProfit(item) {
-      return (item.winAmount || 0) - (item.betAmount || 0)
+      return (item.winAmount || 0) - (item.betAmount || 0);
     },
     profitSign(item) {
-      return this.getProfit(item) < 0 ? '-' : '+'
+      return this.getProfit(item) < 0 ? "-" : "+";
     },
     onFilterChange(i) {
-      this.resetList()
+      this.resetList();
       const rangeMap = {
         0: () => this.$getTodayRange(),
         1: () => this.$getYesterdayRange(),
         2: () => this.$getThisWeekRange(),
         3: () => this.$getLastWeekRange(),
         4: () => this.$getThisMonthRange(),
-        5: () => this.$getLastMonthRange()
-      }
+        5: () => this.$getLastMonthRange(),
+      };
       if (rangeMap[i]) {
-        const range = rangeMap[i]()
-        this.fetchData(range.slice(0, 19), range.slice(20, 40))
+        const range = rangeMap[i]();
+        this.fetchData(range.slice(0, 19), range.slice(20, 40));
       } else {
-        this.fetchData('', '')
+        this.fetchData("", "");
       }
     },
     resetList() {
-      this.userList = []
-      this.page = 0
-      this.finished = false
+      this.userList = [];
+      this.page = 0;
+      this.finished = false;
     },
     async fetchData(startDate, endDate) {
-      this.params = { startDate, endDate, pageIndex: this.page }
-      this.loading = true
+      this.params = { startDate, endDate, pageIndex: this.page };
+      this.loading = true;
       try {
-        const data = await GetUserGameRecordList(this.params)
-        if (data.status === 'ok') {
-          const list = data.content.dataList || []
-          if (list.length < 20) this.finished = true
-          this.userList = this.userList.concat(list)
-          this.loading = false
-          this.page++
+        const data = await GetUserGameRecordList(this.params);
+        if (data.status === "ok") {
+          const list = data.content.dataList || [];
+          if (list.length < 20) this.finished = true;
+          this.userList = this.userList.concat(list);
+          this.loading = false;
+          this.page++;
         } else {
-          this.loading = false
-          this.$toast({ message: data.msg, icon: 'cross' })
+          this.loading = false;
+          this.$toast({ message: data.msg, icon: "cross" });
         }
       } catch (e) {
-        this.loading = false
-        console.error(e)
+        this.loading = false;
+        console.error(e);
       }
     },
     loadMore() {
-      const { startDate, endDate } = this.params
-      this.fetchData(startDate || '', endDate || '')
-    }
-  }
-}
+      const { startDate, endDate } = this.params;
+      this.fetchData(startDate || "", endDate || "");
+    },
+  },
+};
 </script>
 
 <style lang="less" scoped>
 @bg: #1a0a28;
 @card: #12021a;
 @neon: #ffa300;
-@muted: #b8a8d4;
+@muted: #d7a2fa;
 @border: rgba(255, 162, 0, 0.45);
 
 .game-records-page {

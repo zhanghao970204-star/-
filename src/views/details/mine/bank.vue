@@ -5,43 +5,86 @@
     <!-- Empty State -->
     <div v-if="!BankList.length" class="bank-empty">
       <div class="bank-empty__icon">
-        <svg width="64" height="64" viewBox="0 0 24 24" fill="#b8a8d4"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="#b8a8d4">
+          <path
+            d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"
+          />
+        </svg>
       </div>
-      <p class="bank-empty__title">{{ $lang.bank_empty || 'No Bank Card' }}</p>
-      <p class="bank-empty__desc">{{ $lang.bank_empty_desc || 'Add a bank card for withdrawals' }}</p>
+      <p class="bank-empty__title">{{ $lang.bank_empty || "No Bank Card" }}</p>
+      <p class="bank-empty__desc">
+        {{ $lang.bank_empty_desc || "Add a bank card for withdrawals" }}
+      </p>
       <button class="bank-add-btn" @click="onClickRight">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-        <span>{{ $lang.bank_add || 'Add Bank Card' }}</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+        </svg>
+        <span>{{ $lang.bank_add || "Add Bank Card" }}</span>
       </button>
     </div>
 
     <!-- Bank Card List -->
     <div v-else class="bank-list">
-      <div
-        v-for="(item, index) in BankList"
-        :key="index"
-        class="bank-card"
-      >
+      <div v-for="(item, index) in BankList" :key="index" class="bank-card">
         <div class="bank-card__top">
           <div class="bank-card__bank-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffa300"><path d="M4 10v7h3v-7H4zm6 0v7h3v-7h-3zM2 22h19v-3H2v3zm14-12v7h3v-7h-3zm-4.5-9L2 6v2h19V6l-9.5-5z"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffa300">
+              <path
+                d="M4 10v7h3v-7H4zm6 0v7h3v-7h-3zM2 22h19v-3H2v3zm14-12v7h3v-7h-3zm-4.5-9L2 6v2h19V6l-9.5-5z"
+              />
+            </svg>
           </div>
           <span class="bank-card__name">{{ item.bankName }}</span>
-          <button class="bank-card__delete" @click="showDeletePopup(item.cardId)">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="#b8a8d4"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+          <button
+            class="bank-card__delete"
+            @click="showDeletePopup(item.cardId)"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#b8a8d4">
+              <path
+                d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+              />
+            </svg>
           </button>
         </div>
 
         <div class="bank-card__number">
-          <span v-if="item.isSee" class="bank-card__full">{{ item.bankCard }}</span>
-          <span v-else class="bank-card__masked">{{ formatCardNumber(item.bankCard) }}</span>
+          <span v-if="item.isSee" class="bank-card__full">{{
+            item.bankCard
+          }}</span>
+          <span v-else class="bank-card__masked">{{
+            formatCardNumber(item.bankCard)
+          }}</span>
           <div class="bank-card__actions">
             <button class="bank-card__action" @click="copyText(item.bankCard)">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="#b8a8d4"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#b8a8d4">
+                <path
+                  d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"
+                />
+              </svg>
             </button>
             <button class="bank-card__action" @click="toggleSee(item)">
-              <svg v-if="item.isSee" width="18" height="18" viewBox="0 0 24 24" fill="#ffa300"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
-              <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="#b8a8d4"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46A11.804 11.804 0 001 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg>
+              <svg
+                v-if="item.isSee"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="#ffa300"
+              >
+                <path
+                  d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"
+                />
+              </svg>
+              <svg
+                v-else
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="#b8a8d4"
+              >
+                <path
+                  d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46A11.804 11.804 0 001 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"
+                />
+              </svg>
             </button>
           </div>
         </div>
@@ -54,22 +97,42 @@
 
       <!-- Add More Button -->
       <button class="bank-add-btn bank-add-btn--outline" @click="onClickRight">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-        <span>{{ $lang.bank_add || 'Add Bank Card' }}</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+        </svg>
+        <span>{{ $lang.bank_add || "Add Bank Card" }}</span>
       </button>
     </div>
 
     <!-- Delete Confirmation Popup -->
-    <van-popup v-model:show="isShow" round :close-on-click-overlay="true" class="delete-popup">
+    <van-popup
+      v-model:show="isShow"
+      round
+      :close-on-click-overlay="true"
+      class="delete-popup"
+    >
       <div class="delete-popup__content">
         <div class="delete-popup__icon">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="#ef4444"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="#ef4444">
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+            />
+          </svg>
         </div>
-        <p class="delete-popup__title">{{ $lang.bank_txt || 'Remove this bank card?' }}</p>
+        <p class="delete-popup__title">
+          {{ $lang.bank_txt || "Remove this bank card?" }}
+        </p>
         <div class="delete-popup__field">
-          <label>{{ $lang.bank_txt2 || 'Withdrawal Password' }}</label>
-          <div class="delete-popup__input" :class="{ 'delete-popup__input--focus': focus }">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="#b8a8d4"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM9 8V6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9z"/></svg>
+          <label>{{ $lang.bank_txt2 || "Withdrawal Password" }}</label>
+          <div
+            class="delete-popup__input"
+            :class="{ 'delete-popup__input--focus': focus }"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#b8a8d4">
+              <path
+                d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM9 8V6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9z"
+              />
+            </svg>
             <input
               v-model="privacyPwd"
               type="password"
@@ -80,24 +143,37 @@
           </div>
         </div>
         <div class="delete-popup__actions">
-          <button class="delete-popup__btn delete-popup__btn--cancel" @click="isShow = false">
-            {{ $lang.Cancelar || 'Cancel' }}
+          <button
+            class="delete-popup__btn delete-popup__btn--cancel"
+            @click="isShow = false"
+          >
+            {{ $lang.Cancelar || "Cancel" }}
           </button>
-          <button class="delete-popup__btn delete-popup__btn--confirm" @click="Confirm(deleteCardId)">
-            {{ $lang.Confirmar || 'Confirm' }}
+          <button
+            class="delete-popup__btn delete-popup__btn--confirm"
+            @click="Confirm(deleteCardId)"
+          >
+            {{ $lang.Confirmar || "Confirm" }}
           </button>
         </div>
       </div>
     </van-popup>
 
     <!-- Add Bank Card Popup -->
-    <van-popup v-model:show="showAddPopup" round :close-on-click-overlay="true" class="add-popup">
+    <van-popup
+      v-model:show="showAddPopup"
+      round
+      :close-on-click-overlay="true"
+      class="add-popup"
+    >
       <div class="add-popup__content">
-        <h3 class="add-popup__title">{{ $lang.BankInfo_txt13 || 'Add Bank Card' }}</h3>
+        <h3 class="add-popup__title">
+          {{ $lang.BankInfo_txt13 || "Add Bank Card" }}
+        </h3>
 
         <!-- Real Name -->
         <div class="add-popup__field">
-          <label>{{ $lang.common_txt46 || 'Real Name' }}</label>
+          <label>{{ $lang.common_txt46 || "Real Name" }}</label>
           <div class="add-popup__input">
             <input
               v-model="addRealName"
@@ -110,17 +186,28 @@
 
         <!-- Bank Name Selector -->
         <div class="add-popup__field">
-          <label>{{ $lang.bank_title || 'Bank' }}</label>
-          <div class="add-popup__input add-popup__input--select" @click="toggleBankSelect">
-            <span :class="{ 'add-popup__placeholder': !addBankName }">{{ addBankName || 'Select bank' }}</span>
-            <van-icon :name="showBankSelect ? 'arrow-up' : 'arrow-down'" size="14" color="#b8a8d4" />
+          <label>{{ $lang.bank_title || "Bank" }}</label>
+          <div
+            class="add-popup__input add-popup__input--select"
+            @click="toggleBankSelect"
+          >
+            <span :class="{ 'add-popup__placeholder': !addBankName }">{{
+              addBankName || "Select bank"
+            }}</span>
+            <van-icon
+              :name="showBankSelect ? 'arrow-up' : 'arrow-down'"
+              size="14"
+              color="#b8a8d4"
+            />
           </div>
           <div v-if="showBankSelect" class="add-popup__dropdown">
             <div
               v-for="(item, idx) in addBankColumns"
               :key="idx"
               class="add-popup__dropdown-item"
-              :class="{ 'add-popup__dropdown-item--active': idx === addSelectIndex }"
+              :class="{
+                'add-popup__dropdown-item--active': idx === addSelectIndex,
+              }"
               @click="selectBank(idx, item)"
             >
               {{ item.label }}
@@ -156,15 +243,22 @@
 
         <!-- Actions -->
         <div class="add-popup__actions">
-          <button class="add-popup__btn add-popup__btn--cancel" @click="showAddPopup = false">
-            {{ $lang.Cancelar || 'Cancel' }}
+          <button
+            class="add-popup__btn add-popup__btn--cancel"
+            @click="showAddPopup = false"
+          >
+            {{ $lang.Cancelar || "Cancel" }}
           </button>
           <button
             class="add-popup__btn add-popup__btn--confirm"
             :disabled="addSubmitting"
             @click="submitAddBank"
           >
-            {{ addSubmitting ? ($lang.common_loading || 'Loading...') : ($lang.Confirmar || 'Confirm') }}
+            {{
+              addSubmitting
+                ? $lang.common_loading || "Loading..."
+                : $lang.Confirmar || "Confirm"
+            }}
           </button>
         </div>
       </div>
@@ -173,8 +267,13 @@
 </template>
 
 <script>
-import { BankCardInfo, DelBankCard, AddBankCardInit, AddBankCard } from '@/api/common'
-import md5 from '@/utils/md5'
+import {
+  BankCardInfo,
+  DelBankCard,
+  AddBankCardInit,
+  AddBankCard,
+} from "@/api/common";
+import md5 from "@/utils/md5";
 import {
   normalizeBankType,
   needsIfscCard,
@@ -184,177 +283,185 @@ import {
   formatCashtagBodyInput,
   formatRealNameInput,
   validateAddAccountForm,
-  buildAddBankCardPayload
-} from '@/utils/bankAccountValidate'
+  buildAddBankCardPayload,
+} from "@/utils/bankAccountValidate";
 
 export default {
-  name: 'Bank',
+  name: "Bank",
   data() {
     return {
       BankList: [],
       isShow: false,
       focus: false,
-      privacyPwd: '',
+      privacyPwd: "",
       deleteCardId: null,
       // Add bank card popup
       showAddPopup: false,
-      addRealName: '',
+      addRealName: "",
       addRealNameReadonly: false,
-      addBankName: '',
+      addBankName: "",
       addBankId: null,
-      addBankCard: '',
-      addIfscCard: '',
+      addBankCard: "",
+      addIfscCard: "",
       addBankColumns: [],
       showBankSelect: false,
       addSelectIndex: 0,
-      addSubmitting: false
-    }
+      addSubmitting: false,
+    };
   },
   computed: {
     bankType() {
-      return normalizeBankType(this.addBankName)
+      return normalizeBankType(this.addBankName);
     },
     showIfscField() {
-      return needsIfscCard(this.addBankName)
+      return needsIfscCard(this.addBankName);
     },
     showCashtagPrefix() {
-      return needsDollarPrefix(this.addBankName)
+      return needsDollarPrefix(this.addBankName);
     },
     ifscLabel() {
-      if (this.bankType === 'ach') {
-        return this.$lang.account_routing_label || 'Routing Number'
+      if (this.bankType === "ach") {
+        return this.$lang.account_routing_label || "Routing Number";
       }
-      return this.$lang.account_expiry_label || 'Expiry Date'
+      return this.$lang.account_expiry_label || "Expiry Date";
     },
     ifscPlaceholder() {
-      if (this.bankType === 'ach') {
-        return this.$lang.account_routing_placeholder || 'Routing number (9 digits)'
+      if (this.bankType === "ach") {
+        return (
+          this.$lang.account_routing_placeholder || "Routing number (9 digits)"
+        );
       }
-      return this.$lang.account_expiry_placeholder || 'Expiry (MM/YYYY)'
+      return this.$lang.account_expiry_placeholder || "Expiry (MM/YYYY)";
     },
     ifscMaxLength() {
-      return this.bankType === 'ach' ? 9 : 7
+      return this.bankType === "ach" ? 9 : 7;
     },
     accountPlaceholder() {
-      if (this.bankType === 'paypal') {
-        return this.$lang.account_paypal_placeholder || 'PayPal Email'
+      if (this.bankType === "paypal") {
+        return this.$lang.account_paypal_placeholder || "PayPal Email";
       }
-      if (this.bankType === 'card') {
-        return this.$lang.account_card_placeholder || 'Bank card number'
+      if (this.bankType === "card") {
+        return this.$lang.account_card_placeholder || "Bank card number";
       }
-      if (this.bankType === 'ach') {
-        return this.$lang.account_ach_placeholder || 'Bank account number'
+      if (this.bankType === "ach") {
+        return this.$lang.account_ach_placeholder || "Bank account number";
       }
-      if (this.bankType === 'cashapp') {
-        return this.$lang.account_cashapp_placeholder || 'Username e.g. JohnSmith, abc123'
+      if (this.bankType === "cashapp") {
+        return (
+          this.$lang.account_cashapp_placeholder ||
+          "Username e.g. JohnSmith, abc123"
+        );
       }
-      if (this.bankType === 'chime') {
-        return this.$lang.account_chime_placeholder || 'Username e.g. test888'
+      if (this.bankType === "chime") {
+        return this.$lang.account_chime_placeholder || "Username e.g. test888";
       }
-      return this.$lang.account_contact_placeholder
-    }
+      return this.$lang.account_contact_placeholder;
+    },
   },
   mounted() {
-    this.BankCardInfo()
+    this.BankCardInfo();
   },
   methods: {
     formatCardNumber(cardNumber) {
-      if (!cardNumber) return ''
-      if (cardNumber.length <= 4) return cardNumber
-      return '**** **** ' + cardNumber.slice(-4)
+      if (!cardNumber) return "";
+      if (cardNumber.length <= 4) return cardNumber;
+      return "**** **** " + cardNumber.slice(-4);
     },
     toggleSee(item) {
-      (item)['isSee'] = !item.isSee
+      item["isSee"] = !item.isSee;
     },
     copyText(v) {
-      const textarea = document.createElement('textarea')
-      textarea.value = v
-      document.body.appendChild(textarea)
-      textarea.select()
-      document.execCommand('copy')
-      document.body.removeChild(textarea)
-      this.$toast({ message: this.$lang.Sucesso, icon: 'success' })
+      const textarea = document.createElement("textarea");
+      textarea.value = v;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      this.$toast({ message: this.$lang.Sucesso, icon: "success" });
     },
     showDeletePopup(cardId) {
-      this.deleteCardId = cardId
-      this.privacyPwd = ''
-      this.isShow = true
+      this.deleteCardId = cardId;
+      this.privacyPwd = "";
+      this.isShow = true;
     },
     async Confirm(cardId) {
       if (!this.privacyPwd) {
-        this.$toast({ message: this.$lang.bank_txt2 || 'Enter Withdrawal Password', icon: 'cross' })
-        return
+        this.$toast({
+          message: this.$lang.bank_txt2 || "Enter Withdrawal Password",
+          icon: "cross",
+        });
+        return;
       }
       const data = await DelBankCard({
         privacyPwd: md5(this.privacyPwd),
-        cardId: cardId
-      })
-      if (data.status === 'ok') {
-        this.isShow = false
-        await this.BankCardInfo()
-        this.$toast({ message: this.$lang.Sucesso, icon: 'success' })
+        cardId: cardId,
+      });
+      if (data.status === "ok") {
+        this.isShow = false;
+        await this.BankCardInfo();
+        this.$toast({ message: this.$lang.Sucesso, icon: "success" });
       } else {
-        this.$toast({ message: data.msg, icon: 'cross' })
+        this.$toast({ message: data.msg, icon: "cross" });
       }
     },
     onClickRight() {
-      this.showAddPopup = true
-      this.addBankCard = ''
-      this.addIfscCard = ''
-      this.fetchAddBankCardInit()
+      this.showAddPopup = true;
+      this.addBankCard = "";
+      this.addIfscCard = "";
+      this.fetchAddBankCardInit();
     },
     async fetchAddBankCardInit() {
-      const data = await AddBankCardInit()
-      if (data.status === 'ok') {
+      const data = await AddBankCardInit();
+      if (data.status === "ok") {
         if (data.content.realName) {
-          this.addRealName = data.content.realName
-          this.addRealNameReadonly = true
+          this.addRealName = data.content.realName;
+          this.addRealNameReadonly = true;
         } else {
-          this.addRealName = ''
-          this.addRealNameReadonly = false
+          this.addRealName = "";
+          this.addRealNameReadonly = false;
         }
-        this.addBankColumns = (data.content.bankList || []).map(item => ({
+        this.addBankColumns = (data.content.bankList || []).map((item) => ({
           value: item.bankId,
-          label: item.bankName
-        }))
+          label: item.bankName,
+        }));
         if (this.addBankColumns.length > 0) {
-          this.addBankId = this.addBankColumns[0].value
-          this.addBankName = this.addBankColumns[0].label
-          this.addSelectIndex = 0
-          this.addIfscCard = ''
+          this.addBankId = this.addBankColumns[0].value;
+          this.addBankName = this.addBankColumns[0].label;
+          this.addSelectIndex = 0;
+          this.addIfscCard = "";
         }
       }
     },
     toggleBankSelect() {
-      this.showBankSelect = !this.showBankSelect
+      this.showBankSelect = !this.showBankSelect;
     },
     selectBank(index, item) {
-      this.addBankId = item.value
-      this.addBankName = item.label
-      this.addSelectIndex = index
-      this.showBankSelect = false
-      this.addIfscCard = ''
-      this.addBankCard = ''
+      this.addBankId = item.value;
+      this.addBankName = item.label;
+      this.addSelectIndex = index;
+      this.showBankSelect = false;
+      this.addIfscCard = "";
+      this.addBankCard = "";
     },
     onRealNameInput(e) {
-      if (this.addRealNameReadonly) return
-      const val = e && e.target ? e.target.value : e
-      const next = formatRealNameInput(val)
-      if (next !== this.addRealName) this.addRealName = next
+      if (this.addRealNameReadonly) return;
+      const val = e && e.target ? e.target.value : e;
+      const next = formatRealNameInput(val);
+      if (next !== this.addRealName) this.addRealName = next;
     },
     onAccountInput(e) {
-      const val = e && e.target ? e.target.value : e
+      const val = e && e.target ? e.target.value : e;
       if (needsDollarPrefix(this.addBankName)) {
-        const next = formatCashtagBodyInput(val)
-        if (next !== this.addBankCard) this.addBankCard = next
+        const next = formatCashtagBodyInput(val);
+        if (next !== this.addBankCard) this.addBankCard = next;
       }
     },
     onIfscInput(e) {
-      const val = e && e.target ? e.target.value : e
-      if (this.bankType === 'ach') {
-        this.addIfscCard = formatAchRoutingInput(val)
-      } else if (this.bankType === 'card') {
-        this.addIfscCard = formatCardExpiryInput(val)
+      const val = e && e.target ? e.target.value : e;
+      if (this.bankType === "ach") {
+        this.addIfscCard = formatAchRoutingInput(val);
+      } else if (this.bankType === "card") {
+        this.addIfscCard = formatCardExpiryInput(val);
       }
     },
     async submitAddBank() {
@@ -362,16 +469,17 @@ export default {
         realName: this.addRealName,
         bankName: this.addBankName,
         bankCard: this.addBankCard,
-        ifscCard: this.addIfscCard
-      })
+        ifscCard: this.addIfscCard,
+      });
       if (!check.ok) {
         this.$toast({
-          message: (check.messageKey && this.$lang[check.messageKey]) || check.message,
-          icon: 'cross'
-        })
-        return
+          message:
+            (check.messageKey && this.$lang[check.messageKey]) || check.message,
+          icon: "cross",
+        });
+        return;
       }
-      this.addSubmitting = true
+      this.addSubmitting = true;
       try {
         const data = await AddBankCard(
           buildAddBankCardPayload({
@@ -379,42 +487,45 @@ export default {
             bankId: this.addBankId,
             bankCard: this.addBankCard,
             realName: this.addRealName,
-            ifscCard: this.addIfscCard
-          })
-        )
-        if (data.status === 'ok') {
-          this.showAddPopup = false
-          this.$toast({ message: this.$lang.Sucesso || 'Success', icon: 'success' })
-          await this.BankCardInfo()
+            ifscCard: this.addIfscCard,
+          }),
+        );
+        if (data.status === "ok") {
+          this.showAddPopup = false;
+          this.$toast({
+            message: this.$lang.Sucesso || "Success",
+            icon: "success",
+          });
+          await this.BankCardInfo();
         } else {
-          this.$toast({ message: data.msg, icon: 'cross' })
+          this.$toast({ message: data.msg, icon: "cross" });
         }
       } catch (e) {
-        console.error(e)
+        console.error(e);
       } finally {
-        this.addSubmitting = false
+        this.addSubmitting = false;
       }
     },
     async BankCardInfo() {
-      const data = await BankCardInfo()
-      if (data.status === 'ok') {
-        this.BankList = data.content.bankCardList || []
+      const data = await BankCardInfo();
+      if (data.status === "ok") {
+        this.BankList = data.content.bankCardList || [];
         this.BankList.forEach((i) => {
-          (i)['isSee'] = false
-        })
+          i["isSee"] = false;
+        });
       } else {
-        this.$toast({ message: data.msg, icon: 'cross' })
+        this.$toast({ message: data.msg, icon: "cross" });
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style lang="less" scoped>
 @bg: #1a0a28;
 @card: #12021a;
 @neon: #ffa300;
-@muted: #b8a8d4;
+@muted: #d7a2fa;
 @border: rgba(255, 162, 0, 0.45);
 
 .bank-page {
@@ -521,7 +632,7 @@ export default {
     font-weight: 600;
     color: @wihte-color;
     letter-spacing: 2px;
-    font-family: 'Courier New', monospace;
+    font-family: "Courier New", monospace;
   }
 
   &__masked {
@@ -825,8 +936,12 @@ export default {
     cursor: pointer;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 
-    &:last-child { border-bottom: none; }
-    &:active { background: rgba(255, 163, 0, 0.1); }
+    &:last-child {
+      border-bottom: none;
+    }
+    &:active {
+      background: rgba(255, 163, 0, 0.1);
+    }
 
     &--active {
       background: rgba(255, 163, 0, 0.15);
@@ -853,8 +968,13 @@ export default {
     letter-spacing: 0.5px;
     transition: transform 0.1s;
 
-    &:active { transform: scale(0.98); }
-    &:disabled { opacity: 0.5; cursor: not-allowed; }
+    &:active {
+      transform: scale(0.98);
+    }
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
 
     &--cancel {
       background: rgba(255, 255, 255, 0.08);

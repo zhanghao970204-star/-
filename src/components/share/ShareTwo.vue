@@ -213,39 +213,56 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@page-bg: #1a1613;
-@fx-bg: linear-gradient(
-  100deg,
-  #433e27 0%,
-  #3a3523 22%,
-  #2b271b 48%,
-  #1a1812 78%,
-  #13120d 100%
-);
-@fx-border: 1px solid #6f6959;
-@label-color: #c8c4b8;
-@value-color: #efd3ac;
-@btn-grad: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
+@page-bg: #15031d;
+@card-bg: #411c59;
+@label-color: #ffffff;
+@value-color: #ffd467;
 
 .content {
   padding: 0 0 20%;
   background: @page-bg;
 }
 
+/* 子 Tab：对齐首页「渐变紫底 + 上下渐变边 + 选中黑底金边胶囊」 */
 .content-c {
+  position: relative;
   overflow-x: auto;
   overflow-y: hidden;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  padding: 6px 10px 0;
+  height: 48px;
+  padding: 0 6px 0 8px;
   margin: 0;
-  background: @page-bg;
-  border-bottom: 1px solid fade(#e9a843, 28%);
+  box-sizing: border-box;
+  background: linear-gradient(180deg, #7400ae 0%, #53027b 100%);
+  border-bottom: none;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
   scrollbar-width: none;
   -ms-overflow-style: none;
+
+  /* 上下渐变边框（同首页） */
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  &::before {
+    top: 0;
+    background: linear-gradient(90deg, #ed3bfe 0%, #9159fe 100%);
+  }
+
+  &::after {
+    bottom: 0;
+    background: linear-gradient(90deg, #ac65f9 0%, #486dfe 100%);
+  }
 }
 
 .content-c::-webkit-scrollbar {
@@ -256,44 +273,36 @@ export default {
 
 .content-c--item {
   flex: 0 0 auto;
-  padding: 0 2px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  margin: 0 4px;
   white-space: nowrap;
 }
 
 .tab-item {
-  display: inline-block;
-  padding: 8px 10px 10px;
-  color: #b8a8d4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding: 0 14px;
+  box-sizing: border-box;
+  color: #ffffff;
   cursor: pointer;
   font-size: 14px;
-  position: relative;
+  font-weight: 600;
+  line-height: 1;
+  border-radius: 999px;
+  border: 1.5px solid transparent;
+  background: transparent;
 }
 
 .tab-item.active {
-  color: #ffc85a;
-  font-weight: bold;
-}
-
-/* 与底部分割线同一水平；宽度跟文字一致；中间亮区稍长 */
-.tab-item.active::after {
-  content: "";
-  position: absolute;
-  left: 10px;
-  right: 10px;
-  bottom: -1px;
-  height: 2px;
-  border-radius: 1px;
-  background: linear-gradient(
-    90deg,
-    rgba(184, 137, 58, 0) 0%,
-    rgba(184, 137, 58, 0.3) 12%,
-    #e0c078 28%,
-    #f0d890 50%,
-    #e0c078 72%,
-    rgba(184, 137, 58, 0.3) 88%,
-    rgba(184, 137, 58, 0) 100%
-  );
-  box-shadow: 0 0 4px rgba(224, 192, 120, 0.35);
+  color: #ffffff;
+  font-weight: 700;
+  border-color: #ffd400;
+  background: #1a0a2e;
 }
 
 .stat-grid {
@@ -309,9 +318,9 @@ export default {
 }
 
 .stat-card {
-  background: @fx-bg;
-  border: @fx-border;
-  border-radius: 10px;
+  background: @card-bg;
+  border: none;
+  border-radius: 16px;
   box-sizing: border-box;
   min-height: 88px;
   padding: 10px 8px 12px;
@@ -330,7 +339,7 @@ export default {
   justify-content: center;
   font-size: 11px;
   line-height: 1.25;
-  font-weight: 500;
+  font-weight: 600;
   color: @label-color;
 
   :deep(p) {
@@ -343,20 +352,13 @@ export default {
 
 .stat-card__divider {
   width: 78%;
-  height: 1.5px;
+  height: 0;
   margin: 8px 0;
   flex-shrink: 0;
   border: none;
-  border-radius: 1px;
-  background: linear-gradient(
-    90deg,
-    rgba(184, 137, 58, 0) 0%,
-    rgba(184, 137, 58, 0.35) 28%,
-    #e0c078 50%,
-    rgba(184, 137, 58, 0.35) 72%,
-    rgba(184, 137, 58, 0) 100%
-  );
-  box-shadow: 0 0 3px rgba(224, 192, 120, 0.3);
+  border-top: 1px dashed #924fbe;
+  background: none;
+  box-shadow: none;
 }
 
 .stat-card__value {
@@ -369,22 +371,14 @@ export default {
 }
 
 .section-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  display: block;
   margin: 14px 10px 10px;
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 800;
   color: #fff;
   line-height: 1.3;
-
-  &::before {
-    content: "";
-    flex-shrink: 0;
-    width: 3px;
-    height: 16px;
-    border-radius: 2px;
-    background: @btn-grad;
-  }
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
 }
 </style>

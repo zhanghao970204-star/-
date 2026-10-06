@@ -5,14 +5,43 @@ import router from "../router";
 import { emitHeaderRefresh, shouldRefreshHeader } from "@/utils/headerRefresh";
 import { resolveClientIdSync } from "@/utils/nativeDevice";
 import { clearGuestFlags } from "@/utils/guestAuth";
+
+/**
+ * App（含 iOS WKWebView）必须同源 `/a/`，由 Flutter 反代，避免跨域 Network Error。
+ * Vite 本地开发直连业务域名。
+ */
+function isFlutterAppWebView() {
+  try {
+    if (typeof window !== "undefined") {
+      if (window.__IN_FLUTTER_APP__ || window.__FLUTTER_APP__) return true;
+    }
+    if (typeof location === "undefined") return false;
+    const origin = location.origin || "";
+    if (!/^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/i.test(origin)) {
+      return false;
+    }
+    const port = String(location.port || "");
+    // Vite / 常见前端 dev 端口不算 App
+    if (!port || port === "8080" || port === "5173" || port === "3000") {
+      return false;
+    }
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+function resolveApiBase() {
+  if (isFlutterAppWebView()) {
+    return "/a/";
+  }
+  return "https://us.luckyhubx.cc/a/";
+}
+
 // 创建 axios 实例，将来对创建出来的实例，进行自定义配置
 // 好处：不会污染原始的 axios 实例
 const instance = axios.create({
-  // 基地址
-  // baseURL: window.location.origin.includes("192.168")
-  //   ? "ttps://us.luckyhubx.cc/a/"
-  //   : window.location.origin + "/a/",
-  baseURL: "https://us.luckyhubx.cc/a/",
+  baseURL: resolveApiBase(),
   //   超时时间
   timeout: 60000,
   headers: {

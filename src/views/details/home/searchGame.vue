@@ -273,12 +273,13 @@ export default {
   margin-bottom: 20px;
 }
 .search-field {
-  background: @cell-bg;
+  background: #2c1137;
   border-radius: 10px;
-  border: 1px solid fade(@border-color, 30%);
+  border: 1px solid #8b3fb2;
   padding: 10px 12px;
   display: flex;
   align-items: center;
+  border-radius: 999px;
 
   :deep(.van-field__body) {
     align-items: center;
@@ -328,8 +329,8 @@ export default {
   gap: 8px;
 }
 .tag {
-  background: @popup-bg;
-  border: 1px solid fade(@border-color, 25%);
+  background: #411c59;
+  border: 1px solid #ffd404;
   color: @wihte-color;
   padding: 8px 14px;
   border-radius: 8px;

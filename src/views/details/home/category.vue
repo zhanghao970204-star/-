@@ -17,7 +17,6 @@
         v-model="gameValue"
         :placeholder="$lang.common_txt144"
         class="custom-field"
-        style="border: none !important"
       >
         <template #right-icon>
           <img src="../../../assets/img/common/ssk_com.png" width="18" />
@@ -37,11 +36,7 @@
             {{ item2 }}
           </div>
         </div>
-        <div
-          v-if="selectIndex2 === 0"
-          class="cot-cont-rb"
-          ref="targetElement"
-        >
+        <div v-if="selectIndex2 === 0" class="cot-cont-rb" ref="targetElement">
           <div
             v-for="(item3, index) in allGames"
             :key="'all-' + (item3.gid || index)"
@@ -88,11 +83,7 @@
             />
           </div>
         </div>
-        <div
-          v-if="selectIndex2 === 1"
-          class="cot-cont-rb"
-          ref="targetElement"
-        >
+        <div v-if="selectIndex2 === 1" class="cot-cont-rb" ref="targetElement">
           <div
             v-for="(item3, index) in favariteGames"
             :key="'fav-' + (item3.gid || index)"
@@ -350,11 +341,13 @@ export default {
   width: 100%;
   max-width: 450px;
   position: fixed;
-  // background: @cont-bg;
   padding: 10px 7px;
-  // .custom-field {
-  //   background: #2d2456 !important;
-  // }
+
+  .custom-field {
+    background: #2c1137 !important;
+    border-radius: 999px !important;
+    border: 1px solid #8b3fb2 !important;
+  }
 }
 .cot-cont {
   display: flex;

@@ -693,8 +693,7 @@ export default {
     },
     vipBetRebateRatio() {
       const rule = this.betRebateRuleList.find(
-        (item) =>
-          Number(item.vipLevel ?? item.level) === this.currentViewLevel,
+        (item) => Number(item.vipLevel ?? item.level) === this.currentViewLevel,
       );
       if (!rule) return null;
       return (
@@ -1073,7 +1072,7 @@ export default {
 @gold-deep: #e9a843;
 @gold-grad: linear-gradient(90deg, #f7dd9a 0%, #ffa300 100%);
 @btn-grad: linear-gradient(180deg, #ffd220 0%, #e9a843 100%);
-@muted: #a8a095;
+@muted: #d7a2fa;
 
 .vip-page {
   min-height: 100vh;

@@ -29,7 +29,11 @@
               <div class="m-t-10 f-t-18">
                 <p
                   style="
-                    background: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
+                    background: linear-gradient(
+                      180deg,
+                      #ffd467 0%,
+                      #df8a1b 100%
+                    );
                     color: #573900;
                     width: 180px;
                     margin: 0 auto;
@@ -58,7 +62,7 @@
                   'bnb16x660',
                   'bnb16x6180',
                   'bnb16x6300',
-                  'bnb16x6600'
+                  'bnb16x6600',
                 ].includes(lotteryType)
               "
               style="
@@ -99,7 +103,7 @@
                   <p
                     class="lot-ball"
                     v-for="(item2, index) in JSON.parse(
-                      drawingResult
+                      drawingResult,
                     ).winning.split(',')"
                     :key="index"
                   >
@@ -113,7 +117,7 @@
                   <p
                     class="lot-ball"
                     v-for="(item2, index) in JSON.parse(
-                      drawingResult
+                      drawingResult,
                     ).machine.split(',')"
                     :key="index"
                   >
@@ -154,7 +158,7 @@
             <div class="d-flex-s">
               <p>{{ $lang.common_txt196 }}</p>
               <p class="f-w">
-                {{ $dayjs(createDate).format('DD/MM/YYYY HH:mm:ss') }}
+                {{ $dayjs(createDate).format("DD/MM/YYYY HH:mm:ss") }}
               </p>
             </div>
             <div class="d-flex-s m-t-20">
@@ -165,7 +169,7 @@
                   @click="copyText"
                   width="13px"
                   class="m-l-5"
-                  src="../../../assets/img/drawer/drawer_copy.png"
+                  src="@/assets/img/mine/copy.png"
                 />
               </div>
             </div>
@@ -220,7 +224,7 @@
                     'bnb16x660',
                     'bnb16x6180',
                     'bnb16x6300',
-                    'bnb16x6600'
+                    'bnb16x6600',
                   ].includes(lotteryType)
                 "
                 class="f-w f-t-14"
@@ -228,7 +232,7 @@
                 <div
                   v-if="
                     !['szc11x6_ws_dx_zu', 'szc11x6_ws_ds_zu'].includes(
-                      item.playType
+                      item.playType,
                     )
                   "
                   class="bet-bg-c3b2"
@@ -242,7 +246,7 @@
                       'ac-sel3':
                         drawingResult &&
                         drawingResult.length > 0 &&
-                        drawingResult.includes(item2)
+                        drawingResult.includes(item2),
                     }"
                   >
                     {{ item2 }}
@@ -260,7 +264,7 @@
                         drawingResult.length > 0 &&
                         drawingResult
                           .split(',')
-                          [drawingResult.split(',').length - 1].includes(item2)
+                          [drawingResult.split(',').length - 1].includes(item2),
                     }"
                   >
                     {{ item2 }}
@@ -277,7 +281,7 @@
                     'ac-sel3':
                       drawingResult &&
                       drawingResult.length > 0 &&
-                      JSON.parse(drawingResult).winning.includes(item2)
+                      JSON.parse(drawingResult).winning.includes(item2),
                   }"
                 >
                   {{ item2 }}
@@ -292,7 +296,11 @@
                   <div class="d-flex">
                     <p
                       style="
-                        background: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
+                        background: linear-gradient(
+                          180deg,
+                          #ffd467 0%,
+                          #df8a1b 100%
+                        );
                         color: #573900;
                         border-radius: 10px;
                         border: none !important;
@@ -323,7 +331,7 @@
                         :style="{
                           border: ['*'].includes(item3.toString())
                             ? 'none'
-                            : '1px solid'
+                            : '1px solid',
                         }"
                         v-for="(item3, index3) in item2.split(',')"
                         :key="index3"
@@ -354,15 +362,23 @@
                 <div
                   class="m-t-5"
                   style="
-                    background: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
+                    background: linear-gradient(
+                      180deg,
+                      #ffd467 0%,
+                      #df8a1b 100%
+                    );
                     padding: 7px 10px;
                     border-radius: 0 0 13px 13px;
                     color: #573900;
                   "
                 >
-                  <span style="color: #573900; font-weight: 800"> {{ item.betTimes }} </span>
+                  <span style="color: #573900; font-weight: 800">
+                    {{ item.betTimes }}
+                  </span>
                   {{ $lang.common_txt205 }}
-                  <span style="color: #573900; font-weight: 800">{{ item.potCount }}</span>
+                  <span style="color: #573900; font-weight: 800">{{
+                    item.potCount
+                  }}</span>
                   {{ $lang.common_txt206 }}
                   <span style="color: #573900; font-weight: 800"
                     >{{ getCurrency }} {{ item.betAmount }} </span
@@ -397,7 +413,7 @@
       :config="{
         content: $lang.common_txt161,
         bt1: $lang.Cancelar,
-        bt2: $lang.Confirmar
+        bt2: $lang.Confirmar,
       }"
       @close="close"
       @confirm="confirm"
@@ -405,9 +421,9 @@
   </div>
 </template>
 <script>
-import { BetDetail, CancelBet } from '@/api/common'
+import { BetDetail, CancelBet } from "@/api/common";
 export default {
-  name: 'bettingDetails',
+  name: "bettingDetails",
   components: {},
   data() {
     return {
@@ -423,168 +439,168 @@ export default {
         this.$lang.common_txt107,
         this.$lang.common_txt108,
         this.$lang.common_txt109,
-        this.$lang.common_txt110
+        this.$lang.common_txt110,
       ],
       showPopup: false,
-      lotteryName: '',
-      issueNo: '',
+      lotteryName: "",
+      issueNo: "",
       drawingResult: [],
       mainOrderAmount: 0,
-      createDate: '',
-      mainOrderNo: '',
+      createDate: "",
+      mainOrderNo: "",
       betItemList: [],
-      childOrderStatusName: '',
-      lotteryType: '',
-      childOrderStatus: '',
+      childOrderStatusName: "",
+      lotteryType: "",
+      childOrderStatus: "",
       uid: 0,
       sendAmount: 0,
-      iconUrl: '',
-      resultBasedOn: '',
-      isRotating: false
-    }
+      iconUrl: "",
+      resultBasedOn: "",
+      isRotating: false,
+    };
   },
   mounted() {
-    this.BetDetail()
+    this.BetDetail();
   },
   methods: {
     toggleRotation() {
-      if (this.isRotating) return // 如果已经在旋转，直接返回
-      this.isRotating = true
+      if (this.isRotating) return; // 如果已经在旋转，直接返回
+      this.isRotating = true;
       // 动画结束后重置状态
       setTimeout(() => {
-        this.isRotating = false
-      }, 1000) // 动画持续时间
-      this.BetDetail()
+        this.isRotating = false;
+      }, 1000); // 动画持续时间
+      this.BetDetail();
     },
 
     goToBin() {
-      window.open(this.resultBasedOn, '_blank')
+      window.open(this.resultBasedOn, "_blank");
     },
     textStyle(v) {
-      if (v === 'bet_child$no_win') {
+      if (v === "bet_child$no_win") {
         return {
-          backgroundImage: `url(${require('@/assets/img/lottery/lotd_3.png')})`
-        }
-      } else if (v === 'bet_child$refunded_u') {
+          backgroundImage: `url(${require("@/assets/img/lottery/lotd_3.png")})`,
+        };
+      } else if (v === "bet_child$refunded_u") {
         return {
-          backgroundImage: `url(${require('@/assets/img/lottery/lotd_2.png')})`
-        }
-      } else if (v === 'bet_child$sent') {
+          backgroundImage: `url(${require("@/assets/img/lottery/lotd_2.png")})`,
+        };
+      } else if (v === "bet_child$sent") {
         return {
-          backgroundImage: `url(${require('@/assets/img/lottery/lotd_1.png')})`
-        }
-      } else if (v === 'bet_child$refunded_s') {
+          backgroundImage: `url(${require("@/assets/img/lottery/lotd_1.png")})`,
+        };
+      } else if (v === "bet_child$refunded_s") {
         return {
-          backgroundImage: `url(${require('@/assets/img/lottery/lotd_2.png')})`
-        }
-      } else if (v === 'bet_child$draw_waiting') {
+          backgroundImage: `url(${require("@/assets/img/lottery/lotd_2.png")})`,
+        };
+      } else if (v === "bet_child$draw_waiting") {
         return {
-          backgroundImage: `url(${require('@/assets/img/lottery/lotd_4.png')})`
-        }
+          backgroundImage: `url(${require("@/assets/img/lottery/lotd_4.png")})`,
+        };
       }
     },
     getStatus(v) {
-      if (v === 'bet_child$no_win') {
-        return this.$lang.common_txt199
-      } else if (v === 'bet_child$refunded_u') {
-        return this.$lang.common_txt200
-      } else if (v === 'bet_child$sent') {
-        return this.$lang.common_txt201
-      } else if (v === 'bet_child$refunded_s') {
-        return this.$lang.common_txt202
-      } else if (v === 'bet_child$draw_waiting') {
-        return this.$lang.common_txt203
+      if (v === "bet_child$no_win") {
+        return this.$lang.common_txt199;
+      } else if (v === "bet_child$refunded_u") {
+        return this.$lang.common_txt200;
+      } else if (v === "bet_child$sent") {
+        return this.$lang.common_txt201;
+      } else if (v === "bet_child$refunded_s") {
+        return this.$lang.common_txt202;
+      } else if (v === "bet_child$draw_waiting") {
+        return this.$lang.common_txt203;
       }
     },
     copyText() {
-      const textarea = document.createElement('textarea')
-      textarea.value = this.mainOrderNo
-      document.body.appendChild(textarea)
-      textarea.select()
-      document.execCommand('copy')
-      document.body.removeChild(textarea)
+      const textarea = document.createElement("textarea");
+      textarea.value = this.mainOrderNo;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
       this.$toast({
         message: this.$lang.Sucesso,
-        icon: 'success'
-      })
+        icon: "success",
+      });
     },
     onClickLeft() {
-      if (this.$route.query.type === 'y') {
+      if (this.$route.query.type === "y") {
         this.$jumpTo(
-          './lotteryDetail',
+          "./lotteryDetail",
           {
             lotteryType: this.$route.query.lotteryType,
-            lotteryName: this.$route.query.lotteryName
+            lotteryName: this.$route.query.lotteryName,
           },
-          { replace: true }
-        )
+          { replace: true },
+        );
       } else {
-        this.$router.go(-1)
+        this.$router.go(-1);
       }
     },
     confirm() {
-      this.CancelBet()
+      this.CancelBet();
     },
     close() {
-      this.showPopup = false
+      this.showPopup = false;
     },
     async CancelBet() {
       const data = await CancelBet({
         lotteryType: this.lotteryType,
         mainOrderNo: this.mainOrderNo,
-        uid: this.uid
-      })
-      if (data.status === 'ok') {
-        this.showPopup = false
-        this.BetDetail()
+        uid: this.uid,
+      });
+      if (data.status === "ok") {
+        this.showPopup = false;
+        this.BetDetail();
       } else {
         this.$toast({
           message: data.msg,
-          icon: 'cross'
-        })
+          icon: "cross",
+        });
       }
     },
     goToDe(v) {
       if (v === 1) {
         this.$jumpTo(
-          '/lotteryDetail',
+          "/lotteryDetail",
           {
             lotteryType: this.lotteryType,
-            lotteryName: this.lotteryName
+            lotteryName: this.lotteryName,
           },
-          { replace: true }
-        )
+          { replace: true },
+        );
       } else {
-        this.showPopup = true
+        this.showPopup = true;
       }
     },
     async BetDetail() {
       const data = await BetDetail({
         childOrderNo: this.$route.query.childOrderNo,
-        mainOrderNo: this.$route.query.mainOrderNo
-      })
-      if (data.status === 'ok') {
-        this.lotteryName = data.content.lotteryName
-        this.issueNo = data.content.issueNo
+        mainOrderNo: this.$route.query.mainOrderNo,
+      });
+      if (data.status === "ok") {
+        this.lotteryName = data.content.lotteryName;
+        this.issueNo = data.content.issueNo;
         // this.drawingResult = data.content.drawingResult
         //   ? JSON.parse(data.content.drawingResult).winning.split(',')
         //   : []
-        this.drawingResult = data.content.drawingResult
-        this.mainOrderAmount = data.content.mainOrderAmount
-        this.createDate = data.content.createDate
-        this.mainOrderNo = data.content.mainOrderNo
-        this.betItemList = data.content.betItemList
-        this.childOrderStatusName = data.content.childOrderStatusName
-        this.lotteryType = data.content.lotteryType
-        this.childOrderStatus = data.content.childOrderStatus
-        this.uid = data.content._uid
-        this.sendAmount = data.content.sendAmount
-        this.iconUrl = data.content.iconUrl
-        this.resultBasedOn = data.content.resultBasedOn
+        this.drawingResult = data.content.drawingResult;
+        this.mainOrderAmount = data.content.mainOrderAmount;
+        this.createDate = data.content.createDate;
+        this.mainOrderNo = data.content.mainOrderNo;
+        this.betItemList = data.content.betItemList;
+        this.childOrderStatusName = data.content.childOrderStatusName;
+        this.lotteryType = data.content.lotteryType;
+        this.childOrderStatus = data.content.childOrderStatus;
+        this.uid = data.content._uid;
+        this.sendAmount = data.content.sendAmount;
+        this.iconUrl = data.content.iconUrl;
+        this.resultBasedOn = data.content.resultBasedOn;
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 <style lang="less" scoped>
 .bet-bg {
@@ -615,7 +631,7 @@ export default {
 }
 .lot-ball {
   // background: #ffa300;
-  background: url('../../../assets/img/lottery/select-q.png') no-repeat;
+  background: url("../../../assets/img/lottery/select-q.png") no-repeat;
   // background: @cont-bg;
   border-radius: 20px;
   background-size: 100% 100%;
@@ -705,14 +721,17 @@ export default {
   width: 100% !important;
 }
 .lot-right {
-  background: url('../../../assets/img/lottery/right-lot.png') no-repeat;
+  background: url("../../../assets/img/lottery/right-lot.png") no-repeat;
   background-size: 100% 100%;
   width: 135px;
   height: 90px;
   p {
     color: #ffa300;
-    text-shadow: 1px 0 0 #7f5322, /* 右侧边框 */ -1px 0 0 #7f5322,
-      /* 左侧边框 */ 0 1px 0 #7f5322, /* 下方边框 */ 0 -1px 0 #7f5322; /* 上方边框 */
+    text-shadow:
+      1px 0 0 #7f5322,
+      /* 右侧边框 */ -1px 0 0 #7f5322,
+      /* 左侧边框 */ 0 1px 0 #7f5322,
+      /* 下方边框 */ 0 -1px 0 #7f5322; /* 上方边框 */
     text-align: center;
     padding-top: 61px;
   }
@@ -787,7 +806,7 @@ export default {
   border: 1px solid #ed0000 !important;
 }
 .go-win {
-  background: url('../../../assets/img/lottery/lot_gho.png') no-repeat;
+  background: url("../../../assets/img/lottery/lot_gho.png") no-repeat;
   background-size: 100% 100%;
   width: 72px;
   color: @wihte-color;

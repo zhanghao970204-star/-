@@ -13,7 +13,12 @@
         <h3 class="gps__title">
           {{ $lang.gift_pay_title || $lang.common_txt363 || "Payment" }}
         </h3>
-        <button class="gps__close" type="button" :disabled="paying" @click="close">
+        <button
+          class="gps__close"
+          type="button"
+          :disabled="paying"
+          @click="close"
+        >
           <van-icon name="cross" size="18" color="#b8a8d4" />
         </button>
       </div>
@@ -42,7 +47,9 @@
                 :src="item.typeIcon || item.paymentIcon || item.paymentIconUrl"
                 alt=""
               />
-              <p class="gps__type-name">{{ item.typeName || item.paymentName }}</p>
+              <p class="gps__type-name">
+                {{ item.typeName || item.paymentName }}
+              </p>
             </div>
           </div>
         </div>
@@ -90,7 +97,9 @@
           <span>{{ $lang.gift_pay_amount || "Amount" }}</span>
           <strong
             >{{ isUsdtSelected ? "U" : currency }}
-            {{ $formatNumberWithCommas ? $formatNumberWithCommas(amount) : amount }}</strong
+            {{
+              $formatNumberWithCommas ? $formatNumberWithCommas(amount) : amount
+            }}</strong
           >
         </div>
 
@@ -158,11 +167,7 @@ export default {
       return this.paymentList[this.selectIndex] || null;
     },
     emptyText() {
-      return (
-        this.loadError ||
-        this.$lang.gift_pay_empty ||
-        "No payment method"
-      );
+      return this.loadError || this.$lang.gift_pay_empty || "No payment method";
     },
   },
   watch: {
@@ -183,7 +188,9 @@ export default {
       if (!item) return false;
       const id = String(item.paymentId || "").toUpperCase();
       const key = String(item.paymentKey || "").toLowerCase();
-      const name = String(item.typeName || item.paymentName || "").toUpperCase();
+      const name = String(
+        item.typeName || item.paymentName || "",
+      ).toUpperCase();
       return id === "USDT" || key === "usdt" || name.includes("USDT");
     },
     async loadPayments() {
@@ -197,15 +204,16 @@ export default {
       try {
         const data = await VnRechargeInitS();
         if (data.status !== "ok" || !data.content) {
-          this.loadError = data.msg || this.$lang.gift_pay_empty || "No payment method";
+          this.loadError =
+            data.msg || this.$lang.gift_pay_empty || "No payment method";
           return;
         }
         // 新手礼包 / 首充活动不支持 USDT
         const list = (data.content.paymentList || []).filter(
-          (p) => !this.isUsdtItem(p)
+          (p) => !this.isUsdtItem(p),
         );
         const types = (data.content.payTypeList || []).filter(
-          (t) => !this.isUsdtItem(t)
+          (t) => !this.isUsdtItem(t),
         );
         this.allPaymentList = list;
         this.payTypeList = types;
@@ -233,7 +241,7 @@ export default {
         this.paymentList = this.allPaymentList.slice();
       } else {
         this.paymentList = this.allPaymentList.filter(
-          (p) => String(p.paymentId) === String(type.paymentId)
+          (p) => String(p.paymentId) === String(type.paymentId),
         );
       }
       this.selectIndex = 0;
@@ -290,7 +298,7 @@ export default {
 
 <style lang="less" scoped>
 @cell: #2d1545;
-@muted: #b8a8d4;
+@muted: #d7a2fa;
 @gold: #ffa300;
 @gold-soft: #ffe4b5;
 @gold-deep: #e9a843;

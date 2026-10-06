@@ -16,14 +16,21 @@
         <!-- Header -->
         <div class="fr-popup__header">
           <div class="fr-popup__grid-bg"></div>
-          <p class="fr-popup__mission">{{ $lang.fr_limited_offer || 'Limited Time Offer' }}</p>
+          <p class="fr-popup__mission">
+            {{ $lang.fr_limited_offer || "Limited Time Offer" }}
+          </p>
           <p class="fr-popup__subtitle">
-            {{ $lang.fr_title_short || 'First' }} <span class="fr-popup__highlight">{{ $lang.fr_bonus || 'Recharge' }}</span>
+            {{ $lang.fr_title_short || "First" }}
+            <span class="fr-popup__highlight">{{
+              $lang.fr_bonus || "Recharge"
+            }}</span>
           </p>
 
           <!-- Countdown: before purchase → buy deadline; after purchase → next claim unlock -->
           <div v-if="headerCountdown" class="fr-popup__timer">
-            <span class="fr-popup__timer-label">{{ headerCountdownLabel }}</span>
+            <span class="fr-popup__timer-label">{{
+              headerCountdownLabel
+            }}</span>
             <span class="fr-popup__timer-digits">{{ headerCountdown }}</span>
           </div>
         </div>
@@ -33,22 +40,31 @@
           <div class="fr-popup__price-card">
             <div class="fr-popup__price-main">
               <span class="fr-popup__price-currency">{{ liveCurrency }}</span>
-              <span class="fr-popup__price">{{ $formatNumberWithCommas(price) }}</span>
+              <span class="fr-popup__price">{{
+                $formatNumberWithCommas(price)
+              }}</span>
             </div>
             <div v-if="originalPrice" class="fr-popup__price-meta">
-              <span class="fr-popup__original-price">{{ liveCurrency }} {{ $formatNumberWithCommas(originalPrice) }}</span>
-              <span v-if="discountPercent > 0" class="fr-popup__discount">-{{ discountPercent }}%</span>
+              <span class="fr-popup__original-price"
+                >{{ liveCurrency }}
+                {{ $formatNumberWithCommas(originalPrice) }}</span
+              >
+              <span v-if="discountPercent > 0" class="fr-popup__discount"
+                >-{{ discountPercent }}%</span
+              >
             </div>
           </div>
           <button class="fr-popup__btn" :disabled="!price" @click="buyGiftPack">
             {{ ctaText }}
           </button>
           <p class="fr-popup__up-to">
-            {{ $lang.fr_up_to_prefix || 'Receive up to' }}
+            {{ $lang.fr_up_to_prefix || "Receive up to" }}
             <span class="fr-popup__up-to-percent">{{ upToBonusText }}</span>
-            {{ $lang.fr_up_to_suffix || 'rewards.' }}
+            {{ $lang.fr_up_to_suffix || "rewards." }}
           </p>
-          <p class="fr-popup__disclaimer">{{ $lang.fd_limited_one || 'Limited to one purchase per user.' }}</p>
+          <p class="fr-popup__disclaimer">
+            {{ $lang.fd_limited_one || "Limited to one purchase per user." }}
+          </p>
         </div>
 
         <!-- Purchased: show 3-day claim list -->
@@ -58,11 +74,19 @@
               v-for="day in dayList"
               :key="day.index"
               class="fr-popup__day"
-              :class="{ 'is-claimable': day.status === 1, 'is-claimed': day.status === 2, 'is-locked': day.status === 0 }"
+              :class="{
+                'is-claimable': day.status === 1,
+                'is-claimed': day.status === 2,
+                'is-locked': day.status === 0,
+              }"
             >
               <div class="fr-popup__day-label">
-                <span class="fr-popup__day-title">{{ ($lang.fr_day || 'Day') + ' ' + day.index }}</span>
-                <span v-if="day.amountText" class="fr-popup__day-amount">{{ day.amountText }}</span>
+                <span class="fr-popup__day-title">{{
+                  ($lang.fr_day || "Day") + " " + day.index
+                }}</span>
+                <span v-if="day.amountText" class="fr-popup__day-amount">{{
+                  day.amountText
+                }}</span>
               </div>
               <button
                 v-if="day.status === 1"
@@ -70,17 +94,26 @@
                 :disabled="claimingDay === day.index"
                 @click="claimDay(day.index)"
               >
-                {{ claimingDay === day.index ? '...' : ($lang.fd_claim_now || 'Claim') }}
+                {{
+                  claimingDay === day.index
+                    ? "..."
+                    : $lang.fd_claim_now || "Claim"
+                }}
               </button>
-              <span v-else-if="day.status === 2" class="fr-popup__day-btn is-done">
-                {{ $lang.fr_claimed || 'Claimed' }}
+              <span
+                v-else-if="day.status === 2"
+                class="fr-popup__day-btn is-done"
+              >
+                {{ $lang.fr_claimed || "Claimed" }}
               </span>
               <span v-else class="fr-popup__day-btn is-lock">
-                {{ day.availableText || ($lang.fr_locked || 'Locked') }}
+                {{ day.availableText || $lang.fr_locked || "Locked" }}
               </span>
             </div>
           </div>
-          <p class="fr-popup__disclaimer">{{ $lang.fr_daily_hint || 'Return each day to claim your reward.' }}</p>
+          <p class="fr-popup__disclaimer">
+            {{ $lang.fr_daily_hint || "Return each day to claim your reward." }}
+          </p>
         </div>
       </div>
     </van-popup>
@@ -99,26 +132,23 @@
 </template>
 
 <script>
-import { ReceiveNewPlayerGiftPack } from '@/api/common'
-import { reportPromoPanel } from '@/utils/common'
-import {
-  goPayUrl,
-  closePayWindow
-} from '@/utils/payRedirect'
-import GiftPaySheet from '@/components/GiftPaySheet.vue'
+import { ReceiveNewPlayerGiftPack } from "@/api/common";
+import { reportPromoPanel } from "@/utils/common";
+import { goPayUrl, closePayWindow } from "@/utils/payRedirect";
+import GiftPaySheet from "@/components/GiftPaySheet.vue";
 
 export default {
-  name: 'FirstRechargePopup',
+  name: "FirstRechargePopup",
   components: { GiftPaySheet },
   props: {
     modelValue: {
       type: Boolean,
-      default: false
+      default: false,
     },
     packData: {
       type: Object,
-      default: null
-    }
+      default: null,
+    },
   },
   data() {
     return {
@@ -126,213 +156,242 @@ export default {
       nowTs: Math.floor(Date.now() / 1000),
       tickTimer: null,
       showPayIframe: false,
-      payIframeUrl: '',
-      showPaySheet: false
-    }
+      payIframeUrl: "",
+      showPaySheet: false,
+    };
   },
   computed: {
     // 实时国家货币（避免 App 启动早于登录时 mixin 拍下空快照）
     liveCurrency() {
-      return localStorage.getItem('currency') || this.getCurrency || ''
+      return localStorage.getItem("currency") || this.getCurrency || "";
     },
     isPurchased() {
-      return this.packData && Number(this.packData.purchased) === 1
+      return this.packData && Number(this.packData.purchased) === 1;
     },
     price() {
-      return (this.packData && this.packData.price) || 0
+      return (this.packData && this.packData.price) || 0;
     },
     originalPrice() {
-      return (this.packData && this.packData.originalPrice) || ''
+      return (this.packData && this.packData.originalPrice) || "";
     },
     promoType() {
-      return (this.packData && this.packData.promoType) || 'first_recharge_new_1'
+      return (
+        (this.packData && this.packData.promoType) || "first_recharge_new_1"
+      );
     },
     ctaText() {
-      return this.$lang.fr_recharge_now || 'Recharge Now'
+      return this.$lang.fr_recharge_now || "Recharge Now";
     },
     /** 百分比 = price / originalPrice * 100（与页面 Day1 文案同一套） */
     discountPercent() {
-      const p = Number(this.price) || 0
-      const o = Number(this.originalPrice) || 0
-      if (!o || p <= 0) return 0
-      return Math.round((p / o) * 100)
+      const p = Number(this.price) || 0;
+      const o = Number(this.originalPrice) || 0;
+      if (!o || p <= 0) return 0;
+      return Math.round((p / o) * 100);
     },
     /** 入账金额 = price + immediateBonus + day2Max + day3Max */
     creditTotalAmount() {
-      const d = this.packData || {}
+      const d = this.packData || {};
       return (
         (Number(d.price) || 0) +
         (Number(d.immediateBonus) || 0) +
         (Number(d.day2Max) || 0) +
         (Number(d.day3Max) || 0)
-      )
+      );
     },
     /** 展示：+ MXN 158（货币在加号后、金额前） */
     upToBonusText() {
-      const total = this.creditTotalAmount
-      if (!total) return ''
+      const total = this.creditTotalAmount;
+      if (!total) return "";
       const amount = this.$formatNumberWithCommas
         ? this.$formatNumberWithCommas(total)
-        : total
-      const currency = this.liveCurrency || ''
-      return '+ ' + currency + ' ' + amount
+        : total;
+      const currency = this.liveCurrency || "";
+      return "+ " + currency + " " + amount;
     },
     headerTargetSec() {
-      if (!this.packData) return 0
+      if (!this.packData) return 0;
       const toSec = (t) => {
-        const n = Number(t) || 0
-        return n > 1e12 ? Math.floor(n / 1000) : n
-      }
+        const n = Number(t) || 0;
+        return n > 1e12 ? Math.floor(n / 1000) : n;
+      };
       if (this.isPurchased) {
         const times = [1, 2, 3]
-          .map(i => toSec(this.packData['day' + i + 'AvailableTime']))
-          .filter(t => t > this.nowTs)
-          .sort((a, b) => a - b)
-        return times[0] || 0
+          .map((i) => toSec(this.packData["day" + i + "AvailableTime"]))
+          .filter((t) => t > this.nowTs)
+          .sort((a, b) => a - b);
+        return times[0] || 0;
       }
-      return toSec(this.packData.expireTime)
+      return toSec(this.packData.expireTime);
     },
     headerCountdownLabel() {
-      if (this.isPurchased) return this.$lang.fr_next_unlock || 'Next Unlock'
-      return this.$lang.fd_critical_deadline || 'Ends In'
+      if (this.isPurchased) return this.$lang.fr_next_unlock || "Next Unlock";
+      return this.$lang.fd_critical_deadline || "Ends In";
     },
     headerCountdown() {
-      const target = this.headerTargetSec
-      if (!target) return ''
-      const diff = target - this.nowTs
-      if (diff <= 0) return ''
-      const d = Math.floor(diff / 86400)
-      const h = Math.floor((diff % 86400) / 3600)
-      const m = Math.floor((diff % 3600) / 60)
-      const s = diff % 60
+      const target = this.headerTargetSec;
+      if (!target) return "";
+      const diff = target - this.nowTs;
+      if (diff <= 0) return "";
+      const d = Math.floor(diff / 86400);
+      const h = Math.floor((diff % 86400) / 3600);
+      const m = Math.floor((diff % 3600) / 60);
+      const s = diff % 60;
       if (d > 0) {
-        return d + 'd ' +
-          String(h).padStart(2, '0') + ':' +
-          String(m).padStart(2, '0') + ':' +
-          String(s).padStart(2, '0')
+        return (
+          d +
+          "d " +
+          String(h).padStart(2, "0") +
+          ":" +
+          String(m).padStart(2, "0") +
+          ":" +
+          String(s).padStart(2, "0")
+        );
       }
       return (
-        String(h).padStart(2, '0') + ':' +
-        String(m).padStart(2, '0') + ':' +
-        String(s).padStart(2, '0')
-      )
+        String(h).padStart(2, "0") +
+        ":" +
+        String(m).padStart(2, "0") +
+        ":" +
+        String(s).padStart(2, "0")
+      );
     },
     dayList() {
-      if (!this.packData) return []
+      if (!this.packData) return [];
       // 货币始终用本地国家
-      const currency = this.liveCurrency || this.packData.currency || ''
-      const fmt = (n) => this.$formatNumberWithCommas ? this.$formatNumberWithCommas(n) : n
+      const currency = this.liveCurrency || this.packData.currency || "";
+      const fmt = (n) =>
+        this.$formatNumberWithCommas ? this.$formatNumberWithCommas(n) : n;
       const amountFor = (i) => {
         if (i === 1) {
-          const v = Number(this.packData.immediateBonus || 0)
-          return v ? (currency + ' ' + fmt(v)) : ''
+          const v = Number(this.packData.immediateBonus || 0);
+          return v ? currency + " " + fmt(v) : "";
         }
-        if (i === 3) return '???'
-        const min = Number(this.packData['day' + i + 'Min'] || 0)
-        const max = Number(this.packData['day' + i + 'Max'] || 0)
-        if (!min && !max) return ''
+        if (i === 3) return "???";
+        const min = Number(this.packData["day" + i + "Min"] || 0);
+        const max = Number(this.packData["day" + i + "Max"] || 0);
+        if (!min && !max) return "";
         if (!min || !max || min === max) {
-          return currency + ' ' + fmt(min || max)
+          return currency + " " + fmt(min || max);
         }
-        return currency + ' ' + fmt(min) + ' ~ ' + fmt(max)
-      }
-      return [1, 2, 3].map(i => {
-        const status = Number(this.packData['day' + i + 'Status'] || 0)
-        let availableTime = Number(this.packData['day' + i + 'AvailableTime'] || 0)
-        if (availableTime > 1e12) availableTime = Math.floor(availableTime / 1000)
-        let availableText = ''
+        return currency + " " + fmt(min) + " ~ " + fmt(max);
+      };
+      return [1, 2, 3].map((i) => {
+        const status = Number(this.packData["day" + i + "Status"] || 0);
+        let availableTime = Number(
+          this.packData["day" + i + "AvailableTime"] || 0,
+        );
+        if (availableTime > 1e12)
+          availableTime = Math.floor(availableTime / 1000);
+        let availableText = "";
         if (status === 0 && availableTime > 0) {
-          const diff = availableTime - this.nowTs
+          const diff = availableTime - this.nowTs;
           if (diff > 0) {
-            const h = Math.floor(diff / 3600)
-            const m = Math.floor((diff % 3600) / 60)
-            availableText = h + 'h ' + m + 'm'
+            const h = Math.floor(diff / 3600);
+            const m = Math.floor((diff % 3600) / 60);
+            availableText = h + "h " + m + "m";
           }
         }
-        return { index: i, status, availableTime, availableText, amountText: amountFor(i) }
-      })
-    }
+        return {
+          index: i,
+          status,
+          availableTime,
+          availableText,
+          amountText: amountFor(i),
+        };
+      });
+    },
   },
   watch: {
     modelValue(v, oldV) {
       if (v) {
-        this.startTick()
-        if (!oldV) reportPromoPanel('new_player_giftpack', 1)
+        this.startTick();
+        if (!oldV) reportPromoPanel("new_player_giftpack", 1);
       } else {
-        this.stopTick()
-        if (oldV) reportPromoPanel('new_player_giftpack', 2)
+        this.stopTick();
+        if (oldV) reportPromoPanel("new_player_giftpack", 2);
       }
     },
     showPayIframe(v) {
-      if (!v) this.payIframeUrl = ''
-    }
+      if (!v) this.payIframeUrl = "";
+    },
   },
   beforeUnmount() {
-    this.stopTick()
+    this.stopTick();
   },
   methods: {
     handleClose() {
-      this.$emit('update:modelValue', false)
+      this.$emit("update:modelValue", false);
     },
     startTick() {
-      this.stopTick()
-      this.nowTs = Math.floor(Date.now() / 1000)
+      this.stopTick();
+      this.nowTs = Math.floor(Date.now() / 1000);
       this.tickTimer = setInterval(() => {
-        this.nowTs = Math.floor(Date.now() / 1000)
-      }, 1000)
+        this.nowTs = Math.floor(Date.now() / 1000);
+      }, 1000);
     },
     stopTick() {
       if (this.tickTimer) {
-        clearInterval(this.tickTimer)
-        this.tickTimer = null
+        clearInterval(this.tickTimer);
+        this.tickTimer = null;
       }
     },
     buyGiftPack() {
-      if (!this.price || this.showPaySheet) return
-      this.showPaySheet = true
+      if (!this.price || this.showPaySheet) return;
+      this.showPaySheet = true;
     },
     onGiftPaySuccess({ url, payWin, isUsRedirect }) {
-      this.$emit('update:modelValue', false)
+      this.$emit("update:modelValue", false);
       if (url) {
         if (isUsRedirect) {
-          goPayUrl(payWin, url)
+          goPayUrl(payWin, url);
         } else {
-          closePayWindow(payWin)
+          closePayWindow(payWin);
           this.$nextTick(() => {
-            this.payIframeUrl = url
-            this.showPayIframe = true
-          })
+            this.payIframeUrl = url;
+            this.showPayIframe = true;
+          });
         }
       } else {
-        closePayWindow(payWin)
-        this.$toast({ message: this.$lang.bonus_txt16 || 'Success', icon: 'success' })
+        closePayWindow(payWin);
+        this.$toast({
+          message: this.$lang.bonus_txt16 || "Success",
+          icon: "success",
+        });
       }
-      this.$emit('refresh')
+      this.$emit("refresh");
     },
     async claimDay(dayIndex) {
-      if (this.claimingDay) return
-      this.claimingDay = dayIndex
+      if (this.claimingDay) return;
+      this.claimingDay = dayIndex;
       try {
-        const res = await ReceiveNewPlayerGiftPack({ dayIndex })
-        if (res && res.status === 'ok') {
-          const amount = res.content && (res.content.amount || res.content.reward)
+        const res = await ReceiveNewPlayerGiftPack({ dayIndex });
+        if (res && res.status === "ok") {
+          const amount =
+            res.content && (res.content.amount || res.content.reward);
           const msg = amount
-            ? '+' + this.$formatNumberWithCommas(amount) + ' ' + (this.getCurrency || '')
-            : (this.$lang.bonus_txt16 || 'Success')
-          this.$toast({ message: msg, icon: 'success' })
-          this.$emit('refresh')
+            ? "+" +
+              this.$formatNumberWithCommas(amount) +
+              " " +
+              (this.getCurrency || "")
+            : this.$lang.bonus_txt16 || "Success";
+          this.$toast({ message: msg, icon: "success" });
+          this.$emit("refresh");
         } else {
-          this.$toast({ message: (res && res.msg) || 'Failed', icon: 'cross' })
+          this.$toast({ message: (res && res.msg) || "Failed", icon: "cross" });
         }
       } catch (e) {
-        console.error('claimDay error', e)
-        this.$toast({ message: this.$lang.network_error || 'Network error', icon: 'cross' })
+        console.error("claimDay error", e);
+        this.$toast({
+          message: this.$lang.network_error || "Network error",
+          icon: "cross",
+        });
       } finally {
-        this.claimingDay = 0
+        this.claimingDay = 0;
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style lang="less" scoped>
@@ -343,7 +402,7 @@ export default {
 @fr-green: @primary-color;
 @fr-red: #dc2626;
 @fr-bg: #12021a;
-@muted: #b8a8d4;
+@muted: #d7a2fa;
 @gold-soft: #ffe4b5;
 
 .fr-popup-wrapper {
@@ -361,8 +420,9 @@ export default {
   border: 2px solid fade(@border-color, 55%);
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6),
-              0 0 24px fade(@primary-color, 20%);
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.6),
+    0 0 24px fade(@primary-color, 20%);
 
   &__close {
     position: absolute;
@@ -382,14 +442,21 @@ export default {
     align-items: center;
     text-align: center;
     border-bottom: 1px solid fade(@border-color, 18%);
-    background: linear-gradient(180deg, fade(@primary-color, 18%), fade(@cont-bg, 40%));
+    background: linear-gradient(
+      180deg,
+      fade(@primary-color, 18%),
+      fade(@cont-bg, 40%)
+    );
     overflow: hidden;
   }
 
   &__grid-bg {
     position: absolute;
     inset: 0;
-    background-image: radial-gradient(fade(@fr-accent, 18%) 1px, transparent 1px);
+    background-image: radial-gradient(
+      fade(@fr-accent, 18%) 1px,
+      transparent 1px
+    );
     background-size: 20px 20px;
     opacity: 0.4;
     pointer-events: none;
@@ -465,7 +532,11 @@ export default {
     padding: 14px 12px 12px;
     margin-bottom: 14px;
     border-radius: 12px;
-    background: linear-gradient(180deg, fade(@primary-color3, 14%), fade(@primary-color, 10%));
+    background: linear-gradient(
+      180deg,
+      fade(@primary-color3, 14%),
+      fade(@primary-color, 10%)
+    );
     border: 1px solid fade(@border-color, 35%);
   }
 

@@ -1,6 +1,6 @@
 <template>
   <div class="invite">
-    <!-- My link + Quick Sharing -->
+    <!-- 图一：链卡框 share_list2 + My link / Quick Sharing -->
     <section class="invite-card">
       <p class="invite-card__label">{{ $lang.common_txt57 }}</p>
       <div v-if="inviteCode" class="invite-link">
@@ -25,111 +25,128 @@
       </div>
     </section>
 
-    <!-- Hierarchy -->
+    <!-- 图二：层级 -->
     <section class="invite-block">
-      <h3 class="invite-title">{{ $lang.common_txt34 }}</h3>
+      <h3
+        style="
+          font-size: 14px;
+          font-weight: 700;
+          color: #ffffff;
+          margin-bottom: 10px;
+          text-align: center;
+          margin: 14px 0;
+        "
+      >
+        {{ $lang.common_txt34 }}
+      </h3>
       <div class="invite-media">
         <img src="../../assets/img/share/share-fx.png" alt="" />
       </div>
     </section>
 
-    <!-- Invite reward rules -->
+    <!-- 图二：规则整图作背景，正文落在空心紫框内 -->
     <section class="invite-rules-doc">
-      <h2 class="invite-rules-doc__title">{{ $lang.share_rules_title }}</h2>
-      <p class="invite-rules-doc__tags">{{ $lang.share_rules_tags }}</p>
+      <div class="invite-rules-doc__body">
+        <h3 class="invite-section-title">
+          {{ $lang.share_rules_intro_title }}
+        </h3>
+        <p class="invite-section-desc">{{ $lang.share_rules_intro_desc }}</p>
 
-      <h3 class="invite-section-title">{{ $lang.share_rules_intro_title }}</h3>
-      <p class="invite-section-desc">{{ $lang.share_rules_intro_desc }}</p>
+        <h3 class="invite-section-title">
+          {{ $lang.share_rules_first_deposit_title }}
+        </h3>
+        <p class="invite-section-desc">
+          {{ $lang.share_rules_first_deposit_desc }}
+        </p>
+        <div class="invite-table invite-table--4col">
+          <div class="invite-table__head">
+            <p>{{ $lang.share_rules_fd_col_amount }}</p>
+            <p>{{ $lang.share_rules_fd_col_l1 }}</p>
+            <p>{{ $lang.share_rules_fd_col_l2 }}</p>
+            <p>{{ $lang.share_rules_fd_col_l3 }}</p>
+          </div>
+          <div
+            v-for="(item, index) in firstDepositRows"
+            :key="'fd-' + index"
+            class="invite-table__row"
+            :class="{ 'invite-table__row--alt': index % 2 === 1 }"
+          >
+            <p>{{ item.amount }}</p>
+            <p>{{ item.l1 }}</p>
+            <p>{{ item.l2 }}</p>
+            <p class="invite-table__rate">{{ item.l3 }}</p>
+          </div>
+        </div>
+        <p class="invite-note">{{ $lang.share_rules_first_deposit_note }}</p>
 
-      <h3 class="invite-section-title">
-        {{ $lang.share_rules_first_deposit_title }}
-      </h3>
-      <p class="invite-section-desc">
-        {{ $lang.share_rules_first_deposit_desc }}
-      </p>
-      <div class="invite-table invite-table--4col">
-        <div class="invite-table__head">
-          <p>{{ $lang.share_rules_fd_col_amount }}</p>
-          <p>{{ $lang.share_rules_fd_col_l1 }}</p>
-          <p>{{ $lang.share_rules_fd_col_l2 }}</p>
-          <p>{{ $lang.share_rules_fd_col_l3 }}</p>
+        <h3 class="invite-section-title">
+          {{ $lang.share_rules_betting_title }}
+        </h3>
+        <p class="invite-section-desc">{{ $lang.share_rules_betting_desc }}</p>
+        <div class="invite-table invite-table--2col">
+          <div class="invite-table__head">
+            <p>{{ $lang.share_rules_bet_col_level }}</p>
+            <p>{{ $lang.share_rules_bet_col_rate }}</p>
+          </div>
+          <div
+            v-for="(item, index) in bettingRows"
+            :key="'bet-' + index"
+            class="invite-table__row"
+            :class="{ 'invite-table__row--alt': index % 2 === 1 }"
+          >
+            <p>{{ $lang[item.levelKey] }}</p>
+            <p class="invite-table__rate">{{ item.rate }}</p>
+          </div>
         </div>
-        <div
-          v-for="(item, index) in firstDepositRows"
-          :key="'fd-' + index"
-          class="invite-table__row"
-          :class="{ 'invite-table__row--alt': index % 2 === 0 }"
-        >
-          <p>{{ item.amount }}</p>
-          <p>{{ item.l1 }}</p>
-          <p>{{ item.l2 }}</p>
-          <p class="invite-table__rate">{{ item.l3 }}</p>
+        <p class="invite-note">{{ $lang.share_rules_betting_settlement }}</p>
+
+        <h3 class="invite-section-title">
+          {{ $lang.share_rules_cumulative_title }}
+        </h3>
+        <p class="invite-section-desc">
+          {{ $lang.share_rules_cumulative_desc }}
+        </p>
+        <div class="invite-table invite-table--4col invite-table--compact">
+          <div class="invite-table__head">
+            <p>{{ $lang.share_rules_cum_col_count }}</p>
+            <p>{{ $lang.share_rules_cum_col_l1 }}</p>
+            <p>{{ $lang.share_rules_cum_col_l2 }}</p>
+            <p>{{ $lang.share_rules_cum_col_l3 }}</p>
+          </div>
+          <div
+            v-for="(item, index) in cumulativeRows"
+            :key="'cum-' + index"
+            class="invite-table__row"
+            :class="{ 'invite-table__row--alt': index % 2 === 1 }"
+          >
+            <p>{{ item.count }}</p>
+            <p>{{ item.l1 }}</p>
+            <p>{{ item.l2 }}</p>
+            <p class="invite-table__rate">{{ item.l3 }}</p>
+          </div>
         </div>
+
+        <h3 class="invite-section-title">
+          {{ $lang.share_rules_invite_method_title }}
+        </h3>
+        <p class="invite-section-desc">
+          {{ $lang.share_rules_invite_method_desc }}
+        </p>
+
+        <h3 class="invite-section-title">
+          {{ $lang.share_rules_settlement_title }}
+        </h3>
+        <ol class="invite-rules-list">
+          <li
+            v-for="(key, index) in settlementRuleKeys"
+            :key="'settle-' + index"
+          >
+            {{ $lang[key] }}
+          </li>
+        </ol>
+
+        <p class="invite-rules-doc__cta">{{ $lang.share_rules_footer_cta }}</p>
       </div>
-      <p class="invite-note">{{ $lang.share_rules_first_deposit_note }}</p>
-
-      <h3 class="invite-section-title">
-        {{ $lang.share_rules_betting_title }}
-      </h3>
-      <p class="invite-section-desc">{{ $lang.share_rules_betting_desc }}</p>
-      <div class="invite-table invite-table--2col">
-        <div class="invite-table__head">
-          <p>{{ $lang.share_rules_bet_col_level }}</p>
-          <p>{{ $lang.share_rules_bet_col_rate }}</p>
-        </div>
-        <div
-          v-for="(item, index) in bettingRows"
-          :key="'bet-' + index"
-          class="invite-table__row"
-          :class="{ 'invite-table__row--alt': index % 2 === 0 }"
-        >
-          <p>{{ $lang[item.levelKey] }}</p>
-          <p class="invite-table__rate">{{ item.rate }}</p>
-        </div>
-      </div>
-      <p class="invite-note">{{ $lang.share_rules_betting_settlement }}</p>
-
-      <h3 class="invite-section-title">
-        {{ $lang.share_rules_cumulative_title }}
-      </h3>
-      <p class="invite-section-desc">{{ $lang.share_rules_cumulative_desc }}</p>
-      <div class="invite-table invite-table--4col invite-table--compact">
-        <div class="invite-table__head">
-          <p>{{ $lang.share_rules_cum_col_count }}</p>
-          <p>{{ $lang.share_rules_cum_col_l1 }}</p>
-          <p>{{ $lang.share_rules_cum_col_l2 }}</p>
-          <p>{{ $lang.share_rules_cum_col_l3 }}</p>
-        </div>
-        <div
-          v-for="(item, index) in cumulativeRows"
-          :key="'cum-' + index"
-          class="invite-table__row"
-          :class="{ 'invite-table__row--alt': index % 2 === 0 }"
-        >
-          <p>{{ item.count }}</p>
-          <p>{{ item.l1 }}</p>
-          <p>{{ item.l2 }}</p>
-          <p class="invite-table__rate">{{ item.l3 }}</p>
-        </div>
-      </div>
-
-      <h3 class="invite-section-title">
-        {{ $lang.share_rules_invite_method_title }}
-      </h3>
-      <p class="invite-section-desc">
-        {{ $lang.share_rules_invite_method_desc }}
-      </p>
-
-      <h3 class="invite-section-title">
-        {{ $lang.share_rules_settlement_title }}
-      </h3>
-      <ol class="invite-rules-list">
-        <li v-for="(key, index) in settlementRuleKeys" :key="'settle-' + index">
-          {{ $lang[key] }}
-        </li>
-      </ol>
-
-      <p class="invite-rules-doc__cta">{{ $lang.share_rules_footer_cta }}</p>
     </section>
   </div>
 </template>
@@ -168,14 +185,14 @@ export default {
           img: require("@/assets/img/common/img_facebook.png"),
           name: "Facebook",
         },
-        {
-          img: require("@/assets/img/common/douyin.png"),
-          name: "TikTok",
-        },
-        {
-          img: require("@/assets/img/common/img_x.png"),
-          name: "X",
-        },
+        // {
+        //   img: require("@/assets/img/common/douyin.png"),
+        //   name: "TikTok",
+        // },
+        // {
+        //   img: require("@/assets/img/common/img_x.png"),
+        //   name: "X",
+        // },
       ],
       firstDepositRows: [
         { amount: "9.99", l1: "3", l2: "2", l3: "1" },
@@ -274,43 +291,43 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@bg: #1a0a28;
-@gold: #ffa300;
-@gold-soft: #ffe4b5;
-@gold-deep: #e9a843;
-@btn-grad: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
-@card-bg: linear-gradient(0deg, #1a0a28 13.46%, #2d1545 100%);
-@card-border: 0.25px solid #ffebc0;
-/* 图一吸色：左暖橄榄 → 右近黑 */
-@fx-bg: linear-gradient(
-  100deg,
-  #433e27 0%,
-  #3a3523 22%,
-  #2b271b 48%,
-  #1a1812 78%,
-  #13120d 100%
-);
-@fx-border: 1px solid #877d60;
-@muted: #b8a8d4;
+@page-bg: #15031d;
+@panel: #361a50;
+@panel-deep: #1e0a3a;
+@purple-line: #8e51c1;
+@purple-soft: #9b6dff;
+@gold: #ffd36a;
+@gold-soft: #ffe9a8;
+@muted: #d7a2fa;
+@copy-grad: linear-gradient(180deg, #3be59f 0%, #00b56a 100%);
+@title-bg: url("../../assets/img/share/share_title.png");
 
 .invite {
   padding: 4px 12px 80px;
   color: #fff;
 }
 
+/* 图一：链卡整图作背景（image 23470 → share_list2） */
 .invite-card {
-  background: @fx-bg;
-  border: @fx-border;
-  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
   box-sizing: border-box;
-  padding: 14px 12px 16px;
+  /* 头区留给链标装饰，内容落在空心紫区内 */
+  padding: 78px 18px 20px;
+  background-color: @panel;
+  background-image: url("../../assets/img/share/share_list2.png");
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-size: 100% 100%;
+  box-shadow: 0 0 22px fade(@purple-soft, 40%);
+  min-height: 260px;
 }
 
 .invite-card__label {
-  margin: 0 0 8px;
-  font-size: 15px;
+  margin: 20px 0 8px;
+  font-size: 12px;
   font-weight: 700;
-  color: #fff;
+  color: #edd8fb;
 }
 
 .invite-link {
@@ -318,9 +335,9 @@ export default {
   align-items: center;
   gap: 8px;
   min-width: 0;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid fade(@gold-deep, 35%);
-  border-radius: 10px;
+  background: rgba(10, 2, 22, 0.75);
+  border: 1px solid fade(@purple-line, 50%);
+  border-radius: 999px;
   padding: 6px 8px 6px 12px;
 }
 
@@ -330,8 +347,9 @@ export default {
   margin: 0;
   font-size: 12px;
   line-height: 1.4;
-  color: rgba(255, 255, 255, 0.88);
+  color: #ffffff;
   word-break: break-all;
+  font-weight: 700;
 }
 
 .invite-link__copy {
@@ -339,22 +357,22 @@ export default {
   border: none;
   outline: none;
   cursor: pointer;
-  background: @btn-grad;
-  color: #573900;
+  background: @copy-grad;
+  color: #fff;
   font-size: 12px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.3px;
   border-radius: 16px;
   padding: 7px 14px;
+  box-shadow: 0 3px 0 #007a48;
 }
 
 .invite-card__share-title {
-  margin: 14px 0 10px;
-  text-align: center;
-  font-size: 14px;
+  margin: 16px 0 10px;
+  font-size: 12px;
   font-weight: 700;
-  color: #fff;
+  color: #edd8fb;
 }
 
 .invite-share {
@@ -379,73 +397,73 @@ export default {
 }
 
 .invite-share__icon {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   margin: 0 auto;
-  background: none;
-  border: none;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.28);
 
   img {
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     object-fit: contain;
   }
 }
 
 .invite-share__name {
   margin: 6px 0 0;
-  font-size: 9px;
+  font-size: 8px;
   line-height: 1.2;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.92);
   white-space: nowrap;
+  font-weight: 700;
 }
 
-.invite-block {
-  margin-top: 18px;
+/* 标题条：share_title（金星胶囊） */
+.invite-title,
+.invite-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 14px 0 10px;
+  min-height: 50px;
+  padding: 5px 40px 0;
+  box-sizing: border-box;
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.25;
+  text-align: center;
+  letter-spacing: 0.2px;
+  background: @title-bg center center / 100% 100% no-repeat;
+  border: none;
 }
 
 .invite-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
   margin: 0 0 10px;
-  font-size: 15px;
-  font-weight: 700;
-  color: #fff;
-  line-height: 1.3;
-
-  &::before {
-    content: "";
-    flex-shrink: 0;
-    width: 3px;
-    height: 16px;
-    border-radius: 2px;
-    background: @btn-grad;
-  }
+  text-transform: uppercase;
+  font-size: 12px;
+  min-height: 44px;
+  padding: 0 44px;
 }
 
 .invite-media {
-  background: @fx-bg;
-  border: @fx-border;
-  border-radius: 12px;
-  box-sizing: border-box;
-  padding: 8px;
   overflow: hidden;
 
   img {
     display: block;
     width: 100%;
-    border-radius: 8px;
+    vertical-align: top;
   }
 }
 
 .invite-table {
-  background: @card-bg;
-  // border: @card-border;
-  border-radius: 8px;
+  background: rgba(18, 6, 40, 0.72);
+  border: 1px solid fade(@purple-line, 50%);
+  border-radius: 10px;
   box-sizing: border-box;
   overflow: hidden;
 }
@@ -466,28 +484,40 @@ export default {
 
 .invite-table__head {
   padding: 12px 8px;
-  background: rgba(255, 163, 0, 0.12);
-  color: @gold-soft;
+  background: #512275;
+  color: #d7a2fa;
   font-weight: 700;
 }
 
 .invite-table__row {
   padding: 12px 8px;
-  color: @gold;
   font-weight: 700;
+  background: #79218f;
 
+  /* 圈中列：白字 */
   p {
-    color: @gold;
+    color: #ffffff;
     font-weight: 700;
   }
 
+  /* 第二行起间隔：#4B0E5D */
   &--alt {
-    background: rgba(255, 255, 255, 0.03);
+    background: #4b0e5d;
   }
 }
 
-.invite-table__rate {
+/* 4 列表：首列金额金色，奖励列白字 */
+.invite-table--4col .invite-table__row p:first-child {
+  color: @gold;
+}
+
+/* 2 列表：等级列白字，返水比例金色 */
+.invite-table--2col .invite-table__row .invite-table__rate {
   color: @gold !important;
+}
+
+.invite-table__rate {
+  color: #ffffff !important;
   font-weight: 700;
 }
 
@@ -514,35 +544,23 @@ export default {
   }
 }
 
+/* 图二：share_rules 整图背景（头图角色+标题在图内，正文落空心区） */
 .invite-rules-doc {
+  position: relative;
   margin-top: 18px;
-  padding: 14px 10px 8px;
-  background: @fx-bg;
-  border: @fx-border;
-  border-radius: 12px;
+  overflow: hidden;
+  box-sizing: border-box;
+  /* 顶部留给角色/标题装饰，内容从紫框空心区起 */
+  padding: 135px 14px 22px;
+  background-image: url("../../assets/img/share/share_rules.png");
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-size: 100% 100%;
 }
 
-.invite-rules-doc__title {
-  margin: 0 0 8px;
-  text-align: center;
-  font-size: 16px;
-  font-weight: 700;
-  color: @gold-soft;
-}
-
-.invite-rules-doc__tags {
-  margin: 0 0 14px;
-  text-align: center;
-  font-size: 11px;
-  line-height: 1.5;
-  color: @muted;
-}
-
-.invite-section-title {
-  margin: 16px 0 8px;
-  font-size: 14px;
-  font-weight: 700;
-  color: #fff;
+.invite-rules-doc__body {
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .invite-section-desc,
@@ -550,19 +568,19 @@ export default {
   margin: 0 0 10px;
   font-size: 12px;
   line-height: 1.65;
-  color: @muted;
+  color: #ffffff;
 }
 
 .invite-note {
   margin-top: 8px;
-  color: fade(@gold-soft, 85%);
+  color: #ffffff;
 }
 
 .invite-rules-list {
   margin: 0;
   font-size: 12px;
   line-height: 1.65;
-  color: @muted;
+  color: #ffffff;
 
   li + li {
     margin-top: 8px;
@@ -571,62 +589,9 @@ export default {
 
 .invite-rules-doc__cta {
   margin: 16px 0 4px;
-  text-align: center;
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1.5;
-  color: @gold-soft;
-}
-
-.invite-rules-head {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 22px 0 12px;
-}
-
-.invite-rules-head__text {
-  flex-shrink: 0;
   font-size: 14px;
-  font-weight: 700;
-  color: #fff;
-  padding: 0 10px;
-}
-
-.invite-rules-head__line {
-  flex: 1;
-  height: 2px;
-  max-width: 72px;
-
-  &--l {
-    background: linear-gradient(
-      90deg,
-      rgba(255, 163, 0, 0) 0%,
-      fade(@gold, 80%) 100%
-    );
-  }
-
-  &--r {
-    background: linear-gradient(
-      90deg,
-      fade(@gold, 80%) 0%,
-      rgba(255, 163, 0, 0) 100%
-    );
-  }
-}
-
-.invite-rules {
-  font-size: 12px;
-  line-height: 1.7;
-  color: @muted;
-
-  :deep(p) {
-    margin: 0 0 10px;
-  }
-
-  :deep(strong),
-  :deep(b) {
-    color: @gold-soft;
-  }
+  font-weight: 600;
+  line-height: 1.5;
+  color: #eeff00;
 }
 </style>

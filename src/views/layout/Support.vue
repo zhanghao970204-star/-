@@ -15,27 +15,19 @@
       <div class="need_help">
         <div class="need_help_p">
           <img src="../../assets/img/otgame/Support_1.png" width="100%" />
-            <div
-              @click="goToDDD"
-              class="need_help_second t-c"
-              style="margin-top: -3px"
-            >
+          <div
+            @click="goToDDD"
+            class="need_help_second t-c"
+            style="margin-top: -3px"
+          >
             <p class="need_help_second_t f-t-15 f-w">
               {{ $lang.common_txt274 }}
             </p>
             <p class="m-t-10">{{ $lang.common_txt275 }}</p>
-            <div
-              class="support-cs-btn"
-              role="button"
-              @click.stop="goToDDD"
-            >
+            <div class="support-cs-btn" role="button" @click.stop="goToDDD">
               <van-icon name="service-o" size="22" color="#fff" />
             </div>
-            <p
-              class="f-t-15 support-link"
-              role="button"
-              @click.stop="goToDDD"
-            >
+            <p class="f-t-15 support-link" role="button" @click.stop="goToDDD">
               {{ $lang.common_txt276 }}
             </p>
           </div>
@@ -146,7 +138,7 @@ export default {
 
 <style lang="less" scoped>
 @cell: #2d1545;
-@muted: #b8a8d4;
+@muted: #d7a2fa;
 @gold-soft: #ffe4b5;
 
 .support-header {

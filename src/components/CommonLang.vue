@@ -16,36 +16,36 @@
           />
         </div>
         <div class="lang-popup__panel">
-        <p class="lang-popup__title">
-          {{ $lang.common_txt272 }}
-        </p>
-        <div class="lang-popup__list">
-          <div
-            v-for="(item, index) in CountryList"
-            :key="index"
-            class="lang-popup__item"
-            :class="{ 'is-active': selectIndex === index }"
-            @click="selectFun(index, item)"
-          >
-            <img :src="item.iconUrl" width="28" height="20" alt="" />
-            <span>{{ item.countryName }}</span>
+          <p class="lang-popup__title">
+            {{ $lang.common_txt272 }}
+          </p>
+          <div class="lang-popup__list">
+            <div
+              v-for="(item, index) in CountryList"
+              :key="index"
+              class="lang-popup__item"
+              :class="{ 'is-active': selectIndex === index }"
+              @click="selectFun(index, item)"
+            >
+              <img :src="item.iconUrl" width="28" height="20" alt="" />
+              <span>{{ item.countryName }}</span>
+            </div>
+          </div>
+          <div class="lang-popup__hint">
+            <img src="../assets/img/otgame/xzgj_3.png" width="14" alt="" />
+            <span>{{ $lang.common_txt273 }}</span>
+          </div>
+          <div class="lang-popup__action">
+            <van-button
+              size="large"
+              class="lang-popup__btn"
+              @click="confirm"
+              :disabled="selectIndex === null"
+            >
+              {{ $lang.Confirmar }}
+            </van-button>
           </div>
         </div>
-        <div class="lang-popup__hint">
-          <img src="../assets/img/otgame/xzgj_3.png" width="14" alt="" />
-          <span>{{ $lang.common_txt273 }}</span>
-        </div>
-        <div class="lang-popup__action">
-          <van-button
-            size="large"
-            class="lang-popup__btn"
-            @click="confirm"
-            :disabled="selectIndex === null"
-          >
-            {{ $lang.Confirmar }}
-          </van-button>
-        </div>
-      </div>
       </div>
     </van-popup>
   </div>
@@ -161,7 +161,7 @@ export default {
 @gold-deep: #e9a843;
 @gold-grad: linear-gradient(90deg, #f7dd9a 0%, #ffa300 100%);
 @btn-grad: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
-@muted: #b8a8d4;
+@muted: #d7a2fa;
 @card: #12021a;
 @cell: #2d1545;
 

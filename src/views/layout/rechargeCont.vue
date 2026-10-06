@@ -1,86 +1,55 @@
 <template>
   <div class="rc-page">
-    <div class="rc-header">
-      <div class="rc-header__left">
-        <van-icon
-          @click="goLeft()"
-          name="arrow-left"
-          size="20"
-          color="#ffe4b5"
-        />
-        <span class="rc-header__title">{{ $lang.Depósito }}</span>
-        <div class="rc-header__balance">
-          <img src="../../assets/img/otgame/amount.png" width="15" />
-          <span>{{ blance }}</span>
-        </div>
-      </div>
-      <p @click="goToRecord" class="rc-header__record">
-        {{ $lang.common_txt256 }}
-      </p>
-    </div>
-
+    <!-- 图一：WALLET 头图 + 金额卡 + Pay；支付渠道在图二弹层选择 -->
     <div class="RechargeCont-cont">
-      <div v-if="payTypeList.length > 1" class="rc-pay-type">
-        <div
-          v-for="(item, index) in payTypeList"
-          :key="item.paymentId || index"
-          class="rc-pay-type__item"
-          :class="{ 'is-active': selectPayTypeIndex === index }"
-          @click="selectPayType(index)"
-        >
-          <img
-            class="rc-pay-type__icon"
-            :src="item.typeIcon || item.paymentIcon"
-            alt=""
-          />
-          <span class="rc-pay-type__line"></span>
-          <p class="rc-pay-type__name">{{ item.typeName }}</p>
+      <section class="rc-wallet">
+        <img
+          class="rc-wallet__bg"
+          src="../../assets/img/recharge/wupeng.png"
+          alt=""
+        />
+        <div class="rc-wallet__inner">
+          <h2 class="rc-wallet__title">WALLET</h2>
+          <div class="rc-wallet__actions">
+            <button type="button" class="rc-wallet__btn" @click="goToRecord">
+              <img :src="imgHistory" alt="" />
+              <span>{{ $lang.rp_history || "History" }}</span>
+            </button>
+            <button
+              type="button"
+              class="rc-wallet__btn"
+              @click="openTgCustomerService"
+            >
+              <img :src="imgContact" alt="" />
+              <span>{{ $lang.common_txt22 }}</span>
+            </button>
+          </div>
         </div>
-      </div>
+      </section>
 
       <div class="rc-section-head">
         <p class="rc-section-head__title">{{ $lang.common_txt308 }}</p>
-        <p class="rc-section-head__link" @click="$jumpTo('/vipLevels')">
-          {{ $lang.common_txt309 }}
-        </p>
       </div>
 
-      <div
-        v-if="
-          paymentList.length > 0 &&
-          paymentList[selectIndex].paymentId === 'USDT'
-        "
-      >
-        <div class="rc-wl-list">
-          <div
-            v-for="(item, index) in ['Tron(TRC20)', 'Ethereum(ERC20)']"
-            :key="index"
-            class="rc-wl-item"
-            :class="{ 'active-type2': selectWl === index }"
-            @click="getSelectWl(index)"
-          >
-            {{ item }}
-          </div>
-        </div>
-      </div>
-
-      <div class="amount-box-list d-flex-s">
+      <div class="amount-box-list">
         <div
-          class="amount-box-list-item"
+          class="amount-card"
           v-for="(item, index) in dataList"
           :key="index"
           :class="{ active: index === selectAmountIndex || item.isActive }"
           @click="selectAmount(index, item)"
         >
-          <div class="t-c">
-            <span
-              v-if="showActivityBonus && item.bonus"
-              class="amount-bonus-badge"
-              >+{{ $formatNumberWithCommas(item.bonus) }}</span
-            >
-            <span class="amount-box-list-item__val">
-              {{ $formatNumberWithCommas(item.amount) }}</span
-            >
+          <span
+            v-if="showActivityBonus && item.bonus"
+            class="amount-card__ribbon"
+          >
+            <img class="amount-card__ribbon-bg" :src="imgRibbon" alt="" />
+            <em>+{{ $formatNumberWithCommas(item.bonus) }}</em>
+          </span>
+          <img class="amount-card__coin" :src="coinSrc(index)" alt="" />
+          <div class="amount-card__price">
+            <img class="amount-card__price-bg" :src="imgPriceBg" alt="" />
+            <span>$ {{ $formatNumberWithCommas(item.amount) }}</span>
           </div>
         </div>
       </div>
@@ -89,41 +58,25 @@
       <van-field
         v-model="amount"
         :placeholder="$lang.common_txt143"
-        class="custom-field m-t-5"
+        class="custom-field m-t-5 rc-amount-field"
         type="number"
-        :style="{
-          borderColor: focus ? 'var(--border-color)' : 'var(--border-color)',
-        }"
         @input="handleInput"
         @focus="focus = true"
         @blur="focus = false"
       >
         <template #left-icon>
           <div class="d-flex">
-            <span class="rc-field-currency"
-              >{{
-                paymentList.length > 0 &&
-                paymentList[selectIndex].paymentId !== "USDT"
-                  ? getCurrency
-                  : "U"
-              }}
-            </span>
+            <span class="rc-field-currency">{{
+              paymentList.length > 0 &&
+              paymentList[selectIndex] &&
+              paymentList[selectIndex].paymentId !== "USDT"
+                ? getCurrency
+                : "U"
+            }}</span>
             <span class="rc-field-divider">|</span>
           </div>
         </template>
       </van-field>
-
-      <div class="t-c rc-submit-wrap">
-        <van-button
-          @click="submit"
-          size="large"
-          class="custom-button f-t-18 rc-submit-btn"
-          :class="{ 'active-b': isLoading }"
-          :disabled="isLoading"
-        >
-          {{ $lang.common_txt314 }} {{ getCurrency }} {{ amount }}
-        </van-button>
-      </div>
 
       <div class="rc-bonus-panel">
         <div
@@ -132,10 +85,11 @@
           :class="{ 'is-active': agree }"
           @click="agree = !agree"
         >
+          <img class="rc-activity-row__icon" :src="imgCheck" alt="" />
           <van-checkbox
             v-model="agree"
             shape="round"
-            checked-color="#ffa300"
+            checked-color="#22c55e"
             icon-size="18px"
             class="rc-activity-row__check"
             @click.stop
@@ -159,90 +113,142 @@
           <span class="rc-vip-badge" :style="vipBadgeStyle"></span>
           <span class="rc-vip-text">VIP {{ InitDate.vipLevel || 0 }}</span>
           <span class="rc-vip-desc m-l-5">{{ $lang.common_txt312 }}</span>
+          <span class="rc-vip-link">{{ $lang.common_txt309 }}</span>
         </p>
         <div class="rc-total-card">
-          <div class="f-t-15">
-            <span class="rc-total-card__label">
-              {{ $lang.common_txt313 }}
-            </span>
-            <span class="rc-total-card__val">{{
-              $formatNumberWithCommas(totalMount)
-            }}</span>
-          </div>
+          <span class="rc-total-card__label">{{ $lang.common_txt313 }}</span>
+          <span class="rc-total-card__val">{{
+            $formatNumberWithCommas(totalMount)
+          }}</span>
         </div>
-        <p
-          v-if="
-            paymentList.length > 0 &&
-            paymentList[selectIndex].paymentId === 'USDT'
-          "
-          class="rc-usdt-rate"
-        >
-          ≈ {{ $formatNumberWithCommas(TotalHl) }}{{ getCurrency }} ({{
-            $lang.common_txt247
-          }})
-        </p>
       </div>
-      <!-- 账号提示与支付方式无关；仅加密货币（USDT）隐藏 -->
-      <div v-if="paymentKey !== 'usdt'">
+
+      <div class="t-c rc-submit-wrap">
+        <button
+          type="button"
+          class="rc-pay-btn"
+          :disabled="isLoading"
+          @click="openConfirmPay"
+        >
+          <span
+            v-if="showActivityBonus && currentBonus > 0"
+            class="rc-pay-btn__badge"
+          >
+            +{{ $formatNumberWithCommas(currentBonus) }}
+          </span>
+          {{ $lang.common_txt314 }} {{ getCurrency }} {{ amount }}
+        </button>
+      </div>
+
+      <div v-if="paymentKey !== 'usdt'" class="rc-account-block">
         <div class="rc-account-row">
           <img :src="GET_ICONURL" width="25" />
           <span class="rc-account-row__code">{{ GET_AREACODE }}</span>
           <span>{{ account }}</span>
         </div>
-        <div class="rc-account-tip">
-          {{ $lang.common_txt362 }}
-        </div>
-      </div>
-      <div class="deposit_share t-c">
-        <p class="deposit_share__title">
-          {{ $lang.common_txt315 }}
-        </p>
-        <p
-          class="deposit_share__desc"
-          v-html="$lang.common_txt316"
-          @click="onCsDescClick"
-        ></p>
-        <div
-          class="deposit_share__cs"
-          role="button"
-          @click="openTgCustomerService"
-        >
-          <van-icon name="service-o" size="22" color="#000" />
-        </div>
       </div>
 
       <div class="rc-divider-row">
-        <img src="../../assets/img/otgame/cdk_4.png" height="12" width="28%" />
+        <img :src="imgLineL" height="2" width="28%" />
         <p>{{ $lang.common_txt317 }}</p>
-        <img src="../../assets/img/otgame/cdk_3.png" height="12" width="28%" />
+        <img :src="imgLineR" height="2" width="28%" />
       </div>
       <div v-html="$lang.common_txt30" class="l-h-20 rc-footer-note"></div>
     </div>
 
-    <div class="rc-pay-bar">
-      <div class="rc-pay-bar__inner">
-        <div class="rc-pay-tabs" v-drag-scroll v-if="paymentList.length">
+    <!-- 图二：选择支付类型 / 方式 + 订单金额 -->
+    <van-popup
+      v-model:show="confirmShow"
+      position="center"
+      round
+      class="rc-confirm"
+      :close-on-click-overlay="true"
+    >
+      <div class="rc-confirm__head">
+        {{ $lang.common_txt363 }}
+      </div>
+      <div class="rc-confirm__body">
+        <p v-if="payTypeList.length" class="rc-confirm__label">
+          {{ $lang.rc_select_channel || "Select Channel" }}
+        </p>
+        <div v-if="payTypeList.length" class="rc-confirm__grid">
+          <div
+            v-for="(item, index) in payTypeList"
+            :key="'pt-' + (item.paymentId || index)"
+            class="rc-confirm__chip"
+            :class="{ 'is-active': selectPayTypeIndex === index }"
+            @click="selectPayType(index)"
+          >
+            <img :src="item.typeIcon || item.paymentIcon" alt="" />
+            <span>{{ item.typeName }}</span>
+          </div>
+        </div>
+
+        <p class="rc-confirm__label">
+          {{ $lang.rc_select_method || "Select Payment Method" }}
+        </p>
+        <div class="rc-confirm__grid">
           <div
             v-for="(item, index) in paymentList"
-            :key="index"
-            class="rc-pay-tab"
-            :class="{ 'active-type': selectIndex === index }"
+            :key="'pm-' + index"
+            class="rc-confirm__chip"
+            :class="{ 'is-active': selectIndex === index }"
             @click="tabIndex(index)"
           >
-            <img :src="item.paymentIconUrl" class="rc-pay-tab__icon" alt="" />
-            <p>{{ item.paymentName }}</p>
+            <img :src="item.paymentIconUrl" alt="" />
+            <span>{{ item.paymentName }}</span>
           </div>
         </div>
 
         <div
-          class="rc-pay-notice"
-          :class="payNoticeClass"
+          v-if="
+            paymentList.length > 0 &&
+            paymentList[selectIndex] &&
+            paymentList[selectIndex].paymentId === 'USDT'
+          "
+          class="rc-wl-list"
         >
-          <img src="../../assets/img/otgame/Withdraw_1.png" width="15" />
-          <span class="rc-pay-notice__text">{{ $lang.common_txt257 }}</span>
+          <div
+            v-for="(item, index) in ['Tron(TRC20)', 'Ethereum(ERC20)']"
+            :key="'wl-' + index"
+            class="rc-wl-item"
+            :class="{ 'active-type2': selectWl === index }"
+            @click="getSelectWl(index)"
+          >
+            {{ item }}
+          </div>
         </div>
+
+        <p class="rc-confirm__label">
+          {{ $lang.rc_confirm_order || "Confirm Order" }}
+        </p>
+        <div class="rc-confirm__order">
+          <div class="rc-confirm__row">
+            <span>{{ $lang.common_txt143 || "Amount" }}</span>
+            <em
+              >{{ getCurrency }} {{ $formatNumberWithCommas(amount || 0) }}</em
+            >
+          </div>
+          <div class="rc-confirm__row">
+            <span>{{ $lang.rc_bonus || "Bonus" }}</span>
+            <em>+{{ $formatNumberWithCommas(currentBonus) }}</em>
+          </div>
+          <div class="rc-confirm__row">
+            <span>{{ $lang.common_txt313 }}</span>
+            <em>{{ $formatNumberWithCommas(totalMount) }}</em>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="rc-confirm__pay"
+          :disabled="isLoading"
+          @click="submit"
+        >
+          {{ $lang.rc_confirm_pay || "CONFIRM & PAY" }}
+        </button>
       </div>
-    </div>
+    </van-popup>
 
     <van-popup
       v-model:show="orangShow"
@@ -349,6 +355,28 @@ const VIP_SPRITE_H = 280;
 const VIP_BADGE_FRAMES = 21;
 const VIP_RC_BADGE_H = 22;
 
+function rcAsset(name) {
+  return new URL(`../../assets/img/recharge/${name}`, import.meta.url).href;
+}
+
+const AMOUNT_COIN_IMGS = [
+  rcAsset("image 23424.png"),
+  rcAsset("image 23424 (1).png"),
+  rcAsset("image 23424 (2).png"),
+  rcAsset("image 23424 (3).png"),
+  rcAsset("image 23424 (4).png"),
+  rcAsset("image 23424 (5).png"),
+  rcAsset("image 23424 (6).png"),
+  rcAsset("image 23424 (7).png"),
+];
+const IMG_HISTORY = rcAsset("0fb7527a-9065-4851-ae85-9e675d0f3397 1.png");
+const IMG_CONTACT = rcAsset("55cd8f0e-6e58-4776-98b2-fefc18f36364 2.png");
+const IMG_RIBBON = rcAsset("image 23425.png");
+const IMG_PRICE_BG = rcAsset("Rectangle 34626414.png");
+const IMG_CHECK = rcAsset("image 23135.png");
+const IMG_LINE_L = rcAsset("Rectangle 133.png");
+const IMG_LINE_R = rcAsset("Rectangle 34626426.png");
+
 export default {
   name: "RechargeCont",
   data() {
@@ -383,12 +411,20 @@ export default {
       totalMount: 0,
       account: "",
       orangShow: false,
+      confirmShow: false,
       awardRules: "",
       payInfoShow: false,
       paymentIconUrl: "",
       csUrl: "",
       showPayIframe: false,
       payIframeUrl: "",
+      imgHistory: IMG_HISTORY,
+      imgContact: IMG_CONTACT,
+      imgRibbon: IMG_RIBBON,
+      imgPriceBg: IMG_PRICE_BG,
+      imgCheck: IMG_CHECK,
+      imgLineL: IMG_LINE_L,
+      imgLineR: IMG_LINE_R,
     };
   },
   watch: {
@@ -484,9 +520,7 @@ export default {
     },
     showRechargeActivity() {
       return (
-        this.activities.length > 0 ||
-        this.firstRecharge ||
-        this.hasPromoBonus
+        this.activities.length > 0 || this.firstRecharge || this.hasPromoBonus
       );
     },
     showActivityBonus() {
@@ -510,6 +544,17 @@ export default {
       }
       return this.$lang.rc_first_deposit_bonus || "First Deposit Bonus";
     },
+    currentBonus() {
+      if (!this.showActivityBonus) return 0;
+      const row =
+        this.selectAmountIndex != null
+          ? this.dataList[this.selectAmountIndex]
+          : null;
+      if (row && row.bonus) return this.truncateTo2(row.bonus);
+      const amt = this.truncateTo2(this.amount);
+      const total = this.truncateTo2(this.totalMount);
+      return total > amt ? this.truncateTo2(total - amt) : 0;
+    },
   },
   mounted() {
     if (this.token) {
@@ -519,6 +564,40 @@ export default {
     }
   },
   methods: {
+    coinSrc(index) {
+      const list = AMOUNT_COIN_IMGS;
+      return list[index] || list[list.length - 1];
+    },
+    openConfirmPay() {
+      if (!this.amount || Number(this.amount) <= 0) {
+        this.$toast({
+          message: this.$lang.RechargeCont_txt8 || this.$lang.common_txt143,
+          icon: "cross",
+        });
+        return;
+      }
+      const keepAmount = this.amount;
+      const keepIdx = this.selectAmountIndex;
+      // 默认第一种支付类型 / 方式（不改动原 Pay 逻辑）
+      if (this.payTypeList.length && this.selectPayTypeIndex !== 0) {
+        this.selectPayTypeIndex = 0;
+        this.applyPayTypeFilter();
+      } else if (this.paymentList.length && this.selectIndex !== 0) {
+        this.tabIndex(0);
+      } else if (!this.paymentList.length) {
+        this.selectPayTypeIndex = 0;
+        this.applyPayTypeFilter();
+      }
+      this.$nextTick(() => {
+        if (keepIdx != null && this.dataList[keepIdx]) {
+          this.selectAmount(keepIdx, this.dataList[keepIdx]);
+        } else if (keepAmount) {
+          this.amount = keepAmount;
+          this.handleInput(keepAmount);
+        }
+      });
+      this.confirmShow = true;
+    },
     goToRecord() {
       this.$jumpTo("/recordOrder");
     },
@@ -530,12 +609,10 @@ export default {
       }
     },
     openTgCustomerService() {
-      openCustomerService({ url: this.csUrl, scene: "floating" }).then(
-        (ok) => {
-          // 打开成功后刷新预取，避免链接过期
-          if (ok) this.prefetchCsUrl();
-        }
-      );
+      openCustomerService({ url: this.csUrl, scene: "floating" }).then((ok) => {
+        // 打开成功后刷新预取，避免链接过期
+        if (ok) this.prefetchCsUrl();
+      });
     },
     onCsDescClick(e) {
       const el = e && e.target;
@@ -669,6 +746,7 @@ export default {
       });
       if (data.status === "ok") {
         this.orangShow = false;
+        this.confirmShow = false;
         this.GetIsFbReport(this.amount);
         const payUrl = data.content && data.content.url;
         if (this.paymentList.length > 0 && this.paymentKey === "usdt") {
@@ -817,143 +895,268 @@ export default {
 </script>
 
 <style lang="less" scoped>
-/* y7 黑金风格 */
-@bg: #1a0a28;
-@gold: #ffa300;
-@gold-soft: #ffe4b5;
-@gold-deep: #e9a843;
-@gold-grad: linear-gradient(90deg, #f7dd9a 0%, #ffa300 100%);
-@btn-grad: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
-@muted: #b8a8d4;
-@card-bg: #12021a;
-@cell: #2d1545;
+/* 图一 / 图二：紫金钱包充值 */
+@page-bg: #15031d;
+@panel: #4b0e5d;
+@panel-soft: #79218f;
+@gold: #ffd467;
+@muted: #d7a2fa;
+@green: #12c27a;
+@green-deep: #0a8f56;
 
 .rc-page {
   min-height: 100vh;
-  background: @bg;
   color: #fff;
-  /* 预留底部固定支付栏 + Tabbar，避免 Deposit Tips 被挡住 */
-  padding-bottom: 220px;
+  padding-bottom: 100px;
   box-sizing: border-box;
 }
 
-.rc-header {
-  height: 55px;
-  background: rgba(31, 28, 23, 0.92);
-  border-bottom: 1px solid fade(@gold-deep, 30%);
-  backdrop-filter: blur(10px);
-  padding: 0 10px;
-  position: sticky;
-  top: 0;
-  z-index: 999;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.RechargeCont-cont {
+  padding: 8px 12px 24px;
+  box-sizing: border-box;
+}
 
-  &__left {
+.rc-wallet {
+  position: relative;
+  margin: 0 -4px 8px;
+  overflow: hidden;
+
+  &__bg {
+    display: block;
+    width: 100%;
+    height: auto;
+    vertical-align: top;
+  }
+
+  &__inner {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 68%;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    padding: 0 18px 0 20px;
+    box-sizing: border-box;
   }
 
   &__title {
-    font-size: 16px;
-    font-weight: 600;
-    margin-left: 10px;
+    margin: 0;
+    font-size: 34px;
+    font-weight: 900;
+    letter-spacing: 0.6px;
     color: #fff;
+    text-shadow: 0 3px 0 rgba(90, 40, 160, 0.45);
+    line-height: 1;
   }
 
-  &__balance {
+  &__actions {
     display: flex;
-    align-items: center;
-    margin-left: 16px;
-    background: rgba(29, 20, 0, 0.65);
-    border: 1px solid fade(@gold-deep, 35%);
-    border-radius: 20px;
-    padding: 2px 10px 2px 8px;
-    gap: 5px;
-
-    span {
-      color: @gold-soft;
-      min-width: 50px;
-      font-size: 14px;
-      font-weight: 600;
-    }
+    align-items: flex-end;
+    gap: 16px;
+    padding-top: 2px;
   }
 
-  &__record {
-    font-size: 14px;
-    color: @gold-deep;
-    text-decoration: underline;
+  &__btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 3px;
+    min-width: 48px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: @gold;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
     cursor: pointer;
+
+    img {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+      display: block;
+    }
   }
 }
 
 .rc-section-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 15px;
+  justify-content: center;
+  margin: 10px 0 16px;
 
   &__title {
-    font-size: 15px;
-    font-weight: 700;
-    background: @gold-grad;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-  }
-
-  &__link {
-    color: @gold;
-    text-decoration: underline;
-    cursor: pointer;
-    font-size: 14px;
+    margin: 0;
+    font-size: 18px;
+    font-weight: 800;
+    color: #fff;
+    text-align: center;
+    letter-spacing: 0.2px;
   }
 }
 
-.rc-wl-list {
-  display: flex;
-  margin-top: 10px;
+.amount-box-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px 10px;
 }
 
-.rc-wl-item {
+.amount-card {
+  position: relative;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  padding: 10px;
-  border-radius: 10px;
-  margin-right: 10px;
-  margin-bottom: 10px;
-  background: @cell;
-  border: 1px solid fade(@gold-deep, 25%);
-  color: @muted;
+  justify-content: flex-end;
+  min-height: 148px;
+  padding: 18px 6px 0;
+  box-sizing: border-box;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #5b1d96 0%, #3d1270 100%);
+  border: 2px solid transparent;
   cursor: pointer;
+  overflow: visible;
+
+  &.active {
+    border-color: #ffd400;
+    box-shadow: 0 0 0 1px fade(#ffd400, 35%);
+  }
+
+  &__ribbon {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    width: 78%;
+    min-height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    em {
+      position: relative;
+      z-index: 1;
+      font-style: normal;
+      font-size: 12px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  &__ribbon-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+  }
+
+  &__coin {
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+    margin: 8px 0 10px;
+  }
+
+  &__price {
+    position: relative;
+    width: 100%;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    span {
+      position: relative;
+      z-index: 1;
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff;
+    }
+  }
+
+  &__price-bg {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+  }
 }
 
 .rc-hint {
   color: @muted;
-  margin-top: 5px;
+  margin: 12px 0 0;
   font-size: 13px;
+}
+
+.rc-amount-field {
+  margin-top: 8px !important;
+  background: rgba(18, 6, 40, 0.85) !important;
+  border: 1px solid fade(@panel-soft, 55%) !important;
+  border-radius: 10px !important;
 }
 
 .rc-field-currency {
   font-size: 15px;
   margin-right: 10px;
-  color: @gold-soft;
+  color: #fff;
 }
 
 .rc-field-divider {
   margin-top: -3px;
-  color: fade(@gold-deep, 50%);
+  color: fade(#fff, 45%);
+}
+
+.rc-bonus-panel {
+  margin: 12px 0 4px;
+}
+
+.rc-activity-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 8px 4px;
+  cursor: pointer;
+
+  &__icon {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
+  &__check {
+    flex-shrink: 0;
+  }
+
+  &__text {
+    flex: 1;
+    margin: 0;
+    color: #fff;
+    font-size: 12px;
+    line-height: 1.4;
+    font-weight: 600;
+  }
 }
 
 .rc-vip-row {
-  margin-top: 8px;
+  margin: 6px 0;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   cursor: pointer;
-  color: @gold-soft;
+  color: @gold;
   font-size: 13px;
   gap: 4px;
 }
@@ -970,425 +1173,266 @@ export default {
 
 .rc-vip-text {
   font-size: 14px;
-  font-weight: 700;
-  transform: skew(-10deg);
-  background: @gold-grad;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  line-height: 1;
+  font-weight: 800;
+  color: @gold;
 }
 
 .rc-vip-desc {
-  color: @muted;
+  color: @gold;
   font-size: 12px;
 }
 
+.rc-vip-link {
+  margin-left: auto;
+  color: @gold;
+  text-decoration: underline;
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .rc-total-card {
-  background: @card-bg;
-  border: 1px solid fade(@gold-deep, 40%);
-  border-radius: 8px;
-  padding: 10px;
-  margin-top: 5px;
+  background: #0d0218;
+  border-radius: 999px;
+  padding: 12px 16px;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 
   &__label {
-    color: @gold-deep;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
   }
 
   &__val {
-    color: @gold;
-    font-weight: 700;
-    margin-left: 4px;
+    color: #fff;
+    font-weight: 800;
+    font-size: 16px;
   }
-}
-
-.rc-usdt-rate {
-  font-size: 13px;
-  margin-top: 5px;
-  margin-left: 10px;
-  color: @muted;
 }
 
 .rc-submit-wrap {
   margin: 16px 0 12px;
 }
 
-.rc-bonus-panel {
-  margin-bottom: 8px;
-}
-
-.rc-bonus-panel .rc-activity-row {
-  margin-top: 0;
-}
-
-.rc-bonus-panel .rc-vip-row {
-  margin-top: 6px;
-}
-
-.rc-bonus-panel .rc-total-card {
-  margin-top: 4px;
-}
-
-.rc-submit-btn {
+.rc-pay-btn {
+  position: relative;
   width: 100%;
-  height: 48px !important;
-  background: @btn-grad !important;
-  color: #573900 !important;
-  border: none !important;
-  border-radius: 24px !important;
-  font-weight: 800 !important;
-  box-shadow: 0 4px 16px rgba(255, 163, 0, 0.28);
+  height: 50px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #3be59f 0%, #00b56a 100%);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 900;
+  box-shadow: 0 6px 18px rgba(0, 181, 106, 0.35);
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.65;
+  }
+
+  &__badge {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 52px;
+    padding: 2px 10px;
+    border-radius: 8px;
+    background: #e11d48;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.3;
+  }
+}
+
+.rc-account-block {
+  margin: 8px 0 4px;
 }
 
 .rc-account-row {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 15px;
-  margin: 15px 0 20px;
+  font-size: 14px;
+  gap: 6px;
 
   &__code {
     font-weight: bold;
-    margin-left: 3px;
-    margin-right: 10px;
-    color: @gold-soft;
+    color: @muted;
   }
-}
-
-.rc-account-tip {
-  color: @muted;
-  font-size: 15px;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 15px;
-  line-height: 20px;
 }
 
 .rc-divider-row {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 15px;
+  margin-top: 18px;
 
   p {
-    margin: 0 20px;
-    color: @gold-deep;
-    font-size: 13px;
+    margin: 0 12px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 800;
   }
 }
 
 .rc-footer-note {
   width: 96%;
-  margin: 0 auto;
+  margin: 10px auto 0;
   color: @muted;
+  font-size: 12px;
+  line-height: 1.6;
 }
 
-.deposit_share {
-  background: linear-gradient(0deg, #1a0a28 13.46%, #2d1545 100%);
-  border: 1px solid fade(@gold, 35%);
-  border-radius: 10px;
-  padding: 12px 10px;
-
-  &__title {
-    font-size: 15px;
-    font-weight: 700;
-    background: @gold-grad;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-  }
-
-  &__desc {
-    margin-top: 5px;
-    line-height: 20px;
-    color: @muted;
-
-    :deep(.js-cs-link) {
-      color: @gold;
-      text-decoration: underline;
-      text-underline-offset: 2px;
-      cursor: pointer;
-      font-weight: 700;
-      -webkit-tap-highlight-color: transparent;
-    }
-  }
-
-  &__icon {
-    cursor: pointer;
-    margin-top: 6px;
-  }
-
-  &__cs {
-    position: relative;
-    z-index: 2;
-    width: 44px;
-    height: 44px;
-    margin: 8px auto 0;
-    border-radius: 50%;
-    background: @gold-grad;
-    border: 1px solid fade(@gold, 45%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-  }
-}
-
-.rc-pay-type {
+.rc-wl-list {
   display: flex;
+  margin: 8px 0 4px;
   gap: 8px;
-  overflow-x: auto;
-  margin: 0 0 2px;
-  padding: 2px 2px 6px;
-  -webkit-overflow-scrolling: touch;
+}
 
-  &::-webkit-scrollbar {
-    display: none;
+.rc-wl-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #f3f4f6;
+  color: #333;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.active-type2 {
+  color: #fff !important;
+  background: linear-gradient(180deg, #ffb347 0%, #ff8a00 100%) !important;
+}
+
+/* 图二确认弹层 */
+.rc-confirm {
+  width: 88% !important;
+  max-width: 360px;
+  background: @panel !important;
+  overflow: hidden;
+  border-radius: 18px !important;
+
+  &__head {
+    background: @panel-soft;
+    color: #fff;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 800;
+    padding: 14px 12px;
   }
 
-  &__item {
-    flex: 0 0 auto;
-    min-width: 72px;
-    height: 72px;
-    background: linear-gradient(180deg, #332c22 0%, #2d1545 100%);
-    border: 1px solid rgba(233, 168, 67, 0.22);
-    border-radius: 8px;
+  &__body {
+    padding: 14px 14px 18px;
+  }
+
+  &__label {
+    margin: 10px 0 8px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  &__grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  &__chip {
+    width: calc(33.33% - 7px);
+    min-height: 78px;
+    border-radius: 14px;
+    background: #f3f4f6;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    cursor: pointer;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 4px;
     box-sizing: border-box;
-    padding: 6px 8px 5px;
-    box-shadow: inset 0 1px 0 rgba(255, 228, 181, 0.06);
-  }
-
-  &__item.is-active {
-    border: 1.5px solid #d4b275;
-    box-shadow:
-      0 0 6px rgba(212, 178, 117, 0.5),
-      0 0 2px rgba(255, 215, 130, 0.85),
-      inset 0 1px 0 rgba(255, 228, 181, 0.12);
-    background: linear-gradient(180deg, #3a3226 0%, #2c251a 100%);
-  }
-
-  &__icon {
-    width: 30px;
-    height: 30px;
-    object-fit: contain;
-    object-position: center;
-    display: block;
-    flex-shrink: 0;
-  }
-
-  &__line {
-    display: block;
-    width: 68%;
-    height: 1px;
-    margin: 2px 0 4px;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(212, 178, 117, 0.15) 18%,
-      #5e4d34 50%,
-      rgba(212, 178, 117, 0.15) 82%,
-      transparent 100%
-    );
-  }
-
-  &__name {
-    margin: 0;
+    cursor: pointer;
+    color: #333;
     font-size: 11px;
-    font-weight: 600;
-    line-height: 1.15;
-    color: #fff;
-    max-width: 100%;
-    text-align: center;
-    letter-spacing: 0.1px;
-    white-space: nowrap;
-  }
-}
-
-.RechargeCont-cont {
-  padding: 3% 5% 0% 5%;
-  overflow-y: auto;
-  min-height: 73vh;
-  max-height: 77vh;
-  border-radius: 20px 20px 0 0;
-  background: @bg;
-}
-
-.type-item {
-  width: 25%;
-  position: relative;
-  border-radius: 10px;
-  background: @cell;
-  padding: 10px 0;
-  margin-right: 10px;
-  margin-bottom: 10px;
-  border: 1px solid fade(@gold-deep, 25%);
-}
-
-.active-bor {
-  background: fade(@gold, 18%);
-  color: @gold-soft;
-  border: 1px solid @gold-deep !important;
-}
-
-.custom-badge {
-  position: absolute;
-  top: -2px;
-  left: -1px;
-  background: url(../../assets/img/otgame/recharge_4.png) no-repeat;
-  width: 38px;
-  height: 33px;
-  background-size: 100% 100%;
-}
-
-.tool-tips-tail {
-  position: absolute;
-  top: 13px;
-  left: 0;
-  width: 0;
-  height: 0;
-  border-left: 0px solid transparent;
-  border-right: 5px solid transparent;
-  border-top: 6px solid @gold;
-}
-
-.amount-box-list {
-  flex-flow: wrap row;
-}
-
-.amount-box-list::after {
-  content: "";
-  width: 31.5%;
-  height: 0;
-}
-
-.amount-box-list-item {
-  position: relative;
-  border-radius: 8px;
-  width: 31.5%;
-  margin-bottom: 10px;
-  background: @cell;
-  border: 1px solid fade(@gold-deep, 22%);
-  padding: 10px 0;
-  color: @muted;
-  cursor: pointer;
-  transition:
-    border-color 0.15s,
-    background 0.15s,
-    color 0.15s;
-
-  &__val {
-    width: 100%;
-    text-align: center;
     font-weight: 700;
-    font-size: 14px;
-  }
-}
 
-.amount-bonus-badge {
-  position: absolute;
-  top: -2px;
-  right: -2px;
-  background: @gold-grad;
-  color: #573900;
-  font-size: 10px;
-  padding: 1px 6px;
-  border-radius: 0 8px 0 8px;
-  font-weight: bold;
-}
+    img {
+      width: 28px;
+      height: 22px;
+      object-fit: contain;
+    }
 
-.rc-activity-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 10px;
-  margin-bottom: 6px;
-  padding: 10px 12px;
-  background: rgba(42, 36, 24, 0.65);
-  border: 1px solid fade(@gold-deep, 22%);
-  border-radius: 8px;
-  cursor: pointer;
-  transition:
-    background 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
-
-  &.is-active {
-    background: rgba(255, 163, 0, 0.14);
-    border-color: fade(@gold-deep, 55%);
-    box-shadow: 0 0 0 1px fade(@gold, 18%);
+    &.is-active {
+      background: linear-gradient(180deg, #ffd36a 0%, #ff9a1a 100%);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(255, 154, 26, 0.4);
+    }
   }
 
-  &__check {
-    flex-shrink: 0;
+  &__order {
+    margin-top: 4px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(13, 2, 24, 0.45);
   }
 
-  &__text {
-    flex: 1;
-    margin: 0;
-    color: @gold;
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px dashed fade(#fff, 22%);
+    color: #fff;
     font-size: 13px;
-    line-height: 1.45;
-    font-weight: 600;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    em {
+      font-style: normal;
+      color: @gold;
+      font-weight: 800;
+    }
   }
 
-  :deep(.van-checkbox__icon) {
-    font-size: 18px;
-  }
+  &__pay {
+    width: 100%;
+    margin-top: 16px;
+    height: 48px;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #3be59f 0%, #00b56a 100%);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: 0.4px;
+    box-shadow: 0 6px 16px rgba(0, 181, 106, 0.35);
+    cursor: pointer;
 
-  :deep(.van-checkbox__icon .van-icon) {
-    border: 1px solid @gold-deep !important;
-    background: @cell;
-    border-radius: 50%;
-  }
-
-  :deep(.van-checkbox__icon--checked .van-icon) {
-    background: @gold !important;
-    border-color: @gold !important;
-    color: #573900 !important;
-  }
-}
-
-.first-recharge-banner {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 163, 0, 0.18),
-    rgba(233, 168, 67, 0.06)
-  );
-  border: 1px solid fade(@gold-deep, 40%);
-  border-radius: 8px;
-  padding: 8px 12px;
-  margin-bottom: 10px;
-
-  &__check {
-    flex-shrink: 0;
-    margin-right: 2px;
-  }
-
-  &__text {
-    color: @gold;
-    font-size: 13px;
-    font-weight: bold;
-    line-height: 1.35;
+    &:disabled {
+      opacity: 0.65;
+    }
   }
 }
 
-.active {
-  color: #573900 !important;
-  background: @btn-grad !important;
-  border-color: @gold-deep !important;
-  box-shadow: 0 2px 10px rgba(255, 163, 0, 0.25);
+.rc-submit-btn {
+  width: 100%;
+  height: 48px !important;
+  background: linear-gradient(180deg, #3be59f 0%, #00b56a 100%) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 24px !important;
+  font-weight: 800 !important;
 }
 
 .full-screen-overlay {
@@ -1409,148 +1453,23 @@ export default {
   background: transparent !important;
 }
 
-/* 底部支付方式栏 */
-.rc-pay-bar {
-  position: fixed;
-  bottom: 70px;
-  left: 0;
-  right: 0;
-  margin: 0 auto;
-  max-width: 450px;
-  background: rgba(31, 28, 23, 0.98);
-  border-top: 1px solid fade(@gold-deep, 30%);
-  backdrop-filter: blur(8px);
-  z-index: 200;
-
-  &__inner {
-    padding: 10px;
-  }
+:deep(.van-field__control) {
+  color: #fff;
 }
 
-.rc-pay-tabs {
-  display: flex;
-  align-items: flex-end;
-  gap: 10px;
-  height: 70px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  cursor: grab;
-  position: relative;
-  z-index: 1;
-  margin-bottom: -1px;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-}
-
-.rc-pay-tab {
-  text-align: center;
-  font-size: 13px;
-  font-weight: 700;
-  flex: 0 0 auto;
-  height: 58px;
-  min-width: 58px;
-  max-width: 72px;
-  background: @cell;
-  border: 1px solid fade(@gold-deep, 20%);
-  border-radius: 10px;
-  padding: 6px 6px 4px;
-  color: @muted;
-  cursor: pointer;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 10px;
-
-  &__icon {
-    width: 32px;
-    height: 22px;
-    object-fit: contain;
-    object-position: center;
-    display: block;
-    flex-shrink: 0;
-  }
-
-  p {
-    margin: 4px 0 0;
-    line-height: 1.2;
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-}
-
-.rc-pay-notice {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 10px;
-  border: 1px solid @gold-deep;
-  border-radius: 10px;
-  padding: 6px 0;
-  background: @card-bg;
-
-  &__text {
-    margin-left: 10px;
-    color: @gold;
-    font-weight: 600;
-  }
-}
-
-.active-type {
-  border: 1px solid @gold-deep !important;
-  border-bottom: none !important;
-  background: @card-bg !important;
-  border-radius: 10px 10px 0 0 !important;
-  height: 70px !important;
-  margin-bottom: 0 !important;
-  color: @gold-soft !important;
-  position: relative;
-  z-index: 2;
-}
-
-.active-type2 {
-  color: #573900 !important;
-  background: @btn-grad !important;
-  border: 1px solid @gold-deep !important;
-  font-weight: 700;
-}
-
-.rc-pay-notice.is-attach-left {
-  margin-top: 0 !important;
-  border-radius: 0 10px 10px 10px !important;
-}
-
-.rc-pay-notice.is-attach-right {
-  margin-top: 0 !important;
-  border-radius: 10px 0 10px 10px !important;
-}
-
-.rc-pay-notice.is-attach-mid {
-  margin-top: 0 !important;
-  border-radius: 0 0 10px 10px !important;
-}
-
-/* 弹窗 */
 .rc-popup {
-  background: @bg !important;
+  background: @page-bg !important;
   width: 90%;
   border-radius: 12px !important;
   padding: 20px;
-  border: 1px solid fade(@gold-deep, 45%);
+  border: 1px solid fade(@panel-soft, 45%);
 
   &__title {
     margin-top: 20px;
     font-size: 15px;
     text-align: center;
     font-weight: 700;
-    color: @gold-soft;
+    color: #fff;
   }
 
   &__pay-head {
@@ -1562,16 +1481,14 @@ export default {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    color: @gold-soft;
+    color: #fff;
   }
 
   &__pay-icon {
     width: 36px;
     height: 24px;
     object-fit: contain;
-    object-position: center;
     display: block;
-    flex-shrink: 0;
   }
 
   &__body {

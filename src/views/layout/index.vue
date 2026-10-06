@@ -217,7 +217,13 @@ export default {
   name: "LayoutIndex",
   computed: {
     isTopNavVisible() {
-      return this.$route.path.includes("/home");
+      const path = this.$route.path || "";
+      // 首页公共顶栏：home / invite(share) / 充值
+      return (
+        path.includes("/home") ||
+        path.includes("/share") ||
+        path.includes("/rechargeCont")
+      );
     },
     topNavPlaceholderHeight() {
       return this.topDownloadHeight + (this.isTopNavVisible ? 60 : 0);

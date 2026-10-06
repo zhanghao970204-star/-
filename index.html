@@ -83,6 +83,48 @@
         };
       })();
     </script>
+    <!-- App 内：旧包外域 API 兜底改写为同源 /a/（iOS 必走代理，避免 WKWebView 跨域） -->
+    <script>
+      (function () {
+        try {
+          var origin = location.origin || "";
+          var isLoopback = /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/i.test(
+            origin,
+          );
+          if (!isLoopback) return;
+          var port = String(location.port || "");
+          // Vite 本地开发不要改写，否则会打回坏掉的 /a 代理
+          if (!port || port === "8080" || port === "5173" || port === "3000") {
+            if (!window.__IN_FLUTTER_APP__ && !window.__FLUTTER_APP__) return;
+          }
+          var LEGACY = /https?:\/\/(us|api)\.luckyhubx\.cc\/a\//i;
+          function toLocal(url) {
+            if (typeof url !== "string") return url;
+            return url.replace(LEGACY, location.origin + "/a/");
+          }
+          var xo = XMLHttpRequest.prototype.open;
+          XMLHttpRequest.prototype.open = function (method, url) {
+            arguments[1] = toLocal(url);
+            return xo.apply(this, arguments);
+          };
+          var ofetch = window.fetch;
+          if (ofetch) {
+            window.fetch = function (input, init) {
+              if (typeof input === "string") {
+                input = toLocal(input);
+              } else if (
+                input &&
+                typeof Request !== "undefined" &&
+                input instanceof Request
+              ) {
+                input = new Request(toLocal(input.url), input);
+              }
+              return ofetch.call(this, input, init);
+            };
+          }
+        } catch (e) {}
+      })();
+    </script>
     <meta
       name="keywords"
       content="BISONFUN,BISONFUN, BISONFUN,pg,slots,mini,casino,sport,fishing,jili,fc,spade,spribe,jdb,tada,cq9"

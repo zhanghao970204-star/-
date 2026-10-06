@@ -1,85 +1,81 @@
 <template>
   <div class="content">
-    <div class="content-select" ref="filterWrap">
-      <van-dropdown-menu :z-index="3000">
-        <van-dropdown-item
-          class="share-sub-filter-item"
-          teleport="body"
-          v-model="value1"
-          :options="option1"
-          @change="selectChange"
-          @opened="syncDropdownPosition"
-          @open="syncDropdownPosition"
-        />
-      </van-dropdown-menu>
+    <div class="content-select">
+      <common-gradient-select
+        v-model="value1"
+        :options="option1"
+        @change="selectChange"
+      />
     </div>
-    <van-list
-      v-model:loading="loading"
-      :finished="finished"
-      loading-text=" "
-      finished-text=""
-      @load="loadMore"
-      class="order-list"
-    >
-      <div v-if="userList.length" class="content-card">
-        <div
-          class="content-card--i"
-          v-for="(item, index) in userList"
-          :key="item.userId || index"
-        >
-          <div class="d-flex f-t-15 m-b-10 m-t-15">
-            <p>
-              {{ item.userId }}
-            </p>
-            <img
-              @click="copyText(item.userId)"
-              class="m-l-10"
-              width="16px"
-              height="17px"
-              src="../../assets/img/drawer/drawer_copy.png"
-            />
-          </div>
+    <div class="content-panel">
+      <van-list
+        v-model:loading="loading"
+        :finished="finished"
+        loading-text=" "
+        finished-text=""
+        @load="loadMore"
+        class="order-list"
+      >
+        <div v-if="userList.length" class="content-card">
+          <div
+            class="content-card--i"
+            v-for="(item, index) in userList"
+            :key="item.userId || index"
+          >
+            <div class="d-flex f-t-15 m-b-10 m-t-15">
+              <p>
+                {{ item.userId }}
+              </p>
+              <img
+                @click="copyText(item.userId)"
+                class="m-l-10"
+                width="16px"
+                height="17px"
+                src="@/assets/img/mine/copy.png"
+              />
+            </div>
 
-          <div class="f-t-13">
-            <p class="d-flex-s m-t-15">
-              <span class="font-color">{{ $lang.share_txt38 }}</span>
-              {{ getTime(item.loginDate) }}
-            </p>
-            <p class="w-line"></p>
-            <p class="d-flex-s">
-              <span class="font-color">{{ $lang.share_txt36 }}</span>
-              {{ item.hisSubordinatesCount }}
-            </p>
-            <p class="w-line"></p>
-            <p class="d-flex-s">
-              <span class="font-color">{{ $lang.share_txt34 }}</span>
-              {{ getCurrency }}
-              {{ item.depositAmount }}
-            </p>
-            <p class="w-line"></p>
-            <p class="d-flex-s">
-              <span class="font-color">{{ $lang.share_txt37 }}</span>
-              {{ getCurrency }} {{ item.validBets }}
-            </p>
-            <p class="w-line"></p>
-            <p class="d-flex-s">
-              <span class="font-color">{{ $lang.share_txt35 }}</span>
-              <span class="error-color">{{ item.accountStatus }}</span>
-            </p>
-          </div>
+            <div class="f-t-13">
+              <p class="d-flex-s m-t-15">
+                <span class="font-color">{{ $lang.share_txt38 }}</span>
+                {{ getTime(item.loginDate) }}
+              </p>
+              <p class="w-line"></p>
+              <p class="d-flex-s">
+                <span class="font-color">{{ $lang.share_txt36 }}</span>
+                {{ item.hisSubordinatesCount }}
+              </p>
+              <p class="w-line"></p>
+              <p class="d-flex-s">
+                <span class="font-color">{{ $lang.share_txt34 }}</span>
+                {{ getCurrency }}
+                {{ item.depositAmount }}
+              </p>
+              <p class="w-line"></p>
+              <p class="d-flex-s">
+                <span class="font-color">{{ $lang.share_txt37 }}</span>
+                {{ getCurrency }} {{ item.validBets }}
+              </p>
+              <p class="w-line"></p>
+              <p class="d-flex-s">
+                <span class="font-color">{{ $lang.share_txt35 }}</span>
+                <span class="error-color">{{ item.accountStatus }}</span>
+              </p>
+            </div>
 
-          <div class="content-card--ig t-c">
-            <p class="content-card--igt"></p>
-            {{ $lang.VIP }} {{ item.vipLevel }}
+            <div class="content-card--ig t-c">
+              <p class="content-card--igt"></p>
+              {{ $lang.VIP }} {{ item.vipLevel }}
+            </div>
           </div>
         </div>
-      </div>
-      <van-empty
-        v-if="!userList.length && !loading"
-        :image="require('../../assets/img/common/img_no_data.png')"
-        :description="$lang.noempt"
-      />
-    </van-list>
+        <van-empty
+          v-if="!userList.length && !loading"
+          :image="require('../../assets/img/common/img_no_data.png')"
+          :description="$lang.noempt"
+        />
+      </van-list>
+    </div>
   </div>
 </template>
 <script>
@@ -111,19 +107,6 @@ export default {
     };
   },
   methods: {
-    syncDropdownPosition() {
-      this.$nextTick(() => {
-        const trigger =
-          this.$refs.filterWrap &&
-          this.$refs.filterWrap.querySelector(".van-dropdown-menu__bar");
-        const panel = document.querySelector(".share-sub-filter-item");
-        if (!trigger || !panel) return;
-        const rect = trigger.getBoundingClientRect();
-        panel.style.left = `${Math.max(8, rect.left)}px`;
-        panel.style.right = "auto";
-        panel.style.width = `${Math.max(rect.width, 160)}px`;
-      });
-    },
     getTime(v) {
       if (!v) return "-";
       const time = this.$dayjs(v).format("YYYY-MM-DD");
@@ -216,60 +199,45 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+@page-bg: #15031d;
+@panel: #4b0e5d;
+
 .content {
-  background: transparent;
+  background: @page-bg;
   min-height: auto;
+  padding-bottom: 20px;
 }
 
 .content-select {
-  padding: 10px 16px;
-  background: transparent;
+  /* 吸顶：顶栏 60 + 主 Tab 约 53，停在红线位置 */
+  position: sticky;
+  top: 113px;
+  z-index: 20;
+  padding: 10px 16px 12px;
+  background: @page-bg;
+  box-sizing: border-box;
 }
 
-:deep(.van-dropdown-menu) {
-  width: fit-content;
-  height: 30px;
-  background: transparent;
-}
-
-:deep(.van-dropdown-menu__bar) {
-  background: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
-  height: 30px !important;
-  border-radius: 20px;
-  border: none;
-  box-shadow: none;
-  padding: 0 18px;
-  width: fit-content;
-}
-
-:deep(.van-dropdown-menu__item) {
-  flex: none;
-}
-
-:deep(.van-dropdown-menu__title) {
-  color: #573900 !important;
-  font-weight: 700;
-  font-size: 13px;
-}
-
-:deep(.van-dropdown-menu__title--active) {
-  color: #573900 !important;
-}
-
-:deep(.van-dropdown-menu__title:after) {
-  border-color: transparent transparent #573900 #573900;
+.content-panel {
+  margin: 0 12px;
+  padding: 16px 10px 20px;
+  min-height: 280px;
+  border-radius: 16px;
+  background: @panel;
+  box-sizing: border-box;
 }
 
 .content-card {
-  padding: 3% 3% 15%;
+  padding: 3% 0 8%;
 }
 .content-card--i {
   position: relative;
-  .record-list-card();
+  background: rgba(18, 6, 40, 0.55);
+  border: 1px solid fade(#e93dfe, 28%);
   border-radius: 12px;
   justify-content: space-between;
   padding: 15px 18px;
-  box-shadow: 0px 0px 12px 0px rgba(255, 163, 0, 0.08);
+  box-shadow: 0 0 12px fade(#9f24c9, 18%);
   margin-bottom: 15px;
   color: #fff;
 }
@@ -281,8 +249,8 @@ export default {
   right: 0;
   margin: 0 auto;
   padding-bottom: 3px;
-  color: #573900;
-  background: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
+  color: #fff;
+  background: linear-gradient(135deg, #9f24c9 0%, #3b4edc 100%);
   font-weight: bold;
   font-size: 15px;
   border-radius: 15px 15px 15px 0;
@@ -293,60 +261,26 @@ export default {
 :deep(.van-loading) {
   background: transparent;
 }
+:deep(.van-empty) {
+  padding: 40px 0 20px;
+}
+:deep(.van-empty__description) {
+  color: #ffffff;
+}
 .w-line {
   width: 92%;
   height: 2px;
   background: linear-gradient(
     to right,
     rgba(97, 97, 97, 0.1),
-    #e9a843,
+    #b48cff,
     rgba(97, 97, 97, 0.1)
   );
   margin: 10px auto;
 }
 .order-list {
   min-height: auto;
-  padding-bottom: 20px;
+  padding-bottom: 8px;
   background: transparent;
-}
-</style>
-
-<style lang="less">
-.share-sub-filter-item.van-dropdown-item {
-  z-index: 3000 !important;
-  right: auto !important;
-  width: 160px;
-  height: auto !important;
-  max-height: 280px;
-  overflow: hidden;
-  border-radius: 12px;
-  border: 1px solid rgba(233, 168, 67, 0.4);
-  box-sizing: border-box;
-}
-
-.share-sub-filter-item .van-dropdown-item__content {
-  max-height: 280px;
-  background: #2d1545 !important;
-  position: relative !important;
-}
-
-.share-sub-filter-item .van-cell {
-  background: #2d1545 !important;
-  color: #fff !important;
-  padding: 10px 16px;
-  font-size: 13px;
-  white-space: nowrap;
-}
-
-.share-sub-filter-item .van-dropdown-item__option--active,
-.share-sub-filter-item
-  .van-dropdown-item__option--active
-  .van-dropdown-item__icon {
-  color: #ffa300 !important;
-  font-weight: bold;
-}
-
-.share-sub-filter-item .van-overlay {
-  background: transparent !important;
 }
 </style>
