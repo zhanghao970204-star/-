@@ -4,13 +4,11 @@
 
     <!-- Filter -->
     <div class="tx-filter">
-      <van-dropdown-menu>
-        <van-dropdown-item
-          v-model="filterValue"
-          :options="filterOptions"
-          @change="onFilterChange"
-        />
-      </van-dropdown-menu>
+      <common-gradient-select
+        v-model="filterValue"
+        :options="filterOptions"
+        @change="onFilterChange"
+      />
     </div>
 
     <!-- Transaction List -->
@@ -209,67 +207,8 @@ export default {
   position: sticky;
   top: 46px;
   z-index: 10;
-  padding: 10px 16px;
-}
-
-:deep(.van-dropdown-menu__bar) {
-  background: #12021a;
-  height: 30px !important;
-  border-radius: 20px;
-  border: none;
-  padding: 0 18px;
-  box-shadow: none;
-
-  .van-dropdown-menu__title {
-    color: @wihte-color !important;
-  }
-  .van-dropdown-menu__title--active {
-    color: #ffa300 !important;
-  }
-}
-
-:deep(.van-dropdown-menu__title) {
-  font-size: 12px !important;
-  .van-ellipsis {
-    margin-right: 5px;
-  }
-}
-
-:deep(.van-dropdown-item__content) {
-  font-size: 12px !important;
-  .van-cell__value {
-    display: none;
-  }
-}
-
-:deep(.van-dropdown-item) {
-  width: 145px;
-  border-radius: 15px;
-  margin-top: 5px;
-  margin-left: 3%;
-  border: 1px solid rgba(255, 162, 0, 0.45);
-  height: 240px;
-
-  .van-dropdown-item__content {
-    max-height: 100%;
-  }
-  .van-overlay {
-    background-color: transparent !important;
-  }
-  .van-cell {
-    background-color: #2d1545;
-    color: @wihte-color;
-    padding: 5px 16px;
-  }
-}
-
-:deep(.van-dropdown-item__option--active) {
-  color: #ffa300 !important;
-  font-weight: bold;
-}
-
-:deep(.van-dropdown-item__option--active .van-dropdown-item__icon) {
-  color: #ffa300 !important;
+  padding: 10px 16px 12px;
+  background: #1a0a28;
 }
 
 :deep(.van-loading) {
@@ -294,8 +233,8 @@ export default {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: #b8a8d4;
-  background: rgba(31, 28, 23, 0.92);
-  backdrop-filter: blur(8px);
+  /* 与页面/筛选区同色，避免旧主题棕灰底 */
+  background: #1a0a28;
 }
 
 /* ===== Transaction Item ===== */
@@ -372,12 +311,4 @@ export default {
   color: #ef4444;
 }
 
-/* ===== PC Responsive ===== */
-@media (min-width: 769px) {
-  :deep(.van-dropdown-item) {
-    left: 50% !important;
-    transform: translate(-50%, 0%) !important;
-    margin-left: -142px !important;
-  }
-}
 </style>

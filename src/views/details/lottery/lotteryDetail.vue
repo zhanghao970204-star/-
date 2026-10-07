@@ -2702,7 +2702,8 @@ export default {
   position: relative;
   margin-top: 20px;
   width: 100%;
-  background: linear-gradient(0deg, #1a0a28 13.46%, #2d1545 100%);
+  background: #411c59;
+  border: 1px solid #411c59;
   border-radius: 13px 13px 0 0;
   padding: 12px;
   line-height: 18px;
@@ -2799,7 +2800,8 @@ export default {
   margin-top: 20px;
 }
 .lot-bto-t4t {
-  background: linear-gradient(0deg, #1a0a28 13.46%, #2d1545 100%);
+  background: #411c59;
+  border: 1px solid #411c59;
   padding: 12px;
   border-top: 1px solid #797b7b;
   margin-top: 3px;
@@ -2827,7 +2829,8 @@ export default {
 .lot-bto-t4b {
   font-weight: bold;
   padding: 12px;
-  background: linear-gradient(0deg, #1a0a28 13.46%, #2d1545 100%);
+  background: #411c59;
+  border: 1px solid #411c59;
   position: relative;
 }
 .lot-bto-t4b::before {

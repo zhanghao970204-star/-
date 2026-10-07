@@ -12,7 +12,11 @@
           <div class="d-flex-s m-t-5" style="width: 100%">
             <div class="d-flex m-l-10">
               <img
-                :src="vipImg(`V${InitDate2.vipLevel != null ? InitDate2.vipLevel : 0}`)"
+                :src="
+                  vipImg(
+                    `V${InitDate2.vipLevel != null ? InitDate2.vipLevel : 0}`,
+                  )
+                "
                 width="65"
                 style="z-index: 9"
               />
@@ -46,7 +50,11 @@
           />
           <div class="d-flex m-l-5">
             <img
-              :src="vipImg(`V${InitDate2.vipLevel != null ? InitDate2.vipLevel + 1 : 0}`)"
+              :src="
+                vipImg(
+                  `V${InitDate2.vipLevel != null ? InitDate2.vipLevel + 1 : 0}`,
+                )
+              "
               width="30"
               style="z-index: 9"
             />
@@ -74,7 +82,7 @@
                 class="f-t-13 f-w m-l-5"
                 >{{
                   $formatNumberWithCommas(
-                    InitDate2.nextRechargeAmount - InitDate2.rechargeAmount
+                    InitDate2.nextRechargeAmount - InitDate2.rechargeAmount,
                   )
                 }}</span
               ><span v-else style="color: #d52d49" class="f-t-13 f-w m-l-5"
@@ -83,13 +91,13 @@
                 >({{
                   InitDate.rechargeAmount != 0
                     ? $formatNumberWithCommas(InitDate2.rechargeAmount)
-                    : '0'
+                    : "0"
                 }}
                 /
                 {{
                   InitDate2.nextRechargeAmount != 0
                     ? $formatNumberWithCommas(InitDate2.nextRechargeAmount)
-                    : '0'
+                    : "0"
                 }})</span
               >
             </p>
@@ -117,11 +125,7 @@
       >
         <div class="d-flex" style="width: 20%">
           <div class="d-flex">
-            <img
-              style="z-index: 9"
-              :src="vipImg(`V${index}`)"
-              width="28"
-            />
+            <img style="z-index: 9" :src="vipImg(`V${index}`)" width="28" />
             <span class="vip-tag3">VIP{{ item.vipLevel }}</span>
           </div>
         </div>
@@ -135,96 +139,80 @@
   </div>
 </template>
 <script>
-import { VipInit } from '@/api/common'
-import { vipImg } from '@/utils/vipAssets'
+import { VipInit } from "@/api/common";
+import { vipImg } from "@/utils/vipAssets";
 export default {
-  name: 'Vip',
+  name: "Vip",
   components: {},
   data() {
     return {
       InitDate: [],
       InitDate2: {},
       percentage: 0,
-      percentage1: 0
-    }
+      percentage1: 0,
+    };
   },
   mounted() {
-    this.VipInit()
+    this.VipInit();
   },
   methods: {
     vipImg,
     getBackgroundColor(i) {
       if (i === 0) {
         return {
-          background: `${
-            'url(' + vipImg('V0-bg.png') + ') no-repeat'
-          } `
-        }
+          background: `${"url(" + vipImg("V0-bg.png") + ") no-repeat"} `,
+        };
       } else if ([1, 2, 3, 4].includes(i)) {
         return {
-          background: `${
-            'url(' + vipImg('V1-bg.png') + ') no-repeat'
-          } `
-        }
+          background: `${"url(" + vipImg("V1-bg.png") + ") no-repeat"} `,
+        };
       } else if ([5, 6, 7, 8].includes(i)) {
         return {
-          background: `${
-            'url(' + vipImg('V5-bg.png') + ') no-repeat'
-          } `
-        }
+          background: `${"url(" + vipImg("V5-bg.png") + ") no-repeat"} `,
+        };
       } else if ([9, 10, 11].includes(i)) {
         return {
-          background: `${
-            'url(' + vipImg('V9-bg.png') + ') no-repeat'
-          } `
-        }
+          background: `${"url(" + vipImg("V9-bg.png") + ") no-repeat"} `,
+        };
       } else if ([12, 13, 14].includes(i)) {
         return {
-          background: `${
-            'url(' + vipImg('V12-bg.png') + ') no-repeat'
-          } `
-        }
+          background: `${"url(" + vipImg("V12-bg.png") + ") no-repeat"} `,
+        };
       } else if ([15, 16].includes(i)) {
         return {
-          background: `${
-            'url(' + vipImg('V15-bg.png') + ') no-repeat'
-          } `
-        }
+          background: `${"url(" + vipImg("V15-bg.png") + ") no-repeat"} `,
+        };
       } else if ([17, 18].includes(i)) {
         return {
-          background: `${
-            'url(' + vipImg('V17-bg.png') + ') no-repeat'
-          } `
-        }
+          background: `${"url(" + vipImg("V17-bg.png") + ") no-repeat"} `,
+        };
       } else if ([19, 20].includes(i)) {
         return {
-          background: `${
-            'url(' + vipImg('V19-bg.png') + ') no-repeat'
-          } `
-        }
+          background: `${"url(" + vipImg("V19-bg.png") + ") no-repeat"} `,
+        };
       }
     },
     async VipInit() {
-      const data = await VipInit()
-      if (data.status === 'ok') {
-        this.InitDate = data.content.vipList || []
-        this.InitDate2 = data.content
+      const data = await VipInit();
+      if (data.status === "ok") {
+        this.InitDate = data.content.vipList || [];
+        this.InitDate2 = data.content;
         this.percentage1 =
           this.InitDate2.betAmount > this.InitDate.nextBetAmount
             ? 100
             : (parseInt(this.InitDate2.betAmount) /
                 parseInt(this.InitDate2.nextBetAmount)) *
-              100
+              100;
         this.percentage =
           (this.InitDate2.rechargeAmount > this.InitDate2.nextRechargeAmount
             ? 100
             : (parseInt(this.InitDate2.rechargeAmount) /
                 parseInt(this.InitDate2.nextRechargeAmount)) *
-              100) || 0
+              100) || 0;
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 <style lang="less" scoped>
 .content-c {
@@ -234,8 +222,8 @@ export default {
   position: relative;
   border-radius: 13px;
   padding: 16px 10px;
-  background: linear-gradient(0deg, #1a0a28 13.46%, #2d1545 100%);
-  border: 1px solid rgba(233, 168, 67, 0.35);
+  background: #411c59;
+  border: 1px solid #411c59;
   box-shadow: 0 0px 7px black;
   margin-bottom: 19px;
 }

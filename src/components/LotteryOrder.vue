@@ -382,13 +382,20 @@ export default {
   .custom-field {
     margin-top: 5px;
     text-align: center;
-    border-radius: 20px;
-    font-size: 12px;
-    height: 30px;
+    border-radius: 25px;
+    font-size: 14px;
+    height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #294071;
+    background: #000;
+    border: none;
+    padding: 0 16px;
+    box-sizing: border-box;
+
+    &:focus-within {
+      box-shadow: 0 0 0 1px #ffd400;
+    }
   }
 }
 :deep(.van-field__control) {

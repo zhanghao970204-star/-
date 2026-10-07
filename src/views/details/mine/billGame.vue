@@ -11,13 +11,11 @@
         }}</span>
       </div>
       <div class="gr-filter">
-        <van-dropdown-menu>
-          <van-dropdown-item
-            v-model="filterValue"
-            :options="filterOptions"
-            @change="onFilterChange"
-          />
-        </van-dropdown-menu>
+        <common-gradient-select
+          v-model="filterValue"
+          :options="filterOptions"
+          @change="onFilterChange"
+        />
       </div>
     </div>
 
@@ -38,11 +36,11 @@
         >
           <div class="gr-card__left">
             <div class="gr-card__thumb">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="#ffa300">
-                <path
-                  d="M21.58 16.09l-1.09-7.66C20.21 6.46 18.52 5 16.53 5H7.47C5.48 5 3.79 6.46 3.51 8.43l-1.09 7.66C2.2 17.63 3.39 19 4.94 19h0c.68 0 1.32-.27 1.8-.75L9 16h6l2.25 2.25c.48.48 1.13.75 1.8.75h0c1.55 0 2.74-1.37 2.53-2.91zM11 11H9v2H8v-2H6v-1h2V8h1v2h2v1zm4 2c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm2-3c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"
-                />
-              </svg>
+              <img
+                class="gr-card__icon"
+                src="@/assets/img/mine/game_pad.png"
+                alt=""
+              />
             </div>
             <div class="gr-card__info">
               <p class="gr-card__name">{{ item.gameName }}</p>
@@ -198,10 +196,10 @@ export default {
 
 <style lang="less" scoped>
 @bg: #1a0a28;
-@card: #12021a;
-@neon: #ffa300;
+@fill: #1d022c;
+@neon: #f6ff00;
 @muted: #d7a2fa;
-@border: rgba(255, 162, 0, 0.45);
+@border-grad: linear-gradient(90deg, #e93dfe 0%, #3245a2 100%);
 
 .game-records-page {
   min-height: 100vh;
@@ -214,72 +212,47 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   padding: 10px 16px;
   position: sticky;
   top: 46px;
   z-index: 10;
-  background: rgba(31, 28, 23, 0.96);
-  backdrop-filter: blur(8px);
+  background: @bg;
 }
 
 .gr-balance {
-  background: @card;
-  border-radius: 8px;
-  padding: 6px 14px;
   display: flex;
   align-items: center;
-  gap: 4px;
-  border: 1px solid @border;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  box-sizing: border-box;
+  background:
+    linear-gradient(@fill, @fill) padding-box,
+    @border-grad border-box;
+  box-shadow: 0 0 10px fade(#e93dfe, 22%);
 
   &__label {
     font-size: 12px;
-    color: @muted;
+    color: @neon;
+    font-weight: 700;
   }
 
   &__amount {
     font-size: 14px;
     font-weight: 700;
-    color: @wihte-color;
+    color: @neon;
   }
 }
 
 .gr-filter {
-  :deep(.van-dropdown-menu__bar) {
-    background: @card;
-    height: 32px !important;
-    border-radius: 8px;
-    border: 1px solid @border;
-    padding: 0 12px;
-    box-shadow: none;
+  flex-shrink: 0;
 
-    .van-dropdown-menu__title {
-      color: @wihte-color !important;
-      font-size: 12px !important;
-    }
-  }
-
-  :deep(.van-dropdown-item) {
-    border-radius: 10px;
-    overflow: hidden;
-
-    .van-cell {
-      background: @card;
-      color: @wihte-color;
-      padding: 8px 16px;
-      font-size: 12px;
-    }
-
-    .van-dropdown-item__option--active {
-      color: @neon !important;
-    }
-
-    .van-dropdown-item__option--active .van-dropdown-item__icon {
-      color: @neon !important;
-    }
-  }
-
-  :deep(.van-overlay) {
-    background: transparent !important;
+  :deep(.cgs__panel) {
+    left: auto;
+    right: 0;
   }
 }
 
@@ -290,11 +263,10 @@ export default {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: @muted;
+  color: #ffffff;
   position: sticky;
-  top: 98px;
-  background: rgba(31, 28, 23, 0.92);
-  backdrop-filter: blur(8px);
+  top: 90px;
+  background: @bg;
   z-index: 5;
 }
 
@@ -312,28 +284,36 @@ export default {
     display: flex;
     align-items: center;
     gap: 12px;
+    min-width: 0;
   }
 
   &__thumb {
     width: 44px;
     height: 44px;
     border-radius: 10px;
-    background: rgba(255, 163, 0, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__icon {
+    width: 40px;
+    object-fit: contain;
+    display: block;
   }
 
   &__info {
     display: flex;
     flex-direction: column;
     gap: 2px;
+    min-width: 0;
   }
 
   &__name {
     font-size: 14px;
     font-weight: 700;
-    color: @wihte-color;
+    color: #d7a2fa;
     text-transform: uppercase;
   }
 
@@ -343,16 +323,17 @@ export default {
   }
 
   &__bet {
-    color: @muted;
+    color: @neon;
   }
 
   &__time {
     font-size: 11px;
-    color: #b8a8d4;
+    color: #ffffff;
   }
 
   &__right {
     text-align: right;
+    flex-shrink: 0;
   }
 
   &__profit {
@@ -386,14 +367,6 @@ export default {
   .game-records-page {
     max-width: 450px;
     margin: 0 auto;
-  }
-
-  .gr-filter {
-    :deep(.van-dropdown-item) {
-      left: auto !important;
-      right: 16px !important;
-      transform: none !important;
-    }
   }
 }
 </style>

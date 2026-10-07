@@ -1,282 +1,164 @@
 <template>
-  <div class="checkin-page-wrap">
-    <!-- Header -->
-    <header class="checkin-header">
-      <div class="checkin-header__back" @click="goBack">
-        <van-icon name="arrow-left" size="20" color="var(--wihte-color)" />
-      </div>
-      <h1 class="checkin-header__title">
-        {{ $lang.activity_daily_checkin || "DAILY SIGN IN" }}
-      </h1>
-      <div class="checkin-header__right" @click="goRewardHistory">
-        <van-icon name="clock-o" size="12" color="#ffa300" />
-        <span>{{ $lang.reward_history || "Reward History" }}</span>
-      </div>
-    </header>
+  <div class="checkin-page">
+    <title-bar :title="$lang.activity_daily_checkin || 'Daily Check-in'">
+      <template #right>
+        <button type="button" class="checkin-history" @click="goRewardHistory">
+          <span class="checkin-history__icon">
+            <van-icon name="clock-o" size="12" color="#ffd467" />
+          </span>
+          <span>{{ $lang.reward_history || "Reward History" }}</span>
+        </button>
+      </template>
+    </title-bar>
 
-    <!-- Banner Info -->
+    <img
+      class="checkin-hero"
+      src="@/assets/img/activity/checkin/hero.png"
+      alt=""
+    />
+
     <div class="checkin-banner">
-      <h2 class="checkin-banner__title">
+      <img
+        class="checkin-banner__img"
+        src="@/assets/img/activity/checkin/banner.png"
+        alt=""
+      />
+      <p class="checkin-banner__label">
         {{ $lang.reward_your_rewards || "Your Rewards" }}
-      </h2>
-      <p class="checkin-banner__desc">
-        {{
-          $lang.checkin_premium_desc ||
-          "Premium rewards are unlocked after daily payment. Accumulate 10 deposits for a Mega Spin!"
-        }}
       </p>
     </div>
 
-    <!-- Grid of Days -->
     <div class="checkin-grid">
       <div
         v-for="item in dayList"
         :key="item.day"
         class="checkin-card"
         :class="{
-          'checkin-card--claimed':
-            item.status === 'claimed' && !item.premiumClaimed,
-          'checkin-card--claimed-both':
-            item.status === 'claimed' && item.premiumClaimed,
           'checkin-card--active': item.status === 'active',
           'checkin-card--missed': item.status === 'missed',
           'checkin-card--locked': item.status === 'locked',
-          'checkin-card--special': item.isSpecial,
         }"
       >
-        <!-- Day Label -->
         <span class="checkin-card__day"
           >{{ $lang.activity_day || "Day" }} {{ item.day }}</span
         >
 
-        <!-- Claimed State -->
-        <template v-if="item.status === 'claimed'">
-          <div class="checkin-card__icons">
-            <!-- Regular coin - always green glow when claimed -->
-            <div class="checkin-card__icon-group">
-              <div
-                class="checkin-card__icon-circle checkin-card__icon-circle--claimed-coin"
-              >
-                <img
-                  src="@/assets/img/activity/activity_icon/checkin/coin.png"
-                  alt="coin"
-                  width="16"
-                  height="16"
-                />
-              </div>
-              <span class="checkin-card__amount-claimed-coin"
+        <div
+          class="checkin-card__body"
+          :class="{ 'checkin-card__body--well': item.status !== 'active' }"
+        >
+          <template v-if="item.status === 'active'">
+            <div class="checkin-card__stage">
+              <img
+                class="checkin-card__treasure"
+                src="@/assets/img/activity/checkin/treasure.png"
+                alt=""
+              />
+            </div>
+          </template>
+          <template v-else-if="item.status === 'missed'">
+            <img
+              class="checkin-card__icon"
+              src="@/assets/img/activity/checkin/miss.png"
+              alt=""
+            />
+            <div class="checkin-card__amounts">
+              <span class="checkin-card__amt checkin-card__amt--gold"
                 >{{ item.regularAmount }}
                 {{ $lang.checkin_coins || "Coins" }}</span
               >
-            </div>
-            <!-- Diamond - gold glow if premium claimed, claim button if paySignStatus=1, deposit tip otherwise -->
-            <div v-if="item.premiumClaimed" class="checkin-card__icon-group">
-              <div
-                class="checkin-card__icon-circle checkin-card__icon-circle--claimed-diamond"
-              >
-                <img
-                  src="@/assets/img/activity/activity_icon/checkin/diamond.png"
-                  alt="diamond"
-                  width="16"
-                  height="16"
-                />
-              </div>
-              <span class="checkin-card__amount-claimed-diamond"
+              <span class="checkin-card__amt checkin-card__amt--green"
                 >{{ item.premiumAmount }}
                 {{ $lang.checkin_coins || "Coins" }}</span
               >
             </div>
-            <div
-              v-else
-              class="checkin-card__icon-group checkin-card__icon-group--clickable"
+          </template>
+          <template v-else-if="item.status === 'locked'">
+            <img
+              class="checkin-card__icon checkin-card__icon--lock"
+              src="@/assets/img/activity/checkin/lock.png"
+              alt=""
+            />
+            <div class="checkin-card__amounts">
+              <span class="checkin-card__amt checkin-card__amt--gold"
+                >{{ item.regularAmount }}
+                {{ $lang.checkin_coins || "Coins" }}</span
+              >
+              <span class="checkin-card__amt checkin-card__amt--green"
+                >{{ item.premiumAmount }}
+                {{ $lang.checkin_coins || "Coins" }}</span
+              >
+            </div>
+          </template>
+          <template v-else>
+            <div class="checkin-card__amounts">
+              <span class="checkin-card__amt checkin-card__amt--gold"
+                >{{ item.regularAmount }}
+                {{ $lang.checkin_coins || "Coins" }}</span
+              >
+              <span class="checkin-card__amt checkin-card__amt--green"
+                >{{ item.premiumAmount }}
+                {{ $lang.checkin_coins || "Coins" }}</span
+              >
+            </div>
+          </template>
+        </div>
+
+        <div class="checkin-card__foot">
+          <template v-if="item.status === 'active'">
+            <button
+              type="button"
+              class="checkin-card__btn checkin-card__btn--gold"
+              @click="handleClaim('regular')"
+            >
+              {{ $lang.reward_claim_coins || "CLAIM" }}
+              {{ item.regularAmount }} {{ $lang.checkin_coins || "Coins" }}
+            </button>
+            <button
+              type="button"
+              class="checkin-card__btn checkin-card__btn--green"
               @click="
                 item.paySignStatus === 1
                   ? handleClaim('deposit')
                   : handlePremiumTip()
               "
             >
-              <div
-                class="checkin-card__icon-circle"
-                :class="
-                  item.paySignStatus === 1
-                    ? 'checkin-card__icon-circle--claimed-diamond'
-                    : 'checkin-card__icon-circle--premium-diamond'
-                "
-              >
-                <img
-                  src="@/assets/img/activity/activity_icon/checkin/diamond.png"
-                  alt="diamond"
-                  width="16"
-                  height="16"
-                />
-                <van-icon
-                  v-if="item.paySignStatus !== 1"
-                  name="lock"
-                  size="8"
-                  color="var(--wihte-color)"
-                  class="checkin-card__mini-lock"
-                />
-              </div>
-              <span class="checkin-card__amount-premium-locked"
-                >{{ item.premiumAmount }}
-                {{ $lang.checkin_coins || "Coins" }}</span
-              >
-            </div>
-          </div>
-          <span
-            v-if="item.premiumClaimed"
-            class="checkin-card__status checkin-card__status--claimed-both"
-            >{{ $lang.reward_claimed || "CLAIMED" }}</span
-          >
-          <button
-            v-else-if="item.paySignStatus === 1"
-            class="checkin-card__claim-btn checkin-card__claim-btn--premium-small"
-            @click="handleClaim('deposit')"
-          >
-            {{ $lang.checkin_deposit_for || "DEPOSIT FOR" }}
-            {{ item.premiumAmount }} {{ $lang.checkin_coins || "Coins" }}
-          </button>
-          <button
-            v-else
-            class="checkin-card__claim-btn checkin-card__claim-btn--premium-small"
-            @click="handlePremiumTip"
-          >
-            {{ $lang.reward_go_deposit || "Go To Deposit" }}
-          </button>
-        </template>
-
-        <!-- Active State -->
-        <template v-else-if="item.status === 'active'">
-          <div class="checkin-card__active-content">
-            <!-- Regular Claim -->
-            <div class="checkin-card__claim-group">
-              <div
-                class="checkin-card__icon-circle checkin-card__icon-circle--active-coin"
-              >
-                <img
-                  src="@/assets/img/activity/activity_icon/checkin/coin.png"
-                  alt="coin"
-                  width="16"
-                  height="16"
-                />
-              </div>
-              <button
-                class="checkin-card__claim-btn checkin-card__claim-btn--regular"
-                @click="handleClaim('regular')"
-              >
-                {{ $lang.reward_claim_coins || "CLAIM" }}
-                {{ item.regularAmount }} {{ $lang.checkin_coins || "Coins" }}
-              </button>
-            </div>
-            <!-- Premium Claim: only enabled when paySignStatus === 1 (deposited today) -->
-            <div class="checkin-card__claim-group">
-              <div
-                class="checkin-card__icon-circle"
-                :class="
-                  item.paySignStatus === 1
-                    ? 'checkin-card__icon-circle--claimed-diamond'
-                    : 'checkin-card__icon-circle--premium-diamond'
-                "
-              >
-                <img
-                  src="@/assets/img/activity/activity_icon/checkin/diamond.png"
-                  alt="diamond"
-                  width="16"
-                  height="16"
-                />
-                <van-icon
-                  v-if="item.paySignStatus !== 1"
-                  name="lock"
-                  size="8"
-                  color="var(--wihte-color)"
-                  class="checkin-card__mini-lock"
-                />
-              </div>
-              <button
-                v-if="item.paySignStatus === 1"
-                class="checkin-card__claim-btn checkin-card__claim-btn--premium"
-                @click="handleClaim('deposit')"
-              >
-                {{ $lang.checkin_deposit_for || "DEPOSIT FOR" }}
-                {{ item.premiumAmount }} {{ $lang.checkin_coins || "Coins" }}
-              </button>
-              <button
-                v-else
-                class="checkin-card__claim-btn checkin-card__claim-btn--premium"
-                @click="handlePremiumTip"
-              >
-                {{ $lang.checkin_deposit_for || "DEPOSIT FOR" }}
-                {{ item.premiumAmount }} {{ $lang.checkin_coins || "Coins" }}
-              </button>
-            </div>
-          </div>
-        </template>
-
-        <template v-else-if="item.status === 'missed'">
-          <div class="checkin-card__locked-icon">
-            <van-icon name="cross" size="20" color="#ef4444" />
-          </div>
-          <div class="checkin-card__locked-amounts">
-            <span class="checkin-card__amount-small"
-              >{{ item.regularAmount }}
-              {{ $lang.checkin_coins || "Coins" }}</span
-            >
-            <span class="checkin-card__amount-small"
-              >{{ item.premiumAmount }}
-              {{ $lang.checkin_coins || "Coins" }}</span
-            >
-          </div>
-          <span class="checkin-card__status checkin-card__status--missed">{{
-            $lang.checkin_missed || "MISSED"
-          }}</span>
-        </template>
-
-        <!-- Locked State -->
-        <template v-else-if="item.status === 'locked'">
-          <div class="checkin-card__locked-icon">
-            <van-icon
-              v-if="item.isSpecial"
-              name="lock"
-              size="24"
-              color="#fbbf24"
-            />
-            <template v-else>
-              <van-icon name="lock" size="20" color="#b8a8d4" />
-            </template>
-          </div>
-          <div class="checkin-card__locked-amounts">
-            <span
-              :class="
-                item.isSpecial
-                  ? 'checkin-card__amount-special-dim'
-                  : 'checkin-card__amount-small'
-              "
-              >{{ item.regularAmount }}
-              {{ $lang.checkin_coins || "Coins" }}</span
-            >
-            <span
-              :class="
-                item.isSpecial
-                  ? 'checkin-card__amount-special'
-                  : 'checkin-card__amount-premium-locked'
-              "
-            >
+              {{ $lang.checkin_deposit_for || "DEPOSIT FOR" }}
               {{ item.premiumAmount }} {{ $lang.checkin_coins || "Coins" }}
-            </span>
-          </div>
+            </button>
+          </template>
+          <template v-else-if="item.status === 'claimed'">
+            <button
+              v-if="!item.premiumClaimed"
+              type="button"
+              class="checkin-card__btn checkin-card__btn--green"
+              @click="
+                item.paySignStatus === 1
+                  ? handleClaim('deposit')
+                  : handlePremiumTip()
+              "
+            >
+              {{ $lang.checkin_deposit_for || "DEPOSIT FOR" }}
+              {{ item.premiumAmount }} {{ $lang.checkin_coins || "Coins" }}
+            </button>
+            <span v-else class="checkin-card__pill">{{
+              $lang.reward_claimed || "CLAIMED"
+            }}</span>
+          </template>
           <span
-            class="checkin-card__status"
-            :class="{ 'checkin-card__status--special': item.isSpecial }"
+            v-else-if="item.status === 'missed'"
+            class="checkin-card__pill"
+            >{{ $lang.checkin_missed || "MISSED" }}</span
           >
-            {{ $lang.reward_locked || "LOCKED" }}
-          </span>
-        </template>
+          <span v-else class="checkin-card__pill">{{
+            $lang.reward_locked || "LOCKED"
+          }}</span>
+        </div>
       </div>
     </div>
 
-    <!-- Bottom CTA -->
-    <div class="checkin-bottom-cta">
-      <button class="checkin-bottom-cta__btn" @click="goDeposit">
+    <div class="checkin-bottom">
+      <button type="button" class="checkin-bottom__btn" @click="goDeposit">
         {{ $lang.reward_go_deposit || "Go To Deposit" }}
       </button>
     </div>
@@ -303,9 +185,6 @@ export default {
     reportPromoPanel("sign_daily", 2);
   },
   methods: {
-    goBack() {
-      this.$router.go(-1);
-    },
     goRewardHistory() {
       this.$jumpTo("/rewardHistory");
     },
@@ -412,420 +291,271 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@primary: #ffa300;
-@bg-dark: #1a0a28;
-@surface: rgba(255, 255, 255, 0.03);
-@btn-grad: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
-
-.checkin-page-wrap {
+.checkin-page {
   min-height: 100vh;
-  background: @bg-dark;
-  padding-bottom: 100px;
+  background: transparent;
+  padding-bottom: 96px;
+
+  :deep(.van-nav-bar__title) {
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    font-size: 15px;
+    max-width: 46%;
+  }
+
+  :deep(.van-nav-bar__right) {
+    padding-right: 8px;
+  }
 }
 
-// Header
-.checkin-header {
-  display: flex;
+.checkin-history {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: fade(@bg-dark, 80%);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  gap: 4px;
+  height: 24px;
+  padding: 0 8px 0 3px;
+  border: 1px solid #590581;
+  border-radius: 999px;
+  background: #250a3d;
 
-  &__back {
-    width: 40px;
-    height: 40px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+
+  &__icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    border-radius: 50%;
-    &:active {
-      background: rgba(255, 255, 255, 0.05);
-    }
-  }
-
-  &__title {
-    color: @wihte-color;
-    font-size: 14px;
-    font-weight: bold;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    flex: 1;
-    text-align: center;
-  }
-
-  &__right {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    cursor: pointer;
-    span {
-      color: @primary;
-      font-size: 10px;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
+    flex-shrink: 0;
   }
 }
 
-// Banner
+.checkin-hero {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 .checkin-banner {
-  padding: 24px 20px 16px;
+  position: relative;
+  margin: -16px 12px 2px;
 
-  &__title {
-    color: @wihte-color;
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 8px;
+  &__img {
+    display: block;
+    width: 100%;
+    height: auto;
   }
 
-  &__desc {
-    color: #b8a8d4;
-    font-size: 12px;
-    line-height: 1.5;
+  &__label {
+    position: absolute;
+    left: 14%;
+    right: 14%;
+    bottom: 16%;
+    margin: 0;
+    text-align: center;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    pointer-events: none;
   }
 }
 
-// Grid
 .checkin-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  padding: 8px 20px 20px;
+  gap: 8px 7px;
+  padding: 4px 12px 16px;
 }
 
-// Card Base
 .checkin-card {
-  background: @surface;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  padding: 12px;
+  aspect-ratio: 165 / 220;
+  background: url("@/assets/img/activity/checkin/card_purple.png") center / 100%
+    100% no-repeat;
+  border-radius: 16px;
+  padding: 8px 7px 7px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 12px;
+  align-items: stretch;
+  box-sizing: border-box;
+
+  &--active {
+    background-image: url("@/assets/img/activity/checkin/card_gold.png");
+    padding: 8px 8px 8px;
+
+    .checkin-card__day {
+      color: #fff8d6;
+    }
+  }
 
   &__day {
-    font-size: 10px;
-    font-weight: bold;
-    text-transform: uppercase;
-    color: #b8a8d4;
-  }
-
-  // Claimed (regular only - Day 1 style)
-  &--claimed {
-    opacity: 0.7;
-    border-color: fade(@primary, 20%);
-  }
-
-  // Claimed (both regular + premium - Day 2 style)
-  &--claimed-both {
-    opacity: 0.9;
-    border-color: fade(@primary, 40%);
-    background: fade(@primary, 5%);
-  }
-
-  // Active (neon glow)
-  &--active {
-    border-color: fade(@primary, 40%);
-    background: fade(@primary, 5%);
-    box-shadow:
-      0 0 10px fade(@primary, 60%),
-      inset 0 0 5px fade(@primary, 30%);
-
-    .checkin-card__day {
-      color: @primary;
-    }
-  }
-
-  // Missed (过去未签到)
-  &--missed {
-    opacity: 0.5;
-    border-color: fade(#ef4444, 15%);
-  }
-
-  // Special (Day 12)
-  &--special {
-    background: linear-gradient(135deg, fade(#fbbf24, 5%), transparent);
-    border-color: fade(#fbbf24, 20%);
-
-    .checkin-card__day {
-      color: #fbbf24;
-    }
-
-    .checkin-card__locked-icon {
-      background: fade(#fbbf24, 10%);
-      border-color: fade(#fbbf24, 30%);
-    }
-  }
-
-  // Icons row (claimed state)
-  &__icons {
-    display: flex;
-    gap: 12px;
-    width: 100%;
-    justify-content: center;
-  }
-
-  &__icon-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-  }
-
-  &__icon-circle {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    &--coin {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    &--diamond {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    &--claimed-coin {
-      background: fade(@primary, 20%);
-      border: 1px solid fade(@primary, 50%);
-      box-shadow: 0 0 15px fade(@primary, 40%);
-    }
-
-    &--claimed-diamond {
-      background: fade(#ffd700, 20%);
-      border: 1px solid fade(#ffd700, 50%);
-      box-shadow: 0 0 15px fade(#ffd700, 40%);
-    }
-
-    &--active-coin {
-      background: fade(@primary, 20%);
-      border: 1px solid fade(@primary, 50%);
-      box-shadow: 0 0 15px fade(@primary, 40%);
-    }
-
-    &--premium-diamond {
-      background: fade(#fbbf24, 10%);
-      border: 1px solid fade(#fbbf24, 30%);
-      position: relative;
-    }
-  }
-
-  &__mini-lock {
-    position: absolute;
-  }
-
-  &__amount-small {
-    font-size: 8px;
-    color: #b8a8d4;
-    font-weight: 500;
-  }
-
-  &__amount-premium-locked {
-    font-size: 8px;
-    color: fade(#f59e0b, 50%);
-    font-weight: 500;
-  }
-
-  &__amount-claimed-coin {
-    font-size: 8px;
-    color: @primary;
-    font-weight: bold;
-  }
-
-  &__amount-claimed-diamond {
-    font-size: 8px;
-    color: #ffd700;
-    font-weight: bold;
-  }
-
-  &__icon-group--dimmed {
-    opacity: 0.3;
-  }
-
-  &__icon-group--clickable {
-    cursor: pointer;
-    &:active {
-      opacity: 0.7;
-    }
-  }
-
-  &__amount-special {
-    font-size: 8px;
-    color: #fbbf24;
-    font-weight: bold;
-  }
-
-  &__amount-special-dim {
-    font-size: 8px;
-    color: fade(#fbbf24, 60%);
-    font-weight: 500;
-  }
-
-  &__status {
-    font-size: 10px;
-    color: #b8a8d4;
-    text-transform: uppercase;
-    font-weight: bold;
-    margin-top: 4px;
-    letter-spacing: 0.05em;
-
-    &--claimed {
-      color: @primary;
-      letter-spacing: 0.05em;
-    }
-
-    &--special {
-      color: #fbbf24;
-      font-weight: 900;
-      letter-spacing: 0.1em;
-    }
-
-    &--claimed-both {
-      color: @primary;
-      font-weight: 900;
-      letter-spacing: 0.15em;
-    }
-
-    &--missed {
-      color: #ef4444;
-      font-weight: 600;
-    }
-  }
-
-  // Active content
-  &__active-content {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    width: 100%;
-    align-items: center;
-  }
-
-  &__claim-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    width: 100%;
-  }
-
-  &__claim-btn {
-    width: 100%;
-    border: none;
-    font-size: 8px;
-    font-weight: 900;
-    padding: 6px 4px;
-    border-radius: 999px;
-    text-transform: uppercase;
-    cursor: pointer;
+    flex-shrink: 0;
     text-align: center;
-    line-height: 1.2;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #fff;
+    line-height: 1.1;
+  }
 
-    &--regular {
-      background: @btn-grad;
-      color: #573900;
-    }
+  &__body {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    margin-top: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 
-    &--premium {
-      background: #fbbf24;
-      color: #573900;
-      font-size: 7px;
-    }
-
-    &--premium-small {
-      background: #fbbf24;
-      color: #573900;
-      font-size: 7px;
-      width: 100%;
-      border: none;
-      padding: 4px 4px;
-      border-radius: 999px;
-      text-transform: uppercase;
-      cursor: pointer;
-      text-align: center;
-      font-weight: 900;
-      line-height: 1.2;
+    &--well {
+      border-radius: 12px;
+      background: #07040f;
+      padding: 8px 4px 8px;
     }
   }
 
-  // Locked content
-  &__locked-icon {
+  &__stage {
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    border-radius: 10px;
+    background: #050308;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__icon {
     width: 40px;
     height: 40px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    object-fit: contain;
+    display: block;
+    flex-shrink: 0;
+
+    &--lock {
+      width: 36px;
+      height: 40px;
+    }
   }
 
-  &__locked-amounts {
+  &__treasure {
+    width: 52px;
+    height: 52px;
+    object-fit: contain;
+    display: block;
+  }
+
+  &__amounts {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2px;
+    gap: 3px;
   }
-}
 
-// Bottom CTA
-.checkin-bottom-cta {
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 450px;
-  padding: 20px;
-  background: linear-gradient(
-    to top,
-    @bg-dark,
-    fade(@bg-dark, 90%),
-    transparent
-  );
-  z-index: 40;
+  &__amt {
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.05;
+    text-transform: uppercase;
+    white-space: nowrap;
+
+    &--green {
+      color: #2ee56a;
+    }
+
+    &--gold {
+      color: #ffe14a;
+    }
+  }
+
+  &__foot {
+    flex-shrink: 0;
+    width: 100%;
+    margin-top: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  &__pill {
+    width: 100%;
+    height: 24px;
+    border-radius: 999px;
+    background: #8d8d96;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-transform: uppercase;
+  }
 
   &__btn {
     width: 100%;
-    background: @btn-grad;
-    color: #573900;
-    font-size: 18px;
-    font-weight: 900;
-    padding: 16px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: -0.02em;
-    box-shadow: 0 0 20px fade(@primary, 30%);
+    text-align: center;
+    white-space: nowrap;
 
-    &:active {
-      transform: scale(0.98);
+    &--gold {
+      .btn-3d-yellow();
+      height: 24px;
+      padding: 0 2px;
+      color: #fff;
+      font-size: 8px;
+      letter-spacing: 0;
+      text-shadow: none;
+      white-space: nowrap;
+    }
+
+    &--green {
+      .btn-3d-green();
+      height: 24px;
+      padding: 0 2px;
+      font-size: 7px;
+      letter-spacing: 0;
+      white-space: nowrap;
     }
   }
 }
 
-// PC
+.checkin-bottom {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  z-index: 40;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 450px;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+  background: linear-gradient(
+    to top,
+    fade(#27033c, 96%) 40%,
+    fade(#27033c, 0%) 100%
+  );
+  pointer-events: none;
+
+  &__btn {
+    .btn-3d-green();
+    pointer-events: auto;
+    font-size: 16px;
+    letter-spacing: 0.04em;
+  }
+}
+
 @media (min-width: 769px) {
-  .checkin-page-wrap {
+  .checkin-page {
     max-width: 450px;
     margin: 0 auto;
-    border-left: 1px solid fade(#2d1545, 50%);
-    border-right: 1px solid fade(#2d1545, 50%);
   }
 }
 </style>

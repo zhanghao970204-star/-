@@ -2,7 +2,7 @@ import { createApp, defineAsyncComponent } from "vue";
 import App from "./App.vue";
 import "./registerServiceWorker";
 import router from "./router";
-import { setupVant } from "@/utils/vant-ui";
+import { setupVant } from "./utils/vant-ui.js";
 import store from "./store";
 import "./assets/styles/variables.less";
 import "./assets/fonts/iconfont/iconfont.css";
@@ -15,14 +15,14 @@ import { createI18n } from "vue-i18n";
 import dragScroll from "./utils/dragScroll";
 import bus from "./utils/eventBus";
 import toast from "./utils/toast";
-import { getFingerprint } from "@/utils/common";
-import { readCountryCode } from "@/utils/country";
-import { resetPageScrollAfterRoute } from "@/utils/scrollReset";
+import { getFingerprint } from "./utils/common.js";
+import { readCountryCode } from "./utils/country.js";
+import { resetPageScrollAfterRoute } from "./utils/scrollReset.js";
 import {
   resolveClientIdSync,
   getClientId,
   peekFlutterUuid,
-} from "@/utils/nativeDevice";
+} from "./utils/nativeDevice.js";
 // import VConsole from 'vconsole'
 
 // App / 调试：打开 vConsole（?vconsole=0 可关）

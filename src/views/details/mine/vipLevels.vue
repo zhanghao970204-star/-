@@ -1,123 +1,117 @@
 <template>
   <div class="vip-page">
-    <!-- Header -->
-    <div class="vip-header">
-      <van-icon
-        name="arrow-left"
-        size="22"
-        color="#FFE4B5"
-        @click="$router.go(-1)"
-      />
-      <h1 class="vip-header__title">{{ $lang.vip_title }}</h1>
-      <div class="vip-header__balance">
-        <span>{{ getCurrency }} {{ $formatNumberWithCommas(balance) }}</span>
-        <div class="vip-header__add" @click="$jumpTo('/rechargeCont')">
-          <van-icon name="plus" size="12" color="#1a1208" />
+    <top-nav class="vip-page__topnav" />
+    <div class="vip-page__nav-pad"></div>
+
+    <!-- 图一：舞台 Hero + 卡片轮播 -->
+    <section class="vip-hero">
+      <img class="vip-hero__bg" :src="imgHeroBg" alt="" />
+
+      <div class="vip-hero__head">
+        <button type="button" class="vip-hero__back" @click="$router.go(-1)">
+          <img class="vip-hero__back-bg" :src="imgBackCircle" alt="" />
+          <img class="vip-hero__back-ico" :src="imgBackIco" alt="" />
+        </button>
+        <img class="vip-hero__logo" :src="imgLogo" alt="CLUB VIP" />
+      </div>
+
+      <div class="vip-carousel">
+        <img
+          v-if="peekPrevCardSrc"
+          class="vip-carousel__peek is-left"
+          :src="peekPrevCardSrc"
+          alt=""
+        />
+        <img
+          v-if="peekNextCardSrc"
+          class="vip-carousel__peek is-right"
+          :src="peekNextCardSrc"
+          alt=""
+        />
+
+        <div class="vip-carousel__center">
+          <button
+            v-if="peekPrevCardSrc"
+            type="button"
+            class="vip-carousel__arrow"
+            aria-label="prev"
+            @click="prevLevel"
+          >
+            <img :src="imgArrow" alt="" />
+          </button>
+
+          <div class="vip-carousel__main" :class="{ 'is-locked': isLocked }">
+            <img class="vip-carousel__card" :src="viewPairCardSrc" alt="" />
+            <span class="vip-carousel__lv" :style="viewLevelTagStyle">
+              VIP {{ currentViewLevel }}
+            </span>
+            <span
+              class="vip-carousel__tag"
+              :class="{
+                'is-current': currentViewLevel === currentLevel,
+                'is-achieved': currentViewLevel < currentLevel,
+                'is-locked': currentViewLevel > currentLevel,
+              }"
+              :style="
+                currentViewLevel > currentLevel ? null : viewLevelTagStyle
+              "
+            >
+              {{ levelTagText }}
+            </span>
+          </div>
+
+          <button
+            v-if="peekNextCardSrc"
+            type="button"
+            class="vip-carousel__arrow is-next"
+            aria-label="next"
+            @click="nextLevel"
+          >
+            <img :src="imgArrow" alt="" />
+          </button>
         </div>
       </div>
-    </div>
 
-    <div class="vip-card-wrap">
-      <div
-        class="vip-top-card"
-        :class="{ 'is-locked': isLocked }"
-        :style="{ background: vipCardStyle.cardBg }"
-      >
-        <div class="vip-card-fx">
-          <div
-            class="vip-card-fx-glow"
-            :style="{ background: vipCardStyle.glowBg }"
-          ></div>
-          <div class="vip-card-fx-shower">
-            <span
-              v-for="line in cardShowerList"
-              :key="`${currentViewLevel}-${line.id}`"
-              class="vip-card-fx-line"
-              :style="{
-                right: line.right,
-                top: line.top,
-                width: line.width,
-                height: line.height,
-                '--line-opacity': line.opacity,
-                animationDuration: line.duration,
-                animationDelay: getShowerDelay(line),
-              }"
-            ></span>
-          </div>
-        </div>
-
-        <div class="vip-top-card__arrow" @click="prevLevel">
-          <van-icon name="arrow-left" size="16" color="#FFE4B5" />
-        </div>
-
-        <div class="vip-top-card__body">
-          <div class="vip-top-card__badge" :class="{ 'is-dim': isLocked }">
-            <div class="vip-top-card__badge-glow"></div>
-            <div
-              class="vip-top-card__badge-img"
-              :style="badgeSpriteStyle(currentViewLevel, VIP_BADGE_H)"
-            ></div>
-          </div>
-
-          <div class="vip-top-card__info">
-            <div class="vip-top-card__head">
-              <div class="vip-top-card__level">VIP {{ currentViewLevel }}</div>
-              <div
-                class="vip-top-card__tag"
-                :class="{
-                  'is-current': currentViewLevel === currentLevel,
-                  'is-achieved': currentViewLevel < currentLevel,
-                  'is-locked': currentViewLevel > currentLevel,
-                }"
-                :style="
-                  currentViewLevel === currentLevel
-                    ? { background: vipCardStyle.tagBg }
-                    : null
-                "
-              >
-                {{ levelTagText }}
-              </div>
-            </div>
-
-            <div class="vip-top-card__xp">
-              <img class="vip-top-card__xp-ico" :src="xpIcon" alt="" />
-              <span>
-                <span class="xp-cur">{{
-                  $formatNumberWithCommas(rechargeAmount)
-                }}</span>
-                / {{ $formatNumberWithCommas(nextRechargeAmount) }}
+      <!-- VIP PROGRESS：落在舞台反光地面上 —— 底座 23434 + 箭头条 23445 + 钻石框 23443 -->
+      <section class="vip-progress">
+        <h2 class="vip-progress__title">VIP PROGRESS</h2>
+        <div class="vip-progress__stage">
+          <img class="vip-progress__base" :src="imgBase" alt="" />
+          <div class="vip-progress__hud">
+            <div class="vip-progress__badge">
+              <img class="vip-progress__badge-bg" :src="imgBadge" alt="" />
+              <span class="vip-progress__badge-txt">
+                <i>VIP</i>
+                <em>{{ currentViewLevel }}</em>
               </span>
             </div>
-            <div class="vip-top-card__bar">
-              <div
-                class="vip-top-card__fill"
-                :style="{ width: rechargePercent + '%' }"
-              ></div>
-            </div>
-            <div class="vip-top-card__tip">
-              {{ $lang.vip_next_level || "NEXT LEVEL" }}
-              <span class="need-num">{{
-                $formatNumberWithCommas(
-                  Math.max(0, nextRechargeAmount - rechargeAmount),
-                )
-              }}</span>
-              →
-              <span class="next-vip">VIP {{ currentLevel + 1 }}</span>
+            <div class="vip-progress__bar">
+              <img class="vip-progress__bar-bg" :src="imgProgressBar" alt="" />
+              <div class="vip-progress__track">
+                <div
+                  class="vip-progress__fill"
+                  :style="{ width: rechargePercent + '%' }"
+                ></div>
+              </div>
+              <i
+                class="vip-progress__knob"
+                :style="{ left: progressKnobLeft }"
+              ></i>
+              <span class="vip-progress__num">
+                {{ $formatNumberWithCommas(rechargeAmount) }} /
+                {{ $formatNumberWithCommas(nextRechargeAmount) }}
+              </span>
             </div>
           </div>
         </div>
+      </section>
+    </section>
 
-        <div class="vip-top-card__arrow" @click="nextLevel">
-          <van-icon name="arrow" size="16" color="#FFE4B5" />
-        </div>
-      </div>
-    </div>
-
-    <div v-if="currentViewLevel > 0" class="vip-benefits">
-      <div class="vip-benefits__title">
-        <span class="vip-benefits__dot"></span>
-        {{ $lang.vip_exclusive_privileges || "Benefits" }}
-      </div>
+    <!-- Exclusive Privileges -->
+    <section v-if="currentViewLevel > 0" class="vip-benefits">
+      <h2 class="vip-section-title">
+        {{ $lang.vip_exclusive_privileges || "Exclusive Privileges" }}
+      </h2>
       <div class="benefit-grid">
         <div
           v-for="(item, idx) in privileges"
@@ -131,10 +125,17 @@
           }"
           @click="onBenefitClick(item)"
         >
-          <div class="benefit-card-icon-wrap">
-            <van-icon :name="item.icon" size="22" color="#ffa300" />
+          <img class="benefit-card__bg" :src="imgPrivilegeBg" alt="" />
+          <div class="benefit-card__icon">
+            <img class="benefit-card__frame" :src="imgIconFrame" alt="" />
+            <img
+              class="benefit-card__pic"
+              :src="privilegeIcons[idx] || privilegeIcons[0]"
+              alt=""
+            />
+            <van-icon v-if="isLocked" class="benefit-card__lock" name="lock" />
           </div>
-          <div class="benefit-card-text">
+          <div class="benefit-card__text">
             <div class="tit">{{ item.label }}</div>
             <div class="describe">{{ item.value }}</div>
             <div
@@ -152,27 +153,13 @@
               }}
             </div>
           </div>
-          <van-icon
-            v-if="isLocked"
-            class="benefit-card-arrow"
-            name="lock"
-            color="#e9b65a"
-          />
-          <van-icon
-            v-else
-            class="benefit-card-arrow"
-            name="arrow"
-            color="#e9b65a"
-          />
         </div>
       </div>
-    </div>
+    </section>
 
-    <div v-if="vipList.length" class="vip-levels">
-      <div class="vip-benefits__title">
-        <span class="vip-benefits__dot"></span>
-        Level
-      </div>
+    <!-- 图二：Level 列表 -->
+    <section v-if="vipList.length" class="vip-levels">
+      <h2 class="vip-section-title">Level</h2>
 
       <div
         v-if="canShowTopLevelExpand"
@@ -239,11 +226,12 @@
             @click="onLevelCardClick(item)"
           >
             <div class="lv-card-body">
-              <div
+              <img
                 class="lv-card-badge"
                 :class="{ 'is-dim': item.vipLevel > currentLevel }"
-                :style="badgeSpriteStyle(item.vipLevel, LV_BADGE_H)"
-              ></div>
+                :src="resolveVipPairIcon(item.vipLevel)"
+                alt=""
+              />
               <div class="lv-card-content">
                 <div class="lv-card-head">
                   <div class="lv-card-head-left">
@@ -328,7 +316,7 @@
           </svg>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </template>
 
@@ -343,14 +331,136 @@ import {
   GetCashBack,
   GameBalanceList,
 } from "@/api/common";
+import TopNav from "@/components/TopNav.vue";
 import xpIcon from "@/assets/img/vip/xp.png";
 
-// viptb.png：VIP0–VIP20 共 21 帧（4636×280）
-const VIP_SPRITE_W = 4636;
-const VIP_SPRITE_H = 280;
-const VIP_BADGE_FRAMES = 21;
-const VIP_BADGE_H = 110;
-const LV_BADGE_H = 55;
+function vipAsset(name) {
+  return new URL(`../../../assets/img/vip/${name}`, import.meta.url).href;
+}
+
+const vipPairModules = import.meta.glob("@/assets/img/vip/*_*.png", {
+  eager: true,
+  import: "default",
+});
+
+/** 两级共用：1-2 / 3-4 ... 13-14（与我的页 vip 图标规则一致） */
+function vipPairStart(level) {
+  const lv = Math.max(0, Number(level) || 0);
+  const start = lv <= 0 ? 1 : Math.floor((lv - 1) / 2) * 2 + 1;
+  return Math.min(start, 13);
+}
+
+function resolveVipPairIcon(level) {
+  const start = vipPairStart(level);
+  const name = `${start}_${start + 1}.png`;
+  const hit = Object.keys(vipPairModules).find((k) => k.endsWith(`/${name}`));
+  if (hit) return vipPairModules[hit];
+  const fallback = Object.keys(vipPairModules).find((k) =>
+    k.endsWith("/1_2.png"),
+  );
+  return fallback ? vipPairModules[fallback] : "";
+}
+
+/** 两级共用一张 VIP 卡片：0-2 / 3-4 / 5-6 / 7-8 / 9-10 / 11-12 / 13 */
+const VIP_PAIR_CARDS = [
+  vipAsset("image 23435.png"), // 0-2 青铜
+  vipAsset("Group 1707485596.png"), // 3-4 紫丁香
+  vipAsset("Group 1707485597.png"), // 5-6 金红心
+  vipAsset("Group 1707485598.png"), // 7-8 绿黑桃
+  vipAsset("Group 1707485599.png"), // 9-10 蓝钻
+  vipAsset("Group 1707485600.png"), // 11-12 紫金冠
+  vipAsset("Group 1707485594.png"), // 13 黑金冠
+];
+
+function resolveVipPairCard(level) {
+  const start = vipPairStart(level);
+  const idx = Math.min(Math.floor((start - 1) / 2), VIP_PAIR_CARDS.length - 1);
+  return VIP_PAIR_CARDS[Math.max(0, idx)];
+}
+
+/** 卡片等级档：0-2 / 3-4 / 5-6 / 7-8 / 9-10 / 11-12 / 13+ */
+function vipCardTierIndex(level) {
+  const lv = Math.max(0, Number(level) || 0);
+  if (lv <= 2) return 0;
+  if (lv <= 4) return 1;
+  if (lv <= 6) return 2;
+  if (lv <= 8) return 3;
+  if (lv <= 10) return 4;
+  if (lv <= 12) return 5;
+  return 6;
+}
+
+/** 各档卡片底色 / 边框渐变 / 内阴影（设计稿） */
+const VIP_CARD_TIERS = [
+  {
+    bg: ["#7E442E", "#7E442E"],
+    border: ["#FDFFFE", "#EECDAB"],
+    shadow: "#402013",
+  },
+  {
+    bg: ["#35084B", "#482762"],
+    border: ["#FCFEFF", "#D0D1D8"],
+    shadow: "#200C3F",
+  },
+  {
+    bg: ["#750002", "#750002"],
+    border: ["#FFF5CE", "#FFE683"],
+    shadow: "#240000",
+  },
+  {
+    bg: ["#003918", "#003918"],
+    border: ["#FFF5CE", "#FFE683"],
+    shadow: "#010101",
+  },
+  {
+    bg: ["#1156BF", "#1156BF"],
+    border: ["#E0F5FE", "#416197"],
+    shadow: "#010101",
+  },
+  {
+    bg: ["#522074", "#522074"],
+    border: ["#D983C9", "#B122ED"],
+    shadow: "#010101",
+  },
+  {
+    bg: ["#2F0302", "#2F0302"],
+    border: ["#FEE8A7", "#B76320"],
+    shadow: "#170000",
+  },
+];
+
+function resolveVipCardTier(level) {
+  return VIP_CARD_TIERS[vipCardTierIndex(level)];
+}
+
+/** 等级角标 / Current Level 胶囊样式 */
+function resolveVipLevelTagStyle(level) {
+  const t = resolveVipCardTier(level);
+  return {
+    background: `linear-gradient(${t.bg[0]}, ${t.bg[1]}) padding-box, linear-gradient(180deg, ${t.border[0]}, ${t.border[1]}) border-box`,
+    border: "1px solid transparent",
+    boxShadow: `inset 0 3px 8px ${t.shadow}`,
+    color: "#fff",
+  };
+}
+
+const IMG_HERO_BG = vipAsset("image 23433.png");
+const IMG_LOGO = vipAsset("image 23453.png");
+const IMG_BACK_CIRCLE = vipAsset("Ellipse 348.png");
+const IMG_BACK_ICO = vipAsset("back 1.png");
+const IMG_ARROW = vipAsset("vip_arrow.png");
+/** 进度条左侧钻石徽章框（资源名 image 23443） */
+const IMG_BADGE = vipAsset("image 23443.png");
+const IMG_PROGRESS_BAR = vipAsset("image 23445.png");
+const IMG_BASE = vipAsset("image 23434.png");
+const IMG_PRIVILEGE_BG = vipAsset("Rectangle 666.png");
+const IMG_ICON_FRAME = vipAsset("Rectangle 34626434.png");
+const PRIVILEGE_ICONS = [
+  vipAsset("3042c070-6679-490a-8784-101c9d3c2617 1.png"),
+  vipAsset("image 23408.png"),
+  vipAsset("image 23412.png"),
+  vipAsset("image 23452.png"),
+];
 
 const vipCardBgs = [
   "#12021a",
@@ -587,7 +697,8 @@ const cardShowerList = [
 ];
 
 function getVipStyle(levelId) {
-  const lv = Number(levelId) || 1;
+  // 与图标/卡片一致：两级共用同一套配色
+  const lv = vipPairStart(levelId);
   const len = vipCardBgs.length;
   const idx = (((lv - 1) % len) + len) % len;
   const glow = vipGlowColors[idx].replace("#", "");
@@ -605,12 +716,22 @@ function getVipStyle(levelId) {
 
 export default {
   name: "VipLevels",
+  components: { TopNav },
   data() {
     return {
-      VIP_BADGE_H,
-      LV_BADGE_H,
       xpIcon,
       cardShowerList,
+      imgHeroBg: IMG_HERO_BG,
+      imgLogo: IMG_LOGO,
+      imgBackCircle: IMG_BACK_CIRCLE,
+      imgBackIco: IMG_BACK_ICO,
+      imgArrow: IMG_ARROW,
+      imgBadge: IMG_BADGE,
+      imgProgressBar: IMG_PROGRESS_BAR,
+      imgBase: IMG_BASE,
+      imgPrivilegeBg: IMG_PRIVILEGE_BG,
+      imgIconFrame: IMG_ICON_FRAME,
+      privilegeIcons: PRIVILEGE_ICONS,
       balance: 0,
       currentLevel: 0,
       currentViewLevel: 0,
@@ -645,6 +766,10 @@ export default {
         ? Math.min((this.rechargeAmount / this.nextRechargeAmount) * 100, 100)
         : 100;
     },
+    progressKnobLeft() {
+      const p = Math.min(Math.max(this.rechargePercent, 0), 100);
+      return `${7 + p * 0.87}%`;
+    },
     betPercent() {
       return this.nextBetAmount > 0
         ? Math.min((this.betAmount / this.nextBetAmount) * 100, 100)
@@ -674,6 +799,27 @@ export default {
     },
     vipCardStyle() {
       return getVipStyle(this.currentViewLevel);
+    },
+    viewPairIconSrc() {
+      return resolveVipPairIcon(this.currentViewLevel);
+    },
+    viewPairCardSrc() {
+      return resolveVipPairCard(this.currentViewLevel);
+    },
+    /** 资源卡最高档约 13，接口未回列表时也能左右露边 */
+    maxViewLevel() {
+      return Math.max(this.totalLevels || 0, 13);
+    },
+    viewLevelTagStyle() {
+      return resolveVipLevelTagStyle(this.currentViewLevel);
+    },
+    peekPrevCardSrc() {
+      if (this.currentViewLevel <= 0) return "";
+      return resolveVipPairCard(this.currentViewLevel - 1);
+    },
+    peekNextCardSrc() {
+      if (this.currentViewLevel >= this.maxViewLevel) return "";
+      return resolveVipPairCard(this.currentViewLevel + 1);
     },
     currentViewConfig() {
       return (
@@ -767,24 +913,8 @@ export default {
     }
   },
   methods: {
-    badgeFrameIndex(level) {
-      // 精灵图第 0 帧即 VIP0
-      const lv = Math.max(0, Number(level) || 0);
-      return Math.min(lv, VIP_BADGE_FRAMES - 1);
-    },
-    badgeSpriteStyle(level, displayH) {
-      const idx = this.badgeFrameIndex(level);
-      const h = displayH || VIP_BADGE_H;
-      const scale = h / VIP_SPRITE_H;
-      const spriteW = VIP_SPRITE_W * scale;
-      const frameW = spriteW / VIP_BADGE_FRAMES;
-      return {
-        width: `${frameW}px`,
-        height: `${h}px`,
-        backgroundSize: `${spriteW}px ${h}px`,
-        backgroundPosition: `-${idx * frameW}px 0`,
-      };
-    },
+    resolveVipPairIcon,
+    resolveVipPairCard,
     getShowerDelay(line) {
       const dur = parseFloat(line.duration);
       const phase = (line.id - 1) / cardShowerList.length;
@@ -950,7 +1080,7 @@ export default {
       if (this.currentViewLevel > 0) this.currentViewLevel--;
     },
     nextLevel() {
-      if (this.currentViewLevel < this.totalLevels) this.currentViewLevel++;
+      if (this.currentViewLevel < this.maxViewLevel) this.currentViewLevel++;
     },
     async loadGiftStatuses() {
       try {
@@ -1068,396 +1198,551 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@bg: #1a0a28;
-@gold-deep: #e9a843;
-@gold-grad: linear-gradient(90deg, #f7dd9a 0%, #ffa300 100%);
-@btn-grad: linear-gradient(180deg, #ffd220 0%, #e9a843 100%);
-@muted: #d7a2fa;
+@bg: #15031d;
+@gold: #ffd400;
+@purple: #7400ae;
 
 .vip-page {
   min-height: 100vh;
-  background: @bg url(@/assets/img/vip/hybj.png) 0 0 no-repeat;
-  background-size: contain;
+  background: @bg url(@/assets/img/common/page_bg.png) 0 0 repeat;
+  background-attachment: fixed;
   color: #fff;
-  padding-bottom: 24px;
-}
-
-.vip-header {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: rgba(31, 28, 23, 0.92);
-  border-bottom: 1px solid #e9b65a4d;
-  backdrop-filter: blur(10px);
-  height: 50px;
-  display: flex;
-  align-items: center;
-  padding: 0 16px;
-  justify-content: space-between;
-
-  &__title {
-    font-size: 15px;
-    font-weight: 600;
-    color: #fff;
-  }
-
-  &__balance {
-    background: rgba(29, 20, 0, 0.65);
-    border-radius: 20px;
-    padding: 4px 4px 4px 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #ffe4b5;
-    border: 1px solid fade(@gold-deep, 35%);
-  }
-
-  &__add {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: @btn-grad;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-}
-
-/* ① 顶部 VIP 卡 */
-.vip-card-wrap {
-  width: 94%;
-  margin: 12px auto 0;
-}
-
-.vip-top-card {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  min-height: 128px;
-  border-radius: 12px;
-  border: 1px solid @gold-deep;
-  background: #12021a;
-  padding: 0 6px;
+  padding-bottom: 28px;
   box-sizing: border-box;
-  overflow: hidden;
-
-  &.is-locked {
-    border-color: rgba(233, 168, 67, 0.35);
-    filter: grayscale(0.35);
-  }
-
-  &__arrow {
-    position: relative;
-    z-index: 2;
-    width: 28px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
-  &__body {
-    position: relative;
-    z-index: 1;
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 9px 0;
-  }
-
-  &__badge {
-    position: relative;
-    width: 90px;
-    height: 110px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    &.is-dim {
-      opacity: 0.45;
-    }
-  }
-
-  &__badge-glow {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 76px;
-    height: 76px;
-    transform: translate(-50%, -50%);
-    border-radius: 50%;
-    z-index: 0;
-  }
-
-  &__badge-img {
-    position: relative;
-    z-index: 1;
-    background-image: url(@/assets/img/vip/viptb.png);
-    background-repeat: no-repeat;
-    filter: drop-shadow(0 4px 14px rgba(255, 160, 50, 0.45));
-  }
-
-  &__info {
-    flex: 1;
-    min-width: 0;
-  }
-
-  &__head {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
-  }
-
-  &__level {
-    font-size: 26px;
-    font-weight: 800;
-    font-style: italic;
-    background: @gold-grad;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    transform: skew(-8deg);
-    line-height: 1;
-  }
-
-  &__tag {
-    padding: 3px 8px;
-    border-radius: 10px;
-    font-size: 10px;
-    font-weight: 600;
-    white-space: nowrap;
-    border: 1px solid @gold-deep;
-    color: #fff;
-
-    &.is-current {
-      color: #fff;
-    }
-
-    &.is-achieved {
-      background: linear-gradient(
-        180deg,
-        #b68063 0%,
-        #f8d7a4 50%,
-        #b68063 100%
-      );
-      color: #1a1408;
-      border-color: transparent;
-    }
-
-    &.is-locked {
-      background: linear-gradient(180deg, #b0b0b0 0%, #606060 100%);
-      color: #fff;
-      border-color: transparent;
-    }
-  }
-
-  &__xp {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 12px;
-    line-height: 20px;
-    color: #ccc;
-    margin-bottom: 6px;
-
-    .xp-cur {
-      color: #fff;
-      font-weight: 700;
-      font-size: 15px;
-      line-height: 20px;
-    }
-  }
-
-  &__xp-ico {
-    width: 20px;
-    height: 20px;
-    object-fit: contain;
-    flex-shrink: 0;
-    display: block;
-  }
-
-  &__bar {
-    height: 6px;
-    background: #2a2620;
-    border: 1px solid #4d4d4d;
-    border-radius: 999px;
-    overflow: hidden;
-  }
-
-  &__fill {
-    height: 100%;
-    background: @gold-grad;
-    border-radius: 999px;
-  }
-
-  &__tip {
-    margin-top: 8px;
-    font-size: 10px;
-    color: #ccc;
-
-    .need-num {
-      color: #fff;
-      font-weight: 700;
-      margin: 0 2px;
-    }
-
-    .next-vip {
-      color: #fdd35b;
-      font-weight: 700;
-    }
-  }
+  overflow-x: hidden;
 }
 
-.vip-card-fx {
-  position: absolute;
-  top: 0;
+.vip-page__topnav {
+  position: fixed;
+  left: 0;
   right: 0;
-  width: 62%;
-  height: 100%;
+  top: 0;
+  z-index: 100;
+}
+
+.vip-page__nav-pad {
+  height: 60px;
+}
+
+/* ===== 图一 Hero：背景固定 424px，内容上移缩小塞进背景内 ===== */
+.vip-hero {
+  position: relative;
+  width: 100%;
+  height: 424px;
+  padding: 0;
   overflow: hidden;
-  pointer-events: none;
-  z-index: 0;
-  border-top-right-radius: 12px;
+  box-sizing: border-box;
 }
 
-.vip-card-fx-glow {
+.vip-hero__bg {
   position: absolute;
-  top: -28px;
-  right: -28px;
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  filter: blur(12px);
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 450px;
+  height: 424px;
+  object-fit: cover;
+  object-position: center top;
+  z-index: 0;
+  pointer-events: none;
 }
 
-.is-locked .vip-card-fx-glow {
-  background: radial-gradient(
-    circle,
-    rgba(9, 32, 78, 0.35) 0%,
-    transparent 70%
-  ) !important;
+/* 返回在 Logo 左上方；整块头部收紧 */
+.vip-hero__head {
+  position: relative;
+  z-index: 2;
+  height: 72px;
+  padding: 0 8px;
+  box-sizing: border-box;
 }
 
-.vip-card-fx-shower {
+.vip-hero__back {
+  position: absolute;
+  left: 8px;
+  top: 2px;
+  z-index: 3;
+  width: 34px;
+  height: 34px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.vip-hero__back-bg {
   position: absolute;
   inset: 0;
-}
-
-.vip-card-fx-line {
-  position: absolute;
-  border-radius: 999px;
-  transform-origin: center center;
-  opacity: 0;
-  transform: rotate(45deg) translateY(-100px);
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    rgba(255, 210, 140, 0.15) 22%,
-    rgba(255, 240, 210, 0.95) 50%,
-    rgba(255, 190, 110, 0.3) 78%,
-    transparent 100%
-  );
-  box-shadow: 0 0 6px rgba(255, 200, 130, 0.4);
-  animation: vip-card-fx-fall linear infinite;
-  animation-fill-mode: backwards;
-}
-
-@keyframes vip-card-fx-fall {
-  0% {
-    transform: rotate(45deg) translateY(-100px);
-    opacity: 0;
-  }
-  10% {
-    opacity: var(--line-opacity, 0.5);
-  }
-  90% {
-    opacity: var(--line-opacity, 0.5);
-  }
-  100% {
-    transform: rotate(45deg) translateY(130px);
-    opacity: 0;
-  }
-}
-
-/* Benefits 网格 */
-.vip-benefits,
-.vip-levels {
-  width: 94%;
-  margin: 16px auto 0;
-}
-
-.vip-benefits__title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 15px;
-  font-weight: 700;
-  margin-bottom: 12px;
-}
-
-.vip-benefits__dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 10px;
-  background: @gold-grad;
-  border: 2px solid #665433;
-  box-sizing: content-box;
-}
-
-.benefit-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 8px 0;
-}
-
-.benefit-card {
-  width: 49%;
-  min-height: 62px;
-  border-radius: 8px;
-  border: 1px solid #605037;
-  background: transparent;
-  padding: 8px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-
-  &.is-full {
-    width: 100%;
-  }
-
-  &.is-locked {
-    opacity: 0.55;
-  }
-
-  &.is-claimable {
-    border-color: @gold-deep;
-    background: rgba(233, 168, 67, 0.08);
-  }
-}
-
-.benefit-card-icon-wrap {
   width: 40px;
   height: 40px;
-  border-radius: 6px;
-  background: rgba(233, 168, 67, 0.16);
+  object-fit: contain;
+}
+
+.vip-hero__back-ico {
+  position: absolute;
+  left: 60%;
+  top: 60%;
+  height: 20px;
+  transform: translate(-58%, -50%);
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.vip-hero__logo {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 80%;
+  margin: 4px auto 0;
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 0 12px rgba(255, 100, 255, 0.3));
+}
+
+/* 中间主卡大，两侧卡缩小露边（图一图二） */
+.vip-carousel {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 148px;
+  margin: 50px 0 0;
+  overflow: hidden;
+}
+
+.vip-carousel__peek {
+  position: absolute;
+  top: 50%;
+  width: 52%;
+  max-width: 188px;
+  height: auto;
+  object-fit: contain;
+  opacity: 0.92;
+  filter: brightness(0.72);
+  pointer-events: none;
+  z-index: 0;
+
+  &.is-left {
+    left: 0;
+    transform: translate(-58%, -50%) scale(0.72);
+    transform-origin: center center;
+  }
+
+  &.is-right {
+    right: 0;
+    transform: translate(58%, -50%) scale(0.72);
+    transform-origin: center center;
+  }
+}
+
+.vip-carousel__center {
+  position: relative;
+  z-index: 2;
+  width: 58%;
+  max-width: 218px;
+  height: 100%;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.vip-carousel__arrow {
+  position: absolute;
+  z-index: 4;
+  top: 50%;
+  left: -26px;
+  transform: translateY(-50%);
+  width: 22px;
+  height: 30px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+
+  img {
+    display: block;
+    width: 18px;
+    height: 24px;
+    margin: 0 auto;
+    object-fit: contain;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+  }
+
+  &.is-next {
+    left: auto;
+    right: -26px;
+
+    img {
+      transform: scaleX(-1);
+    }
+  }
+}
+
+.vip-carousel__main {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.5));
+
+  &.is-locked {
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.5)) grayscale(0.12)
+      brightness(0.92);
+  }
+}
+
+.vip-carousel__card {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.vip-carousel__lv {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  z-index: 2;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.2;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+.vip-carousel__tag {
+  position: absolute;
+  left: 50%;
+  bottom: 10%;
+  transform: translateX(-50%);
+  z-index: 2;
+  min-width: 86px;
+  text-align: center;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+  color: #fff;
+  pointer-events: none;
+  box-sizing: border-box;
+
+  &.is-locked {
+    background: linear-gradient(180deg, #5a5a5a 0%, #2e2e2e 100%) !important;
+    background-image: none !important;
+    border: 1px solid rgba(180, 180, 180, 0.35) !important;
+    box-shadow: inset 0 3px 8px #111 !important;
+    color: #ddd !important;
+  }
+}
+
+/* ===== VIP PROGRESS：收进 424 背景底部 ===== */
+.vip-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  width: 100%;
+  max-width: 450px;
+  margin: 0 auto;
+  padding: 0 0 2px;
+  box-sizing: border-box;
+}
+
+.vip-progress__title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 18%;
+  z-index: 3;
+  margin: 0;
+  text-align: center;
+  font-size: 21px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: #fff;
+  text-shadow:
+    0 2px 0 #3a0a78,
+    0 0 10px rgba(180, 60, 255, 0.95);
+  pointer-events: none;
+}
+
+.vip-progress__stage {
+  position: relative;
+  width: 100%;
+  height: 168px;
+  margin-top: 0;
+}
+
+.vip-progress__base {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* 文案+进度条下移，落在底座顶层台面 */
+.vip-progress__hud {
+  position: absolute;
+  left: 50%;
+  top: 34%;
+  transform: translateX(-50%);
+  z-index: 2;
+  width: 90%;
+  max-width: 340px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+}
+
+.vip-progress__badge {
+  position: relative;
+  z-index: 3;
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  margin-right: -40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 10px rgba(80, 180, 255, 0.55));
+}
+
+.vip-progress__badge-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.vip-progress__badge-txt {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  pointer-events: none;
+
+  i {
+    font-style: normal;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+    color: #ffe27a;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+  }
+
+  em {
+    margin-top: 1px;
+    font-style: normal;
+    font-size: 18px;
+    font-weight: 900;
+    color: #ffe27a;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+  }
+}
+
+/* 进度条与左侧钻石垂直居中对齐；金色进度在箭头上半槽 */
+.vip-progress__bar {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 72px;
+  display: block;
+}
+
+.vip-progress__bar-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
+}
+
+.vip-progress__track {
+  position: absolute;
+  z-index: 1;
+  left: 7%;
+  top: 30%;
+  width: 85.5%;
+  height: 12px;
+  border-radius: 2px;
+  background: transparent;
+  overflow: hidden;
+}
+
+.vip-progress__fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ffe27a 0%, #ffb000 48%, #ff8a00 100%);
+  box-shadow: 0 0 8px rgba(255, 180, 40, 0.75);
+}
+
+.vip-progress__knob {
+  position: absolute;
+  z-index: 3;
+  top: calc(38% + 4px);
+  width: 15px;
+  height: 15px;
+  margin-left: -5px;
+  margin-top: -12px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 30%,
+    #fff6c8 0%,
+    #ffd24a 42%,
+    #e09000 100%
+  );
+  box-shadow:
+    0 0 8px rgba(255, 200, 60, 0.95),
+    0 0 0 2px rgba(255, 220, 120, 0.4);
+  pointer-events: none;
+}
+
+.vip-progress__num {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: 58%;
+  transform: translate(-50%, -50%);
+  font-size: 10px;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ===== Privileges ===== */
+.vip-section-title {
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.vip-benefits,
+.vip-levels {
+  width: 92%;
+  max-width: 420px;
+  margin: 22px auto 0;
+}
+
+.vip-benefits {
+  position: relative;
+  margin-top: 18px;
+  padding-top: 16px;
+
+  /* 分割线：#BA64DD → #4F00CE */
+  &::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 100vw;
+    height: 1px;
+    transform: translateX(-50%);
+    background: linear-gradient(90deg, #ba64dd 0%, #4f00ce 100%);
+    pointer-events: none;
+  }
+
+  .vip-section-title {
+    text-align: center;
+  }
+}
+
+.benefit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.benefit-card {
+  position: relative;
+  overflow: hidden;
+  padding: 10px 10px 10px 12px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+
+  &.is-full {
+    grid-column: 1 / -1;
+  }
+
+  &.is-locked {
+    opacity: 0.85;
+  }
+
+  &.is-claimable {
+    box-shadow: 0 0 0 1px fade(@gold, 55%);
+  }
+}
+
+.benefit-card__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.benefit-card__icon {
+  position: relative;
+  z-index: 1;
+  width: 52px;
+  height: 40px;
   flex-shrink: 0;
 }
 
-.benefit-card-text {
+.benefit-card__frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+
+.benefit-card__pic {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  transform: translate(-50%, -50%);
+  width: 34px;
+  height: 30px;
+  object-fit: contain;
+}
+
+.benefit-card__lock {
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  z-index: 2;
+  font-size: 12px !important;
+  color: #fff !important;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6));
+}
+
+.benefit-card__text {
+  position: relative;
+  z-index: 1;
   flex: 1;
   min-width: 0;
 
@@ -1465,19 +1750,21 @@ export default {
     font-size: 11px;
     font-weight: 600;
     color: #fff;
+    line-height: 1.25;
   }
 
   .describe {
-    margin-top: 2px;
-    font-size: 12px;
-    font-weight: 700;
-    color: #fdd35b;
+    margin-top: 3px;
+    font-size: 14px;
+    font-weight: 800;
+    color: @gold;
+    line-height: 1.2;
   }
 
   .claim-status {
     margin-top: 2px;
     font-size: 10px;
-    color: @muted;
+    color: #c9b4e8;
 
     &.is-ready {
       color: #ffd467;
@@ -1485,17 +1772,12 @@ export default {
     }
 
     &.is-done {
-      color: @muted;
+      color: #9b86c9;
     }
   }
 }
 
-.benefit-card-arrow {
-  flex-shrink: 0;
-  font-size: 14px;
-}
-
-/* ④ Level 时间轴 */
+/* ===== 图二 Level 列表 ===== */
 .lv-show-more {
   display: flex;
   justify-content: center;
@@ -1536,21 +1818,21 @@ export default {
 .lv-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .lv-item {
   display: flex;
-  gap: 5px;
+  gap: 8px;
   align-items: stretch;
 }
 
 .lv-track {
-  width: 13px;
+  width: 16px;
   flex-shrink: 0;
   position: relative;
   align-self: stretch;
-  padding-top: 31px;
+  padding-top: 28px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -1560,11 +1842,15 @@ export default {
     content: "";
     position: absolute;
     left: 50%;
-    top: 37.5px;
-    bottom: -43.5px;
-    width: 1px;
-    margin-left: -0.5px;
-    background: #665433;
+    top: 36px;
+    bottom: -40px;
+    width: 2px;
+    margin-left: -1px;
+    background: linear-gradient(
+      180deg,
+      #9b3dff 0%,
+      rgba(116, 0, 174, 0.35) 100%
+    );
   }
 }
 
@@ -1573,8 +1859,8 @@ export default {
 }
 
 .lv-dot {
-  width: 13px;
-  height: 13px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   flex-shrink: 0;
   position: relative;
@@ -1586,17 +1872,17 @@ export default {
 
   &.is-achieved,
   &.is-current {
-    border: 2px solid #665433;
-    background: linear-gradient(180deg, #f4d98c 0%, #dd9711 100%);
+    background: linear-gradient(180deg, #ffe27a 0%, #e8a820 100%);
+    box-shadow: 0 0 8px rgba(255, 200, 60, 0.55);
   }
 
   &.is-locked {
-    background: #2e2e2e;
-    border: 1px solid #9d9d9d;
+    background: #411c59;
+    border: 1px solid #411c59;
 
     .lv-dot-lock {
-      font-size: 7px;
-      color: #d7d7d7;
+      font-size: 9px;
+      color: #fff;
     }
   }
 }
@@ -1604,9 +1890,9 @@ export default {
 .lv-card {
   flex: 1;
   min-width: 0;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: #2d2d2d;
+  border-radius: 14px;
+  background: #411c59;
+  border: 1px solid #411c59;
   box-sizing: border-box;
   overflow: hidden;
   cursor: pointer;
@@ -1614,18 +1900,16 @@ export default {
   &.is-current {
     position: relative;
     border: none;
-    background: linear-gradient(180deg, #3a3124 0%, #2a2218 100%);
-    box-shadow:
-      inset 0 0 6px 0 rgba(246, 190, 37, 0.5),
-      0 0 4px 0 rgba(255, 208, 0, 0.5);
+    background: linear-gradient(135deg, #7a2fd0 0%, #3b1490 45%, #24105a 100%);
+    box-shadow: 0 0 14px rgba(180, 80, 255, 0.35);
 
     &::before {
       content: "";
       position: absolute;
       inset: 0;
-      border-radius: 10px;
-      padding: 0.5px;
-      background: linear-gradient(180deg, #f7dd9a 0%, #ffa300 100%);
+      border-radius: 14px;
+      padding: 1.5px;
+      background: linear-gradient(180deg, #ffe27a 0%, #ffb000 100%);
       -webkit-mask:
         linear-gradient(#fff 0 0) content-box,
         linear-gradient(#fff 0 0);
@@ -1636,24 +1920,11 @@ export default {
       mask-composite: exclude;
       pointer-events: none;
     }
-
-    .lv-benefit-val,
-    .exp-cur {
-      color: #fdd35b;
-    }
   }
 
   &.is-locked {
-    .lv-card-level {
-      background: linear-gradient(180deg, #e0e0e0 0%, #676767 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-
-    .lv-benefit-val {
-      color: #fff;
-    }
+    background: #411c59;
+    border-color: #411c59;
   }
 }
 
@@ -1661,18 +1932,19 @@ export default {
   position: relative;
   z-index: 1;
   display: flex;
-  gap: 4px;
-  padding: 10px 8px 10px 4px;
+  gap: 8px;
+  padding: 12px 10px 12px 8px;
 }
 
 .lv-card-badge {
   flex-shrink: 0;
-  background-image: url(@/assets/img/vip/viptb.png);
-  background-repeat: no-repeat;
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
   align-self: flex-start;
 
   &.is-dim {
-    opacity: 0.6;
+    opacity: 0.7;
   }
 }
 
@@ -1691,90 +1963,80 @@ export default {
 .lv-card-head-left {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   min-width: 0;
 }
 
 .lv-card-level {
   flex-shrink: 0;
-  min-width: 50px;
   font-size: 16px;
-  font-weight: 700;
-  font-style: italic;
-  line-height: 16px;
-  background: linear-gradient(180deg, #f7dd9a 0%, #ffa300 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  transform: skew(-8deg);
+  font-weight: 800;
+  line-height: 1;
+  color: #fff;
+}
+
+.lv-card.is-current .lv-card-level {
+  color: @gold;
 }
 
 .lv-card-tag {
   flex-shrink: 0;
-  padding: 3px 8px;
-  border-radius: 10px;
-  font-size: 8px;
-  font-weight: 600;
-  line-height: 11px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 12px;
   white-space: nowrap;
+
+  &.is-current {
+    background: linear-gradient(180deg, #ffe27a 0%, #e8a820 100%);
+    color: #1a1208;
+  }
 
   &.is-achieved {
     background: linear-gradient(180deg, #b68063 0%, #f8d7a4 50%, #b68063 100%);
     color: #1a1408;
   }
 
-  &.is-current {
-    background: linear-gradient(180deg, #f4d98c 0%, #dd9711 100%);
-    color: #1a1408;
-  }
-
   &.is-locked {
-    padding: 3px 10px;
-    border-radius: 20px;
-    background: linear-gradient(180deg, #b0b0b0 0%, #606060 100%);
-    color: #fff;
+    background: rgba(255, 255, 255, 0.88);
+    color: #333;
   }
 }
 
 .lv-card-exp {
   width: 100%;
   margin-bottom: 4px;
-  font-size: 9px;
-  line-height: 11px;
-  color: #999;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 11px;
+  line-height: 14px;
+  color: #c9b4e8;
 
   .exp-cur {
-    color: #fdd35b;
-    font-weight: 500;
+    color: #fff;
+    font-weight: 700;
   }
 }
 
 .lv-card-unlock {
   width: 100%;
   margin-bottom: 4px;
-  font-size: 9px;
-  line-height: 11px;
-  font-weight: 500;
-  color: #fdd35b;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 600;
+  color: @gold;
 }
 
 .lv-card-progress {
   height: 6px;
-  margin: 0 0 6px;
-  background: #2a2620;
+  margin: 0 0 8px;
+  background: rgba(10, 4, 24, 0.55);
   border-radius: 999px;
   overflow: hidden;
 }
 
 .lv-card-progress-fill {
   height: 100%;
-  background: @gold-grad;
+  background: linear-gradient(90deg, #ffe27a 0%, #ffb000 100%);
   border-radius: 999px;
 }
 
@@ -1793,7 +2055,7 @@ export default {
   flex: 0 0 auto;
   min-width: 72px;
   padding: 0 8px;
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-right: 1px solid #b492fd;
 
   &:first-child {
     padding-left: 0;
@@ -1806,15 +2068,15 @@ export default {
 
 .lv-benefit-label {
   font-size: 9px;
-  color: #999;
+  color: #b8a8d4;
   white-space: nowrap;
 }
 
 .lv-benefit-val {
   margin-top: 2px;
-  font-size: 10px;
-  font-weight: 500;
-  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  color: @gold;
   white-space: nowrap;
 }
 

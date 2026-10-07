@@ -273,20 +273,29 @@ export default {
   margin-bottom: 20px;
 }
 .search-field {
-  background: #2c1137;
-  border-radius: 10px;
-  border: 1px solid #8b3fb2;
-  padding: 10px 12px;
+  height: 48px;
+  background: #000 !important;
+  border-radius: 25px !important;
+  border: none !important;
+  padding: 0 16px;
   display: flex;
   align-items: center;
-  border-radius: 999px;
+  box-sizing: border-box;
+
+  &:focus-within {
+    box-shadow: 0 0 0 1px #ffd400;
+  }
 
   :deep(.van-field__body) {
     align-items: center;
   }
 
   :deep(.van-field__control) {
-    color: @wihte-color;
+    color: #fff;
+  }
+
+  :deep(.van-field__control::placeholder) {
+    color: #9b86c9;
   }
 
   :deep(.van-field__left-icon) {

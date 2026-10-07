@@ -29,7 +29,7 @@
         @click="onFloaterClick(goToRedPacket)"
       >
         <img
-          src="./assets/img/bonus/red_packet.png"
+          src="./assets/img/activity/promo/envelopes.png"
           class="global-red-envelope__img"
           draggable="false"
         />
@@ -344,12 +344,14 @@ export default {
     this.checkCsFloatLink();
     this.checkGoogleCallback();
     window.addEventListener("resize", this.onFloaterResize);
+    this.$bus.on("openTreasureBox", this.openTreasureBox);
   },
   beforeUnmount() {
     this.stopTbTick();
     this.stopFrTick();
     this.unbindFloaterDrag();
     window.removeEventListener("resize", this.onFloaterResize);
+    this.$bus.off("openTreasureBox", this.openTreasureBox);
   },
   watch: {
     // 切换路由到首页时重新拉宝箱 / 转盘入口状态
@@ -565,12 +567,7 @@ export default {
       this.$jumpTo("/luckyReferral");
     },
     checkDailyCheckInPopup() {
-      if (!localStorage.getItem("token") || this.checkInPopupClosed) {
-        this.checkInPopupVisible = false;
-        return;
-      }
-      // 与转盘弹窗错开：转盘关闭后再出签到宣传
-      this.checkInPopupVisible = this.isHomePage && !this.lrPopupVisible;
+      this.checkInPopupVisible = false;
     },
     closeCheckInPopup() {
       this.checkInPopupVisible = false;
@@ -884,6 +881,7 @@ h3 {
   background-repeat: repeat;
   background-size: auto;
   background-position: top center;
+  background-attachment: fixed;
 }
 
 /* 基础样式 */
@@ -903,6 +901,7 @@ h3 {
     background-repeat: repeat;
     background-size: auto;
     background-position: top center;
+    background-attachment: fixed;
     min-height: 100vh;
     height: 100vh;
     overflow-y: scroll;
@@ -1044,7 +1043,7 @@ h3 {
   width: 56px;
   height: 56px;
   object-fit: contain;
-  filter: drop-shadow(0 4px 12px rgba(255, 50, 50, 0.4));
+  filter: drop-shadow(0 4px 12px rgba(122, 33, 144, 0.45));
   pointer-events: none;
   -webkit-user-drag: none;
 }

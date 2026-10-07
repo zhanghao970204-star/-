@@ -248,25 +248,36 @@ export default {
 
 .phone-field-row {
   display: flex;
-  gap: 8px;
+  align-items: stretch;
+  gap: 0;
   width: 100%;
   margin-bottom: 8px;
+  background: #000;
+  border-radius: 25px;
+  overflow: hidden;
+  height: 48px;
+  box-sizing: border-box;
+
+  &:focus-within {
+    box-shadow: 0 0 0 1px #ffd400;
+  }
 }
 
 .phone-area-code {
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 0 10px;
+  padding: 0 12px;
   height: 48px;
-  background: @input-bg;
-  border: 1.5px solid @border;
-  border-radius: 10px;
+  background: transparent;
+  border: none;
+  border-right: 1px solid rgba(155, 134, 201, 0.35);
+  border-radius: 0;
   cursor: pointer;
   flex-shrink: 0;
 
   &__text {
-    color: @wihte-color;
+    color: #fff;
     font-size: 13px;
     font-weight: 600;
     white-space: nowrap;
@@ -275,17 +286,17 @@ export default {
 
 .phone-input {
   height: 48px;
-  background: @input-bg !important;
-  border: 1.5px solid @border !important;
-  border-radius: 10px !important;
-  color: @wihte-color;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  color: #fff;
   font-size: 14px;
 
   :deep(.van-field__control) {
-    color: @wihte-color;
+    color: #fff;
   }
   :deep(.van-field__control::placeholder) {
-    color: #b8a8d4;
+    color: #9b86c9;
   }
 }
 

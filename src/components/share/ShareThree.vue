@@ -203,7 +203,7 @@ export default {
 @panel: #4b0e5d;
 
 .content {
-  background: @page-bg;
+  background: transparent;
   min-height: auto;
   padding-bottom: 20px;
 }
@@ -214,7 +214,12 @@ export default {
   top: 113px;
   z-index: 20;
   padding: 10px 16px 12px;
-  background: @page-bg;
+  background-color: #27033c;
+  background-image: url("../../assets/img/common/page_bg.png");
+  background-repeat: repeat;
+  background-size: auto;
+  background-position: top center;
+  background-attachment: fixed;
   box-sizing: border-box;
 }
 

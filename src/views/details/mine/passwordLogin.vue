@@ -1,38 +1,34 @@
 <template>
   <div class="pwd-page">
-    <!-- Custom Header -->
-    <header class="pwd-header">
-      <button class="pwd-header__back" @click="$router.go(-1)">
-        <van-icon name="arrow-left" size="20" color="var(--wihte-color)" />
-      </button>
-      <h1 class="pwd-header__title">
-        {{ $lang.passwordLogin_title || "CHANGE PASSWORD" }}
-      </h1>
-      <div class="pwd-header__spacer"></div>
-    </header>
-    <div class="pwd-header-pad"></div>
+    <title-bar :title="$lang.passwordLogin_title || 'CHANGE LOGIN PASSWORD'" />
 
-    <div class="pwd-form">
+    <div class="pwd-panel">
       <!-- Old Password -->
       <div class="pwd-field">
         <div
           class="pwd-field__input"
           :class="{ 'pwd-field__input--error': error }"
         >
-          <div class="pwd-field__icon">
-            <van-icon name="lock" size="18" color="#b8a8d4" />
-          </div>
+          <img
+            class="pwd-field__icon"
+            src="@/assets/img/mine/pwd_lock.png"
+            alt=""
+          />
           <input
             v-model="oldLoginPwd"
             :type="isSee ? 'text' : 'password'"
-            :placeholder="$lang.passwordLogin_txt5 || 'Enter the old password'"
+            :placeholder="$lang.passwordLogin_txt5 || 'Enter The Old Password.'"
             class="pwd-field__text"
           />
-          <button class="pwd-field__toggle" @click="isSee = !isSee">
-            <van-icon
-              :name="isSee ? 'eye-o' : 'closed-eye'"
-              size="18"
-              :color="isSee ? '#ffa300' : '#b8a8d4'"
+          <button
+            type="button"
+            class="pwd-field__toggle"
+            @click="isSee = !isSee"
+          >
+            <img
+              class="pwd-field__eye"
+              :src="isSee ? eyeOn : eyeOff"
+              alt=""
             />
           </button>
         </div>
@@ -45,20 +41,28 @@
           class="pwd-field__input"
           :class="{ 'pwd-field__input--error': error2 }"
         >
-          <div class="pwd-field__icon">
-            <van-icon name="lock" size="18" color="#b8a8d4" />
-          </div>
+          <img
+            class="pwd-field__icon"
+            src="@/assets/img/mine/pwd_lock.png"
+            alt=""
+          />
           <input
             v-model="newLoginPwd"
             :type="isSee2 ? 'text' : 'password'"
-            :placeholder="$lang.passwordLogin_txt6 || 'Enter the new password'"
+            :placeholder="
+              $lang.passwordLogin_txt6 || 'Enter The Login Password.'
+            "
             class="pwd-field__text"
           />
-          <button class="pwd-field__toggle" @click="isSee2 = !isSee2">
-            <van-icon
-              :name="isSee2 ? 'eye-o' : 'closed-eye'"
-              size="18"
-              :color="isSee2 ? '#ffa300' : '#b8a8d4'"
+          <button
+            type="button"
+            class="pwd-field__toggle"
+            @click="isSee2 = !isSee2"
+          >
+            <img
+              class="pwd-field__eye"
+              :src="isSee2 ? eyeOn : eyeOff"
+              alt=""
             />
           </button>
         </div>
@@ -71,30 +75,36 @@
           class="pwd-field__input"
           :class="{ 'pwd-field__input--error': error3 }"
         >
-          <div class="pwd-field__icon">
-            <van-icon name="passed" size="18" color="#b8a8d4" />
-          </div>
+          <img
+            class="pwd-field__icon"
+            src="@/assets/img/mine/pwd_check.png"
+            alt=""
+          />
           <input
             v-model="confirmPwd"
             :type="isSee3 ? 'text' : 'password'"
-            :placeholder="$lang.pwdConfirm_ph || 'Confirm new password'"
+            :placeholder="$lang.pwdConfirm_ph || 'Confirm New Password'"
             class="pwd-field__text"
           />
-          <button class="pwd-field__toggle" @click="isSee3 = !isSee3">
-            <van-icon
-              :name="isSee3 ? 'eye-o' : 'closed-eye'"
-              size="18"
-              :color="isSee3 ? '#ffa300' : '#b8a8d4'"
+          <button
+            type="button"
+            class="pwd-field__toggle"
+            @click="isSee3 = !isSee3"
+          >
+            <img
+              class="pwd-field__eye"
+              :src="isSee3 ? eyeOn : eyeOff"
+              alt=""
             />
           </button>
         </div>
         <p v-if="errorText3" class="pwd-field__error">{{ errorText3 }}</p>
       </div>
 
-      <p class="pwd-form__tip">{{ $lang.passwordLogin_txt4 }}</p>
+      <p class="pwd-panel__tip">{{ $lang.passwordLogin_txt4 }}</p>
 
-      <button class="pwd-form__submit" @click="submit">
-        {{ $lang.Enviar || "Submit" }}
+      <button type="button" class="pwd-panel__submit" @click="submit">
+        {{ $lang.Enviar || "SUBMIT" }}
       </button>
     </div>
   </div>
@@ -103,11 +113,15 @@
 <script>
 import { ChangeLoginPwd } from "@/api/common";
 import md5 from "@/utils/md5";
+import eyeOn from "@/assets/img/login/eye.png";
+import eyeOff from "@/assets/img/login/eye_off.png";
 
 export default {
   name: "PasswordLogin",
   data() {
     return {
+      eyeOn,
+      eyeOff,
       oldLoginPwd: "",
       newLoginPwd: "",
       confirmPwd: "",
@@ -172,143 +186,119 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@bg: #1a0a28;
-@card: #12021a;
-@neon: #ffa300;
-@muted: #d7a2fa;
-@border: rgba(255, 162, 0, 0.45);
-
 .pwd-page {
   min-height: 100vh;
-  background: @bg;
+  background: transparent;
+  padding-bottom: 40px;
 }
 
-.pwd-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
-  height: 50px;
-  background: @bg;
-  z-index: 999;
-
-  &__back {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 8px;
-  }
-
-  &__title {
-    font-size: 16px;
-    font-weight: 700;
-    color: @wihte-color;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  &__spacer {
-    width: 36px;
-  }
-}
-
-.pwd-header-pad {
-  height: 50px;
-}
-
-.pwd-form {
-  padding: 24px 16px;
+.pwd-panel {
+  margin: 14px 14px 0;
+  padding: 22px 16px 20px;
+  border-radius: 28px;
+  background: linear-gradient(180deg, #7a2190 0%, #532276 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 8px 18px rgba(0, 0, 0, 0.25);
 
   &__tip {
+    margin: 4px 2px 22px;
     font-size: 12px;
-    color: @muted;
-    margin: 8px 4px 24px;
-    line-height: 1.6;
+    line-height: 1.55;
+    color: #e6d4f8;
   }
 
   &__submit {
-    width: 100%;
-    background: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
-    color: #573900;
-    border: none;
-    border-radius: 10px;
-    padding: 14px;
-    font-size: 14px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    cursor: pointer;
-    box-shadow: 0 4px 16px rgba(255, 163, 0, 0.2);
-    transition: transform 0.1s;
-
-    &:active {
-      transform: scale(0.98);
-    }
+    .btn-3d-green();
+    height: 50px;
+    font-size: 16px;
   }
 }
 
 .pwd-field {
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 
   &__input {
+    position: relative;
     display: flex;
     align-items: center;
-    background: @card;
-    border: 1px solid @border;
-    border-radius: 10px;
+    gap: 10px;
+    height: 48px;
     padding: 0 14px;
-    height: 50px;
-    transition:
-      border-color 0.2s,
-      box-shadow 0.2s;
+    background: #000;
+    border-radius: 25px;
+    box-sizing: border-box;
 
-    &:focus-within {
-      border-color: @neon;
-      box-shadow: 0 0 0 2px rgba(255, 163, 0, 0.1);
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 25px;
+      border: 1px solid rgba(233, 61, 254, 0.55);
+      pointer-events: none;
+      box-shadow: 0 0 8px rgba(233, 61, 254, 0.25);
     }
 
-    &--error {
+    &:focus-within::after {
+      border-color: #ffd400;
+      box-shadow: 0 0 0 1px #ffd400;
+    }
+
+    &--error::after {
       border-color: #ef4444;
+      box-shadow: 0 0 0 1px #ef4444;
     }
   }
 
   &__icon {
-    margin-right: 12px;
-    display: flex;
-    align-items: center;
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    flex-shrink: 0;
+    display: block;
   }
 
   &__text {
     flex: 1;
+    min-width: 0;
+    height: 48px;
+    line-height: 48px;
     background: transparent;
     border: none;
-    color: @wihte-color;
+    color: #fff;
     font-size: 14px;
     outline: none;
 
     &::placeholder {
-      color: #b8a8d4;
+      color: #c9b3ff;
+      line-height: 48px;
     }
   }
 
   &__toggle {
-    background: none;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    padding: 0;
     border: none;
-    cursor: pointer;
-    padding: 4px;
+    background: transparent;
     display: flex;
     align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  &__eye {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    display: block;
   }
 
   &__error {
+    margin: 6px 4px 0;
     font-size: 12px;
     color: #ef4444;
-    margin-top: 6px;
-    margin-left: 4px;
   }
 }
 

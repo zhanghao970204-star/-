@@ -2,39 +2,37 @@
   <div class="settings-page">
     <title-bar :title="$lang.settings_title || 'SETTINGS'" />
 
-    <div class="settings-content">
+    <div class="settings-panel">
       <!-- Account Security -->
       <section class="settings-section">
         <div class="settings-section__header">
-          <svg class="section-icon" viewBox="0 0 24 24" fill="currentColor">
-            <path
-              d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"
-            />
-          </svg>
+          <img
+            class="section-icon"
+            src="@/assets/img/mine/settings_shield.png"
+            alt=""
+          />
           <h2>{{ $lang.settings_account_security || "ACCOUNT SECURITY" }}</h2>
         </div>
-        <div class="settings-card">
-          <div class="settings-item" @click="openEmailPopup">
-            <div class="settings-item__info">
-              <p class="settings-item__label">
-                {{ $lang.settings_email || "Email Address" }}
-              </p>
-              <p class="settings-item__value">
-                {{ boundMailDisplay }}
-              </p>
-            </div>
-            <button
-              class="settings-item__btn settings-item__btn--gold"
-              type="button"
-              @click.stop="openEmailPopup"
-            >
-              {{
-                hasBoundMail
-                  ? $lang.settings_change || "CHANGE"
-                  : $lang.settings_bind || "BIND"
-              }}
-            </button>
+        <div class="settings-row" @click="openEmailPopup">
+          <div class="settings-item__info">
+            <p class="settings-item__label">
+              {{ $lang.settings_email || "Email Address" }}
+            </p>
+            <p class="settings-item__value">
+              {{ boundMailDisplay }}
+            </p>
           </div>
+          <button
+            class="settings-item__btn settings-item__btn--gold"
+            type="button"
+            @click.stop="openEmailPopup"
+          >
+            {{
+              hasBoundMail
+                ? $lang.settings_change || "CHANGE"
+                : $lang.settings_bind || "BIND"
+            }}
+          </button>
         </div>
       </section>
 
@@ -79,143 +77,87 @@
       <!-- Preferences -->
       <section class="settings-section">
         <div class="settings-section__header">
-          <svg class="section-icon" viewBox="0 0 24 24" fill="currentColor">
-            <path
-              d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1115.6 12 3.611 3.611 0 0112 15.6z"
-            />
-          </svg>
+          <img
+            class="section-icon"
+            src="@/assets/img/mine/settings_gear.png"
+            alt=""
+          />
           <h2>{{ $lang.settings_preferences || "PREFERENCES" }}</h2>
         </div>
-        <div class="settings-card">
-          <!-- Language (functional) -->
+        <!-- Language: English only -->
+        <div class="settings-row settings-row--static">
+          <div class="settings-item__left">
+            <img
+              class="settings-flag"
+              src="@/assets/img/login/us_flag.png"
+              alt=""
+            />
+            <span class="settings-item__name">{{
+              $lang.settings_language || "Language"
+            }}</span>
+          </div>
+          <div class="settings-item__right">
+            <span class="settings-item__hint">English</span>
+            <van-icon name="arrow" size="14" color="#d4c4ee" />
+          </div>
+        </div>
+
+        <!-- Push Notifications (UI only) -->
+        <div class="settings-row" @click="pushEnabled = !pushEnabled">
+          <div class="settings-item__left">
+            <img
+              class="settings-item__icon-img"
+              src="@/assets/img/mine/settings_bell.png"
+              alt=""
+            />
+            <span class="settings-item__name">{{
+              $lang.settings_push || "Push Notifications"
+            }}</span>
+          </div>
           <div
-            class="settings-item settings-item--border"
-            @click="showLangPopup = true"
+            class="settings-toggle"
+            :class="{ 'settings-toggle--on': pushEnabled }"
           >
-            <div class="settings-item__left">
-              <div class="settings-item__icon-round">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="#b8a8d4">
-                  <path
-                    d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95a15.65 15.65 0 00-1.38-3.56A8.03 8.03 0 0118.92 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56A7.987 7.987 0 015.08 16zm2.95-8H5.08a7.987 7.987 0 014.33-3.56A15.65 15.65 0 008.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2s.07-1.35.16-2h4.68c.09.65.16 1.32.16 2s-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 01-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"
-                  />
-                </svg>
-              </div>
-              <span class="settings-item__name">{{
-                $lang.settings_language || "Language"
-              }}</span>
-            </div>
-            <div class="settings-item__right">
-              <span class="settings-item__hint">{{ currentLangLabel }}</span>
-              <van-icon name="arrow" size="14" color="#b8a8d4" />
+            <div class="settings-toggle__track">
+              <div class="settings-toggle__thumb"></div>
             </div>
           </div>
+        </div>
 
-          <!-- Push Notifications (UI only) -->
-          <div
-            class="settings-item settings-item--border"
-            @click="pushEnabled = !pushEnabled"
-          >
-            <div class="settings-item__left">
-              <div class="settings-item__icon-round">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="#b8a8d4">
-                  <path
-                    d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 002 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
-                  />
-                </svg>
-              </div>
-              <span class="settings-item__name">{{
-                $lang.settings_push || "Push Notifications"
-              }}</span>
-            </div>
-            <div
-              class="settings-toggle"
-              :class="{ 'settings-toggle--on': pushEnabled }"
-            >
-              <div class="settings-toggle__track">
-                <div class="settings-toggle__thumb"></div>
-              </div>
-            </div>
+        <!-- Sound Volume (UI only) -->
+        <div class="settings-row">
+          <div class="settings-item__left">
+            <img
+              class="settings-item__icon-img"
+              src="@/assets/img/mine/settings_sound.png"
+              alt=""
+            />
+            <span class="settings-item__name">{{
+              $lang.settings_sound || "Sound Volume"
+            }}</span>
           </div>
-
-          <!-- Sound Volume (UI only) -->
-          <div class="settings-item">
-            <div class="settings-item__left">
-              <div class="settings-item__icon-round">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="#b8a8d4">
-                  <path
-                    d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0014 8.14v7.72c1.48-.73 2.5-2.25 2.5-3.86zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"
-                  />
-                </svg>
-              </div>
-              <span class="settings-item__name">{{
-                $lang.settings_sound || "Sound Volume"
-              }}</span>
-            </div>
-            <div class="settings-slider" @click.stop>
-              <input
-                v-model="soundVolume"
-                type="range"
-                min="0"
-                max="100"
-                class="settings-slider__input"
-              />
-            </div>
+          <div class="settings-slider" @click.stop>
+            <input
+              v-model="soundVolume"
+              type="range"
+              min="0"
+              max="100"
+              class="settings-slider__input"
+              :style="{ '--vol': soundVolume + '%' }"
+            />
           </div>
         </div>
       </section>
 
       <!-- Logout -->
-      <div class="settings-logout">
-        <button class="settings-logout__btn" @click="showLogoutPopup = true">
-          {{ $lang.mine_txt14 || "Log Out" }}
-        </button>
-      </div>
+      <button
+        class="settings-logout"
+        type="button"
+        @click="showLogoutPopup = true"
+      >
+        {{ $lang.mine_txt14 || "LOG OUT" }}
+      </button>
     </div>
-
-    <van-popup
-      v-model:show="showLangPopup"
-      position="bottom"
-      round
-      class="lang-popup"
-    >
-      <div class="lang-popup__content">
-        <div class="lang-popup__header">
-          <span>{{ $lang.settings_language || "Language" }}</span>
-          <van-icon
-            name="cross"
-            size="20"
-            color="#b8a8d4"
-            @click="showLangPopup = false"
-          />
-        </div>
-        <div
-          v-for="item in langOptions"
-          :key="item.code"
-          class="lang-popup__item"
-          :class="{
-            'lang-popup__item--active': currentLang === item.code,
-          }"
-          @click="selectLanguage(item)"
-        >
-          <div class="lang-popup__item-left">
-            <img
-              v-if="item.iconUrl"
-              :src="item.iconUrl"
-              width="28"
-              height="28"
-              alt=""
-            />
-            <span>{{ item.label }}</span>
-          </div>
-          <van-icon
-            v-if="currentLang === item.code"
-            name="success"
-            size="18"
-            color="#ffa300"
-          />
-        </div>
-      </div>
-    </van-popup>
 
     <!-- Bind / Change Email -->
     <van-popup
@@ -231,12 +173,21 @@
               ? $lang.settings_email_change || "Change Email"
               : $lang.settings_email_bind || "Bind Email"
           }}</span>
-          <van-icon
-            name="cross"
-            size="20"
-            color="#b8a8d4"
+          <button
+            type="button"
+            class="lang-popup__close"
             @click="showEmailPopup = false"
-          />
+          >
+            <svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="true">
+              <path
+                d="M3.2 3.2l11.6 11.6M14.8 3.2L3.2 14.8"
+                fill="none"
+                stroke="#ffd467"
+                stroke-width="2.6"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
         </div>
         <div class="email-form">
           <div v-if="hasBoundMail" class="email-form__field">
@@ -259,7 +210,9 @@
             <van-field
               v-model="newMailInput"
               type="email"
-              :placeholder="$lang.settings_new_email_ph || 'Enter email address'"
+              :placeholder="
+                $lang.settings_new_email_ph || 'Enter email address'
+              "
               class="email-form__input"
             />
           </div>
@@ -278,7 +231,7 @@
           </div>
           <p v-if="emailError" class="email-form__error">{{ emailError }}</p>
           <button
-            class="email-form__submit"
+            class="email-form__submit btn-3d-green"
             type="button"
             :disabled="emailSubmitting"
             @click="submitEmail"
@@ -286,7 +239,7 @@
             {{
               emailSubmitting
                 ? $lang.common_loading || "Loading..."
-                : $lang.Confirmar || "Confirm"
+                : $lang.Confirmar || "CONFIRM"
             }}
           </button>
         </div>
@@ -304,12 +257,14 @@
         <p class="logout-popup__title">{{ $lang.mine_txt4 }}</p>
         <div class="logout-popup__actions">
           <button
+            type="button"
             class="logout-popup__btn logout-popup__btn--cancel"
             @click="showLogoutPopup = false"
           >
             {{ $lang.Cancelar }}
           </button>
           <button
+            type="button"
             class="logout-popup__btn logout-popup__btn--confirm"
             @click="confirmLogout"
           >
@@ -325,17 +280,11 @@
 import { Logout, Init, ChangeMail } from "@/api/common";
 import md5 from "@/utils/md5";
 
-const LANG_OPTIONS = [
-  { code: "en", label: "English" },
-  { code: "es", label: "Español" },
-];
-
 export default {
   name: "Settings",
   data() {
     return {
       showLogoutPopup: false,
-      showLangPopup: false,
       showEmailPopup: false,
       boundMail: "",
       newMailInput: "",
@@ -343,10 +292,8 @@ export default {
       privacyPwdInput: "",
       emailError: "",
       emailSubmitting: false,
-      pushEnabled: false,
+      pushEnabled: true,
       soundVolume: 70,
-      langOptions: LANG_OPTIONS,
-      currentLang: localStorage.getItem("defaultLanguage") || "en",
       socialList: [
         {
           name: "WhatsApp",
@@ -382,11 +329,6 @@ export default {
     };
   },
   computed: {
-    currentLangLabel() {
-      const found = this.langOptions.find((i) => i.code === this.currentLang);
-      if (found) return found.label;
-      return this.currentLang || "English";
-    },
     hasBoundMail() {
       return !!this.boundMail;
     },
@@ -395,6 +337,7 @@ export default {
     },
   },
   created() {
+    localStorage.setItem("defaultLanguage", "en");
     this.fetchProfile();
   },
   methods: {
@@ -461,8 +404,7 @@ export default {
       try {
         const data = await ChangeMail(payload);
         if (data.status === "ok") {
-          const next =
-            (data.content && this.pickMail(data.content)) || newMail;
+          const next = (data.content && this.pickMail(data.content)) || newMail;
           this.boundMail = next;
           this.showEmailPopup = false;
           this.$toast({
@@ -477,22 +419,6 @@ export default {
       } finally {
         this.emailSubmitting = false;
       }
-    },
-    selectLanguage(item) {
-      if (!item || !item.code) {
-        this.showLangPopup = false;
-        return;
-      }
-      if (item.code === this.currentLang) {
-        this.showLangPopup = false;
-        return;
-      }
-      localStorage.setItem("defaultLanguage", item.code);
-      this.currentLang = item.code;
-      this.showLangPopup = false;
-      setTimeout(() => {
-        window.location.reload();
-      }, 200);
     },
     async confirmLogout() {
       try {
@@ -516,72 +442,79 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@settings-bg: #1a0a28;
 @settings-card: #12021a;
+@settings-panel: #6a2d96;
+@settings-row: #0d0d0d;
 @settings-neon: #ffa300;
-@settings-muted: #b8a8d4;
+@settings-title: #e6d4f8;
+@settings-muted: #c9b4e4;
 @settings-border: rgba(255, 162, 0, 0.45);
-@settings-gray-btn: #2d1545;
+@settings-gray-btn: #5a3d78;
 
 .settings-page {
   min-height: 100vh;
-  background: @settings-bg;
+  background: transparent;
   padding-bottom: 40px;
 }
 
-.settings-content {
-  padding: 12px 16px;
+.settings-panel {
+  margin: 12px 14px 0;
+  padding: 18px 14px 16px;
+  border-radius: 28px;
+  background: @settings-panel;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 8px 18px rgba(0, 0, 0, 0.25);
 }
 
 // ====== SECTION HEADER ======
 .settings-section {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 
   &__header {
     display: flex;
     align-items: center;
     gap: 8px;
     margin-bottom: 10px;
-    padding-left: 2px;
+    padding-left: 4px;
 
     .section-icon {
       width: 18px;
       height: 18px;
-      color: @settings-neon;
+      object-fit: contain;
       flex-shrink: 0;
     }
 
     h2 {
-      font-size: 11px;
+      font-size: 13px;
       font-weight: 700;
-      color: @settings-neon;
+      color: @settings-title;
       text-transform: uppercase;
-      letter-spacing: 2px;
+      letter-spacing: 1.2px;
       margin: 0;
     }
   }
 }
 
-// ====== CARD ======
-.settings-card {
-  background: @settings-card;
-  border-radius: 12px;
-  border: 1px solid @settings-border;
-  overflow: hidden;
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 58px;
+  margin-bottom: 10px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: @settings-row;
+  cursor: pointer;
+
+  &--static {
+    cursor: default;
+  }
 }
 
 // ====== ITEM ======
 .settings-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px;
-  cursor: pointer;
-
-  &--border {
-    border-bottom: 1px solid @settings-border;
-  }
-
   &__info {
     display: flex;
     flex-direction: column;
@@ -590,7 +523,7 @@ export default {
 
   &__label {
     font-size: 13px;
-    color: @settings-muted;
+    color: #c084f5;
     margin: 0;
   }
 
@@ -627,14 +560,12 @@ export default {
     }
   }
 
-  &__icon-round {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.06);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  &__icon-img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    display: block;
+    flex-shrink: 0;
   }
 
   &__name {
@@ -652,11 +583,12 @@ export default {
     border: none;
     cursor: pointer;
     font-size: 12px;
-    font-weight: 700;
-    padding: 10px 16px;
-    border-radius: 10px;
+    font-weight: 800;
+    padding: 8px 16px;
+    border-radius: 999px;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.6px;
+    flex-shrink: 0;
 
     &--gray {
       background: @settings-gray-btn;
@@ -664,10 +596,22 @@ export default {
     }
 
     &--gold {
-      background: #fff;
-      color: #1a0a28;
+      background: linear-gradient(180deg, #ffe566 0%, #f0a000 100%);
+      color: #5a3200;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.7),
+        0 2px 0 #c47a00;
     }
   }
+}
+
+.settings-flag {
+  width: 24px;
+  height: 16px;
+  border-radius: 2px;
+  object-fit: cover;
+  display: block;
+  flex-shrink: 0;
 }
 
 // ====== DISABLED FEATURE ======
@@ -679,114 +623,124 @@ export default {
 // ====== TOGGLE ======
 .settings-toggle {
   &__track {
-    width: 40px;
-    height: 22px;
-    border-radius: 11px;
-    background: @settings-gray-btn;
+    width: 46px;
+    height: 26px;
+    border-radius: 13px;
+    background: #6d4a86;
     position: relative;
     transition: background 0.2s;
   }
 
   &__thumb {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
-    background: @wihte-color;
+    background: #fff;
     position: absolute;
-    top: 2px;
-    left: 2px;
+    top: 3px;
+    left: 3px;
     transition: left 0.2s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
   }
 
   &--on {
     .settings-toggle__track {
-      background: @settings-neon;
+      background: #ee960b;
     }
 
     .settings-toggle__thumb {
-      left: 20px;
+      left: 23px;
     }
   }
 }
 
 // ====== SLIDER ======
 .settings-slider {
-  width: 120px;
+  width: 128px;
+  flex-shrink: 0;
 
   &__input {
     -webkit-appearance: none;
     appearance: none;
     width: 100%;
-    height: 4px;
-    border-radius: 2px;
-    background: @settings-gray-btn;
+    height: 8px;
+    border-radius: 999px;
+    background: linear-gradient(
+      90deg,
+      #ffe14a var(--vol, 70%),
+      #6a4588 var(--vol, 70%)
+    );
     outline: none;
     cursor: pointer;
 
     &::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 16px;
-      height: 16px;
+      width: 20px;
+      height: 20px;
       border-radius: 50%;
-      background: @settings-neon;
+      background: #fff;
       cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     }
 
     &::-moz-range-thumb {
-      width: 16px;
-      height: 16px;
+      width: 20px;
+      height: 20px;
       border-radius: 50%;
-      background: @settings-neon;
+      background: #fff;
       border: none;
       cursor: pointer;
     }
   }
 }
 
-// ====== LOGOUT BUTTON ======
 .settings-logout {
-  padding: 0 0;
-  margin-top: 28px;
-
-  &__btn {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    background: rgba(220, 38, 38, 0.1);
-    border: 1px solid rgba(220, 38, 38, 0.3);
-    border-radius: 12px;
-    padding: 14px;
-    font-size: 15px;
-    font-weight: 700;
-    color: #dc2626;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
+  .btn-3d-green();
+  margin-top: 8px;
+  height: 52px;
+  font-size: 16px;
+  letter-spacing: 1px;
 }
 
 // ====== LANGUAGE POPUP ======
 .lang-popup {
-  background: @settings-card !important;
+  background: #7a2190 !important;
 
   &__content {
     padding: 0;
+    background: #7a2190;
   }
 
   &__header {
+    position: relative;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 18px 20px;
-    border-bottom: 1px solid @settings-border;
+    justify-content: center;
+    padding: 18px 44px;
+    background: #532276;
+
+    .lang-popup__close {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      border: none;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
 
     span {
-      font-size: 16px;
-      font-weight: 700;
-      color: @wihte-color;
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: 0.4px;
     }
   }
 
@@ -842,7 +796,8 @@ export default {
 }
 
 .email-form {
-  padding: 16px 20px 24px;
+  padding: 18px 20px 28px;
+  background: transparent;
 
   &__field + &__field {
     margin-top: 14px;
@@ -850,18 +805,55 @@ export default {
 
   &__label {
     margin: 0 0 8px;
-    font-size: 13px;
-    color: @settings-muted;
+    padding: 0 2px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.2;
   }
 
   &__input {
-    background: #2d1545 !important;
-    border: 1px solid @settings-border !important;
-    border-radius: 10px !important;
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 48px;
+    padding: 0 16px !important;
+    background: #000 !important;
+    border: none !important;
+    border-radius: 25px !important;
     overflow: hidden;
+    box-sizing: border-box;
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 25px;
+      border: 1px solid transparent;
+      pointer-events: none;
+    }
+
+    &:focus-within::after {
+      border-color: #ffd400;
+    }
+
+    :deep(.van-field__value),
+    :deep(.van-field__body) {
+      display: flex;
+      align-items: center;
+      height: 48px;
+    }
 
     :deep(.van-field__control) {
+      height: 48px;
+      line-height: 48px;
       color: #fff;
+      font-size: 14px;
+    }
+
+    :deep(.van-field__control::placeholder) {
+      color: #9b86c9;
+      line-height: 48px;
     }
   }
 
@@ -872,68 +864,60 @@ export default {
   }
 
   &__submit {
-    width: 100%;
-    margin-top: 18px;
-    border: none;
-    height: 44px;
-    border-radius: 10px;
-    background: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
-    color: #573900;
-    font-size: 15px;
-    font-weight: 800;
-    cursor: pointer;
-
-    &:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
+    margin-top: 22px;
+    font-size: 16px;
+    letter-spacing: 1px;
   }
 }
 
 // ====== LOGOUT POPUP ======
 .logout-popup {
-  background: @settings-card !important;
+  width: 300px;
+  background: #27033c !important;
+  border: 1px solid rgba(192, 132, 252, 0.45) !important;
   border-radius: 16px !important;
 
   &__content {
-    padding: 28px 24px;
+    padding: 24px 20px 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 24px;
+    gap: 22px;
   }
 
   &__title {
+    margin: 0;
     font-size: 16px;
     font-weight: 700;
-    color: @wihte-color;
+    color: #fff;
     text-align: center;
-    margin: 0;
+    line-height: 1.4;
   }
 
   &__actions {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     width: 100%;
   }
 
   &__btn {
     flex: 1;
+    min-width: 0;
     height: 42px;
-    border-radius: 8px;
+    padding: 0 6px;
     font-size: 14px;
-    font-weight: 700;
-    border: none;
-    cursor: pointer;
+    white-space: nowrap;
 
     &--cancel {
-      background: rgba(255, 255, 255, 0.1);
-      color: @wihte-color;
+      .btn-3d-yellow();
+      height: 42px;
+      font-size: 14px;
     }
 
     &--confirm {
-      background: #ef4444;
-      color: @wihte-color;
+      .btn-3d-green();
+      height: 42px;
+      font-size: 14px;
     }
   }
 }

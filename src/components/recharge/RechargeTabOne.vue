@@ -305,17 +305,25 @@ export default {
 }
 .custom-field {
   margin-top: 5px;
-  padding: 12px 15px;
-  font-size: 15px;
-  background: @background-color;
+  padding: 0 16px;
+  height: 48px;
+  font-size: 14px;
+  background: #000 !important;
+  border: none !important;
+  border-radius: 25px !important;
+  box-sizing: border-box;
+
+  &:focus-within {
+    box-shadow: 0 0 0 1px #ffd400;
+  }
 }
 
 :deep(.van-field__value) {
   caret-color: #a665d8; /* 输入框光标颜色 */
 }
 :deep(.van-field__control::-webkit-input-placeholder) {
-  color: #727895; /* 设置为你需要的颜色 */
-  font-weight: bold;
+  color: #9b86c9;
+  font-weight: 400;
 }
 .active {
   color: @info-color !important;

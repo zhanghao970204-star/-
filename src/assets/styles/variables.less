@@ -100,7 +100,7 @@ ul {
   --van-cell-background: @cell-bg;
   --van-dialog-background: @popup-bg;
   --van-popup-background: @popup-bg;
-  --van-nav-bar-background: @header-bg;
+  --van-nav-bar-background: #15031d;
   --van-nav-bar-height: 55px;
   --van-tabbar-background: transparent;
   /* 底部 Tab 占位：栏高 66 + 间距 + 全面屏安全区 */
@@ -287,14 +287,16 @@ ul {
 // 标题栏相关（与 --van-nav-bar-height 保持一致，避免内容贴顶）
 .van-nav-bar {
   --van-nav-bar-height: 55px;
-  background-color: @header-bg;
+  --van-nav-bar-background: #15031d;
+  background: #15031d !important;
+  background-color: #15031d !important;
   height: var(--van-nav-bar-height);
   background-size: 100% 100%;
   color: @wihte-color !important;
   display: flex;
   align-items: center;
-  border-top: 1px solid fade(#9159fe, 45%);
-  border-bottom: 1px solid fade(#486dfe, 45%);
+  // border-top: 1px solid fade(#9159fe, 45%);
+  // border-bottom: 1px solid fade(#486dfe, 45%);
 }
 .van-nav-bar__content {
   height: var(--van-nav-bar-height);
@@ -319,19 +321,23 @@ ul {
   caret-color: @wihte-color; /* 输入框光标颜色 */
   padding-left: 10px;
 }
-// 输入框（紫底金边）
+// 输入框：与登录页一致（黑底胶囊，聚焦金边）
 .custom-field {
-  border-radius: 10px;
-  background: linear-gradient(96.49deg, #2d1545 2.73%, #12021a 97.68%);
-  border: 1px solid fade(#e9b65a, 20%);
+  height: 48px;
+  background: #000 !important;
+  border: none !important;
+  border-radius: 25px !important;
   display: flex;
   align-items: center;
-  color: @wihte-color;
+  color: #fff;
+  font-size: 14px;
+  padding: 0 16px;
+  box-sizing: border-box;
   input.van-field__control::-webkit-input-placeholder {
     font-family: "Roboto", sans-serif !important;
-    font-weight: 100;
-    font-size: 12px;
-    color: fade(@gary-color, 85%) !important;
+    font-weight: 400;
+    font-size: 14px;
+    color: #9b86c9 !important;
   }
   .van-field__left-icon {
     display: flex;
@@ -342,7 +348,10 @@ ul {
     align-items: center;
   }
   .van-field__control {
-    color: @wihte-color !important;
+    color: #fff !important;
+  }
+  &:focus-within {
+    box-shadow: 0 0 0 1px #ffd400;
   }
 }
 
@@ -371,6 +380,10 @@ ul {
 /* 公共立体胶囊按钮 */
 .btn-3d-green {
   .btn-3d-green();
+}
+
+.btn-3d-yellow {
+  .btn-3d-yellow();
 }
 
 .btn-3d-blue {

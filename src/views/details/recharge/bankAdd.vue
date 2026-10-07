@@ -1,88 +1,104 @@
 <template>
-  <div class="content">
-    <div class="bankAdd-cont d-flex">
-      <van-icon
-        @click="goBack"
-        name="arrow-left"
-        size="17"
-        class="m-l-10 m-b-10"
-        color="var(--wihte-color)"
-      />
-      <div class="d-flex m-l-10">
-        <p
-          v-for="(item, index) in tabList"
-          :key="index"
-          class="m-l-20 ankAdd-top-i"
-          :class="{ active: selectIndex === index }"
-          @click="selectF(index)"
-        >
-          {{ item }}
-        </p>
-      </div>
+  <div class="wd-page">
+    <title-bar :title="$lang.Saque || 'Withdraw'" />
+
+    <div class="wd-tabs">
+      <button
+        v-for="(item, index) in tabList"
+        :key="index"
+        type="button"
+        class="wd-tabs__item"
+        :class="{ 'is-active': selectIndex === index }"
+        @click="selectF(index)"
+      >
+        {{ item }}
+      </button>
     </div>
+
     <bank-info-tab1
       v-if="selectIndex === 0"
       @goToActive="goToActive"
-    ></bank-info-tab1>
-    <bank-info-tab2 v-if="selectIndex === 1"></bank-info-tab2>
+    />
+    <bank-info-tab2 v-if="selectIndex === 1" />
   </div>
 </template>
+
 <script>
-import BankInfoTab1 from '../../../components/recharge/BankInfoTab1.vue'
-import BankInfoTab2 from '../../../components/recharge/BankInfoTab2.vue'
+import BankInfoTab1 from "../../../components/recharge/BankInfoTab1.vue";
+import BankInfoTab2 from "../../../components/recharge/BankInfoTab2.vue";
+
 export default {
-  name: 'BankAdd',
+  name: "BankAdd",
   components: { BankInfoTab1, BankInfoTab2 },
   data() {
     return {
       tabList: [this.$lang.Saque, this.$lang.bankAdd_txt],
-      selectIndex: 0
-    }
+      selectIndex: 0,
+    };
   },
   mounted() {
-    if (this.$route.query.from === 'profile') {
-      this.selectIndex = 1
+    if (this.$route.query.from === "profile") {
+      this.selectIndex = 1;
     }
   },
   methods: {
     selectF(i) {
-      this.selectIndex = i
-    },
-    goBack() {
-      this.$router.go(-1)
+      this.selectIndex = i;
     },
     goToActive(v) {
-      this.selectIndex = v
+      this.selectIndex = v;
+    },
+  },
+};
+</script>
+
+<style lang="less" scoped>
+.wd-page {
+  min-height: 100vh;
+  background: transparent;
+  padding-bottom: 40px;
+  color: #fff;
+}
+
+.wd-tabs {
+  display: flex;
+  margin: 10px 14px 0;
+  height: 44px;
+  padding: 3px;
+  border-radius: 14px;
+  overflow: hidden;
+  background-color: #14041c;
+  background-image: url("@/assets/img/recharge/wd_tab_bg.png");
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  box-sizing: border-box;
+  border: 1px solid rgba(177, 120, 220, 0.4);
+
+  &__item {
+    flex: 1;
+    height: 100%;
+    border: none;
+    border-radius: 12px;
+    background: transparent;
+    color: fade(#fff, 55%);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+
+    &.is-active {
+      background: linear-gradient(180deg, #8f3ab0 0%, #6a228c 100%);
+      color: #fff;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
     }
   }
 }
-</script>
-<style lang="less" scoped>
-.bankAdd-cont {
-  padding-top: 13px;
-  background: #1a0a28;
-  border-bottom: 1px solid @border-color;
-  position: sticky;
-  top: 0;
-  z-index: 2;
-}
-.ankAdd-top-i {
-  padding-bottom: 13px;
-}
-.active {
-  // border-bottom: 2px solid @primary-color;
-  padding-bottom: 11px;
-  position: relative;
-}
-.active::after {
-  content: '';
-  position: absolute;
-  left: -5px;
-  right: 0;
-  bottom: -1px;
-  margin: 0 auto;
-  width: 50px;
-  height: 3px; /* 设置渐变阴影的高度 */
-  background: linear-gradient(to right, @info2-color, #f7ba17, @info2-color);
+
+@media (min-width: 769px) {
+  .wd-page {
+    max-width: 450px;
+    margin: 0 auto;
+  }
 }
 </style>

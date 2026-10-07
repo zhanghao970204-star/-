@@ -61,7 +61,7 @@
       <div
         v-if="$route.path.includes('/home') && bannerList.length"
         class="content-swiper-bg"
-        style="margin-top: 10px"
+        style="margin-top: 6px"
       >
         <van-swipe
           ref="bannerSwipe"
@@ -218,11 +218,13 @@ export default {
   computed: {
     isTopNavVisible() {
       const path = this.$route.path || "";
-      // 首页公共顶栏：home / invite(share) / 充值
+      // 首页公共顶栏：home / invite(share) / 充值 / 活动
       return (
         path.includes("/home") ||
         path.includes("/share") ||
-        path.includes("/rechargeCont")
+        path.includes("/rechargeCont") ||
+        path.includes("/vipLevels") ||
+        path.includes("/activity")
       );
     },
     topNavPlaceholderHeight() {
@@ -906,6 +908,7 @@ export default {
 }
 .content-swiper-bg {
   position: relative;
+  margin-bottom: 0;
   :deep(.van-swipe__indicator) {
     width: 25px;
     border-radius: 12px;
@@ -948,7 +951,7 @@ export default {
 }
 .banner-indicators {
   position: absolute;
-  bottom: 8px;
+  bottom: 4px;
   left: 0;
   right: 0;
   display: flex;

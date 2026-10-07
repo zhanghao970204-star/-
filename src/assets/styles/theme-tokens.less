@@ -21,8 +21,8 @@
 @border-color: #e9a843;
 
 // 记录列表卡片（比页面底略亮 + 金色描边）
-@record-card-bg: linear-gradient(0deg, #1a0a28 13.46%, #2d1545 100%);
-@record-card-border: fade(@border-color, 35%);
+@record-card-bg: #411c59;
+@record-card-border: #411c59;
 
 .record-list-card() {
   background: @record-card-bg;
@@ -41,13 +41,31 @@
 @btn-3d-green-to: #02a460;
 @btn-3d-green-highlight: #a2e7cb;
 @btn-3d-green-lip: #006c3f;
-@btn-3d-green-grad: linear-gradient(180deg, @btn-3d-green-from 0%, @btn-3d-green-to 100%);
+@btn-3d-green-grad: linear-gradient(
+  180deg,
+  @btn-3d-green-from 0%,
+  @btn-3d-green-to 100%
+);
 
 @btn-3d-blue-from: #6188e1;
 @btn-3d-blue-to: #2e5cd0;
 @btn-3d-blue-highlight: fade(#7ea4ff, 75%);
 @btn-3d-blue-lip: #2a4b9a;
-@btn-3d-blue-grad: linear-gradient(180deg, @btn-3d-blue-from 0%, @btn-3d-blue-to 100%);
+@btn-3d-blue-grad: linear-gradient(
+  180deg,
+  @btn-3d-blue-from 0%,
+  @btn-3d-blue-to 100%
+);
+
+@btn-3d-yellow-from: #ffd467;
+@btn-3d-yellow-to: #df8a1b;
+@btn-3d-yellow-highlight: fade(#fff6c8, 70%);
+@btn-3d-yellow-lip: #c47a00;
+@btn-3d-yellow-grad: linear-gradient(
+  180deg,
+  @btn-3d-yellow-from 0%,
+  @btn-3d-yellow-to 100%
+);
 
 .btn-3d-base() {
   display: flex;
@@ -81,6 +99,28 @@
     box-shadow:
       inset 0 1px 1px 0 @btn-3d-green-highlight,
       inset 0 -2px 0 0 @btn-3d-green-lip;
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+.btn-3d-yellow() {
+  .btn-3d-base();
+  background: @btn-3d-yellow-grad;
+  color: @primary-text-on;
+  text-shadow: none;
+  box-shadow:
+    inset 0 2px 2px 0 @btn-3d-yellow-highlight,
+    inset 0 -3px 0 0 @btn-3d-yellow-lip;
+
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+    box-shadow:
+      inset 0 1px 1px 0 @btn-3d-yellow-highlight,
+      inset 0 -2px 0 0 @btn-3d-yellow-lip;
   }
 
   &:disabled {

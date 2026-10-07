@@ -119,45 +119,76 @@
       </section>
     </div>
 
-    <!-- Insufficient Spins Popup -->
+    <!-- Insufficient Spins：通用弹窗样式（同支付确认壳）+ 分享内容 -->
     <van-popup
       v-model:show="showNoSpins"
+      position="center"
       round
+      class="lr-confirm"
       :close-on-click-overlay="true"
-      class="lr-popup-wrapper"
     >
-      <div class="lr-popup">
-        <div class="lr-popup__icon">
-          <van-icon name="warning-o" size="40" color="#ffa300" />
-        </div>
-        <h2 class="lr-popup__title">{{ $lang.lr_insufficient_spins }}</h2>
-        <p class="lr-popup__desc">{{ $lang.lr_invite_more }}</p>
+      <div class="lr-confirm__head">
+        {{ $lang.lr_insufficient_spins }}
+        <button
+          type="button"
+          class="lr-confirm__x"
+          @click="showNoSpins = false"
+        >
+          <svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="true">
+            <path
+              d="M3.2 3.2l11.6 11.6M14.8 3.2L3.2 14.8"
+              fill="none"
+              stroke="#fff"
+              stroke-width="2.6"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+      </div>
+      <div class="lr-confirm__body">
+        <p class="lr-confirm__desc">{{ $lang.lr_invite_more }}</p>
 
-        <div class="lr-popup__socials">
-          <a class="lr-popup__social" @click="shareToSocial('x')">
-            <img src="../../../assets/img/otgame/pinduoduo_24.png" width="48" alt="" />
+        <div class="lr-confirm__socials">
+          <a class="lr-confirm__social" @click="shareToSocial('x')">
+            <img
+              src="../../../assets/img/otgame/pinduoduo_24.png"
+              width="48"
+              alt=""
+            />
           </a>
-          <a class="lr-popup__social" @click="shareToSocial('facebook')">
-            <img src="../../../assets/img/otgame/zjm_39.png" width="48" alt="" />
+          <a class="lr-confirm__social" @click="shareToSocial('facebook')">
+            <img
+              src="../../../assets/img/otgame/zjm_39.png"
+              width="48"
+              alt=""
+            />
           </a>
-          <a class="lr-popup__social" @click="shareToSocial('youtube')">
-            <img src="../../../assets/img/otgame/zjm_42.png" width="48" alt="" />
+          <a class="lr-confirm__social" @click="shareToSocial('youtube')">
+            <img
+              src="../../../assets/img/otgame/zjm_42.png"
+              width="48"
+              alt=""
+            />
           </a>
-          <a class="lr-popup__social" @click="shareToSocial('ins')">
+          <a class="lr-confirm__social" @click="shareToSocial('ins')">
             <img src="../../../assets/img/otgame/ins.png" width="48" alt="" />
           </a>
         </div>
 
-        <div class="lr-popup__ref">
-          <p class="lr-popup__ref-label">{{ $lang.lr_referral_link }}</p>
-          <div class="lr-popup__ref-row">
-            <div class="lr-popup__ref-link">{{ referralLink }}</div>
-            <button class="lr-popup__ref-copy" @click="copyLink">{{ $lang.lr_copy }}</button>
-          </div>
+        <p class="lr-confirm__ref-label">{{ $lang.lr_referral_link }}</p>
+        <div class="lr-confirm__ref-row">
+          <div class="lr-confirm__ref-link">{{ referralLink }}</div>
+          <button type="button" class="lr-confirm__ref-copy" @click="copyLink">
+            {{ $lang.lr_copy }}
+          </button>
         </div>
 
-        <button class="lr-popup__close" @click="showNoSpins = false">
-          {{ $lang.lr_close }}
+        <button
+          type="button"
+          class="lr-confirm__close btn-3d-green"
+          @click="showNoSpins = false"
+        >
+          {{ $lang.lr_close || "Close" }}
         </button>
       </div>
     </van-popup>
@@ -340,10 +371,10 @@ export default {
     },
     shareToSocial(platform) {
       const links = {
-        facebook: `https://www.facebook.com`,
-        ins: `https://instagram.com`,
-        x: `https://x.com`,
-        youtube: `https://youtube.com`
+        facebook: 'https://www.facebook.com',
+        ins: 'https://instagram.com',
+        x: 'https://x.com',
+        youtube: 'https://youtube.com'
       }
       if (links[platform]) {
         window.open(links[platform], '_blank')
@@ -792,52 +823,63 @@ export default {
   }
 }
 
-// ====== POPUP ======
-.lr-popup-wrapper {
-  background: transparent !important;
-  overflow: visible !important;
-}
-
-.lr-popup {
-  width: calc(100vw - 40px);
+/* 通用弹窗壳（对齐充值 Payment Confirmation） */
+.lr-confirm {
+  width: 88% !important;
   max-width: 360px;
-  box-sizing: border-box;
-  background: rgba(10, 14, 26, 0.95);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 163, 0, 0.2);
-  box-shadow: 0 0 20px rgba(255, 163, 0, 0.15);
-  border-radius: 10px;
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
+  background: linear-gradient(180deg, #7a2190 0%, #532276 100%) !important;
+  overflow: hidden;
+  border-radius: 18px !important;
 
-  &__icon {
+  &__head {
+    position: relative;
+    background: #430063;
+    color: #fff;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 800;
+    padding: 14px 40px;
+  }
+
+  &__x {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    background: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
   }
 
-  &__title {
-    font-size: 24px;
-    font-weight: 700;
-    color: @wihte-color;
+  &__body {
+    padding: 16px 14px 18px;
+    background: linear-gradient(180deg, #7a2190 0%, #532276 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
   }
 
   &__desc {
+    margin: 0 0 16px;
+    color: #fff;
     font-size: 14px;
-    color: #b8a8d4;
+    line-height: 1.45;
     text-align: center;
-    padding: 0 16px;
+    font-weight: 600;
   }
 
   &__socials {
-    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 8px;
+    margin-bottom: 16px;
   }
 
   &__social {
@@ -857,72 +899,54 @@ export default {
     }
   }
 
-  &__ref {
-    width: 100%;
+  &__ref-label {
+    margin: 0 0 8px;
+    font-size: 12px;
+    font-weight: 800;
+    color: #fff;
+  }
 
-    &-label {
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: #b8a8d4;
-      margin-bottom: 8px;
-      padding-left: 4px;
-    }
+  &__ref-row {
+    display: flex;
+    align-items: center;
+    background: #12021a;
+    border-radius: 12px;
+    padding: 4px;
+    border: 1px solid fade(#ffa300, 45%);
+    min-width: 0;
+    margin-bottom: 16px;
+  }
 
-    &-row {
-      display: flex;
-      align-items: center;
-      background: #12021a;
-      border-radius: 10px;
-      padding: 4px;
-      border: 1px solid rgba(255, 162, 0, 0.45);
-      min-width: 0;
-    }
+  &__ref-link {
+    flex: 1;
+    min-width: 0;
+    padding: 8px 12px;
+    color: #d1d5db;
+    font-size: 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
-    &-link {
-      flex: 1;
-      min-width: 0;
-      padding: 8px 12px;
-      color: #d1d5db;
-      font-size: 13px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
+  &__ref-copy {
+    flex-shrink: 0;
+    background: @red;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 8px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
 
-    &-copy {
-      flex-shrink: 0;
-      background: @red;
-      color: @wihte-color;
-      font-size: 12px;
-      font-weight: 700;
-      padding: 8px 24px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-
-      &:active {
-        opacity: 0.8;
-      }
+    &:active {
+      opacity: 0.85;
     }
   }
 
   &__close {
     width: 100%;
-    background: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
-    color: #573900;
-    font-weight: 900;
-    padding: 16px;
-    border-radius: 10px;
-    font-size: 18px;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 0 20px rgba(255, 163, 0, 0.4);
-
-    &:active {
-      transform: scale(0.98);
-    }
+    margin-top: 2px;
   }
 }
 

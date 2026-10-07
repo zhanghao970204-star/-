@@ -11,16 +11,38 @@
         <div class="rc-wallet__inner">
           <h2 class="rc-wallet__title">WALLET</h2>
           <div class="rc-wallet__actions">
-            <button type="button" class="rc-wallet__btn" @click="goToRecord">
-              <img :src="imgHistory" alt="" />
+            <button
+              type="button"
+              class="rc-wallet__btn btn-press"
+              @click="goToRecord"
+            >
+              <div
+                style="
+                  border-radius: 999px;
+                  border: 1px solid #8b57d5;
+                  background: #280d4e;
+                  padding: 3px;
+                "
+              >
+                <img :src="imgHistory" alt="" />
+              </div>
               <span>{{ $lang.rp_history || "History" }}</span>
             </button>
             <button
               type="button"
-              class="rc-wallet__btn"
-              @click="openTgCustomerService"
+              class="rc-wallet__btn btn-press"
+              @click="$jumpTo('/Support')"
             >
-              <img :src="imgContact" alt="" />
+              <div
+                style="
+                  border-radius: 999px;
+                  border: 1px solid #8b57d5;
+                  background: #280d4e;
+                  padding: 3px;
+                "
+              >
+                <img :src="imgContact" alt="" />
+              </div>
               <span>{{ $lang.common_txt22 }}</span>
             </button>
           </div>
@@ -39,6 +61,15 @@
           :class="{ active: index === selectAmountIndex || item.isActive }"
           @click="selectAmount(index, item)"
         >
+          <img
+            class="amount-card__bg"
+            :src="
+              index === selectAmountIndex || item.isActive
+                ? imgCardActive
+                : imgCard
+            "
+            alt=""
+          />
           <span
             v-if="showActivityBonus && item.bonus"
             class="amount-card__ribbon"
@@ -85,14 +116,10 @@
           :class="{ 'is-active': agree }"
           @click="agree = !agree"
         >
-          <img class="rc-activity-row__icon" :src="imgCheck" alt="" />
-          <van-checkbox
-            v-model="agree"
-            shape="round"
-            checked-color="#22c55e"
-            icon-size="18px"
-            class="rc-activity-row__check"
-            @click.stop
+          <img
+            class="rc-activity-row__icon"
+            :src="agree ? imgCheck : imgUncheck"
+            alt=""
           />
           <p
             v-if="promoCode === 'first_recharge_new_1'"
@@ -110,7 +137,7 @@
           <p v-else class="rc-activity-row__text">{{ activityBannerText }}</p>
         </div>
         <p class="rc-vip-row" @click="$jumpTo('/vipLevels')">
-          <span class="rc-vip-badge" :style="vipBadgeStyle"></span>
+          <img class="rc-vip-badge" :src="vipPairIconSrc" alt="" />
           <span class="rc-vip-text">VIP {{ InitDate.vipLevel || 0 }}</span>
           <span class="rc-vip-desc m-l-5">{{ $lang.common_txt312 }}</span>
           <span class="rc-vip-link">{{ $lang.common_txt309 }}</span>
@@ -166,6 +193,21 @@
     >
       <div class="rc-confirm__head">
         {{ $lang.common_txt363 }}
+        <button
+          type="button"
+          class="rc-confirm__close"
+          @click="confirmShow = false"
+        >
+          <svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="true">
+            <path
+              d="M3.2 3.2l11.6 11.6M14.8 3.2L3.2 14.8"
+              fill="none"
+              stroke="#fff"
+              stroke-width="2.6"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
       </div>
       <div class="rc-confirm__body">
         <p v-if="payTypeList.length" class="rc-confirm__label">
@@ -179,7 +221,23 @@
             :class="{ 'is-active': selectPayTypeIndex === index }"
             @click="selectPayType(index)"
           >
-            <img :src="item.typeIcon || item.paymentIcon" alt="" />
+            <img
+              class="rc-confirm__chip-bg"
+              :src="selectPayTypeIndex === index ? imgChipOn : imgChipOff"
+              alt=""
+            />
+            <img
+              class="rc-confirm__chip-icon"
+              :src="item.typeIcon || item.paymentIcon"
+              alt=""
+            />
+            <img
+              class="rc-confirm__chip-line"
+              :src="
+                selectPayTypeIndex === index ? imgChipLineOn : imgChipLineOff
+              "
+              alt=""
+            />
             <span>{{ item.typeName }}</span>
           </div>
         </div>
@@ -195,7 +253,21 @@
             :class="{ 'is-active': selectIndex === index }"
             @click="tabIndex(index)"
           >
-            <img :src="item.paymentIconUrl" alt="" />
+            <img
+              class="rc-confirm__chip-bg"
+              :src="selectIndex === index ? imgChipOn : imgChipOff"
+              alt=""
+            />
+            <img
+              class="rc-confirm__chip-icon"
+              :src="item.paymentIconUrl"
+              alt=""
+            />
+            <img
+              class="rc-confirm__chip-line"
+              :src="selectIndex === index ? imgChipLineOn : imgChipLineOff"
+              alt=""
+            />
             <span>{{ item.paymentName }}</span>
           </div>
         </div>
@@ -349,11 +421,23 @@ import {
 } from "@/utils/payRedirect";
 import { fetchCsUrl, openCustomerService } from "@/utils/csLink";
 
-// viptb.png：VIP0–VIP20 共 21 帧（与 vipLevels / mine 一致）
-const VIP_SPRITE_W = 4636;
-const VIP_SPRITE_H = 280;
-const VIP_BADGE_FRAMES = 21;
-const VIP_RC_BADGE_H = 22;
+const vipPairModules = import.meta.glob("@/assets/img/vip/*_*.png", {
+  eager: true,
+  import: "default",
+});
+
+function resolveVipPairIcon(level) {
+  const lv = Math.max(0, Number(level) || 0);
+  const start = lv <= 0 ? 1 : Math.floor((lv - 1) / 2) * 2 + 1;
+  const clampedStart = Math.min(start, 13);
+  const name = `${clampedStart}_${clampedStart + 1}.png`;
+  const hit = Object.keys(vipPairModules).find((k) => k.endsWith(`/${name}`));
+  if (hit) return vipPairModules[hit];
+  const fallback = Object.keys(vipPairModules).find((k) =>
+    k.endsWith("/1_2.png"),
+  );
+  return fallback ? vipPairModules[fallback] : "";
+}
 
 function rcAsset(name) {
   return new URL(`../../assets/img/recharge/${name}`, import.meta.url).href;
@@ -374,8 +458,13 @@ const IMG_CONTACT = rcAsset("55cd8f0e-6e58-4776-98b2-fefc18f36364 2.png");
 const IMG_RIBBON = rcAsset("image 23425.png");
 const IMG_PRICE_BG = rcAsset("Rectangle 34626414.png");
 const IMG_CHECK = rcAsset("image 23135.png");
+const IMG_UNCHECK = rcAsset("Ellipse 346.png");
+const IMG_CARD = rcAsset("Rectangle 34626420 (1).png");
+const IMG_CARD_ACTIVE = rcAsset("Rectangle 34626420.png");
 const IMG_LINE_L = rcAsset("Rectangle 133.png");
 const IMG_LINE_R = rcAsset("Rectangle 34626426.png");
+const IMG_CHIP_ON = rcAsset("Rectangle 480.png");
+const IMG_CHIP_OFF = rcAsset("Rectangle 34626424.png");
 
 export default {
   name: "RechargeCont",
@@ -423,8 +512,15 @@ export default {
       imgRibbon: IMG_RIBBON,
       imgPriceBg: IMG_PRICE_BG,
       imgCheck: IMG_CHECK,
+      imgUncheck: IMG_UNCHECK,
+      imgCard: IMG_CARD,
+      imgCardActive: IMG_CARD_ACTIVE,
       imgLineL: IMG_LINE_L,
       imgLineR: IMG_LINE_R,
+      imgChipOn: IMG_CHIP_ON,
+      imgChipOff: IMG_CHIP_OFF,
+      imgChipLineOn: IMG_LINE_L,
+      imgChipLineOff: IMG_LINE_R,
     };
   },
   watch: {
@@ -487,18 +583,8 @@ export default {
       if (!isFinite(n) || n <= 0) return this.minAmount || "";
       return this.$formatNumberWithCommas ? this.$formatNumberWithCommas(n) : n;
     },
-    vipBadgeStyle() {
-      const lv = Math.max(0, Number(this.InitDate.vipLevel) || 0);
-      const idx = Math.min(lv, VIP_BADGE_FRAMES - 1);
-      const scale = VIP_RC_BADGE_H / VIP_SPRITE_H;
-      const spriteW = VIP_SPRITE_W * scale;
-      const frameW = spriteW / VIP_BADGE_FRAMES;
-      return {
-        width: `${frameW}px`,
-        height: `${VIP_RC_BADGE_H}px`,
-        backgroundSize: `${spriteW}px ${VIP_RC_BADGE_H}px`,
-        backgroundPosition: `-${idx * frameW}px 0`,
-      };
+    vipPairIconSrc() {
+      return resolveVipPairIcon(this.InitDate.vipLevel);
     },
     payNoticeClass() {
       const len = this.paymentList.length;
@@ -898,8 +984,8 @@ export default {
 /* 图一 / 图二：紫金钱包充值 */
 @page-bg: #15031d;
 @panel: #4b0e5d;
-@panel-soft: #79218f;
-@gold: #ffd467;
+@panel-soft: #512275;
+@gold: #ffd404;
 @muted: #d7a2fa;
 @green: #12c27a;
 @green-deep: #0a8f56;
@@ -928,23 +1014,26 @@ export default {
     vertical-align: top;
   }
 
+  /* 6 瓣波浪：标题占左，History / Contact 落在右两瓣 */
   &__inner {
     position: absolute;
     left: 0;
     right: 0;
     top: 0;
-    height: 68%;
-    display: flex;
+    height: 72%;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
     align-items: center;
-    justify-content: space-between;
-    padding: 0 18px 0 20px;
     box-sizing: border-box;
+    padding: 0 2% 0 3%;
   }
 
   &__title {
+    grid-column: 1 / 5;
     margin: 0;
-    font-size: 34px;
-    font-weight: 900;
+    padding-left: 6px;
+    font-size: 24px;
+    font-weight: 800;
     letter-spacing: 0.6px;
     color: #fff;
     text-shadow: 0 3px 0 rgba(90, 40, 160, 0.45);
@@ -952,32 +1041,38 @@ export default {
   }
 
   &__actions {
-    display: flex;
-    align-items: flex-end;
-    gap: 16px;
-    padding-top: 2px;
+    grid-column: 5 / 7;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    justify-items: center;
+    background: none;
+    padding: 0;
+    gap: 0;
   }
 
   &__btn {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-end;
-    gap: 3px;
-    min-width: 48px;
+    justify-content: center;
+    gap: 2px;
+    width: 100%;
     padding: 0;
     border: none;
+    border-radius: 0;
     background: transparent;
     color: @gold;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
     line-height: 1;
     white-space: nowrap;
     cursor: pointer;
+    box-shadow: none;
 
     img {
-      width: 26px;
-      height: 26px;
+      width: 28px;
+      height: 28px;
       object-fit: contain;
       display: block;
     }
@@ -991,9 +1086,9 @@ export default {
   margin: 10px 0 16px;
 
   &__title {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 800;
+    margin: 10px 0 5px;
+    font-size: 15px;
+    font-weight: 700;
     color: #fff;
     text-align: center;
     letter-spacing: 0.2px;
@@ -1012,18 +1107,40 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  min-height: 148px;
-  padding: 18px 6px 0;
+  height: 134px;
+  min-height: 134px;
   box-sizing: border-box;
   border-radius: 16px;
-  background: linear-gradient(180deg, #5b1d96 0%, #3d1270 100%);
-  border: 2px solid transparent;
+  background: transparent;
+  border: none;
   cursor: pointer;
   overflow: visible;
 
   &.active {
-    border-color: #ffd400;
-    box-shadow: 0 0 0 1px fade(#ffd400, 35%);
+    z-index: 2;
+    padding-bottom: 38px;
+  }
+
+  &__bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    z-index: 0;
+    pointer-events: none;
+    border-radius: 16px;
+  }
+
+  /* 整张高亮图放大，中间和未选中一样大；不裁圆角，四角用图片自带透明 */
+  &.active &__bg {
+    inset: auto;
+    left: 50%;
+    top: 50%;
+    width: calc(100% * 187 / 158);
+    height: calc(100% * 222 / 192);
+    transform: translate(-50%, -50%);
+    border-radius: 0;
   }
 
   &__ribbon {
@@ -1031,9 +1148,9 @@ export default {
     top: -10px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 2;
-    width: 78%;
-    min-height: 24px;
+    z-index: 6;
+    width: 100%;
+    min-height: 27px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1042,7 +1159,7 @@ export default {
       position: relative;
       z-index: 1;
       font-style: normal;
-      font-size: 12px;
+      font-size: 14px;
       font-weight: 800;
       color: #fff;
       line-height: 1;
@@ -1059,6 +1176,8 @@ export default {
   }
 
   &__coin {
+    position: relative;
+    z-index: 2;
     width: 72px;
     height: 72px;
     object-fit: contain;
@@ -1067,6 +1186,7 @@ export default {
 
   &__price {
     position: relative;
+    z-index: 1;
     width: 100%;
     height: 38px;
     display: flex;
@@ -1080,6 +1200,15 @@ export default {
       font-weight: 800;
       color: #fff;
     }
+  }
+
+  &.active &__price {
+    position: absolute;
+    left: 50%;
+    bottom: 2px;
+    width: 96%;
+    transform: translateX(-50%);
+    height: 36px;
   }
 
   &__price-bg {
@@ -1101,9 +1230,16 @@ export default {
 
 .rc-amount-field {
   margin-top: 8px !important;
-  background: rgba(18, 6, 40, 0.85) !important;
-  border: 1px solid fade(@panel-soft, 55%) !important;
-  border-radius: 10px !important;
+  height: 48px !important;
+  background: #000 !important;
+  border: none !important;
+  border-radius: 25px !important;
+  padding: 0 16px !important;
+  box-sizing: border-box;
+
+  &:focus-within {
+    box-shadow: 0 0 0 1px #ffd400;
+  }
 }
 
 .rc-field-currency {
@@ -1136,10 +1272,6 @@ export default {
     flex-shrink: 0;
   }
 
-  &__check {
-    flex-shrink: 0;
-  }
-
   &__text {
     flex: 1;
     margin: 0;
@@ -1163,12 +1295,11 @@ export default {
 
 .rc-vip-badge {
   flex-shrink: 0;
-  background-image: url(@/assets/img/vip/viptb.png);
-  background-image: image-set(
-    url("@/assets/img/vip/viptb.webp") type("image/webp"),
-    url("@/assets/img/vip/viptb.png") type("image/png")
-  );
-  background-repeat: no-repeat;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
 }
 
 .rc-vip-text {
@@ -1218,21 +1349,10 @@ export default {
 }
 
 .rc-pay-btn {
+  .btn-3d-green();
   position: relative;
-  width: 100%;
   height: 50px;
-  border: none;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #3be59f 0%, #00b56a 100%);
-  color: #fff;
-  font-size: 18px;
-  font-weight: 900;
-  box-shadow: 0 6px 18px rgba(0, 181, 106, 0.35);
-  cursor: pointer;
-
-  &:disabled {
-    opacity: 0.65;
-  }
+  font-size: 16px;
 
   &__badge {
     position: absolute;
@@ -1317,21 +1437,39 @@ export default {
 .rc-confirm {
   width: 88% !important;
   max-width: 360px;
-  background: @panel !important;
+  background: linear-gradient(180deg, #7a2190 0%, #532276 100%) !important;
   overflow: hidden;
   border-radius: 18px !important;
 
+  &__close {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
   &__head {
+    position: relative;
     background: @panel-soft;
     color: #fff;
     text-align: center;
     font-size: 16px;
     font-weight: 800;
-    padding: 14px 12px;
+    padding: 14px 40px;
   }
 
   &__body {
     padding: 14px 14px 18px;
+    background: linear-gradient(180deg, #7a2190 0%, #532276 100%);
   }
 
   &__label {
@@ -1348,33 +1486,60 @@ export default {
   }
 
   &__chip {
+    position: relative;
     width: calc(33.33% - 7px);
     min-height: 78px;
     border-radius: 14px;
-    background: #f3f4f6;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+    background: transparent;
+    box-shadow: none;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    padding: 8px 4px;
+    gap: 4px;
+    padding: 10px 6px 8px;
     box-sizing: border-box;
     cursor: pointer;
     color: #333;
     font-size: 11px;
     font-weight: 700;
+    overflow: hidden;
 
-    img {
+    &-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    &-icon {
+      position: relative;
+      z-index: 1;
       width: 28px;
       height: 22px;
       object-fit: contain;
     }
 
+    &-line {
+      position: relative;
+      z-index: 1;
+      width: 70%;
+      height: 1px;
+      object-fit: fill;
+    }
+
+    span {
+      position: relative;
+      z-index: 1;
+    }
+
     &.is-active {
-      background: linear-gradient(180deg, #ffd36a 0%, #ff9a1a 100%);
+      background: transparent;
       color: #fff;
-      box-shadow: 0 4px 12px rgba(255, 154, 26, 0.4);
+      box-shadow: none;
     }
   }
 
@@ -1382,7 +1547,8 @@ export default {
     margin-top: 4px;
     padding: 10px 12px;
     border-radius: 12px;
-    background: rgba(13, 2, 24, 0.45);
+    background: #2c1137;
+    border: 1px solid #9346a9;
   }
 
   &__row {
@@ -1390,7 +1556,7 @@ export default {
     align-items: center;
     justify-content: space-between;
     padding: 10px 0;
-    border-bottom: 1px dashed fade(#fff, 22%);
+    border-bottom: 1px dashed #9346a9;
     color: #fff;
     font-size: 13px;
 
@@ -1406,22 +1572,9 @@ export default {
   }
 
   &__pay {
-    width: 100%;
+    .btn-3d-green();
     margin-top: 16px;
-    height: 48px;
-    border: none;
-    border-radius: 999px;
-    background: linear-gradient(180deg, #3be59f 0%, #00b56a 100%);
-    color: #fff;
     font-size: 16px;
-    font-weight: 900;
-    letter-spacing: 0.4px;
-    box-shadow: 0 6px 16px rgba(0, 181, 106, 0.35);
-    cursor: pointer;
-
-    &:disabled {
-      opacity: 0.65;
-    }
   }
 }
 

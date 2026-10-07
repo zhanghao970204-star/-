@@ -80,20 +80,27 @@ export default {
 
 .custom-field2 {
   margin-top: 10px;
-  padding: 11px 15px;
-  font-size: 15px;
-  background: #2d1545;
-  border-radius: 13px;
-  border: 1px solid fade(#e9a843, 35%);
-  font-weight: normal !important; // 👈 添加这句确保外层不加粗
+  padding: 0 16px;
+  height: 48px;
+  font-size: 14px;
+  background: #000 !important;
+  border: none !important;
+  border-radius: 25px !important;
+  box-sizing: border-box;
+  font-weight: normal !important;
+
+  &:focus-within {
+    box-shadow: 0 0 0 1px #ffd400;
+  }
+
   :deep(.van-field__control) {
-    color: @wihte-color; // 输入文字颜色
-    font-size: 15px;
-    font-weight: normal !important; // 👈 添加这句确保外层不加粗
+    color: #fff;
+    font-size: 14px;
+    font-weight: normal !important;
 
     &::placeholder {
-      color: #b8a8d4 !important;
-      font-weight: normal !important; // 👈 添加这句确保外层不加粗
+      color: #9b86c9 !important;
+      font-weight: normal !important;
     }
   }
 }

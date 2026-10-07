@@ -8,21 +8,27 @@
     class="gift-pay-sheet"
     @update:show="onUpdateShow"
   >
-    <div class="gps">
-      <div class="gps__head">
-        <h3 class="gps__title">
-          {{ $lang.gift_pay_title || $lang.common_txt363 || "Payment" }}
-        </h3>
-        <button
-          class="gps__close"
-          type="button"
-          :disabled="paying"
-          @click="close"
-        >
-          <van-icon name="cross" size="18" color="#b8a8d4" />
-        </button>
-      </div>
+    <div class="gps__head">
+      {{ $lang.gift_pay_title || $lang.common_txt363 || "Select Payment" }}
+      <button
+        class="gps__close"
+        type="button"
+        :disabled="paying"
+        @click="close"
+      >
+        <svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="true">
+          <path
+            d="M3.2 3.2l11.6 11.6M14.8 3.2L3.2 14.8"
+            fill="none"
+            stroke="#fff"
+            stroke-width="2.6"
+            stroke-linecap="round"
+          />
+        </svg>
+      </button>
+    </div>
 
+    <div class="gps__body">
       <div v-if="loading" class="gps__state">
         {{ $lang.common_loading || "Loading..." }}
       </div>
@@ -30,77 +36,89 @@
         {{ emptyText }}
       </div>
       <template v-else>
-        <div v-if="payTypeList.length > 1" class="gps__block">
+        <template v-if="payTypeList.length > 1">
           <p class="gps__label">
-            {{ $lang.gift_pay_method || "Payment Method" }}
+            {{ $lang.gift_pay_method || $lang.rc_select_channel || "Select Channel" }}
           </p>
-          <div class="gps__types">
+          <div class="gps__grid">
             <div
               v-for="(item, index) in payTypeList"
               :key="item.paymentId || index"
-              class="gps__type"
+              class="gps__chip"
               :class="{ 'is-active': selectPayTypeIndex === index }"
               @click="selectPayType(index)"
             >
               <img
-                class="gps__type-icon"
+                class="gps__chip-bg"
+                :src="selectPayTypeIndex === index ? imgChipOn : imgChipOff"
+                alt=""
+              />
+              <img
+                class="gps__chip-icon"
                 :src="item.typeIcon || item.paymentIcon || item.paymentIconUrl"
                 alt=""
               />
-              <p class="gps__type-name">
-                {{ item.typeName || item.paymentName }}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="gps__block">
-          <p class="gps__label">
-            {{ $lang.gift_pay_channel || "Payment Channel" }}
-          </p>
-          <div class="gps__channels">
-            <div
-              v-for="(item, index) in paymentList"
-              :key="item.paymentKey || index"
-              class="gps__channel"
-              :class="{ 'is-active': selectIndex === index }"
-              @click="selectChannel(index)"
-            >
               <img
-                class="gps__channel-icon"
-                :src="item.paymentIconUrl || item.paymentIcon"
+                class="gps__chip-line"
+                :src="
+                  selectPayTypeIndex === index ? imgChipLineOn : imgChipLineOff
+                "
                 alt=""
               />
-              <span class="gps__channel-name">{{ item.paymentName }}</span>
+              <span>{{ item.typeName || item.paymentName }}</span>
             </div>
           </div>
-        </div>
+        </template>
 
-        <div v-if="isUsdtSelected" class="gps__block">
-          <p class="gps__label">
-            {{ $lang.gift_pay_network || "Network" }}
-          </p>
-          <div class="gps__networks">
-            <div
-              v-for="(name, index) in usdtNetworks"
-              :key="name"
-              class="gps__network"
-              :class="{ 'is-active': selectWl === index }"
-              @click="selectWl = index"
-            >
-              {{ name }}
-            </div>
-          </div>
-        </div>
-
-        <div class="gps__amount">
-          <span>{{ $lang.gift_pay_amount || "Amount" }}</span>
-          <strong
-            >{{ isUsdtSelected ? "U" : currency }}
-            {{
-              $formatNumberWithCommas ? $formatNumberWithCommas(amount) : amount
-            }}</strong
+        <p class="gps__label">
+          {{
+            $lang.gift_pay_channel ||
+            $lang.rc_select_method ||
+            "Select Payment Method"
+          }}
+        </p>
+        <div class="gps__grid">
+          <div
+            v-for="(item, index) in paymentList"
+            :key="item.paymentKey || index"
+            class="gps__chip"
+            :class="{ 'is-active': selectIndex === index }"
+            @click="selectChannel(index)"
           >
+            <img
+              class="gps__chip-bg"
+              :src="selectIndex === index ? imgChipOn : imgChipOff"
+              alt=""
+            />
+            <img
+              class="gps__chip-icon"
+              :src="item.paymentIconUrl || item.paymentIcon"
+              alt=""
+            />
+            <img
+              class="gps__chip-line"
+              :src="selectIndex === index ? imgChipLineOn : imgChipLineOff"
+              alt=""
+            />
+            <span>{{ item.paymentName }}</span>
+          </div>
+        </div>
+
+        <p class="gps__label">
+          {{ $lang.rc_confirm_order || $lang.gift_pay_amount || "Confirm Order" }}
+        </p>
+        <div class="gps__order">
+          <div class="gps__row">
+            <span>{{ $lang.gift_pay_amount || "Amount" }}</span>
+            <em
+              >{{ currency }}
+              {{
+                $formatNumberWithCommas
+                  ? $formatNumberWithCommas(amount)
+                  : amount
+              }}</em
+            >
+          </div>
         </div>
 
         <button
@@ -112,7 +130,10 @@
           {{
             paying
               ? $lang.common_loading || "Loading..."
-              : $lang.Confirmar || $lang.reward_confirm || "Confirm"
+              : $lang.rc_confirm_pay ||
+                $lang.Confirmar ||
+                $lang.reward_confirm ||
+                "Confirm"
           }}
         </button>
       </template>
@@ -125,9 +146,17 @@ import { VnRechargeInitS, Pay } from "@/api/common";
 import {
   isUsPayRedirect,
   openUsPayBlankWindow,
-  goPayUrl,
   closePayWindow,
 } from "@/utils/payRedirect";
+
+function rcAsset(name) {
+  return new URL(`../assets/img/recharge/${name}`, import.meta.url).href;
+}
+
+const IMG_CHIP_ON = rcAsset("Rectangle 480.png");
+const IMG_CHIP_OFF = rcAsset("Rectangle 34626424.png");
+const IMG_CHIP_LINE_ON = rcAsset("Rectangle 133.png");
+const IMG_CHIP_LINE_OFF = rcAsset("Rectangle 34626426.png");
 
 export default {
   name: "GiftPaySheet",
@@ -157,6 +186,10 @@ export default {
       selectIndex: 0,
       account: "",
       loadError: "",
+      imgChipOn: IMG_CHIP_ON,
+      imgChipOff: IMG_CHIP_OFF,
+      imgChipLineOn: IMG_CHIP_LINE_ON,
+      imgChipLineOff: IMG_CHIP_LINE_OFF,
     };
   },
   computed: {
@@ -297,184 +330,162 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@cell: #2d1545;
-@muted: #d7a2fa;
 @gold: #ffa300;
-@gold-soft: #ffe4b5;
-@gold-deep: #e9a843;
+@panel-head: #430063;
 
 .gift-pay-sheet {
-  background: #1a0a28 !important;
+  width: 100% !important;
+  max-width: none;
   max-height: 78vh;
-}
-
-.gps {
-  padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px));
-  color: #fff;
+  background: linear-gradient(180deg, #7a2190 0%, #532276 100%) !important;
+  overflow: hidden;
+  border-radius: 18px 18px 0 0 !important;
 }
 
 .gps__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-
-.gps__title {
-  margin: 0;
+  position: relative;
+  background: @panel-head;
+  color: #fff;
+  text-align: center;
   font-size: 16px;
-  font-weight: 700;
-  color: @gold-soft;
+  font-weight: 800;
+  padding: 14px 40px;
 }
 
 .gps__close {
-  width: 32px;
-  height: 32px;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  padding: 0;
   border: none;
   background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.gps__body {
+  padding: 14px 14px calc(18px + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(180deg, #7a2190 0%, #532276 100%);
+  max-height: calc(78vh - 48px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .gps__state {
   padding: 36px 12px;
   text-align: center;
-  color: @muted;
+  color: fade(#fff, 70%);
   font-size: 14px;
 }
 
-.gps__block {
-  margin-bottom: 14px;
-}
-
 .gps__label {
-  margin: 0 0 8px;
-  font-size: 13px;
-  color: @muted;
+  margin: 10px 0 8px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
 }
 
-.gps__types {
+.gps__grid {
   display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-  -webkit-overflow-scrolling: touch;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-.gps__type {
-  flex: 0 0 auto;
-  min-width: 72px;
-  height: 72px;
-  box-sizing: border-box;
-  padding: 6px 8px;
-  border-radius: 8px;
-  border: 1px solid fade(@gold-deep, 22%);
-  background: linear-gradient(180deg, #332c22 0%, #2d1545 100%);
+.gps__chip {
+  position: relative;
+  width: calc(33.33% - 7px);
+  min-height: 78px;
+  border-radius: 14px;
+  background: transparent;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 4px;
+  padding: 10px 6px 8px;
+  box-sizing: border-box;
   cursor: pointer;
+  color: #333;
+  font-size: 11px;
+  font-weight: 700;
+  overflow: hidden;
 
   &.is-active {
-    border: 1.5px solid #d4b275;
-    box-shadow:
-      0 0 6px rgba(212, 178, 117, 0.45),
-      inset 0 1px 0 rgba(255, 228, 181, 0.12);
+    color: #fff;
   }
 }
 
-.gps__type-icon {
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
-  margin-bottom: 4px;
+.gps__chip-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  z-index: 0;
+  pointer-events: none;
 }
 
-.gps__type-name {
-  margin: 0;
-  font-size: 11px;
-  color: @gold-soft;
-  max-width: 64px;
+.gps__chip-icon {
+  position: relative;
+  z-index: 1;
+  width: 28px;
+  height: 22px;
+  object-fit: contain;
+}
+
+.gps__chip-line {
+  position: relative;
+  z-index: 1;
+  width: 70%;
+  height: 1px;
+  object-fit: fill;
+}
+
+.gps__chip span {
+  position: relative;
+  z-index: 1;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.gps__channels {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-height: 240px;
-  overflow-y: auto;
+.gps__order {
+  margin-top: 4px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #2c1137;
+  border: 1px solid #9346a9;
 }
 
-.gps__channel {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px solid fade(@gold-deep, 22%);
-  background: @cell;
-  cursor: pointer;
-
-  &.is-active {
-    border-color: @gold;
-    box-shadow: 0 0 0 1px fade(@gold, 35%);
-  }
-}
-
-.gps__channel-icon {
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
-  flex-shrink: 0;
-}
-
-.gps__channel-name {
-  font-size: 14px;
-  color: #fff;
-}
-
-.gps__amount {
+.gps__row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 8px 0 14px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  background: fade(@cell, 80%);
-  color: @muted;
+  padding: 10px 0;
+  color: #fff;
   font-size: 13px;
 
-  strong {
+  em {
+    font-style: normal;
     color: @gold;
-    font-size: 16px;
-    font-weight: 700;
+    font-weight: 800;
   }
 }
 
 .gps__confirm {
-  width: 100%;
-  height: 46px;
-  border: none;
-  border-radius: 23px;
-  background: linear-gradient(90deg, #f7dd9a 0%, #ffa300 100%);
-  color: #1a1408;
+  .btn-3d-green();
+  margin-top: 16px;
   font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-
-  &:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
-  }
 }
 </style>

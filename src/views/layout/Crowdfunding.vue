@@ -435,8 +435,8 @@ export default {
   color: @gold-soft;
 }
 .scroll_ranking {
-  background: linear-gradient(0deg, #1a0a28 13.46%, #2d1545 100%);
-  border: 1px solid fade(@gold, 35%);
+  background: #411c59;
+  border: 1px solid #411c59;
   border-radius: 12px;
   color: @muted;
   padding-bottom: 10px;

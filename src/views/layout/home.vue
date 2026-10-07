@@ -14,7 +14,7 @@
         </div>
       </div>
     </div> -->
-    <div class="mask-cont m-t-10">
+    <div class="mask-cont">
       <!-- <div
         class="d-flex"
         style="
@@ -149,6 +149,36 @@
           </div>
         </div>
       </div> -->
+
+      <!-- 首页活动入口列表 -->
+      <div class="home-act-list">
+        <div
+          v-for="item in homeActList"
+          :key="item.key"
+          class="home-act-list__item"
+          @click="onHomeActClick(item)"
+        >
+          <div class="home-act-list__art">
+            <img class="home-act-list__icon" :src="item.icon" alt="" />
+            <img class="home-act-list__title" :src="item.titleImg" alt="" />
+          </div>
+          <button
+            type="button"
+            class="home-act-list__btn"
+            :class="
+              item.key === 'envelope' && isCountdownActive
+                ? 'is-timer'
+                : 'btn-3d-green'
+            "
+          >
+            <template v-if="item.key === 'envelope' && isCountdownActive">
+              {{ envelopeCountdownText }}
+            </template>
+            <template v-else>{{ item.btn }}</template>
+          </button>
+        </div>
+      </div>
+
       <div v-if="pgDate.dataList" class="content-tab" ref="targetElement">
         <div class="content-tab--s">
           <van-loading v-if="loading" color="#ffa300" vertical> </van-loading>
@@ -180,73 +210,73 @@
                 <span class="tab-text">{{ item.name }}</span>
               </template>
 
-            <div
-              class="content-tab--c"
-              style="margin-left: 12px; margin-right: 12px"
-            >
-              <div v-if="index === 0 && hotGames.length" class="home-hot">
-                <div class="home-hot__title">
-                  <span class="home-hot__name">🔥 Hot</span>
-                </div>
-                <div
-                  class="home-hot__marquee"
-                  @touchstart.passive="onHotTouchStart"
-                  @touchmove="onHotTouchMove"
-                  @touchend.passive="onHotTouchEnd"
-                  @touchcancel.passive="onHotTouchEnd"
-                >
+              <div
+                class="content-tab--c"
+                style="margin-left: 12px; margin-right: 12px"
+              >
+                <div v-if="index === 0 && hotGames.length" class="home-hot">
+                  <div class="home-hot__title">
+                    <span class="home-hot__name">🔥 Hot</span>
+                  </div>
                   <div
-                    ref="hotTrack"
-                    class="home-hot__track"
-                    :style="hotTrackStyle"
+                    class="home-hot__marquee"
+                    @touchstart.passive="onHotTouchStart"
+                    @touchmove="onHotTouchMove"
+                    @touchend.passive="onHotTouchEnd"
+                    @touchcancel.passive="onHotTouchEnd"
                   >
                     <div
-                      v-for="copy in 2"
-                      :key="'hot-copy-' + copy"
-                      class="home-hot__group"
+                      ref="hotTrack"
+                      class="home-hot__track"
+                      :style="hotTrackStyle"
                     >
                       <div
-                        v-for="hot in hotGames"
-                        :key="copy + '-' + (hot.gid || hot.gameCode)"
-                        class="home-hot__item"
-                        @click="goToHotGame(hot)"
+                        v-for="copy in 2"
+                        :key="'hot-copy-' + copy"
+                        class="home-hot__group"
                       >
-                        <img
-                          class="home-hot__cover"
-                          :src="hot.gameIcon"
-                          :alt="hot.gameName"
-                        />
+                        <div
+                          v-for="hot in hotGames"
+                          :key="copy + '-' + (hot.gid || hot.gameCode)"
+                          class="home-hot__item"
+                          @click="goToHotGame(hot)"
+                        >
+                          <img
+                            class="home-hot__cover"
+                            :src="hot.gameIcon"
+                            :alt="hot.gameName"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div v-if="item.sortType === 1" class="vendor-grid">
+                <div v-if="item.sortType === 1" class="vendor-grid">
+                  <div
+                    v-for="(item2, index2) in item.types"
+                    :key="index2"
+                    class="vendor-grid__item"
+                    @click="goVendor(item2)"
+                  >
+                    <img :src="item2.icon" class="vendor-grid__icon" />
+                  </div>
+                </div>
                 <div
-                  v-for="(item2, index2) in item.types"
-                  :key="index2"
-                  class="vendor-grid__item"
-                  @click="goVendor(item2)"
+                  v-else
+                  v-for="(item2, index2) in getVisibleTypes(item)"
+                  :key="item2.code || item2.name || index2"
                 >
-                  <img :src="item2.icon" class="vendor-grid__icon" />
+                  <resher-siper2
+                    v-if="!allOpen && item2"
+                    :siderData="item2"
+                    :siderIndex="index"
+                    @getBack="getBacks"
+                    ref="swipe2"
+                  ></resher-siper2>
                 </div>
               </div>
-              <div
-                v-else
-                v-for="(item2, index2) in getVisibleTypes(item)"
-                :key="item2.code || item2.name || index2"
-              >
-                <resher-siper2
-                  v-if="!allOpen && item2"
-                  :siderData="item2"
-                  :siderIndex="index"
-                  @getBack="getBacks"
-                  ref="swipe2"
-                ></resher-siper2>
-              </div>
-            </div>
-            <!-- <keep-alive>
+              <!-- <keep-alive>
               <resher-content
                 v-if="
                   item.types[typeIndex] &&
@@ -256,66 +286,66 @@
                 :contData="item.types[typeIndex]"
               ></resher-content>
             </keep-alive> -->
-          </van-tab>
+            </van-tab>
 
-          <div class="content-bbttom" style="padding: 20px 0 50px">
-            <div style="width: 90%; margin: 0 auto">
-              <p class="t-c">{{ $lang.common_txt358 }}</p>
+            <div class="content-bbttom" style="padding: 20px 0 50px">
+              <div style="width: 90%; margin: 0 auto">
+                <p class="t-c">{{ $lang.common_txt358 }}</p>
 
-              <div class="t-c m-t-20 home-community-icons">
-                <img
-                  v-for="(item, index) in [
-                    {
-                      src: require('@/assets/img/otgame/pinduoduo_21.png'),
-                      url: 'https://facebook.com',
-                    },
-                    {
-                      src: require('@/assets/img/otgame/pinduoduo_24.png'),
-                      url: 'https://twitter.com',
-                    },
-                    {
-                      src: require('@/assets/img/otgame/ins.png'),
-                      url: 'https://instagram.com',
-                    },
-                    {
-                      src: require('@/assets/img/otgame/zjm_42.png'),
-                      url: 'https://tiktok.com',
-                    },
-                  ]"
-                  :key="index"
-                  :src="item.src"
-                  class="home-community-icon"
-                  @click="openLink(item.url)"
-                />
-              </div>
+                <div class="t-c m-t-20 home-community-icons">
+                  <img
+                    v-for="(item, index) in [
+                      {
+                        src: require('@/assets/img/otgame/pinduoduo_21.png'),
+                        url: 'https://facebook.com',
+                      },
+                      {
+                        src: require('@/assets/img/otgame/pinduoduo_24.png'),
+                        url: 'https://twitter.com',
+                      },
+                      {
+                        src: require('@/assets/img/otgame/ins.png'),
+                        url: 'https://instagram.com',
+                      },
+                      {
+                        src: require('@/assets/img/otgame/zjm_42.png'),
+                        url: 'https://tiktok.com',
+                      },
+                    ]"
+                    :key="index"
+                    :src="item.src"
+                    class="home-community-icon"
+                    @click="openLink(item.url)"
+                  />
+                </div>
 
-              <!-- <img src="../../assets/img/common/logo_h.png" width="100" />
+                <!-- <img src="../../assets/img/common/logo_h.png" width="100" />
               <p class="m-t-10">
                 {{ $lang.common_txt164 }}
               </p> -->
 
-              <!-- <p class="content-line m-t-10"></p> -->
-              <!-- <img src="../../assets/img/common/cmc_1.png" width="90%" /> -->
-              <p class="content-line m-t-10"></p>
+                <!-- <p class="content-line m-t-10"></p> -->
+                <!-- <img src="../../assets/img/common/cmc_1.png" width="90%" /> -->
+                <p class="content-line m-t-10"></p>
 
-              <template v-if="tgChannelList.length">
-                <p class="t-c">{{ $lang.common_txt359 }}</p>
-                <div class="home-tg-list">
-                  <div
-                    v-for="(item, index) in tgChannelList"
-                    :key="index"
-                    class="home-tg-item"
-                    @click="openLink(item.url)"
-                  >
-                    <img :src="item.src" width="34" alt="" />
-                    <span class="home-tg-item__label">{{ item.label }}</span>
+                <template v-if="tgChannelList.length">
+                  <p class="t-c">{{ $lang.common_txt359 }}</p>
+                  <div class="home-tg-list">
+                    <div
+                      v-for="(item, index) in tgChannelList"
+                      :key="index"
+                      class="home-tg-item"
+                      @click="openLink(item.url)"
+                    >
+                      <img :src="item.src" width="34" alt="" />
+                      <span class="home-tg-item__label">{{ item.label }}</span>
+                    </div>
                   </div>
-                </div>
-              </template>
-              <p class="content-line m-t-10"></p>
-              <home-support-footer />
+                </template>
+                <p class="content-line m-t-10"></p>
+                <home-support-footer />
+              </div>
             </div>
-          </div>
           </van-tabs>
         </div>
       </div>
@@ -424,6 +454,16 @@ import { normalizeHomeDataList, getCategoryGames } from "@/utils/homeGameList";
 // import ResherSiper from '../../components/home/ResherSiper.vue'
 import ResherSiper2 from "../../components/home/ResherSiper2.vue";
 import HomeSupportFooter from "../../components/home/HomeSupportFooter.vue";
+import actIconSpin from "@/assets/img/home/act/icon_spin.png";
+import actIconEnvelope from "@/assets/img/home/act/icon_envelope.png";
+import actIconCheckin from "@/assets/img/home/act/icon_checkin.png";
+import actIconChest from "@/assets/img/home/act/icon_chest.png";
+import actIconRescue from "@/assets/img/home/act/icon_rescue.png";
+import actTitleSpin from "@/assets/img/home/act/title_spin.png";
+import actTitleEnvelope from "@/assets/img/home/act/title_envelope.png";
+import actTitleCheckin from "@/assets/img/home/act/title_checkin.png";
+import actTitleChest from "@/assets/img/home/act/title_chest.png";
+import actTitleRescue from "@/assets/img/home/act/title_rescue.png";
 export default {
   name: "Home",
   components: { ResherSiper2, HomeSupportFooter },
@@ -497,6 +537,53 @@ export default {
     formattedSeconds() {
       return this.formatNumber(this.totalSeconds % 60);
     },
+    envelopeCountdownText() {
+      const t = Math.max(0, this.totalSeconds | 0);
+      const h = this.formatNumber(Math.floor(t / 3600));
+      const m = this.formatNumber(Math.floor((t % 3600) / 60));
+      const s = this.formatNumber(t % 60);
+      return `${h}:${m}:${s}`;
+    },
+    homeActList() {
+      const L = this.$lang || {};
+      return [
+        {
+          key: "spin",
+          path: "/luckyReferral",
+          icon: actIconSpin,
+          titleImg: actTitleSpin,
+          btn: L.activity_spin || "SPIN",
+        },
+        {
+          key: "envelope",
+          path: "/redPacket",
+          icon: actIconEnvelope,
+          titleImg: actTitleEnvelope,
+          btn: L.activity_spin || "SPIN",
+        },
+        {
+          key: "checkin",
+          path: "/dailyCheckIn",
+          icon: actIconCheckin,
+          titleImg: actTitleCheckin,
+          btn: L.activity_card_daily_btn || "DAILY",
+        },
+        {
+          key: "chest",
+          action: "treasure",
+          icon: actIconChest,
+          titleImg: actTitleChest,
+          btn: L.activity_spin || "SPIN",
+        },
+        {
+          key: "rescue",
+          path: "/cashBack",
+          icon: actIconRescue,
+          titleImg: actTitleRescue,
+          btn: L.activity_spin || "SPIN",
+        },
+      ];
+    },
     winnerList() {
       return (this.winDate && this.winDate.dataList) || [];
     },
@@ -542,6 +629,7 @@ export default {
   },
   async mounted() {
     this.GetPlatformList();
+    this.initCountdown();
     const today = new Date().toISOString().split("T")[0];
 
     if (sessionStorage.getItem("neverShowToday2") === today) {
@@ -566,6 +654,9 @@ export default {
   activated() {
     if (this.winnerList.length) {
       this.winnerStartAutoplay();
+    }
+    if (this.isCountdownActive && !this.timer5) {
+      this.initCountdown();
     }
     this.$nextTick(() => this.startHotAutoScroll());
   },
@@ -829,6 +920,17 @@ export default {
       } else if (i === 4) {
         this.$jumpTo("/cashBack");
       }
+    },
+    onHomeActClick(item) {
+      if (!this.token) {
+        this.$bus.emit("openLogin");
+        return;
+      }
+      if (item.action === "treasure") {
+        this.$bus.emit("openTreasureBox");
+        return;
+      }
+      if (item.path) this.$jumpTo(item.path);
     },
     serachGo() {
       this.$jumpTo("/category");
@@ -1249,7 +1351,7 @@ export default {
 
 .home-cat-bar {
   position: relative;
-  margin: 8px 0 0;
+  margin: 2px 0 0;
   box-sizing: border-box;
 
   /* 分类栏整宽上下边框（含左侧搜索） */
@@ -1386,12 +1488,16 @@ export default {
   }
 }
 .custom-field {
-  padding: 5px;
-  background: linear-gradient(96.49deg, #2d1545 2.73%, #000000 97.68%);
-  border-radius: 10px;
-  border: 1px solid rgba(233, 182, 90, 0.2);
+  padding: 0 16px;
+  height: 48px;
+  background: #000 !important;
+  border-radius: 25px !important;
+  border: none !important;
   :deep(.van-field__control) {
-    color: @wihte-color;
+    color: #fff;
+  }
+  &:focus-within {
+    box-shadow: 0 0 0 1px #ffd400;
   }
 }
 .van-cell {
@@ -1975,6 +2081,90 @@ export default {
   color: #573900 !important;
   border-bottom: 1px solid #ffa300 !important;
 }
+/* 首页活动入口列表 */
+.home-act-list {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 4px;
+  margin: 2px 10px 0;
+  padding: 2px 4px 4px;
+  box-sizing: border-box;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  &__item {
+    flex: 1 1 0;
+    min-width: 62px;
+    max-width: 78px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  /* 标题图叠在主图底部（文字在图片上） */
+  &__art {
+    position: relative;
+    width: 64px;
+    height: 64px;
+  }
+
+  &__icon {
+    position: absolute;
+    left: 50%;
+    top: 4px;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    display: block;
+    z-index: 1;
+  }
+
+  &__title {
+    position: absolute;
+    left: 50%;
+    bottom: -2px;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 68px;
+    height: 26px;
+    object-fit: contain;
+    display: block;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  &__btn {
+    width: 100%;
+    max-width: 70px;
+    height: 22px !important;
+    margin-top: 2px;
+    padding: 0 4px !important;
+    border: none;
+    border-radius: 999px;
+    font-size: 10px !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.2px;
+    line-height: 1;
+    text-transform: uppercase;
+    white-space: nowrap;
+
+    &.is-timer {
+      background: #732d95 !important;
+      color: #fff !important;
+      box-shadow: none !important;
+      font-variant-numeric: tabular-nums;
+      font-size: 9px !important;
+    }
+  }
+}
+
 /* PC 端样式 */
 @media (min-width: 769px) {
   .cont-redim {

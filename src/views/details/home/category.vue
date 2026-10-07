@@ -344,9 +344,14 @@ export default {
   padding: 10px 7px;
 
   .custom-field {
-    background: #2c1137 !important;
-    border-radius: 999px !important;
-    border: 1px solid #8b3fb2 !important;
+    background: #000 !important;
+    border-radius: 25px !important;
+    border: none !important;
+    height: 48px !important;
+
+    &:focus-within {
+      box-shadow: 0 0 0 1px #ffd400;
+    }
   }
 }
 .cot-cont {

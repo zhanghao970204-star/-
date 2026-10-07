@@ -10,6 +10,9 @@
       <template #left>
         <van-icon name="arrow-left" size="20" color="var(--wihte-color)" />
       </template>
+      <template v-if="$slots.right" #right>
+        <slot name="right" />
+      </template>
     </van-nav-bar>
   </div>
 </template>
@@ -43,5 +46,10 @@ export default {
   /* 与全局 --van-nav-bar-height(55px) 对齐 */
   padding-top: 55px;
   box-sizing: border-box;
+
+  :deep(.van-nav-bar) {
+    background: #15031d !important;
+    background-color: #15031d !important;
+  }
 }
 </style>

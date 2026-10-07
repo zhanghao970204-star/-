@@ -15,8 +15,8 @@
           alt=""
         />
 
-        <!-- 已登录：头像 + VIP（与「我的」页同源） -->
-        <div v-else class="nav-user" @click="$jumpTo('/editProfile')">
+        <!-- 已登录：头像 → 修改信息；VIP 角标仅展示 -->
+        <div v-else class="nav-user" @click="goEditProfile">
           <div class="nav-user__avatar">
             <img
               v-if="avatarSrc"
@@ -30,7 +30,6 @@
               class="nav-user__vip"
               :src="vipBadgeSrc"
               alt=""
-              @click.stop="$jumpTo('/vipLevels')"
             />
           </div>
         </div>
@@ -411,6 +410,9 @@ export default {
   },
   methods: {
     vipImg,
+    goEditProfile() {
+      this.$jumpTo("/editProfile");
+    },
     _onVisibilityRefresh() {
       if (
         document.visibilityState === "visible" &&
@@ -1288,6 +1290,7 @@ export default {
   height: 22px;
   object-fit: contain;
   z-index: 1;
+  pointer-events: none;
 }
 /* 定义旋转动画 */
 @keyframes rotate-and-back {

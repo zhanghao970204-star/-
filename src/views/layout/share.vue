@@ -62,10 +62,10 @@ export default {
 @tab-btn-grad: linear-gradient(135deg, #9f24c9 0%, #3b4edc 100%);
 
 .share-page {
-  min-height: 100vh;
-  background: @bg;
+  min-height: 100%;
+  background: transparent;
   color: #fff;
-  padding-bottom: 20px;
+  padding-bottom: 8px;
 }
 
 .share-page__banner-wrap {
@@ -114,7 +114,12 @@ export default {
   }
 
   :deep(.van-sticky--fixed) {
-    background: @bg;
+    background-color: #27033c;
+    background-image: url("../../assets/img/common/page_bg.png");
+    background-repeat: repeat;
+    background-size: auto;
+    background-position: top center;
+    background-attachment: fixed;
     padding-top: 6px;
     padding-bottom: 2px;
 
@@ -132,7 +137,7 @@ export default {
 
   :deep(.van-tabs__content),
   :deep(.van-tab__panel) {
-    background: @bg !important;
+    background: transparent !important;
     overflow: visible;
   }
 
@@ -141,7 +146,7 @@ export default {
   }
 
   .content-tab--c {
-    background: @bg;
+    background: transparent;
     min-height: 40vh;
   }
 

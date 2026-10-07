@@ -1,15 +1,17 @@
 <template>
   <div class="content">
-    <div ref="timeTabs" class="content-c">
-      <div
-        class="content-c--item"
-        v-for="(item, index) in timeList"
-        :key="index"
-        @click.stop="selectTab(index)"
-      >
-        <span :class="['tab-item', { active: index === selectIndex }]">
-          {{ item }}
-        </span>
+    <div class="content-c-wrap">
+      <div ref="timeTabs" class="content-c">
+        <div
+          class="content-c--item"
+          v-for="(item, index) in timeList"
+          :key="index"
+          @click.stop="selectTab(index)"
+        >
+          <span :class="['tab-item', { active: index === selectIndex }]">
+            {{ item }}
+          </span>
+        </div>
       </div>
     </div>
 
@@ -220,29 +222,15 @@ export default {
 
 .content {
   padding: 0 0 20%;
-  background: @page-bg;
+  background: transparent;
 }
 
-/* 子 Tab：对齐首页「渐变紫底 + 上下渐变边 + 选中黑底金边胶囊」 */
-.content-c {
+/* 外层固定整宽上下渐变边；内层才横向滚动（避免边跟着 Tab 挪断） */
+.content-c-wrap {
   position: relative;
-  overflow-x: auto;
-  overflow-y: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  height: 48px;
-  padding: 0 6px 0 8px;
   margin: 0;
-  box-sizing: border-box;
   background: linear-gradient(180deg, #7400ae 0%, #53027b 100%);
-  border-bottom: none;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-x: contain;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
 
-  /* 上下渐变边框（同首页） */
   &::before,
   &::after {
     content: "";
@@ -263,6 +251,23 @@ export default {
     bottom: 0;
     background: linear-gradient(90deg, #ac65f9 0%, #486dfe 100%);
   }
+}
+
+.content-c {
+  overflow-x: auto;
+  overflow-y: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 48px;
+  padding: 0 6px 0 8px;
+  margin: 0;
+  box-sizing: border-box;
+  border-bottom: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .content-c::-webkit-scrollbar {

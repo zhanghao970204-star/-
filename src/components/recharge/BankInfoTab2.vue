@@ -1,187 +1,234 @@
 <template>
-  <div class="content-c">
-    <div style="padding: 10px">
-      <div class="bank-card f-t-13 l-h-20">
-        <p>{{ $lang.BankInfo_txt12 }}</p>
-        <p>{{ $lang.account }}</p>
-        <div
-          class="bank-card-i d-flex-s"
-          v-for="(item, index) in bankCardList"
-          :key="index"
+  <div class="wd-manage">
+    <div class="wd-manage__card">
+      <p class="wd-manage__title">{{ $lang.BankInfo_txt12 }}</p>
+      <p class="wd-manage__sub">{{ $lang.account }}</p>
+      <div
+        v-for="(item, index) in bankCardList"
+        :key="index"
+        class="wd-manage__item"
+      >
+        <div class="wd-manage__info">
+          <p class="wd-manage__name">{{ item.bankName }}</p>
+          <p class="wd-manage__num">
+            <span>{{ item.bankCard }}</span>
+            <i
+              class="icon iconfont icon-Vector"
+              @click="copyText(item.bankCard)"
+            ></i>
+          </p>
+        </div>
+        <button
+          type="button"
+          class="wd-manage__delete"
+          @click="showDeletePopup(item)"
         >
-          <div class="d-flex" style="flex: 1; min-width: 0">
-            <div class="m-l-10">
-              <p>
-                <span class="font-color"> {{ item.bankName }}</span>
-              </p>
-              <p class="font-color">
-                <span>{{ item.bankCard }}</span>
-                <i
-                  class="icon iconfont icon-Vector m-l-10"
-                  style="font-size: 15px"
-                  @click="copyText(item.bankCard)"
-                ></i>
-              </p>
+          {{ $lang.common_delete || "Delete" }}
+        </button>
+      </div>
+    </div>
+
+    <button type="button" class="wd-manage__add" @click="showBankF">
+      <span class="wd-manage__add-icon">
+        <img class="wd-manage__add-frame" src="@/assets/img/recharge/wd_icon_frame.png" alt="" />
+        <img class="wd-manage__add-card" src="@/assets/img/recharge/wd_card_icon.png" alt="" />
+      </span>
+      <span class="wd-manage__add-text">
+        <strong>{{ $lang.BankInfo_txt6 || "ADD ACCOUNT" }}</strong>
+        <em>{{ $lang.BankInfo_txt13 || "ADD" }}</em>
+      </span>
+    </button>
+
+    <!-- ADD ACCOUNT popup -->
+    <van-popup
+      v-model:show="showBank"
+      round
+      position="center"
+      :close-on-click-overlay="true"
+      class="wd-popup"
+    >
+      <div class="wd-popup__head">
+        <span>{{ $lang.BankInfo_txt6 || "ADD ACCOUNT" }}</span>
+        <button type="button" class="wd-popup__close" @click="showBank = false">
+          <svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="true">
+            <path
+              d="M3.2 3.2l11.6 11.6M14.8 3.2L3.2 14.8"
+              fill="none"
+              stroke="#fff"
+              stroke-width="2.6"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+      </div>
+      <div class="wd-popup__body">
+        <div class="wd-popup__field">
+          <div class="wd-popup__input">
+            <img
+              class="wd-popup__ico"
+              src="@/assets/img/recharge/wd_id_card.png"
+              alt=""
+            />
+            <input
+              v-model="realNameInput"
+              :readonly="realNameIsf"
+              :placeholder="$lang.common_txt46 || 'Real Name'"
+            />
+          </div>
+        </div>
+
+        <div class="wd-popup__field wd-popup__field--select" @click="selectF">
+          <div class="wd-popup__input">
+            <img
+              class="wd-popup__ico"
+              src="@/assets/img/recharge/wd_user.png"
+              alt=""
+            />
+            <span class="wd-popup__value">{{ bankName }}</span>
+            <van-icon name="arrow-down" :class="{ 'is-up': showSelect }" />
+          </div>
+          <div v-if="showSelect" class="wd-popup__select">
+            <button
+              v-for="(item, index) in columns"
+              :key="index"
+              type="button"
+              class="wd-popup__option"
+              :class="{ 'is-active': index === selectIndex }"
+              @click.stop="getSelect(index, item)"
+            >
+              {{ item.label }}
+            </button>
+          </div>
+        </div>
+
+        <div class="wd-popup__field">
+          <div class="wd-popup__input">
+            <span v-if="showCashtagPrefix" class="wd-popup__prefix">$</span>
+            <img
+              v-else
+              class="wd-popup__ico"
+              src="@/assets/img/recharge/wd_signature.png"
+              alt=""
+            />
+            <input
+              v-model="bankCard"
+              :placeholder="accountPlaceholder"
+              class="no-copy"
+              @input="onAccountInput($event.target.value)"
+            />
+          </div>
+        </div>
+
+        <div v-if="showIfscField" class="wd-popup__field">
+          <div class="wd-popup__input">
+            <img
+              class="wd-popup__ico"
+              src="@/assets/img/recharge/wd_signature.png"
+              alt=""
+            />
+            <input
+              v-model="ifscCard"
+              :placeholder="ifscPlaceholder"
+              :maxlength="ifscMaxLength"
+              @input="onIfscInput($event.target.value)"
+            />
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="wd-popup__submit btn-3d-green"
+          @click="submit"
+        >
+          {{ $lang.Confirmar || "CONFIRM" }}
+        </button>
+      </div>
+    </van-popup>
+
+    <!-- Delete popup -->
+    <van-popup
+      v-model:show="showDelete"
+      round
+      :close-on-click-overlay="true"
+      class="wd-popup"
+    >
+      <div class="wd-popup__head">
+        <span>{{ $lang.bank_txt || "Remove this bank card?" }}</span>
+        <button
+          type="button"
+          class="wd-popup__close"
+          @click="showDelete = false"
+        >
+          <svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="true">
+            <path
+              d="M3.2 3.2l11.6 11.6M14.8 3.2L3.2 14.8"
+              fill="none"
+              stroke="#fff"
+              stroke-width="2.6"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+      </div>
+      <div class="wd-popup__body">
+        <p class="wd-popup__pin-label">
+          {{ $lang.bank_txt2 || "Withdrawal Password" }}
+        </p>
+        <div
+          class="pin-box"
+          :class="{ 'pin-box--focus': deletePinFocus }"
+          @click="focusDeletePin"
+        >
+          <input
+            ref="deletePin"
+            class="pin-box__native"
+            type="tel"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            maxlength="6"
+            autocomplete="one-time-code"
+            enterkeyhint="done"
+            :value="privacyPwd"
+            @focus="deletePinFocus = true"
+            @blur="deletePinFocus = false"
+            @input="onDeletePinInput"
+          />
+          <div class="pin-box__cells" aria-hidden="true">
+            <div
+              v-for="i in 6"
+              :key="'d' + i"
+              class="pin-box__cell"
+              :class="{
+                'is-on': privacyPwd.length >= i,
+                'is-caret': deletePinFocus && privacyPwd.length === i - 1,
+              }"
+            >
+              <i v-if="privacyPwd.length >= i" class="pin-box__dot"></i>
             </div>
           </div>
+        </div>
+        <div class="wd-popup__actions">
           <button
             type="button"
-            class="bank-card-delete"
-            @click="showDeletePopup(item)"
+            class="wd-popup__cancel"
+            @click="showDelete = false"
           >
-            {{ $lang.common_delete || "Delete" }}
+            {{ $lang.Cancelar || "Cancel" }}
+          </button>
+          <button
+            type="button"
+            class="wd-popup__submit btn-3d-yellow"
+            :disabled="deleting"
+            @click="confirmDelete"
+          >
+            {{ $lang.Confirmar || "CONFIRM" }}
           </button>
         </div>
       </div>
-    </div>
-
-    <div class="bank-card-b">
-      <div @click="showBankF" class="bank-card-add-btn">
-        <div class="add-bank-card">
-          <div class="add-bank-card__icon">
-            <i class="icon iconfont icon-yinhangkaweihao"></i>
-          </div>
-          <div class="add-bank-card__text">
-            <p class="add-bank-card__title">{{ $lang.BankInfo_txt6 }}</p>
-            <p class="add-bank-card__sub">{{ $lang.BankInfo_txt13 }}</p>
-          </div>
-        </div>
-      </div>
-
-      <van-popup
-        v-model:show="showBank"
-        class="custom-popup"
-        :closeable="false"
-        :close-on-click-overlay="false"
-      >
-        <div class="content-card">
-          <p class="f-t-14 t-c m-b-20">
-            {{ $lang.BankInfo_txt13 }} {{ $lang.account }}
-          </p>
-          <van-field
-            v-model="realNameInput"
-            :placeholder="$lang.common_txt46"
-            class="custom-field m-b-20"
-            :readonly="realNameIsf"
-            :formatter="formatRealName"
-            format-trigger="onChange"
-          >
-            <template #left-icon>
-              <i class="icon iconfont icon-shiming m-r-5"></i>
-            </template>
-          </van-field>
-          <div class="p-r" @click="selectF">
-            <van-field v-model="bankName" class="custom-field m-t-20" readonly>
-              <template #left-icon>
-                <i class="icon iconfont icon-renyuan m-r-5"></i>
-              </template>
-              <template #right-icon>
-                <van-icon
-                  name="arrow-down"
-                  :class="{ 'arrow-up': showSelect }"
-                />
-              </template>
-            </van-field>
-            <div v-if="showSelect" class="bank-select">
-              <p
-                class="bank-select--i"
-                v-for="(item, index) in columns"
-                :key="index"
-                @click="getSelect(index, item)"
-                :class="{ 'select-active': index === selectIndex }"
-              >
-                {{ item.label }}
-              </p>
-            </div>
-          </div>
-
-          <van-field
-            ref="accountField"
-            v-model="bankCard"
-            :placeholder="accountPlaceholder"
-            class="custom-field m-t-20 xg-in no-copy"
-            :class="{ 'cashtag-field': showCashtagPrefix }"
-            @update:model-value="onAccountInput"
-          >
-            <template #left-icon>
-              <span v-if="showCashtagPrefix" class="cashtag-prefix">$</span>
-              <i
-                v-else
-                class="icon iconfont icon-yinhangkaweihao m-r-5"
-              ></i>
-            </template>
-          </van-field>
-
-          <!-- Card: 到期日 MM/YYYY；ACH: 9 位 routing → 接口字段 ifscCard -->
-          <van-field
-            v-if="showIfscField"
-            v-model="ifscCard"
-            :placeholder="ifscPlaceholder"
-            class="custom-field m-t-20 xg-in"
-            :maxlength="ifscMaxLength"
-            @update:model-value="onIfscInput"
-          >
-            <template #left-icon>
-              <i class="icon iconfont icon-yinhangkaweihao m-r-5"></i>
-            </template>
-          </van-field>
-
-          <van-button size="large" class="custom-button m-t-30" @click="submit">
-            {{ $lang.Confirmar }}
-          </van-button>
-        </div>
-        <div class="t-c m-t-10">
-          <i @click="showBank = false" class="icon iconfont icon-guanbi"></i>
-        </div>
-      </van-popup>
-
-      <!-- 删除账户：需输入提现密码 -->
-      <van-popup
-        v-model:show="showDelete"
-        class="custom-popup"
-        :closeable="false"
-        :close-on-click-overlay="true"
-      >
-        <div class="content-card">
-          <p class="f-t-14 t-c m-b-20">
-            {{ $lang.bank_txt || "Remove this bank card?" }}
-          </p>
-          <van-field
-            v-model="privacyPwd"
-            type="password"
-            maxlength="6"
-            class="custom-field"
-            :placeholder="$lang.bank_pwd_ph || 'Enter withdrawal password'"
-          >
-            <template #left-icon>
-              <van-icon name="lock" class="m-r-5" />
-            </template>
-          </van-field>
-          <div class="bank-delete-actions m-t-20">
-            <van-button
-              size="large"
-              class="bank-delete-cancel"
-              @click="showDelete = false"
-            >
-              {{ $lang.Cancelar || "Cancel" }}
-            </van-button>
-            <van-button
-              size="large"
-              class="custom-button"
-              :disabled="deleting"
-              @click="confirmDelete"
-            >
-              {{ $lang.Confirmar || "Confirm" }}
-            </van-button>
-          </div>
-        </div>
-        <div class="t-c m-t-10">
-          <i @click="showDelete = false" class="icon iconfont icon-guanbi"></i>
-        </div>
-      </van-popup>
-    </div>
+    </van-popup>
   </div>
 </template>
+
 <script>
 import {
   AddBankCardInit,
@@ -228,6 +275,7 @@ export default {
       deleteCardId: null,
       privacyPwd: "",
       deleting: false,
+      deletePinFocus: false,
     };
   },
   computed: {
@@ -268,9 +316,7 @@ export default {
         );
       }
       if (this.bankType === "chime") {
-        return (
-          this.$lang.account_chime_placeholder || "Username e.g. test888"
-        );
+        return this.$lang.account_chime_placeholder || "Username e.g. test888";
       }
       return this.$lang.account_contact_placeholder;
     },
@@ -461,6 +507,7 @@ export default {
       this.bankName = v.label;
       this.selectIndex = i;
       this.ifscCard = "";
+      this.showSelect = false;
     },
     async AddBankCardInit() {
       const data = await AddBankCardInit();
@@ -485,251 +532,440 @@ export default {
     selectF() {
       this.showSelect = !this.showSelect;
     },
+    focusDeletePin() {
+      this.$refs.deletePin && this.$refs.deletePin.focus();
+    },
+    onDeletePinInput(e) {
+      const raw = String(e.target.value || "")
+        .replace(/\D/g, "")
+        .slice(0, 6);
+      this.privacyPwd = raw;
+      if (e.target.value !== raw) e.target.value = raw;
+    },
   },
 };
 </script>
+
 <style lang="less" scoped>
-.content-c {
-  z-index: 8;
-  padding-bottom: 20px;
-  .content-card {
-    padding: 10px 15px;
-    border-radius: 12px;
-    width: 90%;
-    background: @cont-bg;
-    margin: 0 auto;
-  }
-  .custom-popup {
-    width: 100%;
-    background: transparent;
-  }
-  .bank-card {
-    background: @cont-bg;
-    border-radius: 5px;
-    border: 1px solid @border-color;
-    padding: 10px;
-  }
-  .bank-card-b {
-    width: 100%;
-    background: transparent;
-    padding: 0;
-  }
-  .bank-card-add-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(
-      135deg,
-      #f8e7b0 0%,
-      #f0c14b 22%,
-      #e8a820 48%,
-      #c98a12 72%,
-      #f5d78a 100%
-    );
-    border: 1px solid rgba(255, 230, 160, 0.55);
+@gold: #ffd467;
+@panel: linear-gradient(180deg, #7a2190 0%, #532276 100%);
+
+.wd-manage {
+  padding: 12px 14px 28px;
+  color: #fff;
+
+  &__card {
+    padding: 16px 16px 14px;
     border-radius: 16px;
-    padding: 18px 22px;
-    margin: 20px auto;
-    width: 85%;
-    cursor: pointer;
-    transition:
-      transform 0.15s,
-      box-shadow 0.15s;
-    position: relative;
-    overflow: hidden;
-    box-shadow:
-      0 6px 18px rgba(180, 120, 20, 0.35),
-      inset 0 1px 0 rgba(255, 255, 255, 0.45),
-      inset 0 -1px 0 rgba(120, 70, 0, 0.25);
+    border: 1.5px solid @gold;
+    background: linear-gradient(180deg, #7a2a9a 0%, #5a1d78 100%);
   }
-  .bank-card-add-btn::before {
-    content: "";
-    position: absolute;
-    top: -40%;
-    left: -20%;
-    width: 55%;
-    height: 180%;
-    background: linear-gradient(
-      105deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.35) 45%,
-      transparent 70%
-    );
-    transform: rotate(12deg);
-    pointer-events: none;
+
+  &__title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 800;
+    color: #fff;
   }
-  .bank-card-add-btn:active {
-    transform: scale(0.98);
-    box-shadow: 0 3px 10px rgba(180, 120, 20, 0.28);
+
+  &__sub {
+    margin: 6px 0 0;
+    font-size: 13px;
+    color: #fff;
+    text-transform: capitalize;
   }
-  .add-bank-card {
+
+  &__item {
     display: flex;
-    flex-direction: row;
     align-items: center;
-    justify-content: flex-start;
-    gap: 14px;
-    width: 100%;
-    position: relative;
-    z-index: 1;
-    &__icon {
-      flex-shrink: 0;
-      width: 46px;
-      height: 46px;
-      border-radius: 12px;
-      background: linear-gradient(160deg, #3a2a12 0%, #1a1208 100%);
-      border: 1px solid rgba(255, 220, 140, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: inset 0 1px 0 rgba(255, 230, 160, 0.2);
-      .iconfont {
-        color: #ffe7a8;
-        font-size: 22px;
-      }
-    }
-    &__text {
-      flex: 1;
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 2px;
-    }
-    &__title {
-      margin: 0;
-      color: #2a1a08;
-      font-size: 16px;
-      font-weight: 800;
-      letter-spacing: 0.2px;
-      line-height: 1.25;
-      text-shadow: 0 1px 0 rgba(255, 245, 210, 0.35);
-    }
-    &__sub {
-      margin: 0;
-      color: #5a3a10;
-      font-size: 13px;
-      font-weight: 600;
-      opacity: 0.9;
-      line-height: 1.2;
-    }
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 12px;
+    padding: 12px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.22);
   }
-  .bank-card-bi {
-    border: 1px solid @border-color;
-    border-radius: 8px;
-    padding: 10px 8px;
+
+  &__info {
+    flex: 1;
+    min-width: 0;
   }
-  .bank-card-bim {
-    background: @wihte-color;
-    padding: 5px;
-    border-radius: 5px;
-  }
-  .iconfont {
-    color: @wihte-color;
-    font-size: 20px;
-  }
-  .bank-select {
-    position: absolute;
-    padding: 10px 0;
-    border: 1px solid @border-color;
-    border-radius: 10px;
-    width: 100%;
-    background: @cont-bg;
-    z-index: 9;
-    color: @font-color;
-    height: 150px;
-    overflow-y: auto;
-  }
-  .bank-select--i {
-    padding: 10px 10px;
-  }
-  .select-active {
-    background: @primary-gradient;
-    font-weight: bold;
-    color: @primary-text-on;
-  }
-  .arrow-up {
-    transform: rotate(-180deg);
-  }
-  .icon-guanbi {
-    font-size: 32px;
-    color: @wihte-color;
-  }
-  .cashtag-prefix {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 14px;
-    margin-right: 6px;
-    color: @wihte-color;
-    font-size: 16px;
+
+  &__name {
+    margin: 0;
+    font-size: 14px;
     font-weight: 700;
-    line-height: 1;
+    color: #fff;
   }
-  .cashtag-field {
-    :deep(.van-field__left-icon) {
-      margin-right: 2px;
+
+  &__num {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: fade(#fff, 85%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .iconfont {
+      font-size: 14px;
+      color: @gold;
+      cursor: pointer;
     }
   }
-  .bank-card-i {
-    border: 1px solid @border-color;
-    padding: 5px;
-    border-radius: 7px;
-    margin-bottom: 5px;
-    align-items: center;
-  }
-  .bank-card-delete {
+
+  &__delete {
     flex-shrink: 0;
     border: none;
     background: transparent;
     color: #ef4444;
     font-size: 13px;
     font-weight: 700;
-    padding: 6px 8px;
+    cursor: pointer;
+    padding: 6px 4px;
+  }
+
+  &__add {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    margin-top: 16px;
+    padding: 14px 16px;
+    border: none;
+    border-radius: 18px;
+    background: url("@/assets/img/recharge/wd_add_bg.png") center / 100% 100% no-repeat;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+    text-align: left;
+    overflow: hidden;
+  }
+
+  &__add-icon {
+    position: relative;
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__add-frame {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  &__add-card {
+    position: relative;
+    z-index: 1;
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+  }
+
+  &__add-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    strong {
+      color: @gold;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+
+    em {
+      font-style: normal;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+  }
+}
+
+.wd-popup {
+  width: 88% !important;
+  max-width: 360px;
+  background: #7a2190 !important;
+  border-radius: 18px !important;
+  overflow: hidden;
+
+  &__head {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 44px;
+    background: #532276;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  &__close {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
   }
-  .custom-button {
+
+  &__body {
+    padding: 18px 20px 24px;
+    background: #7a2190;
+  }
+
+  &__field {
+    position: relative;
+    margin-bottom: 14px;
+
+    &--select {
+      cursor: pointer;
+    }
+  }
+
+  &__input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 48px;
+    padding: 0 16px;
+    background: #000;
+    border-radius: 999px;
+    box-sizing: border-box;
+
+    &:focus-within {
+      box-shadow: 0 0 0 1px #ffd400;
+    }
+
+    input {
+      flex: 1;
+      min-width: 0;
+      height: 48px;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: #fff;
+      font-size: 14px;
+
+      &::placeholder {
+        color: #9b86c9;
+      }
+    }
+  }
+
+  &__ico {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    flex-shrink: 0;
+    filter: brightness(0) invert(1);
+  }
+
+  &__prefix {
+    color: #fff;
+    font-size: 16px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  &__value {
+    flex: 1;
+    min-width: 0;
+    color: #fff;
+    font-size: 14px;
+  }
+
+  .van-icon {
+    color: #fff;
+    transition: transform 0.2s;
+
+    &.is-up {
+      transform: rotate(-180deg);
+    }
+  }
+
+  &__select {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 6px);
+    z-index: 10;
+    max-height: 130px;
+    overflow-y: auto;
+    border-radius: 14px;
+    background: #2a0b45;
+    border: 1px solid fade(@gold, 40%);
+    padding: 6px 0;
+  }
+
+  &__option {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    background: transparent;
+    color: #fff;
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+
+    &.is-active {
+      background: fade(@gold, 18%);
+      color: @gold;
+      font-weight: 700;
+    }
+  }
+
+  &__submit {
+    margin-top: 8px;
+    font-size: 16px;
+    letter-spacing: 1px;
+
     &:disabled {
       opacity: 0.55;
-      cursor: not-allowed;
     }
   }
-  .bank-delete-actions {
+
+  &__actions {
     display: flex;
     gap: 10px;
-    .van-button {
+    margin-top: 8px;
+
+    .wd-popup__submit {
       flex: 1;
+      margin-top: 0;
     }
   }
-  .bank-delete-cancel {
-    background: rgba(255, 255, 255, 0.08) !important;
-    color: @wihte-color !important;
-    border: none !important;
-    border-radius: 22px;
+
+  &__cancel {
+    flex: 1;
+    height: 48px;
+    border: none;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
   }
-  .icon-yanjing {
-    font-size: 28px;
-    color: @primary-color;
-  }
-  .icon-a-Vector1 {
-    font-size: 15px;
-    margin-right: 2px;
-    color: @icon-color;
-  }
-}
-.xg-in {
-  :deep(.van-field__left-icon) {
-    margin-top: 2px;
-  }
-}
-@media (min-width: 769px) {
-  .bank-card-add-btn {
-    width: 450px;
+
+  &__pin-label {
+    margin: 0 0 8px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
   }
 }
+
+/* 与设置提现密码页同一套 PIN 框 */
+.pin-box {
+  position: relative;
+  height: 52px;
+  border-radius: 12px;
+  background: #000;
+  border: 1px solid #c9b3ff;
+  box-sizing: border-box;
+  overflow: hidden;
+  cursor: text;
+
+  &--focus {
+    border-color: #e93dfe;
+    box-shadow: 0 0 0 1px rgba(233, 61, 254, 0.35);
+  }
+
+  &__native {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    opacity: 0.02;
+    border: 0;
+    background: transparent;
+    color: transparent;
+    caret-color: transparent;
+    font-size: 16px;
+    outline: none;
+  }
+
+  &__cells {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    height: 100%;
+  }
+
+  &__cell {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid rgba(201, 179, 255, 0.55);
+    box-sizing: border-box;
+
+    &:last-child {
+      border-right: none;
+    }
+
+    &.is-caret::after {
+      content: "";
+      width: 2px;
+      height: 22px;
+      border-radius: 1px;
+      background: #e93dfe;
+      animation: pin-caret 1s step-end infinite;
+    }
+  }
+
+  &__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #fff;
+    display: block;
+  }
+}
+
+@keyframes pin-caret {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
 .no-copy {
   -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
+}
+</style>
+
+<style lang="less">
+.wd-popup.van-popup {
+  width: 88% !important;
+  max-width: 360px;
+  background: #7a2190 !important;
+  border-radius: 18px !important;
+  overflow: hidden;
 }
 </style>

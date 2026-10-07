@@ -1189,8 +1189,8 @@ export default {
   opacity: 0.7;
 }
 .lot-reslut {
-  background: linear-gradient(0deg, #1a0a28 13.46%, #2d1545 100%);
-  border: 1px solid fade(@border-color, 30%);
+  background: #411c59;
+  border: 1px solid #411c59;
   border-radius: 10px;
   padding: 10px 10px;
   box-shadow: -2px 5px 10px rgba(0, 0, 0, 0.35);

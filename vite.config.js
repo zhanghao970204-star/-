@@ -8,6 +8,8 @@ import { fileURLToPath } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
+const srcDir = fileURLToPath(new URL('./src/', import.meta.url))
+
 export default defineConfig({
   // App 本地 HTTP 服务与 CDN 均按绝对 /assets/... 解析（勿用 file://）
   base: '/',
@@ -22,9 +24,9 @@ export default defineConfig({
     })
   ],
   resolve: {
-    alias: {
-      '@': path.resolve(__dirname, 'src')
-    },
+    alias: [
+      { find: /^@\//, replacement: srcDir }
+    ],
     extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.vue']
   },
   css: {

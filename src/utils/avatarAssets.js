@@ -11,7 +11,7 @@ function resolveFromGlob(modules, fileName) {
   return entry ? entry[1] : "";
 }
 
-export const AVATAR_COUNT = 12;
+export const AVATAR_COUNT = 16;
 
 export function avatarImg(index) {
   if (index == null || index === "") return "";

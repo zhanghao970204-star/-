@@ -86,53 +86,53 @@
   </div>
 </template>
 <script>
-import { GetPromoDailyRelief, ReceivePromoReliefAmount } from '@/api/common'
+import { GetPromoDailyRelief, ReceivePromoReliefAmount } from "@/api/common";
 export default {
-  name: 'cashBack',
+  name: "cashBack",
   components: {},
   data() {
     return {
       InitDate: [],
       info: {},
-      loading: false
-    }
+      loading: false,
+    };
   },
   mounted() {
-    this.GetPromoDailyRelief()
+    this.GetPromoDailyRelief();
   },
   methods: {
     async getJl() {
-      const data = await ReceivePromoReliefAmount()
-      if (data.status === 'ok') {
+      const data = await ReceivePromoReliefAmount();
+      if (data.status === "ok") {
         this.$toast({
           message: this.$lang.bonus_txt16,
-          icon: 'success'
-        })
-        this.GetPromoDailyRelief()
+          icon: "success",
+        });
+        this.GetPromoDailyRelief();
       } else {
         this.$toast({
           message: data.msg,
-          icon: 'cross'
-        })
+          icon: "cross",
+        });
       }
     },
     async GetPromoDailyRelief() {
-      this.loading = true // 开始加载
-      const data = await GetPromoDailyRelief()
-      if (data.status === 'ok') {
-        this.InitDate = JSON.parse(data.content.ruleList) || []
-        this.info = data.content
-        this.loading = false // 开始加载
+      this.loading = true; // 开始加载
+      const data = await GetPromoDailyRelief();
+      if (data.status === "ok") {
+        this.InitDate = JSON.parse(data.content.ruleList) || [];
+        this.info = data.content;
+        this.loading = false; // 开始加载
       } else {
-        this.loading = false // 开始加载
+        this.loading = false; // 开始加载
         // this.$toast({
         //   message: data.msg,
         //   icon: 'cross'
         // })
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 <style lang="less" scoped>
 .content-c {
@@ -144,9 +144,9 @@ export default {
   position: relative;
   border-radius: 15px;
   width: 100%;
-  background: linear-gradient(0deg, #1a0a28 13.46%, #2d1545 100%);
+  background: #411c59;
   height: 165px;
-  border: 1px solid rgba(255, 162, 0, 0.45);
+  border: 1px solid #411c59;
   padding-bottom: 5px;
 }
 .content-c--c1 {
@@ -184,7 +184,6 @@ export default {
   right: 1%;
   width: 106px;
   bottom: 2px;
-
 }
 .content-c2 {
   font-size: 16px;

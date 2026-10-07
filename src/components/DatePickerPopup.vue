@@ -8,14 +8,22 @@
     @update:show="$emit('update:modelValue', $event)"
   >
     <div class="dp">
-      <div class="dp__bar">
-        <span class="dp__bar-line"></span>
+      <div class="dp__header">
+        <span class="dp__title">{{ title || "Select Date" }}</span>
+        <button type="button" class="dp__close" @click="onCancel">
+          <svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="true">
+            <path
+              d="M3.2 3.2l11.6 11.6M14.8 3.2L3.2 14.8"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.6"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
       </div>
 
-      <h3 class="dp__title">{{ title || "Select Date" }}</h3>
-      <p class="dp__subtitle">
-        {{ subtitle || "Select a period to filter your history" }}
-      </p>
+      <p v-if="subtitle" class="dp__subtitle">{{ subtitle }}</p>
 
       <van-date-picker
         v-model="currentDate"
@@ -28,11 +36,8 @@
       />
 
       <div class="dp__actions">
-        <button class="dp__confirm" type="button" @click="onConfirm">
-          {{ confirmText || "Confirm Selection" }}
-        </button>
-        <button class="dp__cancel" type="button" @click="onCancel">
-          {{ cancelText || "Cancel" }}
+        <button class="dp__confirm btn-3d-green" type="button" @click="onConfirm">
+          {{ confirmText || "SAVE" }}
         </button>
       </div>
     </div>
@@ -125,90 +130,72 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@primary: #ffa300;
-@bg-dark: #1a0a28;
-
 .dp {
-  background: @bg-dark;
-  padding: 16px 20px 24px;
-  border-radius: 16px 16px 0 0;
-  border-top: 1px solid fade(#e9a843, 35%);
+  background: #7a2190;
+  padding: 0 20px 28px;
+  border-radius: 20px 20px 0 0;
 
-  &__bar {
+  &__header {
+    position: relative;
     display: flex;
+    align-items: center;
     justify-content: center;
-    padding-bottom: 16px;
-  }
-
-  &__bar-line {
-    width: 40px;
-    height: 4px;
-    background: fade(#e9a843, 40%);
-    border-radius: 2px;
+    padding: 18px 44px;
+    margin: 0 -20px;
+    background: #532276;
   }
 
   &__title {
     color: @wihte-color;
     font-size: 18px;
-    font-weight: bold;
+    font-weight: 800;
+    letter-spacing: 0.4px;
     text-align: center;
-    margin-bottom: 4px;
+  }
+
+  &__close {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    &:active {
+      opacity: 0.75;
+    }
   }
 
   &__subtitle {
-    color: #b8a8d4;
-    font-size: 12px;
+    color: #fff;
+    font-size: 13px;
     text-align: center;
-    margin-bottom: 12px;
+    margin: 12px 0 4px;
   }
 
   &__actions {
-    margin-top: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    align-items: center;
+    margin-top: 18px;
   }
 
   &__confirm {
-    width: 100%;
-    background: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
-    color: #573900;
+    .btn-3d-green();
     font-size: 16px;
-    font-weight: 900;
-    padding: 14px;
-    border: none;
-    border-radius: 999px;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-    box-shadow: 0 4px 16px rgba(255, 163, 0, 0.28);
-
-    &:active {
-      opacity: 0.9;
-      transform: scale(0.98);
-    }
-  }
-
-  &__cancel {
-    background: transparent;
-    border: none;
-    color: #b8a8d4;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    padding: 8px 16px;
-
-    &:active {
-      color: @wihte-color;
-    }
+    letter-spacing: 1px;
   }
 }
 </style>
 
 <style lang="less">
 .date-picker-popup {
-  background: #1a0a28 !important;
+  background: #7a2190 !important;
   overflow: hidden;
 
   .van-picker,
@@ -217,21 +204,23 @@ export default {
   }
 
   .van-picker-column__item {
-    color: #b8a8d4 !important;
+    color: @icon-color !important;
     font-size: 16px;
     font-weight: 500;
 
     &--selected {
-      color: #ffa300 !important;
+      color: #fff !important;
       font-size: 18px;
-      font-weight: bold;
+      font-weight: 800;
     }
   }
 
   .van-picker__frame {
-    border: 2px solid rgba(233, 168, 67, 0.4) !important;
-    border-radius: 12px;
-    background: rgba(255, 163, 0, 0.08);
+    left: 8px !important;
+    right: 8px !important;
+    border: 1.5px solid @border-color !important;
+    border-radius: 10px;
+    background: transparent;
 
     &::after {
       display: none;

@@ -1,7 +1,11 @@
 <template>
   <div class="mine-page">
     <div class="mine-user">
-      <div class="mine-user__avatar" @click="$jumpTo('/editProfile')">
+      <div
+        class="mine-user__avatar"
+        role="button"
+        @click="goEditProfile"
+      >
         <img
           v-if="avatarSrc"
           :src="avatarSrc"
@@ -349,6 +353,9 @@ export default {
     }
   },
   methods: {
+    goEditProfile() {
+      this.$jumpTo("/editProfile");
+    },
     async Init() {
       try {
         const data = await Init();
@@ -485,6 +492,7 @@ export default {
   object-fit: cover;
   display: block;
   border-radius: 50%;
+  pointer-events: none;
 }
 
 .mine-user__avatar-placeholder {
@@ -851,6 +859,7 @@ export default {
   }
 
   &__title {
+    margin: 0;
     font-size: 16px;
     font-weight: 700;
     color: #fff;
@@ -869,22 +878,19 @@ export default {
     min-width: 0;
     height: 42px;
     padding: 0 6px;
-    border-radius: 20px;
     font-size: 14px;
-    font-weight: 600;
-    border: none;
-    cursor: pointer;
     white-space: nowrap;
 
     &--cancel {
-      background: transparent;
-      color: #c9b3ff;
-      border: 1px solid rgba(201, 179, 255, 0.5);
+      .btn-3d-yellow();
+      height: 42px;
+      font-size: 14px;
     }
 
     &--confirm {
-      background: linear-gradient(180deg, #4ade80 0%, #16a34a 100%);
-      color: #fff;
+      .btn-3d-green();
+      height: 42px;
+      font-size: 14px;
     }
 
     &:active {

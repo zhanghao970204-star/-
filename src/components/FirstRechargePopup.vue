@@ -9,13 +9,7 @@
       class="fr-popup-wrapper"
     >
       <div class="fr-popup">
-        <button class="fr-popup__close" @click="handleClose">
-          <van-icon name="cross" size="18" color="rgba(255,255,255,0.4)" />
-        </button>
-
-        <!-- Header -->
-        <div class="fr-popup__header">
-          <div class="fr-popup__grid-bg"></div>
+        <div class="fr-popup__head">
           <p class="fr-popup__mission">
             {{ $lang.fr_limited_offer || "Limited Time Offer" }}
           </p>
@@ -25,95 +19,117 @@
               $lang.fr_bonus || "Recharge"
             }}</span>
           </p>
+          <button
+            type="button"
+            class="fr-popup__close"
+            @click="handleClose"
+          >
+            <svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="true">
+              <path
+                d="M3.2 3.2l11.6 11.6M14.8 3.2L3.2 14.8"
+                fill="none"
+                stroke="#fff"
+                stroke-width="2.6"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
+        </div>
 
-          <!-- Countdown: before purchase → buy deadline; after purchase → next claim unlock -->
+        <div class="fr-popup__body">
           <div v-if="headerCountdown" class="fr-popup__timer">
             <span class="fr-popup__timer-label">{{
               headerCountdownLabel
             }}</span>
             <span class="fr-popup__timer-digits">{{ headerCountdown }}</span>
           </div>
-        </div>
 
-        <!-- Unpurchased: show price + buy button -->
-        <div v-if="!isPurchased" class="fr-popup__action">
-          <div class="fr-popup__price-card">
-            <div class="fr-popup__price-main">
-              <span class="fr-popup__price-currency">{{ liveCurrency }}</span>
-              <span class="fr-popup__price">{{
-                $formatNumberWithCommas(price)
-              }}</span>
-            </div>
-            <div v-if="originalPrice" class="fr-popup__price-meta">
-              <span class="fr-popup__original-price"
-                >{{ liveCurrency }}
-                {{ $formatNumberWithCommas(originalPrice) }}</span
-              >
-              <span v-if="discountPercent > 0" class="fr-popup__discount"
-                >-{{ discountPercent }}%</span
-              >
-            </div>
-          </div>
-          <button class="fr-popup__btn" :disabled="!price" @click="buyGiftPack">
-            {{ ctaText }}
-          </button>
-          <p class="fr-popup__up-to">
-            {{ $lang.fr_up_to_prefix || "Receive up to" }}
-            <span class="fr-popup__up-to-percent">{{ upToBonusText }}</span>
-            {{ $lang.fr_up_to_suffix || "rewards." }}
-          </p>
-          <p class="fr-popup__disclaimer">
-            {{ $lang.fd_limited_one || "Limited to one purchase per user." }}
-          </p>
-        </div>
-
-        <!-- Purchased: show 3-day claim list -->
-        <div v-else class="fr-popup__action">
-          <div class="fr-popup__days">
-            <div
-              v-for="day in dayList"
-              :key="day.index"
-              class="fr-popup__day"
-              :class="{
-                'is-claimable': day.status === 1,
-                'is-claimed': day.status === 2,
-                'is-locked': day.status === 0,
-              }"
-            >
-              <div class="fr-popup__day-label">
-                <span class="fr-popup__day-title">{{
-                  ($lang.fr_day || "Day") + " " + day.index
-                }}</span>
-                <span v-if="day.amountText" class="fr-popup__day-amount">{{
-                  day.amountText
+          <!-- Unpurchased: show price + buy button -->
+          <div v-if="!isPurchased" class="fr-popup__action">
+            <div class="fr-popup__price-card">
+              <div class="fr-popup__price-main">
+                <span class="fr-popup__price-currency">{{ liveCurrency }}</span>
+                <span class="fr-popup__price">{{
+                  $formatNumberWithCommas(price)
                 }}</span>
               </div>
-              <button
-                v-if="day.status === 1"
-                class="fr-popup__day-btn is-claim"
-                :disabled="claimingDay === day.index"
-                @click="claimDay(day.index)"
-              >
-                {{
-                  claimingDay === day.index
-                    ? "..."
-                    : $lang.fd_claim_now || "Claim"
-                }}
-              </button>
-              <span
-                v-else-if="day.status === 2"
-                class="fr-popup__day-btn is-done"
-              >
-                {{ $lang.fr_claimed || "Claimed" }}
-              </span>
-              <span v-else class="fr-popup__day-btn is-lock">
-                {{ day.availableText || $lang.fr_locked || "Locked" }}
-              </span>
+              <div v-if="originalPrice" class="fr-popup__price-meta">
+                <span class="fr-popup__original-price"
+                  >{{ liveCurrency }}
+                  {{ $formatNumberWithCommas(originalPrice) }}</span
+                >
+                <span v-if="discountPercent > 0" class="fr-popup__discount"
+                  >-{{ discountPercent }}%</span
+                >
+              </div>
             </div>
+            <button
+              class="fr-popup__btn"
+              :disabled="!price"
+              @click="buyGiftPack"
+            >
+              {{ ctaText }}
+            </button>
+            <p class="fr-popup__up-to">
+              {{ $lang.fr_up_to_prefix || "Receive up to" }}
+              <span class="fr-popup__up-to-percent">{{ upToBonusText }}</span>
+              {{ $lang.fr_up_to_suffix || "rewards." }}
+            </p>
+            <p class="fr-popup__disclaimer">
+              {{ $lang.fd_limited_one || "Limited to one purchase per user." }}
+            </p>
           </div>
-          <p class="fr-popup__disclaimer">
-            {{ $lang.fr_daily_hint || "Return each day to claim your reward." }}
-          </p>
+
+          <!-- Purchased: show 3-day claim list -->
+          <div v-else class="fr-popup__action">
+            <div class="fr-popup__days">
+              <div
+                v-for="day in dayList"
+                :key="day.index"
+                class="fr-popup__day"
+                :class="{
+                  'is-claimable': day.status === 1,
+                  'is-claimed': day.status === 2,
+                  'is-locked': day.status === 0,
+                }"
+              >
+                <div class="fr-popup__day-label">
+                  <span class="fr-popup__day-title">{{
+                    ($lang.fr_day || "Day") + " " + day.index
+                  }}</span>
+                  <span v-if="day.amountText" class="fr-popup__day-amount">{{
+                    day.amountText
+                  }}</span>
+                </div>
+                <button
+                  v-if="day.status === 1"
+                  class="fr-popup__day-btn is-claim"
+                  :disabled="claimingDay === day.index"
+                  @click="claimDay(day.index)"
+                >
+                  {{
+                    claimingDay === day.index
+                      ? "..."
+                      : $lang.fd_claim_now || "Claim"
+                  }}
+                </button>
+                <span
+                  v-else-if="day.status === 2"
+                  class="fr-popup__day-btn is-done"
+                >
+                  {{ $lang.fr_claimed || "Claimed" }}
+                </span>
+                <span v-else class="fr-popup__day-btn is-lock">
+                  {{ day.availableText || $lang.fr_locked || "Locked" }}
+                </span>
+              </div>
+            </div>
+            <p class="fr-popup__disclaimer">
+              {{
+                $lang.fr_daily_hint || "Return each day to claim your reward."
+              }}
+            </p>
+          </div>
         </div>
       </div>
     </van-popup>
@@ -395,114 +411,92 @@ export default {
 </script>
 
 <style lang="less" scoped>
-/* ====== First Recharge Popup ====== */
-@fr-primary: @primary-color;
-@fr-accent: @primary-color2;
-@fr-yellow: @primary-color3;
-@fr-green: @primary-color;
-@fr-red: #dc2626;
-@fr-bg: #12021a;
+/* ====== First Recharge Popup（通用确认弹窗壳） ====== */
+@fr-yellow: @primary-color;
+@fr-red: #ea4e3d;
 @muted: #d7a2fa;
-@gold-soft: #ffe4b5;
+@panel-head: #430063;
+@order-bg: #2c1137;
+@order-border: #9346a9;
 
 .fr-popup-wrapper {
+  width: 88% !important;
+  max-width: 360px;
   background: transparent !important;
   overflow: visible !important;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .fr-popup {
   position: relative;
-  width: 300px;
-  background: @fr-bg;
-  border: 2px solid fade(@border-color, 55%);
-  border-radius: 20px;
+  width: 100%;
+  background: linear-gradient(180deg, #7a2190 0%, #532276 100%);
+  border-radius: 18px;
   overflow: hidden;
-  box-shadow:
-    0 16px 40px rgba(0, 0, 0, 0.6),
-    0 0 24px fade(@primary-color, 20%);
+
+  &__head {
+    position: relative;
+    background: @panel-head;
+    padding: 14px 40px 12px;
+    text-align: center;
+  }
 
   &__close {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 10;
-    background: none;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    padding: 0;
     border: none;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
   }
 
-  &__header {
-    position: relative;
-    padding: 28px 20px 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    border-bottom: 1px solid fade(@border-color, 18%);
-    background: linear-gradient(
-      180deg,
-      fade(@primary-color, 18%),
-      fade(@cont-bg, 40%)
-    );
-    overflow: hidden;
-  }
-
-  &__grid-bg {
-    position: absolute;
-    inset: 0;
-    background-image: radial-gradient(
-      fade(@fr-accent, 18%) 1px,
-      transparent 1px
-    );
-    background-size: 20px 20px;
-    opacity: 0.4;
-    pointer-events: none;
-  }
-
   &__mission {
-    position: relative;
-    z-index: 1;
+    margin: 0 0 6px;
     font-size: 11px;
-    font-weight: 900;
-    color: @fr-yellow;
-    letter-spacing: 3px;
+    font-weight: 800;
+    color: fade(#fff, 75%);
+    letter-spacing: 2px;
     text-transform: uppercase;
-    margin-bottom: 10px;
   }
 
   &__subtitle {
-    position: relative;
-    z-index: 1;
-    font-size: 18px;
-    font-weight: 900;
-    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+    font-size: 16px;
+    font-weight: 800;
+    color: #fff;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 12px;
+    letter-spacing: 0.5px;
   }
 
   &__highlight {
     color: @fr-yellow;
   }
 
+  &__body {
+    padding: 14px 14px 18px;
+    background: linear-gradient(180deg, #7a2190 0%, #532276 100%);
+  }
+
   &__timer {
-    position: relative;
-    z-index: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: rgba(0, 0, 0, 0.4);
+    margin-bottom: 12px;
     padding: 8px 14px;
-    border-radius: 10px;
-    border: 1px solid fade(@fr-red, 20%);
+    border-radius: 12px;
+    background: @order-bg;
+    border: 1px solid fade(@fr-red, 45%);
 
     &-label {
       font-size: 9px;
-      font-weight: 900;
-      color: fade(@fr-red, 80%);
+      font-weight: 800;
+      color: fade(@fr-red, 90%);
       text-transform: uppercase;
       letter-spacing: 2px;
       margin-bottom: 2px;
@@ -513,12 +507,10 @@ export default {
       font-weight: 900;
       color: @fr-red;
       letter-spacing: 1px;
-      text-shadow: 0 0 12px fade(@fr-red, 60%);
     }
   }
 
   &__action {
-    padding: 16px 20px 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -529,15 +521,11 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 14px 12px 12px;
+    padding: 12px;
     margin-bottom: 14px;
     border-radius: 12px;
-    background: linear-gradient(
-      180deg,
-      fade(@primary-color3, 14%),
-      fade(@primary-color, 10%)
-    );
-    border: 1px solid fade(@border-color, 35%);
+    background: @order-bg;
+    border: 1px solid @order-border;
   }
 
   &__price-main {
@@ -553,12 +541,11 @@ export default {
   }
 
   &__price {
-    font-size: 36px;
+    font-size: 34px;
     font-weight: 900;
     color: @fr-yellow;
     line-height: 1;
     letter-spacing: -1px;
-    text-shadow: 0 0 12px fade(@fr-yellow, 35%);
   }
 
   &__price-meta {
@@ -570,42 +557,23 @@ export default {
 
   &__original-price {
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.4);
+    color: fade(#fff, 45%);
     text-decoration: line-through;
   }
 
   &__discount {
     font-size: 11px;
     font-weight: 900;
-    color: @primary-text-on;
-    background: @primary-gradient;
+    color: #fff;
+    background: fade(@btn-3d-green-to, 85%);
     padding: 2px 8px;
     border-radius: 6px;
     letter-spacing: 0.5px;
   }
 
   &__btn {
-    width: 100%;
-    background: @primary-gradient;
-    color: @primary-text-on;
-    font-weight: 900;
+    .btn-3d-green();
     font-size: 15px;
-    padding: 12px;
-    border-radius: 24px;
-    border: none;
-    text-transform: uppercase;
-    box-shadow: 0 4px 14px rgba(255, 163, 0, 0.28);
-    cursor: pointer;
-
-    &:active {
-      box-shadow: 0 2px 8px rgba(255, 163, 0, 0.2);
-      transform: scale(0.98);
-      opacity: 0.92;
-    }
-
-    &:disabled {
-      opacity: 0.6;
-    }
   }
 
   &__disclaimer {
@@ -615,13 +583,14 @@ export default {
     text-transform: uppercase;
     font-weight: 700;
     letter-spacing: 1px;
+    text-align: center;
   }
 
   &__up-to {
     margin-top: 10px;
     text-align: center;
     font-size: 13px;
-    color: @gold-soft;
+    color: fade(#fff, 85%);
     font-weight: 600;
   }
 
@@ -629,13 +598,12 @@ export default {
     display: inline-block;
     margin: 0 4px;
     padding: 2px 8px;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 900;
-    color: @primary-color;
-    background: fade(@primary-color, 15%);
-    border: 1px solid fade(@border-color, 45%);
+    color: @fr-yellow;
+    background: fade(@order-bg, 90%);
+    border: 1px solid @order-border;
     border-radius: 6px;
-    text-shadow: 0 0 6px fade(@primary-color, 40%);
   }
 
   &__days {
@@ -650,13 +618,12 @@ export default {
     align-items: center;
     justify-content: space-between;
     padding: 10px 12px;
-    border-radius: 10px;
-    background: fade(@cell-bg, 60%);
-    border: 1px solid fade(@border-color, 18%);
+    border-radius: 12px;
+    background: @order-bg;
+    border: 1px solid @order-border;
 
     &.is-claimable {
-      border-color: @fr-green;
-      box-shadow: 0 0 10px fade(@fr-green, 30%);
+      border-color: @btn-3d-green-from;
     }
 
     &.is-claimed {
@@ -674,40 +641,41 @@ export default {
   &__day-title {
     font-size: 13px;
     font-weight: 800;
-    color: @wihte-color;
+    color: #fff;
   }
 
   &__day-amount {
     font-size: 11px;
     font-weight: 700;
     color: @fr-yellow;
-    letter-spacing: 0.3px;
-    text-shadow: 0 0 6px fade(@fr-yellow, 25%);
   }
 
   &__day-btn {
     min-width: 78px;
     text-align: center;
     padding: 6px 12px;
-    border-radius: 8px;
+    border-radius: 999px;
     font-size: 12px;
     font-weight: 800;
     border: none;
     cursor: pointer;
 
     &.is-claim {
-      background: @primary-gradient;
-      color: @primary-text-on;
+      background: @btn-3d-green-grad;
+      color: #fff;
+      box-shadow:
+        inset 0 2px 2px 0 @btn-3d-green-highlight,
+        inset 0 -2px 0 0 @btn-3d-green-lip;
     }
 
     &.is-done {
-      background: fade(@wihte-color, 6%);
-      color: fade(@wihte-color, 50%);
+      background: fade(#fff, 8%);
+      color: fade(#fff, 50%);
     }
 
     &.is-lock {
-      background: fade(@wihte-color, 4%);
-      color: fade(@wihte-color, 35%);
+      background: fade(#fff, 6%);
+      color: fade(#fff, 40%);
       font-size: 11px;
     }
 

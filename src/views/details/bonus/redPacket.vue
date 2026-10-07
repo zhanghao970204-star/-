@@ -8,91 +8,98 @@
       <h1 class="rp-header__title">
         {{ $lang.rp_title || "Red Packet Rain" }}
       </h1>
-      <div class="rp-header__right" @click="showHistory = true">
-        <van-icon name="clock-o" size="14" color="#ff4d4f" />
+      <button
+        type="button"
+        class="rp-header__history"
+        @click="showHistory = true"
+      >
+        <van-icon name="clock-o" size="14" color="#ffd467" />
         <span>{{ $lang.rp_history || "History" }}</span>
-      </div>
+      </button>
     </header>
 
     <!-- Loading -->
     <div v-if="loading" class="rp-loading">
-      <van-loading size="36" color="#ff4d4f" />
+      <van-loading size="36" color="#ffd467" />
     </div>
 
-    <div
-      v-else-if="gameState === 'not_qualified'"
-      class="rp-state rp-state--locked"
-    >
-      <div class="rp-state__icon-wrap">
+    <!-- Hero + 倒计时（非雨中可玩态） -->
+    <div v-else-if="gameState !== 'active'" class="rp-hero">
+      <div class="rp-hero__banner">
         <img
-          src="../../../assets/img/bonus/red_packet.png"
-          class="rp-state__icon rp-state__icon--locked"
-        />
-        <van-icon
-          name="lock"
-          size="28"
-          color="#ff4d4f"
-          class="rp-state__lock"
+          class="rp-hero__img"
+          src="@/assets/img/bonus/redpacket/hero_banner.png"
+          alt=""
         />
       </div>
-      <h2 class="rp-state__title">
-        {{ $lang.rp_not_qualified || "Complete a Deposit to Unlock" }}
-      </h2>
-      <p class="rp-state__desc">
-        {{
-          $lang.rp_not_qualified_desc ||
-          "Make a deposit in the last 3 days to participate"
-        }}
-      </p>
-      <button class="rp-btn rp-btn--deposit" @click="goDeposit">
-        {{ $lang.rp_go_deposit || "Go Deposit" }}
-      </button>
-    </div>
-
-    <div v-else-if="gameState === 'not_open'" class="rp-state rp-state--locked">
-      <img
-        src="../../../assets/img/bonus/red_packet.png"
-        class="rp-state__icon rp-state__icon--grey"
-      />
-      <h2 class="rp-state__title">
-        {{ $lang.rp_not_open || "Activity Not Yet Open" }}
-      </h2>
-      <p class="rp-state__desc">
-        {{ $lang.rp_not_open_desc || "Please check back later" }}
-      </p>
-    </div>
-
-    <!-- Countdown (timeLeft > 0) -->
-    <div
-      v-else-if="gameState === 'countdown'"
-      class="rp-state rp-state--countdown"
-    >
-      <img
-        src="../../../assets/img/bonus/red_packet.png"
-        class="rp-state__icon rp-state__icon--pulse"
-      />
-      <h2 class="rp-state__title">
-        {{ $lang.rp_countdown || "Next Round In" }}
-      </h2>
-      <div class="rp-countdown">
-        <div class="rp-countdown__block">
-          <span class="rp-countdown__num">{{ countdownH }}</span>
-          <span class="rp-countdown__label">{{ $lang.rp_hour || "H" }}</span>
-        </div>
-        <span class="rp-countdown__sep">:</span>
-        <div class="rp-countdown__block">
-          <span class="rp-countdown__num">{{ countdownM }}</span>
-          <span class="rp-countdown__label">{{ $lang.rp_min || "M" }}</span>
-        </div>
-        <span class="rp-countdown__sep">:</span>
-        <div class="rp-countdown__block">
-          <span class="rp-countdown__num">{{ countdownS }}</span>
-          <span class="rp-countdown__label">{{ $lang.rp_sec || "S" }}</span>
+      <div class="rp-hero__timer">
+        <img
+          class="rp-hero__timer-bg"
+          src="@/assets/img/bonus/redpacket/timer_frame.png"
+          alt=""
+        />
+        <div class="rp-hero__timer-inner">
+          <span class="rp-hero__timer-label">{{
+            $lang.rp_countdown || "NEXT ROUND IN"
+          }}</span>
+          <span class="rp-hero__timer-time">{{ displayCountdown }}</span>
         </div>
       </div>
-      <p v-if="rpData.nextStartTime" class="rp-state__sub">
-        {{ $lang.rp_next_round || "Next Round" }}: {{ rpData.nextStartTime }}
+      <p v-if="rpData && rpData.nextStartTime" class="rp-hero__next">
+        {{ $lang.rp_next_round || "NEXT ROUND" }}:
+        {{ rpData.nextStartTime }}
       </p>
+
+      <div
+        v-if="gameState === 'not_qualified'"
+        class="rp-state rp-state--overlay"
+      >
+        <h2 class="rp-state__title">
+          {{ $lang.rp_not_qualified || "Complete a Deposit to Unlock" }}
+        </h2>
+        <p class="rp-state__desc">
+          {{
+            $lang.rp_not_qualified_desc ||
+            "Make a deposit in the last 3 days to participate"
+          }}
+        </p>
+        <button type="button" class="rp-btn btn-3d-green" @click="goDeposit">
+          {{ $lang.rp_go_deposit || "Go Deposit" }}
+        </button>
+      </div>
+
+      <div
+        v-else-if="gameState === 'claimed'"
+        class="rp-state rp-state--overlay"
+      >
+        <h2 class="rp-state__title rp-state__title--green">
+          {{ $lang.rp_claimed || "Claimed This Round" }}
+        </h2>
+        <div class="rp-reward-card">
+          <span class="rp-reward-card__label">{{
+            $lang.rp_your_reward || "Your Reward"
+          }}</span>
+          <span class="rp-reward-card__amount"
+            >{{ getCurrency }}{{ awardAmount }}</span
+          >
+        </div>
+      </div>
+
+      <div
+        v-else-if="gameState === 'not_open' || gameState === 'ended'"
+        class="rp-state rp-state--overlay"
+      >
+        <h2 class="rp-state__title">
+          {{
+            gameState === "ended"
+              ? $lang.rp_round_ended || "Round Ended"
+              : $lang.rp_not_open || "Activity Not Yet Open"
+          }}
+        </h2>
+        <p class="rp-state__desc">
+          {{ $lang.rp_not_open_desc || "Please check back later" }}
+        </p>
+      </div>
     </div>
 
     <!-- Rain Active Game -->
@@ -155,55 +162,13 @@
       </div>
     </div>
 
-    <!-- Already Claimed (receiveStatus=2) -->
-    <div v-else-if="gameState === 'claimed'" class="rp-state rp-state--claimed">
-      <img
-        src="../../../assets/img/bonus/red_packet.png"
-        class="rp-state__icon"
-      />
-      <h2 class="rp-state__title rp-state__title--green">
-        {{ $lang.rp_claimed || "Claimed This Round" }}
-      </h2>
-      <div class="rp-reward-card">
-        <span class="rp-reward-card__label">{{
-          $lang.rp_your_reward || "Your Reward"
-        }}</span>
-        <span class="rp-reward-card__amount"
-          >{{ getCurrency }}{{ awardAmount }}</span
-        >
-      </div>
-      <div v-if="nextTimeLeft > 0" class="rp-next-round">
-        <p class="rp-next-round__label">
-          {{ $lang.rp_next_round || "Next Round" }}
-        </p>
-        <span class="rp-next-round__time">{{ formatTime(nextTimeLeft) }}</span>
-      </div>
-    </div>
-
-    <!-- Round Ended (receiveStatus=3) -->
-    <div v-else-if="gameState === 'ended'" class="rp-state rp-state--ended">
-      <img
-        src="../../../assets/img/bonus/red_packet.png"
-        class="rp-state__icon rp-state__icon--grey"
-      />
-      <h2 class="rp-state__title">
-        {{ $lang.rp_round_ended || "Round Ended" }}
-      </h2>
-      <div v-if="nextTimeLeft > 0" class="rp-next-round">
-        <p class="rp-next-round__label">
-          {{ $lang.rp_next_round || "Next Round" }}
-        </p>
-        <span class="rp-next-round__time">{{ formatTime(nextTimeLeft) }}</span>
-      </div>
-    </div>
-
-    <!-- Round Info Card (visible when not loading) -->
+    <!-- Round Info Card -->
     <div v-if="!loading && rpData" class="rp-info-card">
       <div class="rp-info-card__row" v-if="rpData.startTime">
         <span class="rp-info-card__label">{{
           $lang.rp_round_time || "Round Time"
         }}</span>
-        <span class="rp-info-card__value"
+        <span class="rp-info-card__value rp-info-card__value--green"
           >{{ formatDateTime(rpData.startTime) }} ~
           {{ formatDateTime(rpData.endTime) }}</span
         >
@@ -212,7 +177,9 @@
         <span class="rp-info-card__label">{{
           $lang.rp_packets_left || "Packets Left"
         }}</span>
-        <span class="rp-info-card__value">{{ rpData.count }}</span>
+        <span class="rp-info-card__value rp-info-card__value--gold">{{
+          rpData.count
+        }}</span>
       </div>
       <div
         class="rp-info-card__row"
@@ -221,52 +188,77 @@
         <span class="rp-info-card__label">{{
           $lang.rp_countdown || "Countdown"
         }}</span>
-        <span class="rp-info-card__value rp-info-card__value--red">{{
+        <span class="rp-info-card__value rp-info-card__value--gold">{{
           formatTime(roundTimeLeft)
         }}</span>
       </div>
     </div>
 
-    <!-- Rules Section -->
+    <!-- Rules -->
     <div v-if="!loading" class="rp-rules">
       <h3 class="rp-rules__title">
-        {{ $lang.rp_rules_title || "How to Play" }}
+        {{ $lang.rp_rules_title || "HOW TO PLAY" }}
       </h3>
       <div class="rp-rules__list">
         <div class="rp-rules__item">
           <span class="rp-rules__num">1</span>
           <span>{{
-            $lang.rp_rule_1 || "Deposit within the last 3 days to qualify"
+            $lang.rp_rule_1 ||
+            "Become a Bison Fun member to enjoy two Red Packet Rain events every day."
           }}</span>
         </div>
         <div class="rp-rules__item">
           <span class="rp-rules__num">2</span>
-          <span>{{
-            $lang.rp_rule_2 || "Tap falling red packets to grab rewards"
-          }}</span>
+          <span
+            v-html="
+              $lang.rp_rule_2 ||
+              'Event Times (EST): 1:00-1:59 PM and <em>7:00-8:00 PM</em>'
+            "
+          ></span>
         </div>
         <div class="rp-rules__item">
           <span class="rp-rules__num">3</span>
-          <span>{{ $lang.rp_rule_3 || "Each round has limited clicks" }}</span>
+          <span>{{
+            $lang.rp_rule_3 ||
+            "Simply click once to successfully claim your Red Packet."
+          }}</span>
         </div>
       </div>
     </div>
 
-    <!-- History Popup -->
+    <!-- History：通用弹窗壳 -->
     <van-popup
       v-model:show="showHistory"
+      position="center"
       round
-      position="bottom"
-      style="height: 60%; background: #1a0a28"
+      class="rp-confirm"
+      :close-on-click-overlay="true"
       @open="fetchHistory"
     >
-      <div class="rp-history">
-        <h3 class="rp-history__title">{{ $lang.rp_history || "History" }}</h3>
+      <div class="rp-confirm__head">
+        {{ $lang.rp_history || "HISTORY" }}
+        <button
+          type="button"
+          class="rp-confirm__x"
+          @click="showHistory = false"
+        >
+          <svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="true">
+            <path
+              d="M3.2 3.2l11.6 11.6M14.8 3.2L3.2 14.8"
+              fill="none"
+              stroke="#fff"
+              stroke-width="2.6"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+      </div>
+      <div class="rp-confirm__body">
         <div
           v-if="historyLoading && historyList.length === 0"
           class="rp-history__empty"
         >
-          <van-loading size="36" color="#ff4d4f" />
+          <van-loading size="36" color="#ffd467" />
         </div>
         <div v-else-if="historyList.length === 0" class="rp-history__empty">
           <van-icon name="orders-o" size="48" color="#b8a8d4" />
@@ -279,11 +271,15 @@
             class="rp-history__item"
           >
             <div class="rp-history__left">
-              <img src="../../../assets/img/bonus/red_packet.png" width="32" />
+              <img
+                src="@/assets/img/bonus/redpacket/hero_envelopes.png"
+                width="36"
+                alt=""
+              />
             </div>
             <div class="rp-history__mid">
               <span class="rp-history__round">{{
-                $lang.rp_title || "Red Packet"
+                $lang.rp_title || "Red Packet Rain"
               }}</span>
               <span class="rp-history__time">{{ item.receiveTime }}</span>
               <span class="rp-history__order">{{ item.recordNo }}</span>
@@ -356,6 +352,15 @@ export default {
     },
     countdownS() {
       return String(this.timeLeft % 60).padStart(2, "0");
+    },
+    displayCountdown() {
+      const t =
+        this.gameState === "countdown"
+          ? this.timeLeft
+          : this.nextTimeLeft > 0
+            ? this.nextTimeLeft
+            : this.timeLeft;
+      return this.formatTime(Math.max(0, t | 0));
     },
     clickProgress() {
       if (!this.maxClickTimes) return 0;
@@ -699,17 +704,20 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@rp-bg: #1a0a28;
-@rp-card: #12021a;
+@rp-bg: #0e0616;
+@rp-card: #1a0a28;
 @rp-red: #ff4d4f;
-@rp-gold: #ffa300;
-@rp-green: #ffa300;
+@rp-gold: #ffd467;
+@rp-green: #22c55e;
 @rp-border: rgba(255, 162, 0, 0.45);
+@frame: #430063;
 
 .rp-page {
   min-height: 100vh;
-  background: @rp-bg;
-  padding-bottom: 80px;
+  background: @rp-bg url("@/assets/img/common/page_bg.png") center top / 100%
+    auto repeat-y;
+  padding-bottom: 40px;
+  box-sizing: border-box;
 }
 
 // ====== HEADER ======
@@ -717,13 +725,12 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
+  padding: 10px 12px;
   position: sticky;
   top: 0;
   z-index: 50;
-  background: fade(@rp-bg, 90%);
+  background: fade(@rp-bg, 96%);
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid @rp-border;
 
   &__back {
     width: 36px;
@@ -735,21 +742,107 @@ export default {
   }
 
   &__title {
-    font-size: 16px;
-    font-weight: 700;
-    color: @wihte-color;
+    font-size: 15px;
+    font-weight: 800;
+    color: #fff;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.6px;
   }
 
-  &__right {
-    display: flex;
+  &__history {
+    display: inline-flex;
     align-items: center;
     gap: 4px;
-    cursor: pointer;
+    height: 28px;
+    padding: 0 10px;
+    border-radius: 999px;
+    border: 1px solid @rp-gold;
+    background: fade(@frame, 75%);
+    color: @rp-gold;
     font-size: 11px;
-    color: @rp-red;
-    font-weight: 600;
+    font-weight: 700;
+    cursor: pointer;
+  }
+}
+
+// ====== HERO ======
+.rp-hero {
+  padding: 4px 12px 0;
+  box-sizing: border-box;
+
+  &__banner {
+    position: relative;
+    width: 100%;
+    border-radius: 14px;
+    overflow: visible;
+  }
+
+  &__img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 14px;
+  }
+
+  &__timer {
+    position: relative;
+    width: 78%;
+    max-width: 300px;
+    margin: -8px auto 0;
+    z-index: 2;
+  }
+
+  &__timer-bg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  &__timer-inner {
+    position: absolute;
+    inset: 0;
+    box-sizing: border-box;
+  }
+
+  /* 标签落在灯箱顶部凸台，时间落在下方主框 */
+  &__timer-label {
+    position: absolute;
+    left: 50%;
+    top: 22%;
+    transform: translateX(-50%);
+    width: 48%;
+    text-align: center;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    color: #fff;
+    text-transform: uppercase;
+    white-space: nowrap;
+    line-height: 1;
+  }
+
+  &__timer-time {
+    position: absolute;
+    left: 50%;
+    top: 62%;
+    transform: translate(-50%, -50%);
+    font-size: 30px;
+    font-weight: 900;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 1.5px;
+    line-height: 1;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+  }
+
+  &__next {
+    margin: 10px 0 6px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
   }
 }
 
@@ -773,69 +866,25 @@ export default {
   }
 }
 
-// ====== STATE SCREENS ======
+// ====== STATE OVERLAY ======
 .rp-state {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 48px 24px 32px;
+  padding: 12px 16px 8px;
   text-align: center;
 
-  &__icon-wrap {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
-  }
-
-  &__icon {
-    width: 80px;
-    height: 80px;
-    object-fit: contain;
-    margin-bottom: 16px;
-    display: block;
-
-    &--locked {
-      opacity: 0.5;
-      filter: grayscale(0.3);
-      margin-bottom: 0;
-    }
-
-    &--pulse {
-      animation: rp-pulse 2s ease-in-out infinite;
-    }
-
-    &--grey {
-      filter: grayscale(1);
-      opacity: 0.4;
-    }
-  }
-
-  &__lock {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    background: @rp-card;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 77, 79, 0.5);
-    box-sizing: border-box;
+  &--overlay {
+    margin-top: 4px;
   }
 
   &__title {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 800;
-    color: @wihte-color;
-    margin-bottom: 8px;
+    color: #fff;
+    margin-bottom: 6px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
 
     &--green {
       color: @rp-green;
@@ -843,84 +892,19 @@ export default {
   }
 
   &__desc {
-    font-size: 13px;
-    color: #b8a8d4;
-    line-height: 1.5;
-    max-width: 280px;
-    margin-bottom: 24px;
-  }
-
-  &__sub {
     font-size: 12px;
     color: #b8a8d4;
-    margin-top: 16px;
+    line-height: 1.45;
+    max-width: 300px;
+    margin-bottom: 12px;
   }
 }
 
-// ====== BUTTON ======
 .rp-btn {
+  width: 70%;
+  max-width: 240px;
   border: none;
-  border-radius: 12px;
-  font-weight: 800;
-  font-size: 16px;
-  padding: 14px 48px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
   cursor: pointer;
-
-  &--deposit {
-    background: @rp-red;
-    color: @wihte-color;
-    box-shadow:
-      0 4px 0 #b91c1c,
-      0 8px 24px fade(@rp-red, 30%);
-
-    &:active {
-      transform: translateY(4px);
-      box-shadow: none;
-    }
-  }
-}
-
-// ====== COUNTDOWN ======
-.rp-countdown {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 16px;
-
-  &__block {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: @rp-card;
-    border: 1px solid fade(@rp-red, 30%);
-    border-radius: 10px;
-    padding: 10px 16px;
-    min-width: 60px;
-  }
-
-  &__num {
-    font-size: 28px;
-    font-weight: 900;
-    color: @rp-red;
-    font-variant-numeric: tabular-nums;
-    text-shadow: 0 0 12px fade(@rp-red, 40%);
-  }
-
-  &__label {
-    font-size: 9px;
-    color: #b8a8d4;
-    font-weight: 700;
-    text-transform: uppercase;
-    margin-top: 2px;
-  }
-
-  &__sep {
-    font-size: 24px;
-    font-weight: 900;
-    color: @rp-red;
-  }
 }
 
 // ====== GAME SCREEN ======
@@ -1092,58 +1076,72 @@ export default {
   }
 }
 
-// ====== INFO CARD ======
+// ====== INFO CARD（第二处：紫渐变背景块） ======
 .rp-info-card {
-  margin: 16px;
-  background: @rp-card;
-  border-radius: 12px;
-  padding: 16px;
-  border: 1px solid @rp-border;
+  margin: 8px 12px;
+  padding: 10px 12px 12px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #c24af0 0%, #9a2fd0 40%, #7a2190 100%);
+  box-sizing: border-box;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+  overflow: hidden;
 
   &__row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 6px 0;
+    min-height: 40px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    box-sizing: border-box;
+
+    /* 去掉发黑透明层，首行用正常紫条区分 */
+    &:first-child {
+      background: url("@/assets/img/bonus/redpacket/info_bar.png") center / 100%
+        100% no-repeat;
+    }
 
     & + & {
-      border-top: 1px solid @rp-border;
+      margin-top: 6px;
     }
   }
 
   &__label {
-    font-size: 12px;
-    color: #b8a8d4;
-    font-weight: 600;
+    font-size: 13px;
+    color: #fff;
+    font-weight: 700;
   }
 
   &__value {
     font-size: 13px;
-    color: @wihte-color;
-    font-weight: 700;
+    color: #fff;
+    font-weight: 800;
 
-    &--red {
-      color: @rp-red;
-      font-variant-numeric: tabular-nums;
+    &--green {
+      color: #39ff88;
+    }
+
+    &--gold {
+      color: #ffe14a;
     }
   }
 }
 
-// ====== RULES ======
+// ====== RULES（第三处：#411C59 背景块） ======
 .rp-rules {
-  margin: 16px;
-  background: @rp-card;
-  border-radius: 12px;
-  padding: 16px;
-  border: 1px solid @rp-border;
+  margin: 0 12px 16px;
+  background: #411c59;
+  border-radius: 16px;
+  padding: 14px 14px 12px;
+  box-sizing: border-box;
 
   &__title {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 800;
-    color: @wihte-color;
+    color: #fff;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 12px;
+    letter-spacing: 0.8px;
+    margin: 0 0 12px;
   }
 
   &__list {
@@ -1157,49 +1155,94 @@ export default {
     align-items: flex-start;
     gap: 10px;
     font-size: 12px;
-    color: #b8a8d4;
-    line-height: 1.4;
+    color: #e7deff;
+    line-height: 1.45;
+    background: transparent;
+
+    :deep(em) {
+      font-style: normal;
+      color: #ffe14a;
+      font-weight: 800;
+    }
   }
 
   &__num {
     flex-shrink: 0;
     width: 20px;
     height: 20px;
-    display: flex;
+    margin: 0;
+    padding: 0;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    background: fade(@rp-red, 15%);
-    color: @rp-red;
-    font-size: 10px;
+    background: #2a0a45;
+    color: #fff;
+    font-size: 11px;
     font-weight: 800;
+    line-height: 1;
+    box-sizing: border-box;
+    /* 避免外层再叠一层方/圆底 */
+    box-shadow: none;
+    outline: none;
   }
 }
 
-// ====== HISTORY POPUP ======
-.rp-history {
-  padding: 20px 16px;
+// ====== 通用弹窗壳（History） ======
+.rp-confirm {
+  width: 88% !important;
+  max-width: 360px;
+  max-height: 72vh;
+  background: linear-gradient(180deg, #7a2190 0%, #532276 100%) !important;
+  overflow: hidden;
+  border-radius: 18px !important;
 
-  &__title {
+  &__head {
+    position: relative;
+    background: @frame;
+    color: #fff;
+    text-align: center;
     font-size: 16px;
     font-weight: 800;
-    color: @wihte-color;
-    text-align: center;
-    margin-bottom: 20px;
+    padding: 14px 40px;
     text-transform: uppercase;
-    letter-spacing: 1px;
   }
 
+  &__x {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  &__body {
+    padding: 12px 12px 16px;
+    max-height: calc(72vh - 52px);
+    overflow-y: auto;
+    background: linear-gradient(180deg, #7a2190 0%, #532276 100%);
+  }
+}
+
+// ====== HISTORY LIST ======
+.rp-history {
   &__empty {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 12px;
-    padding: 40px 0;
-    min-height: 40vh;
+    padding: 36px 0;
+    min-height: 180px;
 
-    // 覆盖全局 .van-loading 全宽 + padding-top，避免 History 加载偏左
     :deep(.van-loading) {
       width: auto !important;
       height: auto !important;
@@ -1225,10 +1268,10 @@ export default {
   &__item {
     display: flex;
     align-items: center;
-    gap: 12px;
-    .record-list-card();
-    border-radius: 10px;
-    padding: 12px;
+    gap: 10px;
+    background: #3f1d5d;
+    border-radius: 12px;
+    padding: 10px 12px;
   }
 
   &__left {
@@ -1237,26 +1280,10 @@ export default {
 
   &__mid {
     flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     gap: 2px;
-  }
-
-  &__round {
-    font-size: 13px;
-    font-weight: 600;
-    color: @wihte-color;
-  }
-
-  &__time {
-    font-size: 11px;
-    color: #b8a8d4;
-  }
-
-  &__order {
-    font-size: 10px;
-    color: #b8a8d4;
-    word-break: break-all;
   }
 
   &__right {
@@ -1280,11 +1307,28 @@ export default {
 
   &__more {
     text-align: center;
-    padding: 14px;
-    color: @rp-red;
+    padding: 12px;
+    color: @rp-gold;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
+  }
+
+  &__round {
+    color: #fff;
+    font-weight: 800;
+    font-size: 13px;
+  }
+
+  &__time {
+    color: #c4b5e0;
+    font-size: 11px;
+  }
+
+  &__order {
+    color: #c4b5e0;
+    font-size: 10px;
+    word-break: break-all;
   }
 }
 

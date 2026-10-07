@@ -83,57 +83,57 @@
   </div>
 </template>
 <script>
-import { GetVipAwardInit, Init, GetVipAward } from '@/api/common'
+import { GetVipAwardInit, Init, GetVipAward } from "@/api/common";
 export default {
-  name: 'cashBack',
+  name: "cashBack",
   components: {},
   data() {
     return {
       InitDate: [],
       info: {},
       vipLevel: 0,
-      loading: false
-    }
+      loading: false,
+    };
   },
   mounted() {
     if (this.token) {
-      this.GetVipAwardInit()
-      this.Init()
+      this.GetVipAwardInit();
+      this.Init();
     }
   },
   methods: {
     async getJl() {
-      const data = await GetVipAward()
-      if (data.status === 'ok') {
+      const data = await GetVipAward();
+      if (data.status === "ok") {
         this.$toast({
           message: this.$lang.bonus_txt16,
-          icon: 'success'
-        })
-        this.GetVipAwardInit()
+          icon: "success",
+        });
+        this.GetVipAwardInit();
       } else {
         this.$toast({
           message: data.msg,
-          icon: 'cross'
-        })
+          icon: "cross",
+        });
       }
     },
     async Init() {
-      const data = await Init()
-      if (data.status === 'ok') {
-        this.vipLevel = data.content.vipLevel
+      const data = await Init();
+      if (data.status === "ok") {
+        this.vipLevel = data.content.vipLevel;
       }
     },
     async GetVipAwardInit() {
-      this.loading = true // 开始加载
-      const data = await GetVipAwardInit()
-      if (data.status === 'ok') {
-        this.InitDate = JSON.parse(data.content.ruleList)
-        this.info = data.content
-        this.loading = false // 开始加载
+      this.loading = true; // 开始加载
+      const data = await GetVipAwardInit();
+      if (data.status === "ok") {
+        this.InitDate = JSON.parse(data.content.ruleList);
+        this.info = data.content;
+        this.loading = false; // 开始加载
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 <style lang="less" scoped>
 .content-c {
@@ -144,8 +144,8 @@ export default {
   position: relative;
   border-radius: 15px;
   width: 100%;
-  background: linear-gradient(0deg, #1a0a28 13.46%, #2d1545 100%);
-  border: 1px solid rgba(255, 162, 0, 0.45);
+  background: #411c59;
+  border: 1px solid #411c59;
   height: 155px;
 }
 .content-c--c1 {

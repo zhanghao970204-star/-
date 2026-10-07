@@ -609,8 +609,8 @@ export default {
 .bet-bg-t {
   // background: url(../../../assets/img/lottery/lotty-debg.png) no-repeat;
   // background: @cont-bg;
-  background: linear-gradient(0deg, #1a0a28 13.46%, #2d1545 100%);
-  border: 1px solid rgba(233, 168, 67, 0.35);
+  background: #411c59;
+  border: 1px solid #411c59;
   border-radius: 20px;
   background-size: 100% 100%;
   width: 100%;
