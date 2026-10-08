@@ -102,8 +102,8 @@
           </div>
         </div>
 
-        <!-- Push Notifications (UI only) -->
-        <div class="settings-row" @click="pushEnabled = !pushEnabled">
+        <!-- Sound master switch：开才有音效 -->
+        <div class="settings-row" data-no-sound @click="toggleSound">
           <div class="settings-item__left">
             <img
               class="settings-item__icon-img"
@@ -116,7 +116,7 @@
           </div>
           <div
             class="settings-toggle"
-            :class="{ 'settings-toggle--on': pushEnabled }"
+            :class="{ 'settings-toggle--on': soundEnabled }"
           >
             <div class="settings-toggle__track">
               <div class="settings-toggle__thumb"></div>
@@ -124,7 +124,7 @@
           </div>
         </div>
 
-        <!-- Sound Volume (UI only) -->
+        <!-- Sound Volume -->
         <div class="settings-row">
           <div class="settings-item__left">
             <img
@@ -136,14 +136,16 @@
               $lang.settings_sound || "Sound Volume"
             }}</span>
           </div>
-          <div class="settings-slider" @click.stop>
+          <div class="settings-slider" data-no-sound @click.stop>
             <input
-              v-model="soundVolume"
+              v-model.number="soundVolume"
               type="range"
               min="0"
               max="100"
               class="settings-slider__input"
               :style="{ '--vol': soundVolume + '%' }"
+              @input="onVolumeInput"
+              @change="onVolumeChange"
             />
           </div>
         </div>
@@ -182,7 +184,7 @@
               <path
                 d="M3.2 3.2l11.6 11.6M14.8 3.2L3.2 14.8"
                 fill="none"
-                stroke="#ffd467"
+                stroke="#fff"
                 stroke-width="2.6"
                 stroke-linecap="round"
               />
@@ -279,6 +281,14 @@
 <script>
 import { Logout, Init, ChangeMail } from "@/api/common";
 import md5 from "@/utils/md5";
+import {
+  playSwitchSound,
+  playClickSound,
+  getSoundVolume,
+  setSoundVolume,
+  isSoundEnabled,
+  setSoundEnabled,
+} from "@/utils/sound";
 
 export default {
   name: "Settings",
@@ -292,8 +302,8 @@ export default {
       privacyPwdInput: "",
       emailError: "",
       emailSubmitting: false,
-      pushEnabled: true,
-      soundVolume: 70,
+      soundEnabled: isSoundEnabled(),
+      soundVolume: getSoundVolume(),
       socialList: [
         {
           name: "WhatsApp",
@@ -341,6 +351,24 @@ export default {
     this.fetchProfile();
   },
   methods: {
+    toggleSound() {
+      if (this.soundEnabled) {
+        playSwitchSound();
+        this.soundEnabled = false;
+        setSoundEnabled(false);
+      } else {
+        this.soundEnabled = true;
+        setSoundEnabled(true);
+        playSwitchSound();
+      }
+    },
+    onVolumeInput() {
+      setSoundVolume(this.soundVolume);
+    },
+    onVolumeChange() {
+      setSoundVolume(this.soundVolume);
+      if (this.soundEnabled && this.soundVolume > 0) playClickSound();
+    },
     pickMail(content) {
       if (!content) return "";
       return (

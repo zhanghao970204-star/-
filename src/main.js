@@ -23,6 +23,7 @@ import {
   getClientId,
   peekFlutterUuid,
 } from "./utils/nativeDevice.js";
+import { installGlobalClickSound } from "./utils/sound.js";
 // import VConsole from 'vconsole'
 
 // App / 调试：打开 vConsole（?vconsole=0 可关）
@@ -222,6 +223,7 @@ async function bootstrap() {
     defineAsyncComponent(() => import("./components/ActivityPopup.vue")),
   );
 
+  installGlobalClickSound();
   app.mount("#app");
 }
 

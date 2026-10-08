@@ -222,8 +222,6 @@ export default {
 .activity-page {
   padding: 10px 12px 100px;
   min-height: 100vh;
-  background: @bg url("@/assets/img/common/page_bg.png") center top / 100% auto
-    repeat-y;
   color: #fff;
   box-sizing: border-box;
 }

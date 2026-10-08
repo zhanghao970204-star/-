@@ -9,79 +9,148 @@
       class="fr-popup-wrapper"
     >
       <div class="fr-popup">
-        <div class="fr-popup__head">
-          <p class="fr-popup__mission">
-            {{ $lang.fr_limited_offer || "Limited Time Offer" }}
-          </p>
-          <p class="fr-popup__subtitle">
-            {{ $lang.fr_title_short || "First" }}
-            <span class="fr-popup__highlight">{{
-              $lang.fr_bonus || "Recharge"
-            }}</span>
-          </p>
-          <button
-            type="button"
-            class="fr-popup__close"
-            @click="handleClose"
-          >
-            <svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="true">
-              <path
-                d="M3.2 3.2l11.6 11.6M14.8 3.2L3.2 14.8"
-                fill="none"
-                stroke="#fff"
-                stroke-width="2.6"
-                stroke-linecap="round"
-              />
-            </svg>
-          </button>
+        <button type="button" class="fr-popup__close" @click="handleClose">
+          <svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="true">
+            <path
+              d="M3.2 3.2l11.6 11.6M14.8 3.2L3.2 14.8"
+              fill="none"
+              stroke="#fff"
+              stroke-width="2.6"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+
+        <div class="fr-popup__visual">
+          <img
+            class="fr-popup__hero"
+            src="@/assets/img/bonus/firstrecharge/hero.png"
+            alt=""
+          />
+          <img
+            class="fr-popup__title-img"
+            src="@/assets/img/bonus/firstrecharge/title.png"
+            alt=""
+          />
         </div>
 
         <div class="fr-popup__body">
-          <div v-if="headerCountdown" class="fr-popup__timer">
-            <span class="fr-popup__timer-label">{{
-              headerCountdownLabel
-            }}</span>
-            <span class="fr-popup__timer-digits">{{ headerCountdown }}</span>
-          </div>
-
-          <!-- Unpurchased: show price + buy button -->
+          <!-- Unpurchased: price + timer + buy -->
           <div v-if="!isPurchased" class="fr-popup__action">
-            <div class="fr-popup__price-card">
-              <div class="fr-popup__price-main">
-                <span class="fr-popup__price-currency">{{ liveCurrency }}</span>
-                <span class="fr-popup__price">{{
-                  $formatNumberWithCommas(price)
-                }}</span>
+            <div class="fr-popup__price-wrap">
+              <div v-if="originalPrice" class="fr-popup__ribbon">
+                <img
+                  class="fr-popup__ribbon-bg"
+                  src="@/assets/img/bonus/firstrecharge/ribbon.png"
+                  alt=""
+                />
+                <div class="fr-popup__ribbon-inner">
+                  <span class="fr-popup__original-price"
+                    >{{ liveCurrency }}
+                    {{ $formatNumberWithCommas(originalPrice) }}</span
+                  >
+                  <span v-if="discountPercent > 0" class="fr-popup__discount"
+                    >-{{ discountPercent }}%</span
+                  >
+                </div>
               </div>
-              <div v-if="originalPrice" class="fr-popup__price-meta">
-                <span class="fr-popup__original-price"
-                  >{{ liveCurrency }}
-                  {{ $formatNumberWithCommas(originalPrice) }}</span
-                >
-                <span v-if="discountPercent > 0" class="fr-popup__discount"
-                  >-{{ discountPercent }}%</span
-                >
+              <div class="fr-popup__price-bar">
+                <img
+                  class="fr-popup__price-bar-bg"
+                  src="@/assets/img/bonus/firstrecharge/price_bar.png"
+                  alt=""
+                />
+                <div class="fr-popup__price-main">
+                  <span class="fr-popup__price-currency">{{
+                    liveCurrency
+                  }}</span>
+                  <span class="fr-popup__price">{{
+                    $formatNumberWithCommas(price)
+                  }}</span>
+                </div>
               </div>
             </div>
+
+            <div v-if="countdownParts" class="fr-popup__timer">
+              <p class="fr-popup__timer-label">
+                {{ headerCountdownLabel }}
+              </p>
+              <div class="fr-popup__timer-row">
+                <span class="fr-popup__timer-cell">
+                  <img
+                    src="@/assets/img/bonus/firstrecharge/timer_cell.png"
+                    alt=""
+                  />
+                  <em>{{ countdownParts.h }}</em>
+                </span>
+                <span class="fr-popup__timer-colon">:</span>
+                <span class="fr-popup__timer-cell">
+                  <img
+                    src="@/assets/img/bonus/firstrecharge/timer_cell.png"
+                    alt=""
+                  />
+                  <em>{{ countdownParts.m }}</em>
+                </span>
+                <span class="fr-popup__timer-colon">:</span>
+                <span class="fr-popup__timer-cell">
+                  <img
+                    src="@/assets/img/bonus/firstrecharge/timer_cell.png"
+                    alt=""
+                  />
+                  <em>{{ countdownParts.s }}</em>
+                </span>
+              </div>
+            </div>
+
             <button
               class="fr-popup__btn"
               :disabled="!price"
               @click="buyGiftPack"
             >
-              {{ ctaText }}
+              <span class="fr-popup__btn-main">{{ ctaText }}</span>
+              <span v-if="upToBonusPlain" class="fr-popup__btn-sub">
+                {{ $lang.fr_up_to_prefix || "Receive up to" }}
+                <em>{{ upToBonusPlain }}</em>
+                {{ $lang.fr_rewards || "Rewards" }}
+              </span>
             </button>
-            <p class="fr-popup__up-to">
-              {{ $lang.fr_up_to_prefix || "Receive up to" }}
-              <span class="fr-popup__up-to-percent">{{ upToBonusText }}</span>
-              {{ $lang.fr_up_to_suffix || "rewards." }}
-            </p>
             <p class="fr-popup__disclaimer">
               {{ $lang.fd_limited_one || "Limited to one purchase per user." }}
             </p>
           </div>
 
-          <!-- Purchased: show 3-day claim list -->
+          <!-- Purchased: 3-day claim list -->
           <div v-else class="fr-popup__action">
+            <div v-if="countdownParts" class="fr-popup__timer">
+              <p class="fr-popup__timer-label">
+                {{ headerCountdownLabel }}
+              </p>
+              <div class="fr-popup__timer-row">
+                <span class="fr-popup__timer-cell">
+                  <img
+                    src="@/assets/img/bonus/firstrecharge/timer_cell.png"
+                    alt=""
+                  />
+                  <em>{{ countdownParts.h }}</em>
+                </span>
+                <span class="fr-popup__timer-colon">:</span>
+                <span class="fr-popup__timer-cell">
+                  <img
+                    src="@/assets/img/bonus/firstrecharge/timer_cell.png"
+                    alt=""
+                  />
+                  <em>{{ countdownParts.m }}</em>
+                </span>
+                <span class="fr-popup__timer-colon">:</span>
+                <span class="fr-popup__timer-cell">
+                  <img
+                    src="@/assets/img/bonus/firstrecharge/timer_cell.png"
+                    alt=""
+                  />
+                  <em>{{ countdownParts.s }}</em>
+                </span>
+              </div>
+            </div>
             <div class="fr-popup__days">
               <div
                 v-for="day in dayList"
@@ -217,13 +286,18 @@ export default {
     },
     /** 展示：+ MXN 158（货币在加号后、金额前） */
     upToBonusText() {
+      const plain = this.upToBonusPlain;
+      return plain ? "+ " + plain : "";
+    },
+    /** 按钮副文案用：USD 19.99 */
+    upToBonusPlain() {
       const total = this.creditTotalAmount;
       if (!total) return "";
       const amount = this.$formatNumberWithCommas
         ? this.$formatNumberWithCommas(total)
         : total;
       const currency = this.liveCurrency || "";
-      return "+ " + currency + " " + amount;
+      return (currency + " " + amount).trim();
     },
     headerTargetSec() {
       if (!this.packData) return 0;
@@ -242,35 +316,26 @@ export default {
     },
     headerCountdownLabel() {
       if (this.isPurchased) return this.$lang.fr_next_unlock || "Next Unlock";
-      return this.$lang.fd_critical_deadline || "Ends In";
+      return this.$lang.fd_critical_deadline || "CRITICAL DEADLINE";
     },
     headerCountdown() {
+      const parts = this.countdownParts;
+      if (!parts) return "";
+      return parts.h + ":" + parts.m + ":" + parts.s;
+    },
+    countdownParts() {
       const target = this.headerTargetSec;
-      if (!target) return "";
+      if (!target) return null;
       const diff = target - this.nowTs;
-      if (diff <= 0) return "";
-      const d = Math.floor(diff / 86400);
-      const h = Math.floor((diff % 86400) / 3600);
+      if (diff <= 0) return null;
+      const h = Math.floor(diff / 3600);
       const m = Math.floor((diff % 3600) / 60);
       const s = diff % 60;
-      if (d > 0) {
-        return (
-          d +
-          "d " +
-          String(h).padStart(2, "0") +
-          ":" +
-          String(m).padStart(2, "0") +
-          ":" +
-          String(s).padStart(2, "0")
-        );
-      }
-      return (
-        String(h).padStart(2, "0") +
-        ":" +
-        String(m).padStart(2, "0") +
-        ":" +
-        String(s).padStart(2, "0")
-      );
+      return {
+        h: String(h).padStart(2, "0"),
+        m: String(m).padStart(2, "0"),
+        s: String(s).padStart(2, "0"),
+      };
     },
     dayList() {
       if (!this.packData) return [];
@@ -411,16 +476,14 @@ export default {
 </script>
 
 <style lang="less" scoped>
-/* ====== First Recharge Popup（通用确认弹窗壳） ====== */
-@fr-yellow: @primary-color;
-@fr-red: #ea4e3d;
-@muted: #d7a2fa;
-@panel-head: #430063;
-@order-bg: #2c1137;
-@order-border: #9346a9;
+/* ====== First Recharge Popup（资源版） ====== */
+@fr-yellow: #fbff00;
+@order-bg: #2a0a3d;
+@order-border: #7a2190;
+@muted: #9b7ab8;
 
 .fr-popup-wrapper {
-  width: 88% !important;
+  width: 86% !important;
   max-width: 360px;
   background: transparent !important;
   overflow: visible !important;
@@ -429,22 +492,17 @@ export default {
 .fr-popup {
   position: relative;
   width: 100%;
-  background: linear-gradient(180deg, #7a2190 0%, #532276 100%);
-  border-radius: 18px;
-  overflow: hidden;
-
-  &__head {
-    position: relative;
-    background: @panel-head;
-    padding: 14px 40px 12px;
-    text-align: center;
-  }
+  background: linear-gradient(180deg, #2b0740 0%, #1a0428 55%, #12021a 100%);
+  border-radius: 22px;
+  border: 1px solid fade(#9b4dff, 45%);
+  overflow: visible;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
 
   &__close {
     position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
+    right: 10px;
+    top: 10px;
+    z-index: 5;
     width: 28px;
     height: 28px;
     padding: 0;
@@ -456,58 +514,34 @@ export default {
     cursor: pointer;
   }
 
-  &__mission {
-    margin: 0 0 6px;
-    font-size: 11px;
-    font-weight: 800;
-    color: fade(#fff, 75%);
-    letter-spacing: 2px;
-    text-transform: uppercase;
+  &__visual {
+    position: relative;
+    padding: 8px 10px 0;
+    text-align: center;
   }
 
-  &__subtitle {
-    margin: 0;
-    font-size: 16px;
-    font-weight: 800;
-    color: #fff;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  &__hero {
+    display: block;
+    width: 92%;
+    max-width: 300px;
+    margin: 0 auto -6px;
+    height: auto;
+    pointer-events: none;
   }
 
-  &__highlight {
-    color: @fr-yellow;
+  &__title-img {
+    display: block;
+    width: 94%;
+    max-width: 320px;
+    margin: -68px auto 0;
+    height: auto;
+    position: relative;
+    z-index: 1;
+    pointer-events: none;
   }
 
   &__body {
-    padding: 14px 14px 18px;
-    background: linear-gradient(180deg, #7a2190 0%, #532276 100%);
-  }
-
-  &__timer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 12px;
-    padding: 8px 14px;
-    border-radius: 12px;
-    background: @order-bg;
-    border: 1px solid fade(@fr-red, 45%);
-
-    &-label {
-      font-size: 9px;
-      font-weight: 800;
-      color: fade(@fr-red, 90%);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      margin-bottom: 2px;
-    }
-
-    &-digits {
-      font-size: 22px;
-      font-weight: 900;
-      color: @fr-red;
-      letter-spacing: 1px;
-    }
+    padding: 4px 16px 16px;
   }
 
   &__action {
@@ -516,64 +550,208 @@ export default {
     align-items: center;
   }
 
-  &__price-card {
+  &__price-wrap {
+    position: relative;
     width: 100%;
+    margin: 4px 0 10px;
+    padding-top: 14px;
+  }
+
+  &__ribbon {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    z-index: 2;
+    width: 52%;
+    max-width: 168px;
+    transform: translateX(-50%);
+  }
+
+  &__ribbon-bg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  &__ribbon-inner {
+    position: absolute;
+    inset: 0;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    padding: 12px;
-    margin-bottom: 14px;
-    border-radius: 12px;
-    background: @order-bg;
-    border: 1px solid @order-border;
+    justify-content: center;
+    gap: 4px;
+    padding: 0 12px 2px;
+    box-sizing: border-box;
+  }
+
+  &__original-price {
+    font-size: 11px;
+    font-weight: 800;
+    color: #fff;
+    text-decoration: line-through;
+    white-space: nowrap;
+  }
+
+  &__discount {
+    font-size: 10px;
+    font-weight: 900;
+    color: #fff;
+    background: #c2183a;
+    border-radius: 999px;
+    padding: 1px 6px;
+    line-height: 1.3;
+  }
+
+  &__price-bar {
+    position: relative;
+    width: 100%;
+  }
+
+  &__price-bar-bg {
+    display: block;
+    width: 100%;
+    height: auto;
   }
 
   &__price-main {
+    position: absolute;
+    inset: 0;
     display: flex;
-    align-items: baseline;
+    align-items: center;
+    justify-content: center;
     gap: 6px;
+    padding: 0 28px;
+    box-sizing: border-box;
   }
 
   &__price-currency {
-    font-size: 16px;
-    font-weight: 900;
+    font-size: 28px;
+    font-weight: 600;
     color: @fr-yellow;
   }
 
   &__price {
-    font-size: 34px;
-    font-weight: 900;
+    font-size: 28px;
+    font-weight: 600;
     color: @fr-yellow;
     line-height: 1;
-    letter-spacing: -1px;
+    letter-spacing: -0.5px;
+    text-shadow: 0 0 10px fade(@fr-yellow, 35%);
   }
 
-  &__price-meta {
-    margin-top: 6px;
+  &__timer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 2px 0 12px;
+  }
+
+  &__timer-label {
+    margin: 0 0 10px;
+    font-size: 13px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+  }
+
+  &__timer-row {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
   }
 
-  &__original-price {
-    font-size: 13px;
-    color: fade(#fff, 45%);
-    text-decoration: line-through;
+  &__timer-cell {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      pointer-events: none;
+    }
+
+    em {
+      position: relative;
+      z-index: 1;
+      font-style: normal;
+      font-size: 26px;
+      font-weight: 600;
+      color: #fff;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+      /* 多层 text-shadow 模拟描边，兼容性好于仅用 -webkit-text-stroke */
+      text-shadow:
+        -1.5px -1.5px 0 #1a0428,
+        1.5px -1.5px 0 #1a0428,
+        -1.5px 1.5px 0 #1a0428,
+        1.5px 1.5px 0 #1a0428,
+        0 -1.5px 0 #1a0428,
+        0 1.5px 0 #1a0428,
+        -1.5px 0 0 #1a0428,
+        1.5px 0 0 #1a0428,
+        0 3px 6px rgba(0, 0, 0, 0.35);
+    }
   }
 
-  &__discount {
-    font-size: 11px;
+  &__timer-colon {
+    font-size: 26px;
     font-weight: 900;
     color: #fff;
-    background: fade(@btn-3d-green-to, 85%);
-    padding: 2px 8px;
-    border-radius: 6px;
-    letter-spacing: 0.5px;
+    line-height: 1;
+    margin-top: -2px;
+    text-shadow:
+      -1.5px -1.5px 0 #1a0428,
+      1.5px -1.5px 0 #1a0428,
+      -1.5px 1.5px 0 #1a0428,
+      1.5px 1.5px 0 #1a0428,
+      0 -1.5px 0 #1a0428,
+      0 1.5px 0 #1a0428,
+      -1.5px 0 0 #1a0428,
+      1.5px 0 0 #1a0428,
+      0 3px 6px rgba(0, 0, 0, 0.35);
   }
 
   &__btn {
     .btn-3d-green();
-    font-size: 15px;
+    height: auto;
+    min-height: 52px;
+    padding: 8px 12px 10px;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 16px;
+  }
+
+  &__btn-main {
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  &__btn-sub {
+    font-size: 11px;
+    font-weight: 700;
+    color: fade(#fff, 92%);
+    text-transform: none;
+    letter-spacing: 0;
+
+    em {
+      font-style: normal;
+      color: @fr-yellow;
+      font-weight: 900;
+      margin: 0 2px;
+    }
   }
 
   &__disclaimer {
@@ -582,28 +760,8 @@ export default {
     color: @muted;
     text-transform: uppercase;
     font-weight: 700;
-    letter-spacing: 1px;
+    letter-spacing: 0.8px;
     text-align: center;
-  }
-
-  &__up-to {
-    margin-top: 10px;
-    text-align: center;
-    font-size: 13px;
-    color: fade(#fff, 85%);
-    font-weight: 600;
-  }
-
-  &__up-to-percent {
-    display: inline-block;
-    margin: 0 4px;
-    padding: 2px 8px;
-    font-size: 14px;
-    font-weight: 900;
-    color: @fr-yellow;
-    background: fade(@order-bg, 90%);
-    border: 1px solid @order-border;
-    border-radius: 6px;
   }
 
   &__days {
@@ -611,6 +769,7 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    margin-top: 4px;
   }
 
   &__day {

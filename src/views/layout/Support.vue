@@ -1,42 +1,45 @@
 <template>
-  <div class="content">
-    <!-- Header with back button -->
+  <div class="content support-page">
     <header class="support-header">
-      <button class="support-header__back" @click="$router.go(-1)">
+      <button
+        class="support-header__back"
+        type="button"
+        @click="$router.go(-1)"
+      >
         <van-icon name="arrow-left" size="20" color="var(--wihte-color)" />
       </button>
       <h1 class="support-header__title">
-        {{ $lang.common_txt274 || "Support" }}
+        {{ $lang.common_txt274 || "- PLAYER SUPPORT -" }}
       </h1>
       <div class="support-header__spacer"></div>
     </header>
 
-    <div>
-      <div class="need_help">
-        <div class="need_help_p">
-          <img src="../../assets/img/otgame/Support_1.png" width="100%" />
-          <div
-            @click="goToDDD"
-            class="need_help_second t-c"
-            style="margin-top: -3px"
-          >
-            <p class="need_help_second_t f-t-15 f-w">
-              {{ $lang.common_txt274 }}
-            </p>
-            <p class="m-t-10">{{ $lang.common_txt275 }}</p>
-            <div class="support-cs-btn" role="button" @click.stop="goToDDD">
-              <van-icon name="service-o" size="22" color="#fff" />
-            </div>
-            <p class="f-t-15 support-link" role="button" @click.stop="goToDDD">
-              {{ $lang.common_txt276 }}
-            </p>
-          </div>
+    <div class="need_help">
+      <img
+        class="need_help__hero"
+        src="@/assets/img/otgame/Support_1.png"
+        alt=""
+      />
+      <div class="need_help_second t-c" @click="goToDDD">
+        <p class="need_help_second_t f-t-15 f-w">
+          {{ $lang.common_txt274 }}
+        </p>
+        <p class="need_help_second__hint m-t-10">{{ $lang.common_txt275 }}</p>
+        <div class="support-cs-btn" role="button" @click.stop="goToDDD">
+          <img
+            class="support-cs-btn__img"
+            src="@/assets/img/otgame/Support_cs.png"
+            alt=""
+          />
         </div>
+        <p class="f-t-15 support-link" role="button" @click.stop="goToDDD">
+          {{ $lang.common_txt276 }}
+        </p>
       </div>
     </div>
 
     <div>
-      <div class="d-flex" style="justify-content: center">
+      <div class="d-flex m-t-10" style="justify-content: center">
         <p class="details_faq_left"></p>
         <p class="m-l-10 m-r-10 f-t-14 faq-section-title">
           {{ $lang.common_txt297 }}
@@ -77,7 +80,6 @@ export default {
   data() {
     return {
       csUrl: "",
-      // 常见问题列表（对应图片中的内容）
       problemList: [
         {
           question: this.$lang.common_txt298,
@@ -120,13 +122,10 @@ export default {
         this.csUrl = "";
       }
     },
-    // 切换问题的展开/收起
     toggleProblem(index) {
-      // 关闭其他问题，只保持一个展开（可选逻辑，可删除）
       this.problemList.forEach((item, i) => {
         if (i !== index) item.isOpen = false;
       });
-      // 切换当前问题的状态
       this.problemList[index].isOpen = !this.problemList[index].isOpen;
     },
   },
@@ -140,6 +139,12 @@ export default {
 @cell: #2d1545;
 @muted: #d7a2fa;
 @gold-soft: #ffe4b5;
+
+.support-page {
+  min-height: 100%;
+  padding-bottom: 24px;
+  box-sizing: border-box;
+}
 
 .support-header {
   display: flex;
@@ -175,32 +180,50 @@ export default {
   }
 }
 
-.need_help_p {
-  background: url(../../assets/img/otgame/Support_4.png) no-repeat;
-  background-size: 100% 100%;
-  padding: 20px;
+.need_help {
+  padding: 8px 12px 0;
 }
+
+.need_help__hero {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+
 .need_help_second {
   position: relative;
   z-index: 1;
-  background: url(../../assets/img/otgame/Support_3.png) no-repeat;
-  background-size: 100% 100%;
-  padding: 6px 0;
+  margin-top: 10px;
+  padding: 16px 12px 14px;
+  background: url("@/assets/img/otgame/Support_3.png") no-repeat center / 100%
+    100%;
+  border: 1px solid fade(@border-color, 55%);
+  border-radius: 14px;
+  box-sizing: border-box;
+  cursor: pointer;
 }
+
 .need_help_second_t {
-  background: @primary-gradient-h;
-  -webkit-background-clip: text;
-  color: transparent;
+  color: @primary-color;
+  letter-spacing: 0.5px;
+}
+
+.need_help_second__hint {
+  color: fade(#fff, 88%);
+  font-size: 12px;
+  line-height: 1.4;
+  padding: 0 8px;
 }
 
 .support-cs-btn {
   position: relative;
   z-index: 2;
-  width: 48px;
-  height: 48px;
-  margin: 10px auto 6px;
+  width: 42px;
+  height: 43px;
+  margin: 12px auto 8px;
   border-radius: 50%;
-  background: #2f6fed;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -208,6 +231,14 @@ export default {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
   pointer-events: auto;
+
+  &__img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    pointer-events: none;
+  }
 }
 
 .support-link {
@@ -225,7 +256,6 @@ export default {
   color: @primary-color;
 }
 
-/* 新增：常见问题样式 */
 .common-problems {
   margin: 10px;
   background: @cell;
@@ -238,6 +268,10 @@ export default {
   border-bottom: 1px solid fade(@border-color, 20%);
   padding: 10px 0;
   cursor: pointer;
+
+  &:last-child {
+    border-bottom: none;
+  }
 }
 .problem-header {
   display: flex;
@@ -246,21 +280,12 @@ export default {
   color: @gold-soft;
   font-size: 13px;
 }
-.arrow-icon {
-  color: @wihte-color;
-  transition: transform 0.3s ease;
-}
-/* 箭头旋转动画 */
-.rotate {
-  transform: rotate(180deg);
-}
 .problem-answer {
   color: @muted;
   margin-top: 10px;
   padding-left: 5px;
   line-height: 1.6;
 }
-/* 文字从左滑出动画 */
 .slide-left-enter-from,
 .slide-left-leave-to {
   transform: translateX(-20px);

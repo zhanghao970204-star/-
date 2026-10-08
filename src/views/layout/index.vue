@@ -239,7 +239,8 @@ export default {
       return (
         !path.includes("/Country") &&
         !path.includes("/Crowdfunding") &&
-        !path.includes("/appDetail")
+        !path.includes("/appDetail") &&
+        !path.includes("/Support")
       );
     },
   },

@@ -159,6 +159,7 @@ import {
   LuckyRoulette,
   GetLuckyRouletteRecord,
 } from "@/api/common";
+import { playWheelSound, playWheelResultSound } from "@/utils/sound";
 
 export default {
   name: "Crowdfunding",
@@ -328,6 +329,7 @@ export default {
     // 执行转盘旋转
     rotateTurntable(targetIndex) {
       this.GetLuckyRoulette();
+      playWheelSound();
       // 计算每个奖品区块角度
       const sectorAngle = 360 / this.prizeCount;
 
@@ -341,6 +343,7 @@ export default {
       // 动画结束后恢复状态
       setTimeout(() => {
         this.isSpinning = false;
+        playWheelResultSound();
         // 移除了中奖弹窗相关代码
       }, 4500); // 需要与CSS动画时间匹配
     },

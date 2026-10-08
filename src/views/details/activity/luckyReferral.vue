@@ -203,6 +203,7 @@ import {
   GetLuckyRouletteLatestAwards
 } from '@/api/common'
 import { reportPromoPanel } from '@/utils/common'
+import { playWheelSound, playWheelResultSound, playClickSound } from '@/utils/sound'
 import NewRoundTurntable from '@/components/activity/NewRoundTurntable.vue'
 import mysteryCoin from '@/assets/img/activity/turntable/mystery_coin.png'
 import mysteryBox from '@/assets/img/activity/turntable/mystery_box.png'
@@ -299,6 +300,7 @@ export default {
     async spin() {
       if (this.isSpinning) return
       if (this.remainingSpins <= 0) {
+        playClickSound()
         this.showNoSpins = true
         return
       }
@@ -309,6 +311,7 @@ export default {
         this._pendingSpinResult = res
         const index = Math.floor(Math.random() * this.prizeList.length)
         if (this.$refs.turntable && this.$refs.turntable.rotate) {
+          playWheelSound()
           this.$refs.turntable.rotate(index)
         } else {
           this.onSpinEnd()
@@ -323,6 +326,7 @@ export default {
       const res = this._pendingSpinResult
       this._pendingSpinResult = null
       this.isSpinning = false
+      playWheelResultSound()
       if (res && res.content) {
         const d = res.content
         const prevEarnings = this.currentEarnings

@@ -259,6 +259,7 @@ import {
   GetLuckyRouletteRecord,
   ReceiveLuckyRouletteBonus,
 } from "@/api/common";
+import { playWheelSound, playWheelResultSound } from "@/utils/sound";
 export default {
   name: "LuckyRoulette",
   props: {
@@ -493,6 +494,7 @@ export default {
     // 执行转盘旋转
     rotateTurntable(targetIndex) {
       this.GetLuckyRoulette();
+      playWheelSound();
       // 计算每个奖品区块角度
       const sectorAngle = 360 / this.prizeCount;
 
@@ -506,6 +508,7 @@ export default {
       // 动画结束后恢复状态
       setTimeout(() => {
         this.isSpinning = false;
+        playWheelResultSound();
         this.showDialog = true;
         this.timer++;
         this.showDialog = true;
