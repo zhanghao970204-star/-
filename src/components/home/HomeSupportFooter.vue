@@ -9,6 +9,8 @@
         class="home-support__pay-icon"
         :src="item.src"
         :alt="item.alt"
+        loading="lazy"
+        decoding="async"
       />
     </div>
     <p class="home-support__rate">
@@ -17,6 +19,8 @@
 
     <img
       class="home-support__brand"
+      loading="lazy"
+      decoding="async"
       src="@/assets/img/login/logo.webp"
       alt=""
     />
@@ -27,21 +31,21 @@
         target="_blank"
         rel="noopener noreferrer"
       >
-        <img src="@/assets/img/footer/support-ton.svg" alt="TON" />
+        <img src="@/assets/img/footer/support-ton.svg" alt="TON" loading="lazy" decoding="async" />
       </a>
       <a
         href="https://cryptogambling.org/"
         target="_blank"
         rel="noopener noreferrer"
       >
-        <img src="@/assets/img/footer/support-verified.webp" alt="Verified" />
+        <img src="@/assets/img/footer/support-verified.webp" alt="Verified" loading="lazy" decoding="async" />
       </a>
       <a
         href="https://cert.gcb.cw/certificate?id=ZXlKcGRpSTZJbWQ0UTBwa1NUSjNSV0pCTTI4NGVYQjFkSGxPSzNjOVBTSXNJblpoYkhWbElqb2lZakJVVkU4NFVrYzFSRzlxTm1kcFNIWmlUa1ZxVVQwOUlpd2liV0ZqSWpvaU1tVmpNekV6TVRKak0ySXlaR0kzWkdZeE16QmtOVGcyWkRNeU9EZGhNV1EzTmpnNE4ySXhOek16WlRJNFpEZzBaV0UyWVRrNE5EUTBOamRsTkRCaVpDSXNJblJoWnlJNklpSjk="
         target="_blank"
         rel="noopener noreferrer"
       >
-        <img src="@/assets/img/footer/support-gcb.svg" alt="GCB" />
+        <img src="@/assets/img/footer/support-gcb.svg" alt="GCB" loading="lazy" decoding="async" />
       </a>
     </div>
 
@@ -60,6 +64,8 @@
     </p>
     <img
       class="home-support__age"
+      loading="lazy"
+      decoding="async"
       src="@/assets/img/otgame/eighteen.png"
       width="34"
       alt="18+"

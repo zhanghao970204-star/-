@@ -5,16 +5,19 @@ import { VantResolver } from 'unplugin-vue-components/resolvers'
 import requireTransform from 'vite-plugin-require-transform'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { productionEsbuild, productionOutput } from './scripts/production-output.mjs'
+import { API_ORIGIN, API_TIMEOUT_MS } from './src/utils/appConstants.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const srcDir = fileURLToPath(new URL('./src/', import.meta.url))
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   // App 本地 HTTP 服务与 CDN 均按绝对 /assets/... 解析（勿用 file://）
   base: '/',
   plugins: [
-    vue(),
+    vue({ template: { compilerOptions: { comments: command !== 'build' } } }),
+    productionOutput(),
     Components({
       resolvers: [VantResolver({ importStyle: true })],
       dts: false
@@ -23,6 +26,7 @@ export default defineConfig({
       fileRegex: /\.(js|jsx|vue)$/
     })
   ],
+  esbuild: command === 'build' ? productionEsbuild : {},
   resolve: {
     alias: [
       { find: /^@\//, replacement: srcDir }
@@ -44,10 +48,10 @@ export default defineConfig({
     // 本地备用代理（优先直连 us 域名；若仍走 /a 则转到 us）
     proxy: {
       '/a': {
-        target: 'https://us.luckyhubx.cc',
+        target: API_ORIGIN,
         changeOrigin: true,
         secure: false,
-        timeout: 60000
+        timeout: API_TIMEOUT_MS
       }
     }
   },
@@ -58,6 +62,7 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: false,
+    minify: 'esbuild',
     cssCodeSplit: true,
     commonjsOptions: {
       transformMixedEsModules: true
@@ -66,7 +71,8 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           if (!id.includes('node_modules')) return
-          if (id.includes('vant')) return 'vant'
+          // Let Rollup split Vant by actual usage instead of pulling every
+          // route's date picker / uploader / dialog into one initial chunk.
           if (
             id.includes('/vue/') ||
             id.includes('/vue-router/') ||
@@ -84,4 +90,4 @@ export default defineConfig({
       }
     }
   }
-})
+}))

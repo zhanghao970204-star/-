@@ -1,7 +1,13 @@
 import { normalizeCountryCode } from "@/utils/country";
+import { DEFAULT_LOCALE, STORAGE_KEYS } from './appConstants';
 
-/** 与 main.js localeLoaders / src/lang 保持一致 */
-export const LOCAL_LOCALES = ["en", "es", "fr", "pt"];
+export const LOCALE_LOADERS = Object.freeze({
+  en: () => import('../lang/en'),
+  es: () => import('../lang/es'),
+  fr: () => import('../lang/fr'),
+  pt: () => import('../lang/pt'),
+});
+export const LOCAL_LOCALES = Object.freeze(Object.keys(LOCALE_LOADERS));
 
 /**
  * 本地国家码 → 默认语言
@@ -65,12 +71,12 @@ export function resolveCountryLanguage(item = {}) {
   const fromApi = normalizeLang(item.defaultLanguage);
   if (fromApi) return fromApi;
 
-  return "en";
+  return DEFAULT_LOCALE;
 }
 
 /** 写入切换国家后的默认语言 */
 export function applyCountryLanguage(item) {
   const lang = resolveCountryLanguage(item);
-  localStorage.setItem("defaultLanguage", lang);
+  localStorage.setItem(STORAGE_KEYS.language, lang);
   return lang;
 }

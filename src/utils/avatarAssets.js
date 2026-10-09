@@ -1,15 +1,11 @@
+import { createAssetResolver } from './assetResolver'
+
 const avatarModules = import.meta.glob(
   "@/assets/img/avatar/*.{png,jpg,jpeg,gif,webp,svg}",
   { eager: true, import: "default" },
 );
 
-function resolveFromGlob(modules, fileName) {
-  const target = String(fileName);
-  const entry = Object.entries(modules).find(([key]) =>
-    key.endsWith(`/${target}`),
-  );
-  return entry ? entry[1] : "";
-}
+const resolveAvatar = createAssetResolver(avatarModules);
 
 export const AVATAR_COUNT = 16;
 
@@ -22,10 +18,10 @@ export function avatarImg(index) {
   const i = Number(index);
   if (!Number.isFinite(i) || i < 0) return "";
   return (
-    resolveFromGlob(avatarModules, `avatar_${i}.png`) ||
-    resolveFromGlob(avatarModules, `avatar_${i}.jpg`) ||
-    resolveFromGlob(avatarModules, `avatar_${i}.jpeg`) ||
-    resolveFromGlob(avatarModules, `avatar_${i}.webp`) ||
+    resolveAvatar(`avatar_${i}.png`) ||
+    resolveAvatar(`avatar_${i}.jpg`) ||
+    resolveAvatar(`avatar_${i}.jpeg`) ||
+    resolveAvatar(`avatar_${i}.webp`) ||
     ""
   );
 }

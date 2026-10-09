@@ -79,7 +79,8 @@
               class="content-swiper--img"
               :src="item.advertisementImg"
               alt=""
-              loading="lazy"
+              :loading="index === 0 ? 'eager' : 'lazy'"
+              :fetchpriority="index === 0 ? 'high' : 'auto'"
               decoding="async"
               @error="onBannerImgError"
             />

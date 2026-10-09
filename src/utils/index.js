@@ -5,6 +5,10 @@ import router from "../router";
 import { emitHeaderRefresh, shouldRefreshHeader } from "@/utils/headerRefresh";
 import { resolveClientIdSync } from "@/utils/nativeDevice";
 import { clearGuestFlags } from "@/utils/guestAuth";
+import {
+  API_ORIGIN, API_PATH, API_TIMEOUT_MS, DEFAULT_LOCALE,
+  DEFAULT_PLATFORM, DEFAULT_CURRENCY, STORAGE_KEYS,
+} from './appConstants';
 
 /**
  * App（含 iOS WKWebView）必须同源 `/a/`，由 Flutter 反代，避免跨域 Network Error。
@@ -33,9 +37,9 @@ function isFlutterAppWebView() {
 
 function resolveApiBase() {
   if (isFlutterAppWebView()) {
-    return "/a/";
+    return API_PATH;
   }
-  return "https://us.luckyhubx.cc/a/";
+  return API_ORIGIN + API_PATH;
 }
 
 // 创建 axios 实例，将来对创建出来的实例，进行自定义配置
@@ -43,12 +47,12 @@ function resolveApiBase() {
 const instance = axios.create({
   baseURL: resolveApiBase(),
   //   超时时间
-  timeout: 60000,
+  timeout: API_TIMEOUT_MS,
   headers: {
     "Content-Type": "application/json", // 默认请求头
   },
   params: {
-    lang: localStorage.getItem("defaultLanguage") || "en",
+    lang: localStorage.getItem(STORAGE_KEYS.language) || DEFAULT_LOCALE,
   },
   transformRequest: [
     (data, headers) => {
@@ -60,10 +64,10 @@ const instance = axios.create({
           mode: 2, // 固定模式
           code: 2,
           timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, //客户端时区
-          platform: localStorage.getItem("platform") || "usbet", //平台名称
+          platform: localStorage.getItem("platform") || DEFAULT_PLATFORM, //平台名称
           uuid: clientId,
           online: true, //是否在线
-          currency: localStorage.getItem("currency") || "usd", //币种
+          currency: localStorage.getItem("currency") || DEFAULT_CURRENCY, //币种
           isWap: true, //是否手机端
           ...data, // 合并用户传入的数据
         };
@@ -86,7 +90,7 @@ instance.interceptors.request.use(
     } else if (!window.fingerprint) {
       const cached =
         typeof localStorage !== "undefined"
-          ? localStorage.getItem("ot_fp_vid")
+          ? localStorage.getItem(STORAGE_KEYS.fingerprint)
           : null;
       if (cached) {
         window.fingerprint = cached;

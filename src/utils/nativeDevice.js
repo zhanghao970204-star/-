@@ -11,6 +11,8 @@
  *   window.setNativeClientIds({ uuid: 'flutter-uuid' });
  */
 
+import { STORAGE_KEYS } from './appConstants';
+
 const UUID_KEY = "__NATIVE_UUID__";
 
 function norm(v) {
@@ -92,7 +94,7 @@ export function peekVueLocalUuid() {
     if (window.fingerprint) return norm(window.fingerprint);
     if (typeof localStorage !== "undefined") {
       return (
-        norm(localStorage.getItem("ot_fp_vid")) ||
+        norm(localStorage.getItem(STORAGE_KEYS.fingerprint)) ||
         norm(localStorage.getItem("vue_guest_uuid")) ||
         ""
       );

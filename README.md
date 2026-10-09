@@ -1,4 +1,4 @@
-# BISONFUN H5
+# LuckyPlay H5
 
 Vue 3 + Vite + JavaScript (Options API) + Vant 4.
 

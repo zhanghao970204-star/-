@@ -48,15 +48,15 @@ export default {
       serviceList: [
         {
           img: require("@/assets/img/common/tt_icon.png"),
-          txt: "BISONFUN | Official Channel",
+          txt: "LuckyPlay | Official Channel",
         },
         {
           img: require("@/assets/img/common/tt_icon.png"),
-          txt: "BISONFUN | Finance Channel",
+          txt: "LuckyPlay | Finance Channel",
         },
         {
           img: require("@/assets/img/common/whats-w.png"),
-          txt: "BISONFUN | Finance Channel",
+          txt: "LuckyPlay | Finance Channel",
         },
       ],
     };

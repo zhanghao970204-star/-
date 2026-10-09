@@ -262,7 +262,7 @@
                   margin-top: -20px;
                 "
               >
-                {{ $lang.common_txt286 }} BISONFUN
+                {{ $lang.common_txt286 }} LuckyPlay
               </p>
             </div>
           </div>

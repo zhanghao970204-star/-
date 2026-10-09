@@ -238,8 +238,8 @@ export default {
         if (navigator.share) {
           navigator
             .share({
-              title: "BISONFUN",
-              text: "BISONFUN",
+              title: "LuckyPlay",
+              text: "LuckyPlay",
               url: this.inviteCode,
             })
             .catch((err) => {

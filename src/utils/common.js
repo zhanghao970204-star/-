@@ -1,3 +1,5 @@
+import { STORAGE_KEYS } from './appConstants'
+
 // 千分位
 export function formatNumberWithCommas(value) {
   if (this.getCurrency !== 'BRL') {
@@ -68,7 +70,7 @@ export function generateUUID() {
     .replace(/(.8{})(.{4})(.{4})(.{4})(.{12})/, '$1-$2-$3-$4-$5')
 }
 //指纹uuid
-const FP_CACHE_KEY = 'ot_fp_vid'
+const FP_CACHE_KEY = STORAGE_KEYS.fingerprint
 
 export async function getFingerprint() {
   try {

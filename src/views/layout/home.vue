@@ -245,6 +245,8 @@
                             class="home-hot__cover"
                             :src="hot.gameIcon"
                             :alt="hot.gameName"
+                            loading="lazy"
+                            decoding="async"
                           />
                         </div>
                       </div>
@@ -259,7 +261,7 @@
                     class="vendor-grid__item"
                     @click="goVendor(item2)"
                   >
-                    <img :src="item2.icon" class="vendor-grid__icon" />
+                    <img :src="item2.icon" class="vendor-grid__icon" loading="lazy" decoding="async" />
                   </div>
                 </div>
                 <div
@@ -315,6 +317,8 @@
                     :key="index"
                     :src="item.src"
                     class="home-community-icon"
+                    loading="lazy"
+                    decoding="async"
                     @click="openLink(item.url)"
                   />
                 </div>
@@ -337,7 +341,7 @@
                       class="home-tg-item"
                       @click="openLink(item.url)"
                     >
-                      <img :src="item.src" width="34" alt="" />
+                      <img :src="item.src" width="34" alt="" loading="lazy" decoding="async" />
                       <span class="home-tg-item__label">{{ item.label }}</span>
                     </div>
                   </div>

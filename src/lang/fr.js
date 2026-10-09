@@ -4,7 +4,7 @@ export default {
   cont_txt3: `Movies`,
   cont_txt4: `Books`,
   cont_txt5: `Children`,
-  cont_txt6: `BISONFUN Slots - Casino Games`,
+  cont_txt6: `LuckyPlay Slots - Casino Games`,
   cont_txt7: `BETTA GAMES`,
   cont_txt8: `Verified by the app`,
   cont_txt9: `reviews`,
@@ -17,7 +17,7 @@ export default {
   cont_txt16: `Add to wish list`,
   cont_txt17: `wish list`,
   cont_txt18: `About this game`,
-  cont_txt19: `🎮 BISONFUN is a leading online gambling platform in Nigeria, holding a legal license issued by the National Lottery Regulatory Commission (NLRC). The Group has been in the industry for 5 years and is known for its integrity and brand influence, providing the best experiences in slot machines, innovative gameplay, generous bonuses, and exclusive VIP promotions. BISONFUN Casino is an official partner of the Paystack and Flutterwave payment systems, ensuring fast and secure transactions. With the support of the government and authorized agencies, BISONFUN continues to innovate and offer reliable and exciting entertainment.`,
+  cont_txt19: `🎮 LuckyPlay is a leading online gambling platform in Nigeria, holding a legal license issued by the National Lottery Regulatory Commission (NLRC). The Group has been in the industry for 5 years and is known for its integrity and brand influence, providing the best experiences in slot machines, innovative gameplay, generous bonuses, and exclusive VIP promotions. LuckyPlay Casino is an official partner of the Paystack and Flutterwave payment systems, ensuring fast and secure transactions. With the support of the government and authorized agencies, LuckyPlay continues to innovate and offer reliable and exciting entertainment.`,
   cont_txt20: `Mis à jour le`,
   cont_txt21: `10 févr. 2025`,
   cont_txt22: `casino`,
@@ -165,8 +165,8 @@ export default {
   home_txt3: "Plus de avantages vous attendent sur les canaux officiels",
   home_txt4: "Partager sur les réseaux sociaux",
   home_txt5:
-    "BISONFUN est une marque gérée par GAMEWIZ BRASIL LTDA, CNPJ 56.195.099/0001-89, dûment autorisée par le Ministère des Finances en vertu de l'Autorisation SPA/MFn°2.104-10",
-  home_txt6: "@2024 BISONFUN Tous droits réservés",
+    "LuckyPlay est une marque gérée par GAMEWIZ BRASIL LTDA, CNPJ 56.195.099/0001-89, dûment autorisée par le Ministère des Finances en vertu de l'Autorisation SPA/MFn°2.104-10",
+  home_txt6: "@2024 LuckyPlay Tous droits réservés",
   home_txt7: "Ne plus afficher aujourd'hui",
   home_txt8: "Ne plus demander jamais",
   home_txt9: "Déposer maintenant !",
@@ -184,7 +184,7 @@ export default {
             nous vous invitons à contacter directement notre responsable ! Nous établirons un plan de salaire hebdomadaire détaillé ! Tant que vous avez la volonté, tant que vous avez le courage ! Tant que vous avez les ressources ! Nous vous invitons à nous rejoindre !
           </p>
           <p class="m-t-20">
-            Conditions pour devenir agent : Influenceur connu sur les réseaux sociaux, passionné par la promotion. Aimez-vous la plateforme BISONFUN ? Avez-vous un grand nombre d'abonnés ou de groupes sociaux capables de convaincre un nombre significatif d'utilisateurs valides de rejoindre la plateforme BISONFUN ? Collaborez avec nous à long terme et participez à nos plans opérationnels et à nos activités promotionnelles.
+            Conditions pour devenir agent : Influenceur connu sur les réseaux sociaux, passionné par la promotion. Aimez-vous la plateforme LuckyPlay ? Avez-vous un grand nombre d'abonnés ou de groupes sociaux capables de convaincre un nombre significatif d'utilisateurs valides de rejoindre la plateforme LuckyPlay ? Collaborez avec nous à long terme et participez à nos plans opérationnels et à nos activités promotionnelles.
           </p>
           <p class="m-t-20">
             Nous attendons avec impatience votre participation et votre financement : avantages VIP exclusifs et services de règlement de commissions exclusifs. Autres récompenses, telles que des dividendes de profit hebdomadaires. Salaire hebdomadaire élevé : 10 000 - 50 000 (sans limite supérieure).
@@ -314,7 +314,7 @@ export default {
           au moins 2 tours de paris avec la valeur reçue.
         </p>
         <p class="content-c5--cash">
-          8.La décision finale sur toutes les questions est à la discrétion de BISONFUN.
+          8.La décision finale sur toutes les questions est à la discrétion de LuckyPlay.
         </p>`,
   bonus_txt12: `Détails de l'événement`,
   bonus_txt13: `Les nouveaux utilisateurs inscrits recevront un bonus aléatoire de 3500 
@@ -336,7 +336,7 @@ export default {
           des retraits complets.
         </p>
         <p class="m-t-10">
-          5.BISONFUN se réserve le droit de modifier, d'interrompre ou d'annuler l'activité
+          5.LuckyPlay se réserve le droit de modifier, d'interrompre ou d'annuler l'activité
           à tout moment.
         </p>`,
   bonus_txt15: `Connecter & Inscrire`,
@@ -371,7 +371,7 @@ export default {
           au moins 3 tours de paris avec la valeur reçue.
         </p>
         <p class="m-t-10">
-          8.La décision finale sur toutes les questions est à la discrétion de BISONFUN.
+          8.La décision finale sur toutes les questions est à la discrétion de LuckyPlay.
         </p>`,
   bonus_txt22: `Déposer et participer`,
   bonus_txt23: `Mon lien`,
@@ -457,7 +457,7 @@ export default {
           7. Cependant, avant de pouvoir retirer la récompense de remboursement d'équipe, votre équipe doit effectuer au moins 3 tours de paris avec le montant de remboursement reçu.
         </p>
         <p class="m-t-10">
-          8. La décision finale sur toutes les questions relatives aux remboursements d'équipe est à la discrétion de BISONFUN.
+          8. La décision finale sur toutes les questions relatives aux remboursements d'équipe est à la discrétion de LuckyPlay.
         </p>`,
   bonus_txt41: `Règles des récompenses journalières VIP`,
   bonus_txt42: `Après avoir atteint le niveau correspondant, si la valeur du pari valide est >=
@@ -550,14 +550,14 @@ export default {
 
     <p style="line-height: 20px; margin-top: 10px">1. Introduction :</p>
     <p class=" m-t-10" style="line-height: 20px">
-      Chez BISONFUN, notre objectif est de fournir aux utilisateurs la meilleure expérience possible. Par conséquent, pour vous offrir des services de plus en plus personnalisés (notre utilisateur), nous avons besoin de comprendre vos habitudes de jeu et vos interactions.
+      Chez LuckyPlay, notre objectif est de fournir aux utilisateurs la meilleure expérience possible. Par conséquent, pour vous offrir des services de plus en plus personnalisés (notre utilisateur), nous avons besoin de comprendre vos habitudes de jeu et vos interactions.
       Cependant, la confidentialité et la sécurité de vos données personnelles sont toujours notre priorité absolue. C'est pourquoi nous souhaitons expliquer de manière transparente et détaillée comment nous collectons, stockons, partageons et utilisons vos données personnelles, ainsi que préciser les choix et options de contrôle dont vous disposez lorsque vous décidez de partager de telles données personnelles. C'est le but principal de cette Politique de confidentialité et de protection des données personnelles ("Politique").
     </p>
 
     <p class="m-t-10" style="line-height: 20px">2. À propos de cette Politique</p>
 
     <p class="m-t-10" style="line-height: 20px">
-      Cette Politique décrit les détails clés concernant la relation entre les données personnelles des utilisateurs et BISONFUN. Cette Politique s'applique à tous les services de BISONFUN et à tout service connexe (collectivement désignés comme "Services de BISONFUN"). Les conditions régissant l'utilisation des Services de BISONFUN par les utilisateurs sont définies dans nos Conditions générales.
+      Cette Politique décrit les détails clés concernant la relation entre les données personnelles des utilisateurs et LuckyPlay. Cette Politique s'applique à tous les services de LuckyPlay et à tout service connexe (collectivement désignés comme "Services de LuckyPlay"). Les conditions régissant l'utilisation des Services de LuckyPlay par les utilisateurs sont définies dans nos Conditions générales.
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
@@ -573,7 +573,7 @@ export default {
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
-      Expliquer comment nous utilisons les données personnelles que les utilisateurs nous partagent pour offrir une bonne expérience lors de l'utilisation des services de BISONFUN ;
+      Expliquer comment nous utilisons les données personnelles que les utilisateurs nous partagent pour offrir une bonne expérience lors de l'utilisation des services de LuckyPlay ;
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
@@ -585,7 +585,7 @@ export default {
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
-      D'autre part, si les utilisateurs ne sont pas d'accord avec le contenu de cette Politique, nous déclarons que les utilisateurs ont la liberté de décider d'utiliser et/ou de continuer à utiliser les services de BISONFUN.
+      D'autre part, si les utilisateurs ne sont pas d'accord avec le contenu de cette Politique, nous déclarons que les utilisateurs ont la liberté de décider d'utiliser et/ou de continuer à utiliser les services de LuckyPlay.
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
@@ -625,7 +625,7 @@ export default {
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
-      Pour permettre aux utilisateurs d'exercer facilement ces droits et d'enregistrer leurs préférences concernant l'utilisation que BISONFUN fait de leurs données personnelles, nous fournissons les options suivantes via les Paramètres de confidentialité sur la page "Mon profil" :
+      Pour permettre aux utilisateurs d'exercer facilement ces droits et d'enregistrer leurs préférences concernant l'utilisation que LuckyPlay fait de leurs données personnelles, nous fournissons les options suivantes via les Paramètres de confidentialité sur la page "Mon profil" :
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
@@ -659,15 +659,15 @@ export default {
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
-      Lorsque les utilisateurs s'inscrivent aux services de BISONFUN : Après l'inscription, nous collectons certaines données personnelles, telles que, mais sans s'y limiter : adresse e-mail, nom complet, sexe, pays/région, adresse IP, appareil utilisé et ses identifiants, afin qu'ils puissent utiliser les services de BISONFUN pertinents.
+      Lorsque les utilisateurs s'inscrivent aux services de LuckyPlay : Après l'inscription, nous collectons certaines données personnelles, telles que, mais sans s'y limiter : adresse e-mail, nom complet, sexe, pays/région, adresse IP, appareil utilisé et ses identifiants, afin qu'ils puissent utiliser les services de LuckyPlay pertinents.
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
-      Par l'utilisation des services de BISONFUN : Lorsque les utilisateurs utilisent les services de BISONFUN, nous collectons des données personnelles sur leur utilisation des services de BISONFUN pertinents, telles que les jeux joués, l'historique de jeu, la liste des appareils utilisés pour accéder au service, le pseudonyme utilisé lors de l'accès depuis un seul appareil, les changements de position dans le classement, les changements des soldes de points virtuels pour chaque utilisateur, l'adresse IP utilisée pour l'accès, et autres informations nécessaires pour atteindre nos objectifs commerciaux. Par exemple, les utilisateurs peuvent également nous fournir occasionnellement des données personnelles supplémentaires ou nous autoriser à collecter d'autres données personnelles pour offrir plus de fonctionnalités ou de caractéristiques. Les données personnelles collectées nous permettent également d'atténuer les risques liés aux utilisateurs et aux services et/ou de prévenir la fraude.
+      Par l'utilisation des services de LuckyPlay : Lorsque les utilisateurs utilisent les services de LuckyPlay, nous collectons des données personnelles sur leur utilisation des services de LuckyPlay pertinents, telles que les jeux joués, l'historique de jeu, la liste des appareils utilisés pour accéder au service, le pseudonyme utilisé lors de l'accès depuis un seul appareil, les changements de position dans le classement, les changements des soldes de points virtuels pour chaque utilisateur, l'adresse IP utilisée pour l'accès, et autres informations nécessaires pour atteindre nos objectifs commerciaux. Par exemple, les utilisateurs peuvent également nous fournir occasionnellement des données personnelles supplémentaires ou nous autoriser à collecter d'autres données personnelles pour offrir plus de fonctionnalités ou de caractéristiques. Les données personnelles collectées nous permettent également d'atténuer les risques liés aux utilisateurs et aux services et/ou de prévenir la fraude.
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
-      Par l'intermédiaire de tiers – Nous pouvons également recevoir des données personnelles relatives aux utilisateurs et à leurs activités de la part de tiers (y compris les annonceurs et les partenaires avec lesquels nous travaillons) afin de pouvoir fournir les services de BISONFUN (voir la section 7 "Partage des données personnelles des utilisateurs" ci-dessous). Si les utilisateurs concernés autorisent le tiers ou MEGA SLOTS à partager de telles données, ou si BISONFUN a un intérêt légitime à utiliser ces données personnelles pour fournir les services de BISONFUN, nous utiliserons ces données personnelles.
+      Par l'intermédiaire de tiers – Nous pouvons également recevoir des données personnelles relatives aux utilisateurs et à leurs activités de la part de tiers (y compris les annonceurs et les partenaires avec lesquels nous travaillons) afin de pouvoir fournir les services de LuckyPlay (voir la section 7 "Partage des données personnelles des utilisateurs" ci-dessous). Si les utilisateurs concernés autorisent le tiers ou MEGA SLOTS à partager de telles données, ou si LuckyPlay a un intérêt légitime à utiliser ces données personnelles pour fournir les services de LuckyPlay, nous utiliserons ces données personnelles.
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
@@ -687,12 +687,12 @@ export default {
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
-      Informations d'inscription au compte, Il s'agit des données personnelles fournies par l'utilisateur ou collectées par nous afin que l'utilisateur puisse utiliser les services de BISONFUN.
+      Informations d'inscription au compte, Il s'agit des données personnelles fournies par l'utilisateur ou collectées par nous afin que l'utilisateur puisse utiliser les services de LuckyPlay.
       Cela inclut le nom de l'utilisateur, les documents d'identification, l'adresse e-mail, la date de naissance, le sexe et l'adresse physique. Les utilisateurs doivent fournir certaines données personnelles lors de la création d'un compte. Les utilisateurs peuvent également choisir de fournir des données personnelles supplémentaires pour personnaliser leur expérience.
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
-      Données d'utilisation. Fait référence aux données personnelles collectées lorsque les utilisateurs utilisent les services de BISONFUN, qui peuvent inclure : - Informations sur le type de plan de service de BISONFUN. - Informations sur les interactions des utilisateurs avec les services de BISONFUN, telles que les jeux joués, l'historique de jeu, la liste des appareils utilisés pour accéder au service, l'historique des pseudonymes utilisés pour accéder depuis un seul appareil, les changements de position dans le classement, les changements des soldes de points virtuels pour chaque utilisateur, et les interactions avec d'autres utilisateurs de BISONFUN. - Cela peut également inclure des informations sur l'utilisation d'applications tierces et toute publicité que vous recevez. - Contenu des utilisateurs qu'ils publient sur BISONFUN (tel que défini dans les Conditions générales), y compris les messages envoyés et/ou reçus via BISONFUN et les interactions avec le support client de BISONFUN. - Données techniques, qui peuvent inclure des informations sur l'URL, des données de cookies, l'adresse IP de l'utilisateur, les appareils utilisés pour accéder aux services de BISONFUN, les identifiants uniques de l'appareil, les attributs de l'appareil, et les types de connexions réseau (Wi-Fi, 3G, LTE, Bluetooth, etc.), le fournisseur de réseau, les performances du réseau et de l'appareil, le navigateur, la langue, les informations de gestion des droits numériques, le système d'exploitation, et la version de l'application BISONFUN.
+      Données d'utilisation. Fait référence aux données personnelles collectées lorsque les utilisateurs utilisent les services de LuckyPlay, qui peuvent inclure : - Informations sur le type de plan de service de LuckyPlay. - Informations sur les interactions des utilisateurs avec les services de LuckyPlay, telles que les jeux joués, l'historique de jeu, la liste des appareils utilisés pour accéder au service, l'historique des pseudonymes utilisés pour accéder depuis un seul appareil, les changements de position dans le classement, les changements des soldes de points virtuels pour chaque utilisateur, et les interactions avec d'autres utilisateurs de LuckyPlay. - Cela peut également inclure des informations sur l'utilisation d'applications tierces et toute publicité que vous recevez. - Contenu des utilisateurs qu'ils publient sur LuckyPlay (tel que défini dans les Conditions générales), y compris les messages envoyés et/ou reçus via LuckyPlay et les interactions avec le support client de LuckyPlay. - Données techniques, qui peuvent inclure des informations sur l'URL, des données de cookies, l'adresse IP de l'utilisateur, les appareils utilisés pour accéder aux services de LuckyPlay, les identifiants uniques de l'appareil, les attributs de l'appareil, et les types de connexions réseau (Wi-Fi, 3G, LTE, Bluetooth, etc.), le fournisseur de réseau, les performances du réseau et de l'appareil, le navigateur, la langue, les informations de gestion des droits numériques, le système d'exploitation, et la version de l'application LuckyPlay.
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
@@ -704,7 +704,7 @@ export default {
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
-      Données mobiles facultatives <br />En plus des données mobiles que nous collectons pour fournir les services de BISONFUN (comme décrit ci-dessus), les utilisateurs peuvent choisir de nous autoriser à collecter des données personnelles supplémentaires à partir de leurs appareils mobiles afin que nous puissions fournir les fonctionnalités et caractéristiques suivantes qui améliorent votre expérience avec les services de BISONFUN.
+      Données mobiles facultatives <br />En plus des données mobiles que nous collectons pour fournir les services de LuckyPlay (comme décrit ci-dessus), les utilisateurs peuvent choisir de nous autoriser à collecter des données personnelles supplémentaires à partir de leurs appareils mobiles afin que nous puissions fournir les fonctionnalités et caractéristiques suivantes qui améliorent votre expérience avec les services de LuckyPlay.
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
@@ -717,7 +717,7 @@ export default {
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
-      Localisation géographique exacte de l'appareil mobile de l'utilisateur – Si les utilisateurs autorisent l'accès à des emplacements spécifiques, nous pouvons utiliser le GPS ou le Bluetooth de l'utilisateur pour fournir les services de BISONFUN qui nécessitent des données de localisation exacte. Notez que cela n'inclut pas l'adresse IP de l'utilisateur. Nous utilisons l'adresse IP de l'utilisateur pour déterminer une localisation géographique non exacte, telle que le pays/région dans lequel il se trouve, dans le but de se conformer à nos Conditions générales.
+      Localisation géographique exacte de l'appareil mobile de l'utilisateur – Si les utilisateurs autorisent l'accès à des emplacements spécifiques, nous pouvons utiliser le GPS ou le Bluetooth de l'utilisateur pour fournir les services de LuckyPlay qui nécessitent des données de localisation exacte. Notez que cela n'inclut pas l'adresse IP de l'utilisateur. Nous utilisons l'adresse IP de l'utilisateur pour déterminer une localisation géographique non exacte, telle que le pays/région dans lequel il se trouve, dans le but de se conformer à nos Conditions générales.
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
@@ -727,7 +727,7 @@ export default {
     <p class="m-t-10" style="line-height: 20px">Informations de paiement</p>
 
     <p class="m-t-10" style="line-height: 20px">
-      Si les utilisateurs s'inscrivent pour une période d'essai ou effectuent des achats via les services de BISONFUN (tel que défini dans les Conditions générales), nous pouvons collecter ces données personnelles. Les données réellement collectées peuvent varier selon la méthode de paiement, mais peuvent inclure ce qui suit :
+      Si les utilisateurs s'inscrivent pour une période d'essai ou effectuent des achats via les services de LuckyPlay (tel que défini dans les Conditions générales), nous pouvons collecter ces données personnelles. Les données réellement collectées peuvent varier selon la méthode de paiement, mais peuvent inclure ce qui suit :
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
@@ -752,12 +752,12 @@ export default {
     <p class="m-t-10" style="line-height: 20px">Données marketing</p>
 
     <p class="m-t-10" style="line-height: 20px">
-      Ces données personnelles sont utilisées pour permettre à BISONFUN et à ses partenaires/prestataires de services d'envoyer des informations marketing aux utilisateurs :
+      Ces données personnelles sont utilisées pour permettre à LuckyPlay et à ses partenaires/prestataires de services d'envoyer des informations marketing aux utilisateurs :
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
       Par e-mail<br />
-      Lors de l'utilisation des services de BISONFUN<br />
+      Lors de l'utilisation des services de LuckyPlay<br />
       Directement de la part de tiers.
     </p>
 
@@ -766,12 +766,12 @@ export default {
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
-      Lorsque les utilisateurs utilisent ou interagissent avec les services de BISONFUN, nous utilisons diverses technologies pour traiter les données personnelles collectées pour diverses raisons.
+      Lorsque les utilisateurs utilisent ou interagissent avec les services de LuckyPlay, nous utilisons diverses technologies pour traiter les données personnelles collectées pour diverses raisons.
       Dans le tableau ci-dessous, nous listons les raisons pour lesquelles nous traitons les données personnelles des utilisateurs, le fondement légal de nos actions, et les catégories de données personnelles (tel que défini dans la section 5 "Quels types de données personnelles collectons-nous sur les utilisateurs ?") utilisées aux fins suivantes :
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
-      Explication des raisons du traitement des données personnelles par BISONFUN
+      Explication des raisons du traitement des données personnelles par LuckyPlay
       ("Finalités du traitement")<br />
       Fondement légal de la finalité du traitement<br />
       Catégories de données personnelles utilisées pour la finalité du traitement
@@ -779,10 +779,10 @@ export default {
 
     <p class="m-t-10" style="line-height: 20px">
       Fournir, personnaliser et améliorer l'expérience de l'utilisateur avec le
-      service de BISONFUN et d'autres services et produits fournis par BISONFUN,
+      service de LuckyPlay et d'autres services et produits fournis par LuckyPlay,
       tels que l'offre de contenu et de recommandations personnalisés, basés sur la localisation ou spécifiques à un lieu,
       des fonctionnalités et des publicités (y compris des produits et services tiers)
-      à l'intérieur ou à l'extérieur de BISONFUN.<br />
+      à l'intérieur ou à l'extérieur de LuckyPlay.<br />
       Exécution du contrat<br />
       Données d'inscription au compte, données d'utilisation du service, et, le cas échéant,
       données mobiles facultatives
@@ -790,21 +790,21 @@ export default {
 
     <p class="m-t-10" style="line-height: 20px">
       Assurer l'intégrité des systèmes de classement fournis et réduire la fraude
-      et la collusion liées aux utilisateurs dans l'environnement de divertissement de BISONFUN.
+      et la collusion liées aux utilisateurs dans l'environnement de divertissement de LuckyPlay.
       Exécution du contrat, intérêts légitimes Données d'inscription au compte, données d'utilisation du service
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
-      Comprendre comment les utilisateurs accèdent et utilisent le service de BISONFUN,
-      dans le but d'assurer la fonctionnalité technique des services de BISONFUN,
-      développer de nouveaux produits et services, et analyser l'utilisation des services de BISONFUN par les utilisateurs,
+      Comprendre comment les utilisateurs accèdent et utilisent le service de LuckyPlay,
+      dans le but d'assurer la fonctionnalité technique des services de LuckyPlay,
+      développer de nouveaux produits et services, et analyser l'utilisation des services de LuckyPlay par les utilisateurs,
       y compris leurs interactions avec l'application, ainsi que la publicité,
       les produits et services liés à MEGA SLOTS ou fournis par ce dernier.<br />
       Exécution du contrat, intérêts légitimes Données d'inscription au compte, données d'utilisation du service
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
-      Établir une communication avec les utilisateurs à des fins liées au service de BISONFUN.
+      Établir une communication avec les utilisateurs à des fins liées au service de LuckyPlay.
       Exécution du contrat, intérêts légitimes Données d'inscription au compte, données d'utilisation du service
     </p>
 
@@ -826,7 +826,7 @@ export default {
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
-      Conformément à tout consentement que l'utilisateur peut avoir accordé à BISONFUN
+      Conformément à tout consentement que l'utilisateur peut avoir accordé à LuckyPlay
       (par exemple, via les paramètres de confidentialité), par e-mail, notifications, ou autres messages.
     </p>
 
@@ -853,7 +853,7 @@ export default {
     <p class="m-t-10" style="line-height: 20px">
       Les finalités pour lesquelles nous utilisons des informations anonymisées et agrégées
       incluent le test de nos systèmes informatiques, la recherche, l'analyse de données, la modélisation et la promotion marketing,
-      l'amélioration des services de BISONFUN, et le développement de nouvelles fonctionnalités et caractéristiques pour les services de BISONFUN.
+      l'amélioration des services de LuckyPlay, et le développement de nouvelles fonctionnalités et caractéristiques pour les services de LuckyPlay.
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
@@ -864,7 +864,7 @@ export default {
     <p class="m-t-10" style="line-height: 20px">Informations publiques</p>
 
     <p class="m-t-10" style="line-height: 20px">
-      Les données personnelles suivantes de l'utilisateur seront toujours disponibles publiquement sur les services de BISONFUN : pseudonyme de l'utilisateur, image de profil, informations sur les performances de jeu, et date de création du compte, ainsi que toute autre donnée personnelle vérifiable sur la page de profil de l'utilisateur.
+      Les données personnelles suivantes de l'utilisateur seront toujours disponibles publiquement sur les services de LuckyPlay : pseudonyme de l'utilisateur, image de profil, informations sur les performances de jeu, et date de création du compte, ainsi que toute autre donnée personnelle vérifiable sur la page de profil de l'utilisateur.
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
@@ -876,16 +876,16 @@ export default {
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
-      L'utilisateur sélectionne une fonctionnalité spécifique des services de BISONFUN qui nécessite le partage de données personnelles pour utiliser la fonctionnalité correctement. <br />L'utilisateur autorise explicitement le partage de données personnelles, par exemple en sélectionnant les paramètres appropriés dans les paramètres de confidentialité des services de BISONFUN.<br />
+      L'utilisateur sélectionne une fonctionnalité spécifique des services de LuckyPlay qui nécessite le partage de données personnelles pour utiliser la fonctionnalité correctement. <br />L'utilisateur autorise explicitement le partage de données personnelles, par exemple en sélectionnant les paramètres appropriés dans les paramètres de confidentialité des services de LuckyPlay.<br />
       Catégorie de contenu<br />
       Raison du partage
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
       Applications tierces utilisées pour se connecter à MEGA SLOTS<br />
-      Lors de l'accès à votre compte BISONFUN depuis une application tierce (telle qu'une application de médias sociaux),
-      BISONFUN peut partager des données pour lier le compte de l'utilisateur dans les deux enregistrements,
-      c'est-à-dire le réseau BISONFUN et tout tiers.
+      Lors de l'accès à votre compte LuckyPlay depuis une application tierce (telle qu'une application de médias sociaux),
+      LuckyPlay peut partager des données pour lier le compte de l'utilisateur dans les deux enregistrements,
+      c'est-à-dire le réseau LuckyPlay et tout tiers.
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
@@ -896,11 +896,11 @@ export default {
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
-      Communauté <br />Lorsqu'un utilisateur rejoint la communauté BISONFUN,
+      Communauté <br />Lorsqu'un utilisateur rejoint la communauté LuckyPlay,
       il doit utiliser le même pseudonyme que son compte. De tels pseudonymes d'utilisateurs
-      seront affichés publiquement à toute personne accédant à la zone de communauté BISONFUN,
+      seront affichés publiquement à toute personne accédant à la zone de communauté LuckyPlay,
       ainsi que toute question, commentaire, et autre contenu qu'ils choisissent de publier ou de rendre public
-      via les paramètres de confidentialité des services de BISONFUN.
+      via les paramètres de confidentialité des services de LuckyPlay.
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
@@ -916,8 +916,8 @@ export default {
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
-      Prestataires de services et autres parties Nous utilisons des prestataires de services techniques pour l'infrastructure nécessaire au fonctionnement des services de BISONFUN,
-      en particulier ceux qui hébergent, stockent, gèrent et maintiennent l'application BISONFUN, son contenu, et les données que nous traitons.
+      Prestataires de services et autres parties Nous utilisons des prestataires de services techniques pour l'infrastructure nécessaire au fonctionnement des services de LuckyPlay,
+      en particulier ceux qui hébergent, stockent, gèrent et maintiennent l'application LuckyPlay, son contenu, et les données que nous traitons.
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
@@ -927,8 +927,8 @@ export default {
 
     <p class="m-t-10" style="line-height: 20px">
       Nous utilisons également des partenaires de marketing et de publicité pour afficher un contenu plus personnalisé
-      ou pour nous aider à comprendre comment les utilisateurs utilisent les services de BISONFUN et fournir de meilleurs services.
-      Nous pouvons également partager des données personnelles avec certains partenaires de marketing et de publicité pour envoyer des informations promotionnelles sur BISONFUN aux utilisateurs.
+      ou pour nous aider à comprendre comment les utilisateurs utilisent les services de LuckyPlay et fournir de meilleurs services.
+      Nous pouvons également partager des données personnelles avec certains partenaires de marketing et de publicité pour envoyer des informations promotionnelles sur LuckyPlay aux utilisateurs.
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
@@ -937,10 +937,10 @@ export default {
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
-      Partenaires de BISONFUN<br />
-      Si l'utilisateur accède aux services de BISONFUN par le biais d'une offre reçue d'un tiers (tel que son opérateur de réseau mobile),
-      nous partagerons des données personnelles sur son utilisation des services de BISONFUN, telles que si et dans quelle mesure il a utilisé l'offre,
-      s'il a activé son compte MEGA SLOTS, ou s'il utilise activement les services de BISONFUN.
+      Partenaires de LuckyPlay<br />
+      Si l'utilisateur accède aux services de LuckyPlay par le biais d'une offre reçue d'un tiers (tel que son opérateur de réseau mobile),
+      nous partagerons des données personnelles sur son utilisation des services de LuckyPlay, telles que si et dans quelle mesure il a utilisé l'offre,
+      s'il a activé son compte MEGA SLOTS, ou s'il utilise activement les services de LuckyPlay.
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
@@ -970,16 +970,16 @@ export default {
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
-      Dans ces cas, BISONFUN continuera à assurer la confidentialité des données personnelles des utilisateurs,
+      Dans ces cas, LuckyPlay continuera à assurer la confidentialité des données personnelles des utilisateurs,
       et nous informerons les utilisateurs avant de transférer leurs données personnelles à l'acheteur
       ou avant de se conformer à une politique de confidentialité différente.
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
-      8. Conservation et suppression des données : <br />Nous conserverons les données personnelles des utilisateurs aussi longtemps que nécessaire pour fournir les services de BISONFUN
-      et pour des raisons commerciales légitimes et nécessaires, telles que le maintien des performances des services de BISONFUN,
+      8. Conservation et suppression des données : <br />Nous conserverons les données personnelles des utilisateurs aussi longtemps que nécessaire pour fournir les services de LuckyPlay
+      et pour des raisons commerciales légitimes et nécessaires, telles que le maintien des performances des services de LuckyPlay,
       la prise de décisions commerciales basées sur les données, la conformité à nos obligations légales, et le règlement des litiges.
-      Nous conserverons certaines données personnelles obtenues des utilisateurs tant qu'ils restent des utilisateurs des services de BISONFUN.
+      Nous conserverons certaines données personnelles obtenues des utilisateurs tant qu'ils restent des utilisateurs des services de LuckyPlay.
       Par exemple, nous conserverons l'historique d'utilisation et l'historique d'achats, le profil, la position dans le classement,
       les enregistrements de crédit, et autres informations du compte.
     </p>
@@ -998,11 +998,11 @@ export default {
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
-      9. Transfert vers d'autres pays : BISONFUN partage certaines des données personnelles obtenues auprès d'utilisateurs du monde entier avec UNITED JOY LLP,
+      9. Transfert vers d'autres pays : LuckyPlay partage certaines des données personnelles obtenues auprès d'utilisateurs du monde entier avec UNITED JOY LLP,
       dont le siège est à Londres, Royaume-Uni, pour mener les activités spécifiées dans cette politique.
     </p>
     <p class="m-t-10" style="line-height: 20px">
-      BISONFUN peut également sous-traiter des services ou partager les données personnelles obtenues
+      LuckyPlay peut également sous-traiter des services ou partager les données personnelles obtenues
       des utilisateurs avec des tiers situés dans des pays autres que le pays de résidence de l'utilisateur.
       Par conséquent, les données personnelles obtenues des utilisateurs peuvent être soumises à des lois
       sur la protection de la vie privée différentes de celles de leur pays de résidence.
@@ -1011,7 +1011,7 @@ export default {
     <p class="m-t-10" style="line-height: 20px">
       Par exemple, les données personnelles collectées dans l'UE et en Suisse peuvent être
       transférées et traitées par des tiers situés hors de l'UE et de la Suisse. Dans ces cas,
-      BISONFUN s'assurera que le transfert des données personnelles des utilisateurs est conforme
+      LuckyPlay s'assurera que le transfert des données personnelles des utilisateurs est conforme
       aux lois applicables sur la protection de la vie privée et, en particulier, que des mesures
       contractuelles, techniques et organisationnelles appropriées sont mises en place, telles que
       les clauses contractuelles types approuvées par la Commission européenne.
@@ -1029,7 +1029,7 @@ export default {
       redirigeant vers des sites web de tiers. Nous n'avons aucun contrôle sur les pratiques de
       protection de la vie privée ou le contenu des tiers et ne sommes pas responsables de ceux-ci.
       Si les utilisateurs cliquent sur des publicités ou des URL de tiers, ils doivent savoir qu'ils
-      quitteront les services de BISONFUN et que toute donnée personnelle qu'ils fournissent ne
+      quitteront les services de LuckyPlay et que toute donnée personnelle qu'ils fournissent ne
       sera pas soumise à la présente politique. Les utilisateurs doivent lire les politiques de
       protection de la vie privée pertinentes pour comprendre comment leurs données personnelles
       seront collectées et traitées.
@@ -1053,7 +1053,7 @@ export default {
       Les mots de passe peuvent protéger les comptes des utilisateurs, nous encourageons donc les
       utilisateurs à utiliser des mots de passe uniques et fiables, à limiter l'accès aux ordinateurs,
       navigateurs et autres appareils considérés comme sécurisés (digne de confiance), et à se
-      déconnecter après avoir utilisé les services de BISONFUN.
+      déconnecter après avoir utilisé les services de LuckyPlay.
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
@@ -1076,7 +1076,7 @@ export default {
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
-      7. Sans l'autorisation écrite de BISONFUN, les utilisateurs ne peuvent pas sous-licencier,
+      7. Sans l'autorisation écrite de LuckyPlay, les utilisateurs ne peuvent pas sous-licencier,
       louer, vendre, donner, transférer ou de quelque autre manière céder leur compte ou des objets
       virtuels associés, en tout ou en partie, à toute personne.
     </p>
@@ -1106,7 +1106,7 @@ export default {
 
     <p class="m-t-10" style="line-height: 20px">
       12. Si les utilisateurs n'approuvent pas les conditions d'utilisation, ils ne peuvent pas
-      utiliser aucun jeu ou service de BISONFUN, et la permission de l'utilisateur d'utiliser le
+      utiliser aucun jeu ou service de LuckyPlay, et la permission de l'utilisateur d'utiliser le
       service sera immédiatement révoquée.
     </p>
 
@@ -1115,12 +1115,12 @@ export default {
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
-      Supprimer toute information ou contenu lié aux droits d'auteur dans le logiciel de BISONFUN
+      Supprimer toute information ou contenu lié aux droits d'auteur dans le logiciel de LuckyPlay
       et d'autres copies ; Effectuer un reverse engineering, désassembler, décompiler ou tenter de
       copier ou modifier le logiciel du jeu MEGA SLOTS pour quelque raison que ce soit ;
       Utiliser, copier, modifier, lier, republication, compiler, publier, transmettre, créer des
-      sites miroirs, ou utiliser le jeu de BISONFUN à ces fins sans le consentement préalable de
-      BISONFUN, ou développer des produits dérivés, œuvres ou services liés au logiciel.
+      sites miroirs, ou utiliser le jeu de LuckyPlay à ces fins sans le consentement préalable de
+      LuckyPlay, ou développer des produits dérivés, œuvres ou services liés au logiciel.
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
@@ -1152,7 +1152,7 @@ export default {
     </p>
 
     <p class="m-t-10" style="line-height: 20px">
-      BISONFUN est responsable du traitement des données personnelles des utilisateurs conformément
+      LuckyPlay est responsable du traitement des données personnelles des utilisateurs conformément
       à la présente politique.
     </p>
   `,
@@ -1340,7 +1340,7 @@ export default {
           <p class="m-t-10 font-color">
             Bien que B3 ait rejoint plus tard et soit un subordonné de A, son subordonné C3 a eu une forte performance, avec des ventes directes de 200 RMB, permettant à B3 de bénéficier directement d'un taux de commission élevé de 3 %.
           </p>`,
-  share_txt13: `Règles de règlement de la plateforme BISONFUN`,
+  share_txt13: `Règles de règlement de la plateforme LuckyPlay`,
   share_txt14: `Les remises sur parrainage et paris sont émises en temps réel. Cliquez sur 'Parrainages quotidiens' pour voir les détails des commissions.`,
   share_txt15: `Déclaration spéciale :`,
   share_txt16: `Pour assurer l'équité sur la plateforme, des politiques anti-triche sont appliquées. Les utilisateurs qui trichent seront interdits définitivement, les fonds obtenus illégalement seront gelés et une responsabilité légale sera engagée.`,
@@ -1466,7 +1466,7 @@ export default {
         leur compte en une seule fois.<br />
         <p class="m-t-10">
           2. Il n'y a pas de limite au nombre de retraits par jour, et
-          BISONFUN prend en charge les retraits en ligne 24h/24.
+          LuckyPlay prend en charge les retraits en ligne 24h/24.
         </p>
         <p class="m-t-10">
           3. Le montant minimum pour un retrait unique est de 1 000.
@@ -1482,7 +1482,7 @@ export default {
           veuillez contacter le service client pour obtenir de l'aide.
         </p></div>
         `,
-  common_txt25: `BISONFUN est une marque gérée par GAMEWIZ BRASIL LTDA, CNPJ 56.195.099/0001-89, dûment autorisée par le Ministère des Finances sous le numéro d'autorisation SPA/MFn° 2.104-10.`,
+  common_txt25: `LuckyPlay est une marque gérée par GAMEWIZ BRASIL LTDA, CNPJ 56.195.099/0001-89, dûment autorisée par le Ministère des Finances sous le numéro d'autorisation SPA/MFn° 2.104-10.`,
   common_txt26: `Commission`,
   common_txt27: `Comment inviter`,
   common_txt28: `Mes données`,
@@ -1674,7 +1674,7 @@ Notre système a détecté que votre niveau VIP est actuellement bas. Pour la s�
   common_txt161: `Êtes-vous sûr de vouloir annuler la commande ?`,
   common_txt162: `Tirage`,
   common_txt163: `Commande`,
-  common_txt164: `BISONFUN est un agent de Golden Chance Lotto et une société exerçant l'activité de loterie. Tous les produits de loterie proposés sur la plateforme sont fournis par Golden Chance Lotto et traités par les agents officiels de BISONFUN.`,
+  common_txt164: `LuckyPlay est un agent de Golden Chance Lotto et une société exerçant l'activité de loterie. Tous les produits de loterie proposés sur la plateforme sont fournis par Golden Chance Lotto et traités par les agents officiels de LuckyPlay.`,
   common_txt165: `Partager sur les réseaux sociaux`,
   common_txt166: `Méthodes de paiement acceptées :`,
   common_txt167: `cartes et cryptomonnaies.`,
@@ -1695,9 +1695,9 @@ Notre système a détecté que votre niveau VIP est actuellement bas. Pour la s�
   common_txt182: `1er tirage`,
   common_txt183: `2ème tirage`,
   common_txt184: `Vérifiez le résultat de la Quina`,
-  common_txt185: `BISONFUN est un agent de Golden Chance Lotto et une société exerçant l'activité de
+  common_txt185: `LuckyPlay est un agent de Golden Chance Lotto et une société exerçant l'activité de
           loterie. Tous les produits de loterie proposés sur la plateforme sont
-          fournis par Golden Chance Lotto et traités par les agents officiels de BISONFUN.`,
+          fournis par Golden Chance Lotto et traités par les agents officiels de LuckyPlay.`,
   common_txt186: `Partager sur les réseaux sociaux`,
   common_txt187: `Méthodes de paiement acceptées :`,
   common_txt188: `Cartes de crédit, PIX et PicPay.`,
@@ -1734,7 +1734,7 @@ Notre système a détecté que votre niveau VIP est actuellement bas. Pour la s�
   common_txt218: `Montant`,
   common_txt219: `Statut`,
   common_txt220: `Prix`,
-  common_txt221: `1. Il n'y a pas de limite au nombre de retraits par jour, et BISONFUN propose
+  common_txt221: `1. Il n'y a pas de limite au nombre de retraits par jour, et LuckyPlay propose
           un support de retrait en ligne 24h/24 et 7j/7.`,
   common_txt222: `2. Le montant minimum pour un retrait unique est de`,
   common_txt223: `. Aucune demande de retrait ne peut être initiée pour des montants inférieurs à ce seuil.`,
@@ -1904,15 +1904,15 @@ Notre système a détecté que votre niveau VIP est actuellement bas. Pour la s�
 📣 Participez à la super promotion de la boîte à prix! 👫 Invitez 1 ami et recevez 50. Gagnez jusqu'à 500 000 facilement! 💸
 💥 Recevez une commission exclusive de 5% en invitant des amis! 🏅 Gagnez jusqu'à 1 000 000 par mois simplement et en toute sécurité!
 🎊 Des surprises incroyables!
-✅ Inscrivez-vous sur BISONFUN maintenant et profitez de bonus inoubliables!
+✅ Inscrivez-vous sur LuckyPlay maintenant et profitez de bonus inoubliables!
 📍 Faites votre pointage quotidien: de manière consécutive et recevez 888 💵 Bonus jusqu'à 9 999! 💫 Jusqu'à 12 fois par jour!
 ⏰ Horaires de distribution:
 👑23:00 - 23:59 👑00:00 - 00:59 👑01:00 - 01:59 👑02:00 - 02:59 👑03:00 - 03:59
 👑04:00 - 04:59 👑05:00 - 05:59 👑06:00 - 06:59 👑07:00 - 07:59 👑08:00 - 08:59
 👑10:00 - 10:59 👑11:00 - 11:59
 🔑 Plateforme fiable, dépôts et retraits rapides!
-🎖 Rejoignez BISONFUN maintenant et commencez votre voyage vers la richesse! ✨
-BISONFUN - Le plus grand et le plus fiable casino en ligne! 🎰
+🎖 Rejoignez LuckyPlay maintenant et commencez votre voyage vers la richesse! ✨
+LuckyPlay - Le plus grand et le plus fiable casino en ligne! 🎰
 💰 Probabilité de gain élevée sur les jeux PG, promotions continues et richesse à portée de main! 🎰
 Les meilleurs machines à sous, du plaisir sans fin et de l'excitation garantie!
 🛡️ Équité et transparence, licence officielle et fiabilité garantie!

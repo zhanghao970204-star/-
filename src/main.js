@@ -17,6 +17,8 @@ import bus from "./utils/eventBus";
 import toast from "./utils/toast";
 import { getFingerprint } from "./utils/common.js";
 import { readCountryCode } from "./utils/country.js";
+import { DEFAULT_LOCALE, STORAGE_KEYS } from './utils/appConstants.js';
+import { LOCALE_LOADERS, LOCAL_LOCALES } from './utils/locale.js';
 import { resetPageScrollAfterRoute } from "./utils/scrollReset.js";
 import {
   resolveClientIdSync,
@@ -46,7 +48,7 @@ import { installGlobalClickSound } from "./utils/sound.js";
       window.fingerprint = id;
       if (peekFlutterUuid()) return;
     }
-    const cached = localStorage.getItem("ot_fp_vid");
+    const cached = localStorage.getItem(STORAGE_KEYS.fingerprint);
     if (cached && !window.fingerprint) {
       window.fingerprint = cached;
     }
@@ -66,34 +68,26 @@ import { installGlobalClickSound } from "./utils/sound.js";
   });
 })();
 
-const localeLoaders = {
-  en: () => import("./lang/en"),
-  es: () => import("./lang/es"),
-  fr: () => import("./lang/fr"),
-  pt: () => import("./lang/pt"),
-};
-
 async function loadLocaleMessages(locale) {
-  const key = localeLoaders[locale] ? locale : "en";
+  const key = LOCAL_LOCALES.includes(locale) ? locale : DEFAULT_LOCALE;
   const messages = {};
-  const mod = await localeLoaders[key]();
-  messages[key] = mod.default || mod;
-  // fallbackLocale 需要 en
-  if (key !== "en") {
-    const enMod = await localeLoaders.en();
-    messages.en = enMod.default || enMod;
-  }
+  // Fetch the selected language and fallback concurrently, without loading others.
+  const keys = key === DEFAULT_LOCALE ? [key] : [key, DEFAULT_LOCALE];
+  await Promise.all(keys.map(async language => {
+    const mod = await LOCALE_LOADERS[language]();
+    messages[language] = mod.default || mod;
+  }));
   return { locale: key, messages };
 }
 
 async function bootstrap() {
-  const locale = localStorage.getItem("defaultLanguage") || "en";
+  const locale = localStorage.getItem(STORAGE_KEYS.language) || DEFAULT_LOCALE;
   const { locale: resolvedLocale, messages } = await loadLocaleMessages(locale);
 
   const i18n = createI18n({
     legacy: true,
     locale: resolvedLocale,
-    fallbackLocale: "en",
+    fallbackLocale: DEFAULT_LOCALE,
     messages,
   });
 
