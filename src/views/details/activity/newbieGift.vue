@@ -1,13 +1,6 @@
 <template>
   <div class="newbie-gift">
-    <!-- Header -->
-    <nav class="ng-header">
-      <button class="ng-header__back" @click="$router.go(-1)">
-        <van-icon name="arrow-left" size="20" color="var(--wihte-color)" />
-      </button>
-      <h1 class="ng-header__title">{{ $lang.ng_title }}</h1>
-      <div class="ng-header__spacer"></div>
-    </nav>
+    <title-bar :title="$lang.ng_title"></title-bar>
 
     <main class="ng-main">
       <!-- Hero Section -->
@@ -15,25 +8,31 @@
         <div class="ng-hero__img-wrap">
           <img
             class="ng-hero__img"
-            src="../../../assets/img/activity/activity_banner/newbee/1.png"
+            src="../../../assets/img/activity/newbieGift/hero.png"
+            alt=""
           />
-          <!-- Best Value Badge -->
-          <div class="ng-hero__badge">{{ $lang.ng_best_value || 'BEST VALUE' }}</div>
         </div>
 
         <!-- Countdown Timer -->
         <div class="ng-timer">
-          <span class="ng-timer__label">{{ $lang.ng_limited_time }}</span>
-          <div class="ng-timer__tube" :class="{ 'ng-timer__tube--green': purchased }">
-            <div class="ng-timer__pulse"></div>
-            <span class="ng-timer__digits" :class="{ 'ng-timer__digits--green': purchased }">
-              {{ countdownDisplay }}
-            </span>
+          <div
+            class="ng-timer__frame"
+            :class="{ 'ng-timer__frame--done': purchased }"
+          >
+            <img
+              class="ng-timer__bg"
+              src="../../../assets/img/activity/newbieGift/timer_frame.png"
+              alt=""
+            />
+            <div class="ng-timer__inner">
+              <span class="ng-timer__label">{{ $lang.ng_limited_time }}</span>
+              <span class="ng-timer__digits">{{ countdownDisplay }}</span>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- Reward Track -->
+      <!-- Reward Track：上内容区 + 下居中按钮 -->
       <section class="ng-rewards">
         <div
           v-for="(day, idx) in days"
@@ -42,28 +41,22 @@
           :class="{
             'ng-reward-card--active': day.status === 'active',
             'ng-reward-card--locked': day.status === 'locked',
-            'ng-reward-card--claimed': day.status === 'claimed'
+            'ng-reward-card--claimed': day.status === 'claimed',
           }"
         >
-          <!-- Icon -->
-          <div class="ng-reward-card__icon" :class="{ 'ng-reward-card__icon--active': day.status === 'active' || day.status === 'claimed' }">
-            <img :src="day.icon" class="ng-reward-card__icon-img" />
-          </div>
-
-          <!-- Info -->
-          <div class="ng-reward-card__info">
-            <div class="ng-reward-card__head">
-              <span v-if="day.status === 'active'" class="ng-badge ng-badge--active">{{ $lang.ng_active || 'Active' }}</span>
-              <span v-if="day.status === 'claimed'" class="ng-badge ng-badge--claimed">{{ $lang.ng_claimed }}</span>
-              <h3 class="ng-reward-card__title">{{ day.title }}</h3>
+          <div class="ng-reward-card__body">
+            <div class="ng-reward-card__icon">
+              <img :src="day.icon" class="ng-reward-card__icon-img" alt="" />
             </div>
-            <p class="ng-reward-card__desc" v-html="day.desc"></p>
+            <div class="ng-reward-card__info">
+              <h3 class="ng-reward-card__title">{{ day.title }}</h3>
+              <p class="ng-reward-card__desc" v-html="day.desc"></p>
+            </div>
           </div>
 
-          <!-- Button -->
           <button
             v-if="day.status === 'active'"
-            class="ng-reward-card__btn ng-reward-card__btn--active"
+            class="ng-reward-card__btn ng-reward-card__btn--active btn-3d-green"
             @click="claimReward(idx + 1)"
           >
             {{ $lang.ng_claim }}
@@ -80,7 +73,11 @@
             class="ng-reward-card__btn ng-reward-card__btn--locked"
             disabled
           >
-            <van-icon name="lock" size="12" />
+            <img
+              class="ng-reward-card__lock"
+              src="../../../assets/img/activity/newbieGift/lock.png"
+              alt=""
+            />
             <span v-if="day.countdown">{{ day.countdown }}</span>
             <span v-else>{{ $lang.ng_claim }}</span>
           </button>
@@ -94,18 +91,29 @@
     <div v-if="!purchased" class="ng-footer">
       <div class="ng-footer__row">
         <div class="ng-footer__price">
-          <span class="ng-footer__price-label">{{ $lang.ng_limited_price }}</span>
+          <span class="ng-footer__price-label">{{
+            $lang.ng_limited_price
+          }}</span>
           <div class="ng-footer__price-row">
-            <span class="ng-footer__price-current">{{ getCurrency }}{{ $formatNumberWithCommas(price) }}</span>
-            <span v-if="originalPrice && Number(originalPrice) > Number(price)" class="ng-footer__price-original">{{ getCurrency }}{{ $formatNumberWithCommas(originalPrice) }}</span>
+            <span class="ng-footer__price-current"
+              >{{ getCurrency }}{{ $formatNumberWithCommas(price) }}</span
+            >
+            <span
+              v-if="originalPrice && Number(originalPrice) > Number(price)"
+              class="ng-footer__price-original"
+              >{{ getCurrency
+              }}{{ $formatNumberWithCommas(originalPrice) }}</span
+            >
           </div>
         </div>
         <div class="ng-footer__value">
           <span class="ng-footer__value-pct">{{ creditAmountText }}</span>
-          <p class="ng-footer__value-label">{{ $lang.ng_total_value || 'TOTAL VALUE' }}</p>
+          <p class="ng-footer__value-label">
+            {{ $lang.ng_total_value || "TOTAL VALUE" }}
+          </p>
         </div>
       </div>
-      <button class="ng-footer__buy" @click="buyNow">
+      <button class="ng-footer__buy btn-3d-green" @click="buyNow">
         {{ $lang.ng_buy_now }}
       </button>
       <p class="ng-footer__disclaimer">{{ $lang.ng_disclaimer }}</p>
@@ -138,16 +146,24 @@
 
         <!-- Countdown -->
         <div class="ng-popup__timer">
-          <span class="ng-timer__label">{{ $lang.ng_limited_time }}</span>
-          <div class="ng-timer__tube">
-            <div class="ng-timer__pulse"></div>
-            <span class="ng-timer__digits">{{ countdownDisplay }}</span>
+          <div class="ng-timer__frame">
+            <img
+              class="ng-timer__bg"
+              src="../../../assets/img/activity/newbieGift/timer_frame.png"
+              alt=""
+            />
+            <div class="ng-timer__inner">
+              <span class="ng-timer__label">{{ $lang.ng_limited_time }}</span>
+              <span class="ng-timer__digits">{{ countdownDisplay }}</span>
+            </div>
           </div>
         </div>
 
         <!-- Total Reward Summary -->
         <div class="ng-popup__summary">
-          <span class="ng-popup__summary-label">{{ $lang.ng_total_reward }}</span>
+          <span class="ng-popup__summary-label">{{
+            $lang.ng_total_reward
+          }}</span>
           <div class="ng-popup__summary-value">100% Bonus + 800 Coins</div>
         </div>
 
@@ -156,7 +172,7 @@
           <div class="ng-popup__total-value">
             <span>300% Total Value</span>
           </div>
-          <button class="ng-popup__buy" @click="buyNow">
+          <button class="ng-popup__buy btn-3d-green" @click="buyNow">
             {{ $lang.ng_buy_now }}
           </button>
           <p class="ng-popup__disclaimer">{{ $lang.ng_disclaimer }}</p>
@@ -184,25 +200,22 @@
 </template>
 
 <script>
-import { NewPlayerGiftPackInit, ReceiveNewPlayerGiftPack } from '@/api/common'
-import { reportPromoPanel } from '@/utils/common'
-import {
-  goPayUrl,
-  closePayWindow
-} from '@/utils/payRedirect'
-import GiftPaySheet from '@/components/GiftPaySheet.vue'
+import { NewPlayerGiftPackInit, ReceiveNewPlayerGiftPack } from "@/api/common";
+import { reportPromoPanel } from "@/utils/common";
+import { goPayUrl, closePayWindow } from "@/utils/payRedirect";
+import GiftPaySheet from "@/components/GiftPaySheet.vue";
 
 export default {
-  name: 'NewbieGift',
+  name: "NewbieGift",
   components: { GiftPaySheet },
   data() {
     return {
       purchased: false,
       showChestPopup: false,
       countdownTimer: null,
-      price: '',
-      originalPrice: '',
-      promoType: '',
+      price: "",
+      originalPrice: "",
+      promoType: "",
       immediateBonus: 0,
       day2Max: 0,
       day3Max: 0,
@@ -217,16 +230,16 @@ export default {
       visible: 0,
       loading: false,
       showPayIframe: false,
-      payIframeUrl: '',
-      showPaySheet: false
-    }
+      payIframeUrl: "",
+      showPaySheet: false,
+    };
   },
   computed: {
     toSec() {
       return (t) => {
-        const n = Number(t) || 0
-        return n > 1e12 ? Math.floor(n / 1000) : n
-      }
+        const n = Number(t) || 0;
+        return n > 1e12 ? Math.floor(n / 1000) : n;
+      };
     },
     countdownTarget() {
       // 未购买 → 到 expireTime；已购买 → 下一个未到的 dayNAvailableTime
@@ -234,32 +247,42 @@ export default {
         const times = [
           this.toSec(this.day1AvailableTime),
           this.toSec(this.day2AvailableTime),
-          this.toSec(this.day3AvailableTime)
-        ].filter(t => t > this.nowTs).sort((a, b) => a - b)
-        return times[0] || 0
+          this.toSec(this.day3AvailableTime),
+        ]
+          .filter((t) => t > this.nowTs)
+          .sort((a, b) => a - b);
+        return times[0] || 0;
       }
-      return this.toSec(this.expireTime)
+      return this.toSec(this.expireTime);
     },
     countdownSeconds() {
-      if (!this.countdownTarget) return 0
-      const diff = this.countdownTarget - this.nowTs
-      return diff > 0 ? diff : 0
+      if (!this.countdownTarget) return 0;
+      const diff = this.countdownTarget - this.nowTs;
+      return diff > 0 ? diff : 0;
     },
     countdownDisplay() {
-      const total = this.countdownSeconds
-      if (!total) return '00:00:00'
-      const d = Math.floor(total / 86400)
-      const h = Math.floor((total % 86400) / 3600)
-      const m = Math.floor((total % 3600) / 60)
-      const s = total % 60
+      const total = this.countdownSeconds;
+      if (!total) return "00:00:00";
+      const d = Math.floor(total / 86400);
+      const h = Math.floor((total % 86400) / 3600);
+      const m = Math.floor((total % 3600) / 60);
+      const s = total % 60;
       if (d > 0) {
-        return d + 'd ' + String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0')
+        return (
+          d +
+          "d " +
+          String(h).padStart(2, "0") +
+          ":" +
+          String(m).padStart(2, "0")
+        );
       }
       return (
-        String(h).padStart(2, '0') + ':' +
-        String(m).padStart(2, '0') + ':' +
-        String(s).padStart(2, '0')
-      )
+        String(h).padStart(2, "0") +
+        ":" +
+        String(m).padStart(2, "0") +
+        ":" +
+        String(s).padStart(2, "0")
+      );
     },
     /** 入账金额 = price + immediateBonus + day2Max + day3Max */
     creditTotalAmount() {
@@ -268,401 +291,347 @@ export default {
         (Number(this.immediateBonus) || 0) +
         (Number(this.day2Max) || 0) +
         (Number(this.day3Max) || 0)
-      )
+      );
     },
     /** 百分比 = price / originalPrice * 100（与弹窗同一套） */
     priceRatioPercent() {
-      const p = Number(this.price) || 0
-      const o = Number(this.originalPrice) || 0
-      if (!o || p <= 0) return 0
-      return Math.round((p / o) * 100)
+      const p = Number(this.price) || 0;
+      const o = Number(this.originalPrice) || 0;
+      if (!o || p <= 0) return 0;
+      return Math.round((p / o) * 100);
     },
     /** 角标：+ MXN 158（与弹窗同一套计算） */
     creditAmountText() {
-      const total = this.creditTotalAmount
-      if (!total) return ''
+      const total = this.creditTotalAmount;
+      if (!total) return "";
       const amount = this.$formatNumberWithCommas
         ? this.$formatNumberWithCommas(total)
-        : total
-      const currency = this.getCurrency || ''
-      return '+ ' + currency + ' ' + amount
+        : total;
+      const currency = this.getCurrency || "";
+      return "+ " + currency + " " + amount;
     },
     days() {
-      const pct = this.priceRatioPercent
-      const day1Desc = String(this.$lang.ng_day1_desc || '').replace(
+      const pct = this.priceRatioPercent;
+      const day1Desc = String(this.$lang.ng_day1_desc || "").replace(
         /\{percent\}/g,
         String(pct),
-      )
+      );
       const dayConfigs = [
         {
           title: this.$lang.ng_day1_title,
           desc: day1Desc,
-          icon: require('../../../assets/img/bonus/coin.png'),
+          icon: require("../../../assets/img/activity/newbieGift/icon_day1.png"),
           apiStatus: this.day1Status,
-          availableTime: this.toSec(this.day1AvailableTime)
+          availableTime: this.toSec(this.day1AvailableTime),
         },
         {
           title: this.$lang.ng_day2_title,
           desc: this.$lang.ng_day2_desc,
-          icon: require('../../../assets/img/refer_friend/img_box_unopened.png'),
+          icon: require("../../../assets/img/activity/newbieGift/icon_day2.png"),
           apiStatus: this.day2Status,
-          availableTime: this.toSec(this.day2AvailableTime)
+          availableTime: this.toSec(this.day2AvailableTime),
         },
         {
           title: this.$lang.ng_day3_title,
           desc: this.$lang.ng_day3_desc,
-          icon: require('../../../assets/img/refer_friend/img_open_box.png'),
+          icon: require("../../../assets/img/activity/newbieGift/icon_day3.png"),
           apiStatus: this.day3Status,
-          availableTime: this.toSec(this.day3AvailableTime)
-        }
-      ]
-      return dayConfigs.map(cfg => {
-        let status = 'locked'
+          availableTime: this.toSec(this.day3AvailableTime),
+        },
+      ];
+      return dayConfigs.map((cfg) => {
+        let status = "locked";
         if (cfg.apiStatus === 2) {
-          status = 'claimed'
+          status = "claimed";
         } else if (cfg.apiStatus === 1) {
-          status = 'active'
+          status = "active";
         }
-        let countdown = ''
-        if (this.purchased && status === 'locked' && cfg.availableTime > this.nowTs) {
-          const diff = cfg.availableTime - this.nowTs
-          const d = Math.floor(diff / 86400)
-          const h = Math.floor((diff % 86400) / 3600)
-          const m = Math.floor((diff % 3600) / 60)
-          if (d > 0) countdown = d + 'd ' + h + 'h'
-          else if (h > 0) countdown = h + 'h ' + m + 'm'
-          else countdown = m + 'm'
+        let countdown = "";
+        if (
+          this.purchased &&
+          status === "locked" &&
+          cfg.availableTime > this.nowTs
+        ) {
+          const diff = cfg.availableTime - this.nowTs;
+          const d = Math.floor(diff / 86400);
+          const h = Math.floor((diff % 86400) / 3600);
+          const m = Math.floor((diff % 3600) / 60);
+          if (d > 0) countdown = d + "d " + h + "h";
+          else if (h > 0) countdown = h + "h " + m + "m";
+          else countdown = m + "m";
         }
-        return { ...cfg, status, countdown }
-      })
-    }
+        return { ...cfg, status, countdown };
+      });
+    },
   },
   watch: {
     showPayIframe(v) {
-      if (!v) this.payIframeUrl = ''
-    }
+      if (!v) this.payIframeUrl = "";
+    },
   },
   mounted() {
-    reportPromoPanel('new_player_giftpack', 1)
-    this.initData()
-    this.startCountdown()
+    reportPromoPanel("new_player_giftpack", 1);
+    this.initData();
+    this.startCountdown();
   },
   beforeUnmount() {
-    reportPromoPanel('new_player_giftpack', 2)
+    reportPromoPanel("new_player_giftpack", 2);
     if (this.countdownTimer) {
-      clearInterval(this.countdownTimer)
+      clearInterval(this.countdownTimer);
     }
   },
   methods: {
     async initData() {
       try {
-        const res = await NewPlayerGiftPackInit({})
+        const res = await NewPlayerGiftPackInit({});
         if (res && res.content) {
-          const d = res.content
-          this.purchased = d.purchased === 1
-          this.day1Status = d.day1Status || 0
-          this.day2Status = d.day2Status || 0
-          this.day3Status = d.day3Status || 0
-          this.day1AvailableTime = d.day1AvailableTime || 0
-          this.day2AvailableTime = d.day2AvailableTime || 0
-          this.day3AvailableTime = d.day3AvailableTime || 0
-          this.expireTime = d.expireTime || 0
-          this.visible = d.visible || 0
-          this.promoType = d.promoType || ''
+          const d = res.content;
+          this.purchased = d.purchased === 1;
+          this.day1Status = d.day1Status || 0;
+          this.day2Status = d.day2Status || 0;
+          this.day3Status = d.day3Status || 0;
+          this.day1AvailableTime = d.day1AvailableTime || 0;
+          this.day2AvailableTime = d.day2AvailableTime || 0;
+          this.day3AvailableTime = d.day3AvailableTime || 0;
+          this.expireTime = d.expireTime || 0;
+          this.visible = d.visible || 0;
+          this.promoType = d.promoType || "";
           if (d.price) {
-            this.price = d.price
+            this.price = d.price;
           }
           if (d.originalPrice) {
-            this.originalPrice = d.originalPrice
+            this.originalPrice = d.originalPrice;
           }
-          this.immediateBonus = Number(d.immediateBonus) || 0
-          this.day2Max = Number(d.day2Max) || 0
-          this.day3Max = Number(d.day3Max) || 0
+          this.immediateBonus = Number(d.immediateBonus) || 0;
+          this.day2Max = Number(d.day2Max) || 0;
+          this.day3Max = Number(d.day3Max) || 0;
         }
       } catch (e) {
-        console.log('initData error', e)
+        console.log("initData error", e);
       }
     },
     startCountdown() {
-      this.nowTs = Math.floor(Date.now() / 1000)
+      this.nowTs = Math.floor(Date.now() / 1000);
       this.countdownTimer = setInterval(() => {
-        this.nowTs = Math.floor(Date.now() / 1000)
-      }, 1000)
+        this.nowTs = Math.floor(Date.now() / 1000);
+      }, 1000);
     },
     async claimReward(dayIndex) {
-      if (this.loading) return
-      this.loading = true
+      if (this.loading) return;
+      this.loading = true;
       try {
-        const res = await ReceiveNewPlayerGiftPack({ dayIndex })
+        const res = await ReceiveNewPlayerGiftPack({ dayIndex });
         if (res && res.content && res.content.receiveSuccess === 1) {
           // Update the day status to claimed
-          if (dayIndex === 1) this.day1Status = 2
-          else if (dayIndex === 2) this.day2Status = 2
-          else if (dayIndex === 3) this.day3Status = 2
-          const amount = res.content.amount || 0
+          if (dayIndex === 1) this.day1Status = 2;
+          else if (dayIndex === 2) this.day2Status = 2;
+          else if (dayIndex === 3) this.day3Status = 2;
+          const amount = res.content.amount || 0;
           this.$toast({
             message: `+${this.getCurrency}${this.$formatNumberWithCommas(amount)}`,
-            icon: 'success'
-          })
+            icon: "success",
+          });
           // Refresh data to get updated statuses
-          this.initData()
+          this.initData();
         } else {
-          this.$toast(res?.msg || 'Error')
+          this.$toast(res?.msg || "Error");
         }
       } catch (e) {
-        this.$toast(e?.msg || 'Error')
+        this.$toast(e?.msg || "Error");
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
     buyNow() {
-      if (!this.price || this.showPaySheet) return
-      this.showChestPopup = false
-      this.showPaySheet = true
+      if (!this.price || this.showPaySheet) return;
+      this.showChestPopup = false;
+      this.showPaySheet = true;
     },
     onGiftPaySuccess({ url, payWin, isUsRedirect }) {
       if (url) {
         if (isUsRedirect) {
-          goPayUrl(payWin, url)
+          goPayUrl(payWin, url);
         } else {
-          closePayWindow(payWin)
-          this.payIframeUrl = url
-          this.showPayIframe = true
+          closePayWindow(payWin);
+          this.payIframeUrl = url;
+          this.showPayIframe = true;
         }
       } else {
-        closePayWindow(payWin)
-        this.$toast({ message: this.$lang.bonus_txt16 || 'Success', icon: 'success' })
+        closePayWindow(payWin);
+        this.$toast({
+          message: this.$lang.bonus_txt16 || "Success",
+          icon: "success",
+        });
       }
     },
     openChestPopup() {
-      this.showChestPopup = true
-    }
-  }
-}
+      this.showChestPopup = true;
+    },
+  },
+};
 </script>
 
 <style lang="less" scoped>
-@primary: #ffa300;
-@secondary: #ffa300;
-@bg-dark: #1a0a28;
-@navy-800: #12021a;
-@navy-700: #2d1545;
-@red: #dc2626;
+@gold: #ffd467;
+@highlight-from: #fdfdb7;
+@highlight-to: #fcb91f;
+@page: #12021a;
+@muted: #d2c4f0;
+@card-from: #8527b7;
+@card-to: #4339b6;
+@card-border: #cbb111;
+@tabbar-h: calc(
+  var(--tabbar-bar-height, 66px) + env(safe-area-inset-bottom, 0px)
+);
+@footer-h: 150px;
 
 .newbie-gift {
   min-height: 100vh;
-  background: @bg-dark;
-  color: #f1f5f9;
+  background: @page;
+  color: #fff;
   position: relative;
   overflow: hidden;
-}
-
-// ====== HEADER ======
-.ng-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  max-width: 450px;
-  margin: 0 auto;
-  z-index: 50;
-  background: @bg-dark;
-  backdrop-filter: blur(12px);
-
-  &__back {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
-
-  &__title {
-    font-size: 18px;
-    font-weight: 800;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: @wihte-color;
-    text-shadow: 0 0 15px rgba(248, 245, 16, 0.6);
-  }
-
-  &__spacer {
-    width: 40px;
-  }
 }
 
 // ====== MAIN ======
 .ng-main {
   max-width: 450px;
   margin: 0 auto;
-  padding-top: 72px;
-  padding-bottom: 200px;
+  /* 底部固定栏 + Tabbar，避免被挡住 */
+  padding-bottom: calc(@footer-h + @tabbar-h + 24px);
+  box-sizing: border-box;
 }
 
 // ====== HERO ======
 .ng-hero {
-  padding: 8px 16px 32px;
+  padding: 4px 12px 16px;
 
   &__img-wrap {
     width: 100%;
-    border-radius: 12px;
     overflow: hidden;
     position: relative;
-    margin-bottom: 24px;
+    margin-bottom: 10px;
   }
 
   &__img {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 12px;
-  }
-
-  &__badge {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    background: @secondary;
-    color: #573900;
-    font-weight: 900;
-    font-size: 12px;
-    padding: 4px 12px;
-    border-radius: 9999px;
-    animation: pulse-badge 2s ease-in-out infinite;
+    height: auto;
+    display: block;
+    object-fit: contain;
   }
 }
 
-@keyframes pulse-badge {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
-}
-
-// ====== TIMER ======
+// ====== TIMER：标题在顶帽，倒计时在下区，均为白色 ======
 .ng-timer {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
+  justify-content: center;
+  margin-bottom: 4px;
 
-  &__label {
-    font-size: 11px;
-    color: rgba(255, 255, 255, 0.7);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 3px;
+  &__frame {
+    position: relative;
+    width: 100%;
+    max-width: 320px;
   }
 
-  &__tube {
+  &__bg {
     width: 100%;
-    max-width: 280px;
-    padding: 12px;
-    border-radius: 16px;
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.4);
+    height: auto;
+    display: block;
+    pointer-events: none;
+  }
+
+  &__inner {
+    position: absolute;
+    left: 9%;
+    right: 9%;
+    top: 6%;
+    bottom: 10%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-    position: relative;
-    overflow: hidden;
-
-    &--green {
-      .ng-timer__pulse {
-        background: fade(@primary, 5%);
-      }
-    }
+    box-sizing: border-box;
   }
 
-  &__pulse {
-    position: absolute;
-    inset: 0;
-    background: fade(@red, 5%);
-    animation: timer-pulse 2s ease-in-out infinite;
+  &__label {
+    flex: 0 0 auto;
+    margin-top: 18px;
+    font-size: 10px;
+    font-weight: 800;
+    color: #ffffff;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    line-height: 1.15;
+    white-space: nowrap;
   }
 
   &__digits {
-    font-size: 36px;
-    font-weight: 900;
-    letter-spacing: 3px;
-    color: @red;
-    z-index: 10;
-    text-shadow: 0 0 10px fade(@red, 50%);
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
-
-    &--green {
-      color: @primary;
-      text-shadow: 0 0 10px fade(@primary, 50%);
-    }
-  }
-}
-
-@keyframes timer-pulse {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
-}
-
-// ====== REWARD CARDS ======
-.ng-rewards {
-  padding: 0 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.ng-reward-card {
-  background: fade(@navy-800, 50%);
-  box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.1),
-    0 4px 6px -1px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 162, 0, 0.35);
-  padding: 16px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  opacity: 0.7;
-  filter: grayscale(0.5);
-
-  &--active,
-  &--claimed {
-    background: @navy-800;
-    border-left: 4px solid @primary;
-    box-shadow:
-      inset 0 1px 1px rgba(255, 255, 255, 0.1),
-      0 4px 6px -1px rgba(0, 0, 0, 0.5),
-      0 10px 20px fade(@primary, 5%);
-    opacity: 1;
-    filter: none;
-  }
-
-  &__icon {
-    width: 64px;
-    height: 64px;
-    background: @navy-700;
-    border-radius: 8px;
+    margin-top: 10px;
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
-    border: 1px solid rgba(255, 162, 0, 0.35);
+    width: 100%;
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: #ffffff;
+    text-align: center;
+    text-transform: uppercase;
+    line-height: 1;
+    /* 设计稿：白字 + 0 2 #1F0002 */
+    text-shadow: 0 2px 0 #1f0002;
+  }
 
-    &--active {
-      background: fade(@primary, 20%);
-      border-color: fade(@primary, 30%);
-    }
+  &__frame--done &__digits {
+    color: #ffffff;
+  }
+}
+
+// ====== REWARD CARDS：上内容 / 下居中按钮 ======
+.ng-rewards {
+  padding: 8px 12px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ng-reward-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  padding: 8px 8px 12px;
+  border-radius: 14px;
+  /* 设计稿背景 #8527B7→#4339B6，描边 2px #CBB111 */
+  background: linear-gradient(180deg, @card-from 0%, @card-to 100%);
+  border: 2px solid @card-border;
+  box-sizing: border-box;
+
+  &__body {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background: #0f0515;
+    box-sizing: border-box;
+    border: 1px solid #764993;
+  }
+
+  &__icon {
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
 
     &-img {
-      width: 48px;
-      height: 48px;
+      width: 52px;
+      height: 52px;
       object-fit: contain;
     }
   }
@@ -672,112 +641,104 @@ export default {
     min-width: 0;
   }
 
-  &__head {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
   &__title {
-    font-size: 14px;
-    font-weight: 700;
-    color: @wihte-color;
+    margin: 0;
+    font-size: 15px;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.25;
   }
 
   &__desc {
+    margin: 4px 0 0;
     font-size: 12px;
-    color: #b8a8d4;
-    margin-top: 4px;
-    line-height: 1.4;
+    color: @muted;
+    line-height: 1.35;
 
     :deep(.highlight) {
-      color: @primary;
-      font-weight: 700;
+      font-weight: 800;
+      background: linear-gradient(
+        180deg,
+        @highlight-from 0%,
+        @highlight-to 100%
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 1px 0 #000);
     }
+  }
+
+  &__lock {
+    width: 16px;
+    height: 18px;
+    object-fit: contain;
+    flex-shrink: 0;
   }
 
   &__btn {
-    flex-shrink: 0;
-    font-size: 12px;
+    align-self: center;
+    width: 168px;
+    max-width: 80%;
+    height: 40px;
+    padding: 0 18px;
+    font-size: 13px;
     font-weight: 900;
     text-transform: uppercase;
-    letter-spacing: -0.3px;
-    padding: 8px 16px;
-    border-radius: 10px;
+    letter-spacing: 0.4px;
+    border-radius: 19.5px;
     border: none;
     cursor: pointer;
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 4px;
+    justify-content: center;
+    gap: 6px;
+    box-sizing: border-box;
+    color: #fff;
 
     &--active {
-      background: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
-      color: #573900;
-      box-shadow: 0 0 10px fade(@primary, 40%);
-
-      &:active {
-        transform: scale(0.95);
-      }
+      /* 点亮：通用绿色按钮 */
     }
 
-    &--disabled {
-      background: fade(#2d1545, 80%);
-      color: #b8a8d4;
-      cursor: not-allowed;
-      border: 1px solid rgba(255, 162, 0, 0.2);
-      box-shadow: none;
-    }
-
+    /* 置灰：#929292→#7F7D7D + 内阴影 */
+    &--disabled,
     &--locked {
-      background: fade(#2d1545, 80%);
-      color: #b8a8d4;
+      background: linear-gradient(180deg, #929292 0%, #7f7d7d 100%);
+      color: #fff;
       cursor: not-allowed;
-      border: 1px solid rgba(255, 162, 0, 0.2);
+      box-shadow:
+        inset 0 5px 4.7px #a1a1a1,
+        inset 0 -3px 0 #676666;
+      opacity: 1;
     }
-  }
-}
-
-.ng-badge {
-  font-size: 10px;
-  font-weight: 900;
-  text-transform: uppercase;
-  padding: 2px 8px;
-  border-radius: 4px;
-
-  &--active {
-    color: @primary;
-    background: fade(@primary, 10%);
-  }
-
-  &--claimed {
-    color: #b8a8d4;
-    background: #12021a;
   }
 }
 
 .ng-spacer {
-  height: 40px;
+  height: 16px;
 }
 
-// ====== FOOTER ======
+// ====== FOOTER：抬到 Tabbar 上方 ======
 .ng-footer {
   position: fixed;
-  bottom: 30px;
   left: 0;
   right: 0;
-  background: fade(@bg-dark, 95%);
-  backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 16px;
+  bottom: @tabbar-h;
+  background: fade(@page, 96%);
+  backdrop-filter: blur(16px);
+  border-top: 1px solid fade(@gold, 28%);
+  padding: 12px 16px 14px;
   max-width: 450px;
   margin: 0 auto;
   z-index: 50;
+  box-sizing: border-box;
 
   &__row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
   }
 
   &__price {
@@ -786,10 +747,10 @@ export default {
 
     &-label {
       font-size: 10px;
-      color: #b8a8d4;
+      color: #ffffff;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 2px;
+      letter-spacing: 1.5px;
     }
 
     &-row {
@@ -799,15 +760,15 @@ export default {
     }
 
     &-current {
-      font-size: 30px;
-      font-weight: 900;
-      color: @secondary;
-      text-shadow: 0 0 15px fade(@secondary, 60%);
+      font-size: 18px;
+      font-weight: 600;
+      color: #fbff00;
+      text-shadow: 0 0 12px fade(@gold, 45%);
     }
 
     &-original {
-      font-size: 14px;
-      color: #b8a8d4;
+      font-size: 13px;
+      color: @muted;
       text-decoration: line-through;
     }
   }
@@ -816,42 +777,34 @@ export default {
     text-align: right;
 
     &-pct {
-      font-size: 20px;
-      font-weight: 900;
-      color: @primary;
+      font-size: 18px;
+      font-weight: 600;
+      color: #fbff00;
     }
 
     &-label {
       font-size: 10px;
-      color: #b8a8d4;
+      color: #ffffff;
       font-weight: 700;
     }
   }
 
   &__buy {
     width: 100%;
-    background: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
-    color: #573900;
-    font-weight: 900;
-    padding: 16px;
-    border-radius: 10px;
-    border: none;
+    height: 48px;
     font-size: 16px;
+    font-weight: 900;
     text-transform: uppercase;
-    letter-spacing: 3px;
-    box-shadow: 0 0 20px fade(@primary, 40%);
+    letter-spacing: 2px;
+    border: none;
     cursor: pointer;
-
-    &:active {
-      transform: scale(0.98);
-    }
   }
 
   &__disclaimer {
     text-align: center;
     font-size: 10px;
-    color: #b8a8d4;
-    margin-top: 12px;
+    color: @muted;
+    margin-top: 10px;
     font-weight: 500;
   }
 }
@@ -865,9 +818,9 @@ export default {
 .ng-popup {
   width: 100%;
   max-width: 420px;
-  background: @bg-dark;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 162, 0, 0.45);
+  background: @page;
+  border-radius: 14px;
+  border: 2px solid @card-border;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
   overflow: hidden;
   display: flex;
@@ -878,16 +831,15 @@ export default {
     align-items: center;
     justify-content: space-between;
     padding: 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid fade(@gold, 25%);
   }
 
   &__title {
     font-size: 18px;
     font-weight: 800;
-    color: @primary;
+    color: #fff;
     text-transform: uppercase;
     letter-spacing: 2px;
-    text-shadow: 0 0 10px fade(@primary, 50%);
   }
 
   &__close {
@@ -909,13 +861,17 @@ export default {
     align-items: center;
     justify-content: center;
     position: relative;
-    background: linear-gradient(to bottom, fade(@primary, 10%), transparent);
+    background: linear-gradient(180deg, fade(@card-from, 35%), transparent);
 
     &-glow {
       position: absolute;
       inset: 0;
-      opacity: 0.2;
-      background: radial-gradient(circle at center, @primary, transparent, transparent);
+      opacity: 0.25;
+      background: radial-gradient(
+        circle at center,
+        fade(@gold, 55%),
+        transparent 70%
+      );
     }
 
     &-img {
@@ -929,19 +885,21 @@ export default {
 
   &__timer {
     padding: 0 24px;
-    margin-top: -32px;
+    margin-top: -28px;
     position: relative;
     z-index: 20;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
+    justify-content: center;
+
+    .ng-timer__frame {
+      max-width: 260px;
+    }
   }
 
   &__summary {
     margin: 20px 24px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 162, 0, 0.45);
+    background: linear-gradient(180deg, @card-from 0%, @card-to 100%);
+    border: 2px solid @card-border;
     border-radius: 12px;
     padding: 16px;
     text-align: center;
@@ -951,7 +909,7 @@ export default {
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 2px;
-      color: @red;
+      color: @muted;
       display: block;
       margin-bottom: 4px;
     }
@@ -959,7 +917,7 @@ export default {
     &-value {
       font-size: 20px;
       font-weight: 900;
-      color: @secondary;
+      color: @gold;
     }
   }
 
@@ -977,36 +935,27 @@ export default {
     span {
       font-size: 18px;
       font-weight: 900;
-      color: @primary;
+      color: @gold;
       text-transform: uppercase;
       letter-spacing: 3px;
-      text-shadow: 0 0 10px fade(@primary, 50%);
     }
   }
 
   &__buy {
     width: 100%;
-    background: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
-    color: #573900;
+    height: 48px;
+    font-size: 16px;
     font-weight: 900;
-    padding: 20px;
-    border-radius: 12px;
-    border: none;
-    font-size: 18px;
     text-transform: uppercase;
-    letter-spacing: 4px;
-    box-shadow: 0 10px 30px fade(@primary, 40%);
+    letter-spacing: 2px;
+    border: none;
     cursor: pointer;
-
-    &:active {
-      transform: scale(0.95);
-    }
   }
 
   &__disclaimer {
     text-align: center;
     font-size: 10px;
-    color: rgba(255, 255, 255, 0.3);
+    color: @muted;
     margin-top: 12px;
     font-weight: 500;
   }
@@ -1029,7 +978,7 @@ export default {
     right: -10%;
     width: 256px;
     height: 256px;
-    background: fade(@primary, 10%);
+    background: fade(#9f24c9, 18%);
     filter: blur(100px);
     border-radius: 50%;
   }
@@ -1040,7 +989,7 @@ export default {
     left: -10%;
     width: 320px;
     height: 320px;
-    background: fade(@secondary, 5%);
+    background: fade(@gold, 8%);
     filter: blur(120px);
     border-radius: 50%;
   }

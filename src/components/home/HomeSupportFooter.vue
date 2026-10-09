@@ -21,7 +21,7 @@
       class="home-support__brand"
       loading="lazy"
       decoding="async"
-      src="@/assets/img/login/logo.webp"
+      src="@/assets/img/tabbar/tabqb.png"
       alt=""
     />
 
@@ -31,21 +31,36 @@
         target="_blank"
         rel="noopener noreferrer"
       >
-        <img src="@/assets/img/footer/support-ton.svg" alt="TON" loading="lazy" decoding="async" />
+        <img
+          src="@/assets/img/footer/support-ton.svg"
+          alt="TON"
+          loading="lazy"
+          decoding="async"
+        />
       </a>
       <a
         href="https://cryptogambling.org/"
         target="_blank"
         rel="noopener noreferrer"
       >
-        <img src="@/assets/img/footer/support-verified.webp" alt="Verified" loading="lazy" decoding="async" />
+        <img
+          src="@/assets/img/footer/support-verified.webp"
+          alt="Verified"
+          loading="lazy"
+          decoding="async"
+        />
       </a>
       <a
         href="https://cert.gcb.cw/certificate?id=ZXlKcGRpSTZJbWQ0UTBwa1NUSjNSV0pCTTI4NGVYQjFkSGxPSzNjOVBTSXNJblpoYkhWbElqb2lZakJVVkU4NFVrYzFSRzlxTm1kcFNIWmlUa1ZxVVQwOUlpd2liV0ZqSWpvaU1tVmpNekV6TVRKak0ySXlaR0kzWkdZeE16QmtOVGcyWkRNeU9EZGhNV1EzTmpnNE4ySXhOek16WlRJNFpEZzBaV0UyWVRrNE5EUTBOamRsTkRCaVpDSXNJblJoWnlJNklpSjk="
         target="_blank"
         rel="noopener noreferrer"
       >
-        <img src="@/assets/img/footer/support-gcb.svg" alt="GCB" loading="lazy" decoding="async" />
+        <img
+          src="@/assets/img/footer/support-gcb.svg"
+          alt="GCB"
+          loading="lazy"
+          decoding="async"
+        />
       </a>
     </div>
 
@@ -175,7 +190,6 @@ export default {
 
   &__brand {
     display: block;
-    width: 220px;
     max-width: 78%;
     height: auto;
     margin: 0 auto 14px;

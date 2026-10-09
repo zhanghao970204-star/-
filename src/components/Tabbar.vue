@@ -27,11 +27,9 @@
     </van-tabbar-item>
 
     <van-tabbar-item>
-      <span
-        class="wallet-label"
-        :class="{ activeSpan: active === 2 }"
-        >{{ $lang.Depósito }}</span
-      >
+      <span class="wallet-label" :class="{ activeSpan: active === 2 }">{{
+        $lang.Depósito
+      }}</span>
       <template #icon>
         <div class="boxBg">
           <img class="tabqb" src="@/assets/img/tabbar/tabqb.png" alt="" />
@@ -63,88 +61,94 @@
 </template>
 
 <script>
-import { resetPageScroll, resetPageScrollAfterRoute } from '@/utils/scrollReset'
+import {
+  resetPageScroll,
+  resetPageScrollAfterRoute,
+} from "@/utils/scrollReset";
 
 export default {
-  name: 'Y7Tabbar',
-  emits: ['need-login'],
+  name: "Y7Tabbar",
+  emits: ["need-login"],
   data() {
     return {
-      active: 0
-    }
+      active: 0,
+    };
   },
   computed: {
     routePrefix() {
-      return this.$route.params.prefix || localStorage.getItem('country') || ''
+      return this.$route.params.prefix || localStorage.getItem("country") || "";
     },
     routerArr() {
-      const p = this.routePrefix
+      const p = this.routePrefix;
       return [
         `/${p}/home`,
         `/${p}/share`,
         `/${p}/rechargeCont`,
         `/${p}/activity`,
-        `/${p}/mine`
-      ]
+        `/${p}/mine`,
+      ];
     },
     // deposit / share / mine 需登录；home / activity 可游客
     needLoginIndexes() {
-      return [1, 2, 4]
+      return [1, 2, 4];
     },
     visible() {
-      const path = this.$route.path
+      const path = this.$route.path;
       return (
-        !path.includes('/Country') &&
-        !path.includes('/Crowdfunding') &&
-        !path.includes('/appDetail') &&
-        !path.includes('/Support')
-      )
-    }
+        !path.includes("/Country") &&
+        !path.includes("/Crowdfunding") &&
+        !path.includes("/appDetail") &&
+        !path.includes("/Support")
+      );
+    },
   },
   watch: {
     $route: {
       handler(to) {
-        this.syncActive(to.path)
+        this.syncActive(to.path);
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
   methods: {
     syncActive(path) {
-      if (path.includes('/share')) {
-        this.active = 1
-      } else if (path.includes('/rechargeCont')) {
-        this.active = 2
-      } else if (path.includes('/activity') || path.includes('/bonus')) {
-        this.active = 3
-      } else if (path.includes('/mine')) {
-        this.active = 4
-      } else if (path.includes('/home')) {
-        this.active = 0
+      if (path.includes("/share")) {
+        this.active = 1;
+      } else if (path.includes("/rechargeCont")) {
+        this.active = 2;
+      } else if (path.includes("/activity") || path.includes("/bonus")) {
+        this.active = 3;
+      } else if (path.includes("/mine")) {
+        this.active = 4;
+      } else if (path.includes("/home")) {
+        this.active = 0;
       }
     },
     toTop() {
-      resetPageScroll()
+      resetPageScroll();
     },
     onBeforeChange(index) {
-      const to = this.routerArr[index]
-      if (!to) return false
+      const to = this.routerArr[index];
+      if (!to) return false;
 
-      if (this.needLoginIndexes.includes(index) && !localStorage.getItem('token')) {
-        this.$emit('need-login')
-        return false
+      if (
+        this.needLoginIndexes.includes(index) &&
+        !localStorage.getItem("token")
+      ) {
+        this.$emit("need-login");
+        return false;
       }
 
       if (this.$route.path !== to) {
-        this.$router.push(to)
+        this.$router.push(to);
       }
       // 任意底部 Tab 切换都回到顶部，避免首页滑到底再进「我的」停在中间
-      this.toTop()
-      resetPageScrollAfterRoute()
-      return true
-    }
-  }
-}
+      this.toTop();
+      resetPageScrollAfterRoute();
+      return true;
+    },
+  },
+};
 </script>
 
 <style scoped lang="less">
@@ -161,7 +165,7 @@ export default {
   box-shadow: none !important;
 
   .tabqb {
-    width: 54px;
+    width: 75px;
     height: auto;
     object-fit: contain;
     display: block;
@@ -176,7 +180,9 @@ export default {
   max-width: 450px;
   margin: 0 auto;
   z-index: 999;
-  height: calc(var(--tabbar-bar-height, 66px) + env(safe-area-inset-bottom, 0px));
+  height: calc(
+    var(--tabbar-bar-height, 66px) + env(safe-area-inset-bottom, 0px)
+  );
   padding-bottom: env(safe-area-inset-bottom, 0px);
   box-sizing: border-box;
   text-align: center;
@@ -244,7 +250,7 @@ export default {
     position: relative;
 
     &::after {
-      content: '';
+      content: "";
       position: absolute;
       top: -1px;
       right: -3px;

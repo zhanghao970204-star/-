@@ -261,7 +261,12 @@
                     class="vendor-grid__item"
                     @click="goVendor(item2)"
                   >
-                    <img :src="item2.icon" class="vendor-grid__icon" loading="lazy" decoding="async" />
+                    <img
+                      :src="item2.icon"
+                      class="vendor-grid__icon"
+                      loading="lazy"
+                      decoding="async"
+                    />
                   </div>
                 </div>
                 <div
@@ -341,7 +346,13 @@
                       class="home-tg-item"
                       @click="openLink(item.url)"
                     >
-                      <img :src="item.src" width="34" alt="" loading="lazy" decoding="async" />
+                      <img
+                        :src="item.src"
+                        width="34"
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                      />
                       <span class="home-tg-item__label">{{ item.label }}</span>
                     </div>
                   </div>
@@ -581,7 +592,7 @@ export default {
         },
         {
           key: "rescue",
-          path: "/cashBack",
+          path: "/weeklyMissions",
           icon: actIconRescue,
           titleImg: actTitleRescue,
           btn: L.activity_spin || "SPIN",

@@ -123,6 +123,10 @@
     <Tabbar @need-login="handleOpenLogin" />
 
     <login v-model="showPopup" overlay @close-key="close"></login>
+    <guest-upgrade-popup
+      v-model="showGuestUpgradePopup"
+      @success="handleGuestUpgradeSuccess"
+    />
     <!-- <lucky-roulette
       v-model="isShowPopup"
       @login-key="LoginKey"
@@ -199,6 +203,7 @@
 // import TopDownload from "../../components/TopDownload.vue"; //顶部下载
 import TopNav from "../../components/TopNav.vue"; //顶部导航栏
 import Tabbar from "../../components/Tabbar.vue";
+import GuestUpgradePopup from "../../components/GuestUpgradePopup.vue";
 import {
   Init,
   VnRechargeInitS,
@@ -214,6 +219,7 @@ export default {
     // TopDownload,
     TopNav,
     Tabbar,
+    GuestUpgradePopup,
   },
   name: "LayoutIndex",
   computed: {
@@ -268,6 +274,7 @@ export default {
       timer: null,
       topDownloadHeight: 0,
       showPopup: false, //登录弹窗开关
+      showGuestUpgradePopup: false,
       // tabBar: [
       //   {
       //     title: this.$lang.Início,
@@ -344,6 +351,7 @@ export default {
 
     // 全局监听登录弹窗事件（未登录接口、活动页等场景统一触发）
     this.$bus.on("openLogin", this.handleOpenLogin);
+    this.$bus.on("openGuestUpgrade", this.handleOpenGuestUpgrade);
     this.$nextTick(() => {
       if (consumeOpenLoginAfterPlatformSwitch() && this.$bus) {
         this.$bus.emit("openLogin");
@@ -352,6 +360,7 @@ export default {
   },
   beforeUnmount() {
     this.$bus.off("openLogin", this.handleOpenLogin);
+    this.$bus.off("openGuestUpgrade", this.handleOpenGuestUpgrade);
   },
   async created() {
     this.fetchBannerList();
@@ -372,6 +381,15 @@ export default {
     },
     handleOpenLogin() {
       this.showPopup = true;
+    },
+    handleOpenGuestUpgrade() {
+      this.showGuestUpgradePopup = true;
+    },
+    handleGuestUpgradeSuccess() {
+      // 绑定接口的新 Token 已保存；按产品流程继续打开登录页。
+      this.$nextTick(() => {
+        this.showPopup = true;
+      });
     },
     async GetInvitationID() {
       const data = await GetInvitationID({

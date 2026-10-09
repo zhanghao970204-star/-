@@ -232,7 +232,7 @@
 
 <script>
 import { Init, GameBalanceList, Logout, VipInit } from "@/api/common";
-import { clearGuestFlags } from "@/utils/guestAuth";
+import { clearGuestFlags, isGuestUser } from "@/utils/guestAuth";
 import { avatarImg } from "@/utils/avatarAssets";
 import { resetPageScroll } from "@/utils/scrollReset";
 
@@ -394,6 +394,10 @@ export default {
     async goToDesposit(i) {
       if (i === 0) {
         this.$jumpTo("/rechargeCont");
+        return;
+      }
+      if (isGuestUser()) {
+        this.$bus.emit("openGuestUpgrade");
         return;
       }
       await this.Init();

@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- Treasure Box Popup -->
     <van-popup
       :show="modelValue"
       @update:show="$emit('update:modelValue', $event)"
@@ -9,44 +8,97 @@
       class="tb-popup-wrapper"
     >
       <div class="tb-popup">
-        <button class="tb-popup__close" @click="handleClose">
-          <van-icon name="cross" size="18" color="rgba(255,255,255,0.4)" />
+        <button type="button" class="tb-popup__close" @click="handleClose">
+          <svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="true">
+            <path
+              d="M3.2 3.2l11.6 11.6M14.8 3.2L3.2 14.8"
+              fill="none"
+              stroke="#fff"
+              stroke-width="2.6"
+              stroke-linecap="round"
+            />
+          </svg>
         </button>
 
-        <!-- Header -->
-        <div class="tb-popup__header">
-          <div class="tb-popup__grid-bg"></div>
-          <p class="tb-popup__mission">
-            {{ $lang.fd_mission_briefing || "Mission Briefing" }}
-          </p>
+        <div class="tb-popup__visual">
+          <img
+            class="tb-popup__hero"
+            src="@/assets/img/bonus/treasurebox/hero.png"
+            alt=""
+          />
+          <img
+            class="tb-popup__title-img"
+            src="@/assets/img/bonus/treasurebox/title.png"
+            alt="Mission Briefing"
+          />
+        </div>
 
-          <span class="tb-popup__value-label">{{
-            $lang.fd_total_reward_value || "Total Reward Value"
-          }}</span>
-          <div class="tb-popup__value-row">
-            <span class="tb-popup__value-currency">{{ liveCurrency }}</span>
-            <span class="tb-popup__value-amount">{{ totalValue }}</span>
-            <span class="tb-popup__value-plus">+</span>
-            <span v-if="extraRewardText" class="tb-popup__value-extra">{{
-              extraRewardText
-            }}</span>
+        <div class="tb-popup__body">
+          <p class="tb-popup__value-label">
+            {{ $lang.fd_total_reward_value || "Total Reward Value" }}
+          </p>
+          <div class="tb-popup__price-wrap">
+            <div v-if="extraRewardText" class="tb-popup__ribbon">
+              <img
+                class="tb-popup__ribbon-bg"
+                src="@/assets/img/bonus/firstrecharge/ribbon.png"
+                alt=""
+              />
+              <div class="tb-popup__ribbon-inner">
+                <span>+{{ extraRewardText }}</span>
+              </div>
+            </div>
+            <div class="tb-popup__value-bar">
+              <img
+                class="tb-popup__value-bar-bg"
+                src="@/assets/img/bonus/firstrecharge/price_bar.png"
+                alt=""
+              />
+              <div class="tb-popup__value-main">
+                <span class="tb-popup__value-currency">{{ liveCurrency }}</span>
+                <span class="tb-popup__value-amount">{{
+                  $formatNumberWithCommas(totalValue)
+                }}</span>
+              </div>
+            </div>
           </div>
+
           <p class="tb-popup__subtitle">
             {{ $lang.tb_treasure_box || "Treasure" }}
             <span class="tb-popup__highlight">{{ $lang.tb_box || "Box" }}</span>
           </p>
 
-          <!-- Countdown -->
           <div class="tb-popup__timer">
-            <span class="tb-popup__timer-label">{{
-              $lang.fd_critical_deadline || "Critical Deadline"
-            }}</span>
-            <span class="tb-popup__timer-digits">{{ tbCountdown }}</span>
+            <p class="tb-popup__timer-label">
+              {{ $lang.fd_critical_deadline || "Critical Deadline" }}
+            </p>
+            <div class="tb-popup__timer-row">
+              <span class="tb-popup__timer-cell">
+                <img
+                  src="@/assets/img/bonus/firstrecharge/timer_cell.png"
+                  alt=""
+                />
+                <em>{{ countdownParts.h }}</em>
+              </span>
+              <span class="tb-popup__timer-colon">:</span>
+              <span class="tb-popup__timer-cell">
+                <img
+                  src="@/assets/img/bonus/firstrecharge/timer_cell.png"
+                  alt=""
+                />
+                <em>{{ countdownParts.m }}</em>
+              </span>
+              <span class="tb-popup__timer-colon">:</span>
+              <span class="tb-popup__timer-cell">
+                <img
+                  src="@/assets/img/bonus/firstrecharge/timer_cell.png"
+                  alt=""
+                />
+                <em>{{ countdownParts.s }}</em>
+              </span>
+            </div>
           </div>
-        </div>
 
-        <!-- Action -->
-        <div class="tb-popup__action">
           <div class="tb-popup__energy">
             <div class="tb-popup__energy-track">
               <div
@@ -60,6 +112,7 @@
           </div>
 
           <button
+            type="button"
             class="tb-popup__btn"
             :disabled="tbPaying"
             @click="claimTreasureBox"
@@ -68,14 +121,15 @@
               $lang.common_loading || "Loading..."
             }}</template>
             <template v-else>
-              <span class="tb-popup__btn-label">{{
+              <span class="tb-popup__btn-main">{{
                 $lang.fd_claim_now || "Claim Now"
               }}</span>
-              <span v-if="price" class="tb-popup__btn-price">
-                {{ liveCurrency }} {{ $formatNumberWithCommas(price) }}
+              <span v-if="price" class="tb-popup__btn-sub">
+                <em>{{ liveCurrency }} {{ $formatNumberWithCommas(price) }}</em>
               </span>
             </template>
           </button>
+
           <p class="tb-popup__disclaimer">
             {{
               $lang.fd_offer_ends_energy || "Offer ends when energy runs out"
@@ -109,27 +163,22 @@ export default {
       type: Boolean,
       default: false,
     },
-    // Treasure box price used for payment
     price: {
       type: [Number, String],
       default: 0,
     },
-    // Total reward value shown on header
     totalValue: {
       type: [Number, String],
       default: 0,
     },
-    // Initial countdown seconds
     countdownSeconds: {
       type: Number,
       default: 86399,
     },
-    // Energy bar percentage (0-100)
     energy: {
       type: Number,
       default: 65,
     },
-    // Extra rewards from backend (array of { amount, type })
     rewards: {
       type: Array,
       default: () => [],
@@ -146,7 +195,6 @@ export default {
     };
   },
   computed: {
-    // 实时从 localStorage 取，避免 App 初始化时还没登录拿到的快照过期
     liveCurrency() {
       return localStorage.getItem("currency") || this.getCurrency || "";
     },
@@ -157,23 +205,20 @@ export default {
         .filter(Boolean)
         .join(" + ");
     },
-    tbCountdown() {
+    countdownParts() {
       const h = Math.floor(this.tbCountdownSeconds / 3600);
       const m = Math.floor((this.tbCountdownSeconds % 3600) / 60);
       const s = this.tbCountdownSeconds % 60;
-      return (
-        String(h).padStart(2, "0") +
-        ":" +
-        String(m).padStart(2, "0") +
-        ":" +
-        String(s).padStart(2, "0")
-      );
+      return {
+        h: String(h).padStart(2, "0"),
+        m: String(m).padStart(2, "0"),
+        s: String(s).padStart(2, "0"),
+      };
     },
   },
   watch: {
     modelValue(v, oldV) {
       if (v) {
-        // reset countdown from latest prop each time popup opens
         this.tbCountdownSeconds = this.countdownSeconds;
         this.tbEnergy = this.energy;
         this.startTbCountdown();
@@ -184,7 +229,6 @@ export default {
       }
     },
     countdownSeconds(v) {
-      // Only reset when the popup is closed, otherwise we keep the running timer
       if (!this.modelValue) {
         this.tbCountdownSeconds = v;
       }
@@ -289,272 +333,341 @@ export default {
 </script>
 
 <style lang="less" scoped>
-/* ====== Treasure Box Popup (Compact) ====== */
-@tb-primary: @primary-color;
-@tb-yellow: @primary-color3;
-@tb-red: #dc2626;
-@tb-bg: #12021a;
-@muted: #d7a2fa;
+@tb-yellow: #fbff00;
+@muted: #9b7ab8;
 
 .tb-popup-wrapper {
+  width: 86% !important;
+  max-width: 360px;
   background: transparent !important;
   overflow: visible !important;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .tb-popup {
   position: relative;
-  width: 300px;
-  background: @tb-bg;
-  border: 2px solid fade(@border-color, 50%);
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow:
-    0 16px 40px rgba(0, 0, 0, 0.6),
-    0 0 20px fade(@primary-color, 15%);
+  width: 100%;
+  background: linear-gradient(180deg, #2b0740 0%, #1a0428 55%, #12021a 100%);
+  border-radius: 22px;
+  border: 1px solid fade(#9b4dff, 45%);
+  overflow: visible;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
 
   &__close {
     position: absolute;
-    top: 10px;
     right: 10px;
-    z-index: 10;
-    background: none;
+    top: 10px;
+    z-index: 5;
+    width: 28px;
+    height: 28px;
+    padding: 0;
     border: none;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
   }
 
-  /* ---- Header Section ---- */
-  &__header {
+  &__visual {
     position: relative;
-    padding: 28px 20px 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    padding: 8px 10px 0;
     text-align: center;
-    border-bottom: 1px solid fade(@border-color, 18%);
-    background: linear-gradient(
-      180deg,
-      fade(@primary-color, 14%),
-      fade(@cont-bg, 45%)
-    );
-    overflow: hidden;
   }
 
-  &__grid-bg {
-    position: absolute;
-    inset: 0;
-    background-image: radial-gradient(
-      fade(@tb-primary, 14%) 1px,
-      transparent 1px
-    );
-    background-size: 20px 20px;
-    opacity: 0.3;
+  &__hero {
+    display: block;
+    width: 90px;
+    height: 90px;
+    margin: 0 auto -6px;
+    object-fit: contain;
+    pointer-events: none;
+    /* 资源自带黑底，用 screen 去掉纯黑 */
+    mix-blend-mode: screen;
+  }
+
+  &__title-img {
+    display: block;
+    width: 92%;
+    max-width: 310px;
+    margin: -18px auto 0;
+    height: auto;
+    position: relative;
+    z-index: 1;
     pointer-events: none;
   }
 
-  &__mission {
-    position: relative;
-    z-index: 1;
-    font-size: 11px;
-    font-weight: 900;
-    color: @muted;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    margin-bottom: 16px;
+  &__body {
+    padding: 6px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   &__value-label {
-    position: relative;
-    z-index: 1;
-    font-size: 9px;
-    font-weight: 700;
-    color: fade(@muted, 80%);
+    margin: 0 0 6px;
+    font-size: 10px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
-    letter-spacing: 3px;
-    margin-bottom: 4px;
   }
 
-  &__value-row {
+  /* 复用首充：price_bar + ribbon */
+  &__price-wrap {
     position: relative;
-    z-index: 1;
+    width: 100%;
+  }
+
+  &__ribbon {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    z-index: 2;
+    width: 42%;
+    max-width: 140px;
+    transform: translateX(-50%);
+  }
+
+  &__ribbon-bg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  &__ribbon-inner {
+    position: absolute;
+    inset: 0;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
-    flex-wrap: nowrap;
+    padding: 0 10px 2px;
+    box-sizing: border-box;
+    font-size: 11px;
+    font-weight: 900;
+    color: #fff;
+    white-space: nowrap;
+  }
+
+  &__value-bar {
+    position: relative;
+    width: 100%;
+  }
+
+  &__value-bar-bg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  &__value-main {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 28px;
+    box-sizing: border-box;
     white-space: nowrap;
   }
 
   &__value-currency {
-    font-size: 18px;
-    font-weight: 900;
+    font-size: 28px;
+    font-weight: 600;
     color: @tb-yellow;
-    margin-top: 10px;
   }
 
   &__value-amount {
-    font-size: 56px;
+    font-size: 28px;
+    font-weight: 600;
+    color: @tb-yellow;
     line-height: 1;
-    font-weight: 900;
-    color: @tb-yellow;
-    letter-spacing: -2px;
-    filter: drop-shadow(0 0 16px fade(@tb-yellow, 35%));
-  }
-
-  &__value-plus {
-    font-size: 18px;
-    font-weight: 900;
-    color: @tb-yellow;
-    margin-top: 10px;
-    margin-left: 2px;
-  }
-
-  &__value-extra {
-    font-size: 22px;
-    line-height: 1;
-    font-weight: 900;
-    color: @tb-yellow;
-    margin-left: 2px;
-    margin-top: 8px;
-    filter: drop-shadow(0 0 10px fade(@tb-yellow, 35%));
+    letter-spacing: -0.5px;
+    text-shadow: 0 0 10px fade(@tb-yellow, 35%);
   }
 
   &__subtitle {
-    position: relative;
-    z-index: 1;
+    margin: 8px 0 10px;
     font-size: 12px;
     font-weight: 700;
-    color: fade(@wihte-color, 65%);
+    color: fade(#fff, 70%);
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin-top: 4px;
-    margin-bottom: 12px;
   }
 
   &__highlight {
     color: @tb-yellow;
   }
 
-  /* ---- Countdown ---- */
   &__timer {
-    position: relative;
-    z-index: 1;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100%;
-    max-width: 220px;
-    background: rgba(0, 0, 0, 0.4);
-    padding: 10px 16px;
-    border-radius: 12px;
-    border: 1px solid fade(@tb-red, 20%);
+    margin: 0 0 12px;
+  }
 
-    &-label {
-      font-size: 9px;
-      font-weight: 900;
-      color: fade(@tb-red, 80%);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      margin-bottom: 4px;
+  &__timer-label {
+    margin: 0 0 10px;
+    font-size: 13px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+  }
+
+  &__timer-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  &__timer-cell {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      pointer-events: none;
     }
 
-    &-digits {
+    em {
+      position: relative;
+      z-index: 1;
+      font-style: normal;
       font-size: 26px;
-      font-weight: 900;
-      color: @tb-red;
-      letter-spacing: 1px;
-      text-shadow: 0 0 12px fade(@tb-red, 60%);
+      font-weight: 600;
+      color: #fff;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+      text-shadow:
+        -1.5px -1.5px 0 #1a0428,
+        1.5px -1.5px 0 #1a0428,
+        -1.5px 1.5px 0 #1a0428,
+        1.5px 1.5px 0 #1a0428,
+        0 -1.5px 0 #1a0428,
+        0 1.5px 0 #1a0428,
+        -1.5px 0 0 #1a0428,
+        1.5px 0 0 #1a0428,
+        0 3px 6px rgba(0, 0, 0, 0.35);
     }
   }
 
-  /* ---- Action Section ---- */
-  &__action {
-    padding: 16px 20px 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  &__timer-colon {
+    font-size: 26px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1;
+    margin-top: -2px;
+    text-shadow:
+      -1.5px -1.5px 0 #1a0428,
+      1.5px -1.5px 0 #1a0428,
+      -1.5px 1.5px 0 #1a0428,
+      1.5px 1.5px 0 #1a0428,
+      0 -1.5px 0 #1a0428,
+      0 1.5px 0 #1a0428,
+      -1.5px 0 0 #1a0428,
+      1.5px 0 0 #1a0428,
+      0 3px 6px rgba(0, 0, 0, 0.35);
   }
 
   &__energy {
     width: 100%;
     margin-bottom: 12px;
 
+    /* 设计稿：轨道底 #670995→#A414E7，描边 #FFDD64→#FFB303，内阴影 #4F0572 */
     &-track {
       width: 100%;
-      height: 10px;
-      background: #1a0a28;
+      height: 16px;
       border-radius: 999px;
       padding: 2px;
-      border: 1px solid fade(@border-color, 20%);
-      box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.5);
+      box-sizing: border-box;
+      border: 1px solid transparent;
+      background:
+        linear-gradient(90deg, #670995 0%, #a414e7 100%) padding-box,
+        linear-gradient(90deg, #ffdd64 0%, #ffb303 100%) border-box;
+      box-shadow:
+        inset 0 -4px 4px #4f0572,
+        inset 0 4px 4px #4f0572;
+      overflow: hidden;
     }
 
+    /* 设计稿填充：#E1FF81 → #CDF744 → #9DEF06 */
     &-fill {
       height: 100%;
-      background: @primary-gradient-h;
+      min-width: 0;
       border-radius: 999px;
-      box-shadow: 0 0 8px fade(@tb-primary, 50%);
+      background: linear-gradient(90deg, #e1ff81 0%, #cdf744 50%, #9def06 100%);
+      box-shadow: 0 0 6px fade(#9def06, 55%);
     }
 
     &-text {
-      font-size: 8px;
-      color: @muted;
+      margin: 6px 0 0;
+      font-size: 9px;
+      color: #d7a2fa;
       text-transform: uppercase;
-      font-weight: 900;
+      font-weight: 800;
       letter-spacing: 1px;
-      margin-top: 4px;
       text-align: center;
     }
   }
 
+  /* 复用首充绿色 3D 按钮 */
   &__btn {
+    .btn-3d-green();
     width: 100%;
-    background: @primary-gradient;
-    color: @primary-text-on;
-    font-weight: 900;
-    padding: 10px 12px;
-    border-radius: 10px;
-    border: none;
-    text-transform: uppercase;
-    box-shadow: 0 4px 0 @primary-color2;
-    cursor: pointer;
-    display: flex;
+    height: auto;
+    min-height: 52px;
+    padding: 8px 12px 10px;
     flex-direction: column;
-    align-items: center;
     gap: 2px;
-    line-height: 1.2;
-
-    &:active {
-      box-shadow: none;
-      transform: translateY(4px);
-    }
+    font-size: 16px;
 
     &:disabled {
       opacity: 0.6;
     }
   }
 
-  &__btn-label {
+  &__btn-main {
     font-size: 16px;
+    font-weight: 900;
     letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #fff;
   }
 
-  &__btn-price {
+  &__btn-sub {
     font-size: 12px;
     font-weight: 700;
-    opacity: 0.7;
+    color: fade(#fff, 92%);
     text-transform: none;
     letter-spacing: 0;
+
+    em {
+      font-style: normal;
+      color: @tb-yellow;
+      font-weight: 900;
+    }
   }
 
   &__disclaimer {
-    margin-top: 8px;
-    font-size: 8px;
+    margin-top: 10px;
+    font-size: 9px;
     color: @muted;
     text-transform: uppercase;
     font-weight: 700;
-    letter-spacing: 1px;
+    letter-spacing: 0.8px;
+    text-align: center;
   }
 }
 </style>

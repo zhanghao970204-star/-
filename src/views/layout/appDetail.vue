@@ -25,7 +25,7 @@
         <div class="flex-row self-stretch group_2 app-detail-hero-row">
           <img
             class="image app-detail-app-icon"
-            src="@/assets/img/logo.webp"
+            src="@/assets/img/tabbar/tabqb.png"
             alt=""
           />
           <div

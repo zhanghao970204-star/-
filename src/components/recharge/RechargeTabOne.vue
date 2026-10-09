@@ -1,7 +1,7 @@
 <template>
   <div class="content-c">
     <div class="content-c1">
-      <img src="../../assets/img/wallet/pay_item_logo.png" width="115" />
+      <img src="@/assets/img/tabbar/tabqb.png" width="115" />
       <div
         v-for="(item, index2) in paymentList"
         :key="index2"

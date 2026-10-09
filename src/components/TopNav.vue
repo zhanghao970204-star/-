@@ -11,7 +11,7 @@
         <img
           v-if="!token"
           class="nav-logo"
-          src="@/assets/img/login/logo.webp"
+          src="@/assets/img/tabbar/tabqb.png"
           alt=""
         />
 
@@ -302,6 +302,7 @@ import { vipImg } from "@/utils/vipAssets";
 import { avatarImg } from "@/utils/avatarAssets";
 import { normalizeHomeDataList } from "@/utils/homeGameList";
 import { applyCountryLanguage } from "@/utils/locale";
+import { isGuestUser } from "@/utils/guestAuth";
 export default {
   name: "TopNav",
   components: {},
@@ -581,6 +582,11 @@ export default {
         if (i === 0) {
           this.$jumpTo("./rechargeCont");
         } else {
+          if (isGuestUser()) {
+            this.show = false;
+            this.$bus.emit("openGuestUpgrade");
+            return;
+          }
           this.$jumpTo("./bankAdd");
         }
       } else {
@@ -670,6 +676,10 @@ export default {
       }
     },
     goToSaque() {
+      if (isGuestUser()) {
+        this.$bus.emit("openGuestUpgrade");
+        return;
+      }
       this.$jumpTo("/bankAdd");
     },
     goToRegistro() {

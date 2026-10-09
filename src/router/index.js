@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { resetPageScroll, resetPageScrollAfterRoute } from '@/utils/scrollReset'
 import bus from '@/utils/eventBus'
+import { isGuestUser } from '@/utils/guestAuth'
 import { normalizeCountryCode, readCountryCode } from '@/utils/country'
 import { consumeRouteMotion } from '@/utils/routeMotion'
 
@@ -491,6 +492,21 @@ router.beforeEach((to, from, next) => {
   // 底部 Deposit / Mine 及分享页需登录；未登录回首页并弹登录框
   const needAuthPaths = ['/rechargeCont', '/mine', '/share']
   const currentPath = to.path.replace(/^\/[^/]+/, '') || '/'
+
+  // 游客不能进入提现页：停留当前页并打开账号升级弹窗。
+  if (currentPath === '/bankAdd' && isGuestUser()) {
+    const redirectPath = finalPrefix ? `/${finalPrefix}/home` : '/home'
+    const openUpgrade = () => {
+      setTimeout(() => bus.emit('openGuestUpgrade'), 0)
+    }
+    if (!from.fullPath || from.fullPath === '/') {
+      next(redirectPath)
+    } else {
+      next(false)
+    }
+    openUpgrade()
+    return
+  }
 
   if (needAuthPaths.includes(currentPath)) {
     const token = localStorage.getItem('token')

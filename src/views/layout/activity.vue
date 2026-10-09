@@ -1,23 +1,6 @@
 <template>
   <div class="activity-page">
-    <!-- 顶部 Banner -->
-    <van-swipe class="promo-banner" :autoplay="4000" indicator-color="#fff">
-      <van-swipe-item @click="goTo('/dailyCheckIn')">
-        <div class="promo-banner__card promo-banner__card--checkin">
-          <span class="promo-banner__badge">{{
-            $lang.activity_active || "ACTIVE"
-          }}</span>
-        </div>
-      </van-swipe-item>
-      <van-swipe-item @click="goTo('/vipLevels')">
-        <div class="promo-banner__card promo-banner__card--vip"></div>
-      </van-swipe-item>
-      <van-swipe-item v-if="tbVisible" @click="openTreasureBox">
-        <div class="promo-banner__card promo-banner__card--chest"></div>
-      </van-swipe-item>
-    </van-swipe>
-
-    <!-- 双列活动卡：紫框底 + 黑内容区 + 底部绿按钮 -->
+    <!-- 双列六入口：紫框底 + 黑内容区 + 底部绿按钮 -->
     <div class="promo-grid">
       <div
         v-for="card in promoCards"
@@ -39,24 +22,11 @@
     </div>
 
     <login v-model="showLogin" overlay></login>
-
-    <treasure-box-popup
-      v-model="showTreasureBox"
-      :price="tbPrice"
-      :total-value="tbTotalValue"
-      :rewards="tbRewards"
-      :countdown-seconds="tbCountdownSeconds"
-    />
   </div>
 </template>
 
 <script>
-import {
-  TreasureBoxInit,
-  RedPacket,
-  NewPlayerGiftPackInit,
-} from "@/api/common";
-import TreasureBoxPopup from "@/components/TreasureBoxPopup.vue";
+import { NewPlayerGiftPackInit } from "@/api/common";
 import iconSpin from "@/assets/img/activity/promo/spin.png";
 import iconEnvelopes from "@/assets/img/activity/promo/envelopes.png";
 import iconGifts from "@/assets/img/activity/promo/gifts.png";
@@ -66,34 +36,16 @@ import iconVip from "@/assets/img/activity/promo/vip.png";
 
 export default {
   name: "Activity",
-  components: { TreasureBoxPopup },
   data() {
     return {
       showLogin: false,
-      showTreasureBox: false,
-      tbTotalValue: 0,
-      tbPrice: 0,
-      tbRewards: [],
-      tbCountdownSeconds: 86399,
-      tbVisible: false,
       newbieVisible: false,
-      redPacketVisible: false,
     };
   },
   computed: {
     promoCards() {
       const L = this.$lang || {};
       const cards = [
-        {
-          key: "spin",
-          path: "/luckyReferral",
-          icon: iconSpin,
-          title: L.activity_card_spins || "DAILY FREE SPINS",
-          desc:
-            L.activity_card_spins_desc ||
-            "Get up to <em>100</em> Free Spins every day",
-          btn: L.activity_spin || "SPIN",
-        },
         {
           key: "envelope",
           path: "/redPacket",
@@ -103,7 +55,16 @@ export default {
             L.activity_card_lucky_desc ||
             "Up to <em>$5000</em> bonus on big deposits",
           btn: L.activity_spin || "SPIN",
-          needRedPacket: true,
+        },
+        {
+          key: "spin",
+          path: "/luckyReferral",
+          icon: iconSpin,
+          title: L.activity_card_spins || "DAILY FREE SPINS",
+          desc:
+            L.activity_card_spins_desc ||
+            "Get up to <em>100</em> Free Spins every day",
+          btn: L.activity_spin || "SPIN",
         },
         {
           key: "deposit",
@@ -127,7 +88,7 @@ export default {
         },
         {
           key: "loss",
-          path: "/cashBack",
+          path: "/weeklyMissions",
           icon: iconLoss,
           title: L.activity_card_loss || "LOSS RESCUE",
           desc:
@@ -146,12 +107,7 @@ export default {
           btn: L.activity_spin || "SPIN",
         },
       ];
-      return cards.filter((c) => {
-        if (c.needRedPacket && !this.redPacketVisible && this.token) {
-          return false;
-        }
-        return true;
-      });
+      return cards;
     },
   },
   mounted() {
@@ -160,37 +116,12 @@ export default {
   methods: {
     async initActivityStatus() {
       try {
-        const res = await TreasureBoxInit({});
-        if (res && res.status === "ok" && res.content) {
-          const c = res.content;
-          this.tbVisible = c.visible !== 0;
-          if (c.price !== undefined) this.tbPrice = c.price;
-          if (c.totalValue !== undefined) this.tbTotalValue = c.totalValue;
-          else if (c.price !== undefined) this.tbTotalValue = c.price;
-          this.tbRewards = Array.isArray(c.rewards) ? c.rewards : [];
-          if (c.countdownSeconds !== undefined)
-            this.tbCountdownSeconds = c.countdownSeconds;
-        }
-      } catch (e) {
-        console.error("TreasureBoxInit error", e);
-      }
-      try {
         const ngRes = await NewPlayerGiftPackInit({});
         if (ngRes && ngRes.status === "ok" && ngRes.content) {
           this.newbieVisible = ngRes.content.visible === 1;
         }
       } catch (e) {
         console.error("NewPlayerGiftPackInit error", e);
-      }
-      if (this.token) {
-        try {
-          const res = await RedPacket({});
-          if (res && res.status === "ok" && res.content) {
-            this.redPacketVisible = true;
-          }
-        } catch (e) {
-          console.error("RedPacket init error", e);
-        }
       }
     },
     onCardClick(card) {
@@ -203,85 +134,18 @@ export default {
       }
       this.$jumpTo(path);
     },
-    openTreasureBox() {
-      if (!this.token) {
-        this.showLogin = true;
-        return;
-      }
-      this.showTreasureBox = true;
-    },
   },
 };
 </script>
 
 <style lang="less" scoped>
-@bg: #15031d;
 @frame: #7e3fb8;
-@muted: #c4b5e0;
 
 .activity-page {
   padding: 10px 12px 100px;
   min-height: 100vh;
   color: #fff;
   box-sizing: border-box;
-}
-
-.promo-banner {
-  border-radius: 14px;
-  overflow: hidden;
-  margin-bottom: 14px;
-
-  :deep(.van-swipe__indicators) {
-    bottom: 8px;
-  }
-
-  :deep(.van-swipe__indicator) {
-    width: 6px;
-    height: 6px;
-    background: fade(#fff, 35%);
-    opacity: 1;
-  }
-
-  :deep(.van-swipe__indicator--active) {
-    background: #fff;
-  }
-
-  &__card {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 21 / 9;
-    border-radius: 20px;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    box-sizing: border-box;
-    cursor: pointer;
-
-    &--checkin {
-      background-image: url("@/assets/img/activity/activity_banner/activity_checkin.png");
-    }
-
-    &--vip {
-      background-image: url("@/assets/img/activity/activity_banner/activity_vip_club.png");
-    }
-
-    &--chest {
-      background-image: url("@/assets/img/activity/activity_banner/activity_vip.png");
-    }
-  }
-
-  &__badge {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    padding: 3px 10px;
-    border-radius: 999px;
-    background: linear-gradient(180deg, #ffe082 0%, #f4a100 100%);
-    color: #402a0f;
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 0.4px;
-  }
 }
 
 .promo-grid {

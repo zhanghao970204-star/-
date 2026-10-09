@@ -11,8 +11,8 @@
         <div class="lang-popup__brand">
           <img
             class="lang-popup__logo"
-            src="@/assets/img/login/logo.webp"
-            alt="BISON FUN"
+            src="@/assets/img/tabbar/tabqb.png"
+            alt="LuckyPlay"
           />
         </div>
         <div class="lang-popup__panel">

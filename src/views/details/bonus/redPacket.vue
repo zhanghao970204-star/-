@@ -32,23 +32,26 @@
           alt=""
         />
       </div>
-      <div class="rp-hero__timer">
-        <img
-          class="rp-hero__timer-bg"
-          src="@/assets/img/bonus/redpacket/timer_frame.png"
-          alt=""
-        />
-        <div class="rp-hero__timer-inner">
-          <span class="rp-hero__timer-label">{{
-            $lang.rp_countdown || "NEXT ROUND IN"
-          }}</span>
-          <span class="rp-hero__timer-time">{{ displayCountdown }}</span>
+      <!-- 未达标（需充值）不展示倒计时，与 otgame 锁定态一致 -->
+      <template v-if="gameState !== 'not_qualified'">
+        <div v-if="showHeroCountdown" class="rp-hero__timer">
+          <img
+            class="rp-hero__timer-bg"
+            src="@/assets/img/bonus/redpacket/timer_frame.png"
+            alt=""
+          />
+          <div class="rp-hero__timer-inner">
+            <span class="rp-hero__timer-label">{{
+              $lang.rp_countdown || "NEXT ROUND IN"
+            }}</span>
+            <span class="rp-hero__timer-time">{{ displayCountdown }}</span>
+          </div>
         </div>
-      </div>
-      <p v-if="rpData && rpData.nextStartTime" class="rp-hero__next">
-        {{ $lang.rp_next_round || "NEXT ROUND" }}:
-        {{ rpData.nextStartTime }}
-      </p>
+        <p v-if="rpData && rpData.nextStartTime" class="rp-hero__next">
+          {{ $lang.rp_next_round || "NEXT ROUND" }}:
+          {{ rpData.nextStartTime }}
+        </p>
+      </template>
 
       <div
         v-if="gameState === 'not_qualified'"
@@ -164,13 +167,16 @@
 
     <!-- Round Info Card -->
     <div v-if="!loading && rpData" class="rp-info-card">
-      <div class="rp-info-card__row" v-if="rpData.startTime">
+      <div
+        class="rp-info-card__row"
+        v-if="rpData.beginDate || rpData.endDate || rpData.startTime"
+      >
         <span class="rp-info-card__label">{{
           $lang.rp_round_time || "Round Time"
         }}</span>
         <span class="rp-info-card__value rp-info-card__value--green"
-          >{{ formatDateTime(rpData.startTime) }} ~
-          {{ formatDateTime(rpData.endTime) }}</span
+          >{{ formatDateTime(rpData.beginDate || rpData.startTime) }} ~
+          {{ formatDateTime(rpData.endDate || rpData.endTime) }}</span
         >
       </div>
       <div class="rp-info-card__row" v-if="rpData.count !== undefined">
@@ -353,14 +359,18 @@ export default {
     countdownS() {
       return String(this.timeLeft % 60).padStart(2, "0");
     },
+    /** 倒计时秒数：等下一场用 timeLeft；已领/结束后用 nextTimeLeft */
+    displayCountdownSec() {
+      if (this.gameState === "countdown") return Math.max(0, this.timeLeft | 0);
+      if (this.nextTimeLeft > 0) return Math.max(0, this.nextTimeLeft | 0);
+      return 0;
+    },
     displayCountdown() {
-      const t =
-        this.gameState === "countdown"
-          ? this.timeLeft
-          : this.nextTimeLeft > 0
-            ? this.nextTimeLeft
-            : this.timeLeft;
-      return this.formatTime(Math.max(0, t | 0));
+      return this.formatTime(this.displayCountdownSec);
+    },
+    /** 有剩余秒数才展示灯箱倒计时（未达标不展示，见模板） */
+    showHeroCountdown() {
+      return this.displayCountdownSec > 0;
     },
     clickProgress() {
       if (!this.maxClickTimes) return 0;
@@ -596,21 +606,32 @@ export default {
       return h + ":" + m + ":" + s;
     },
 
-    // Format API time strings or timestamps to readable HH:MM
+    // Format API time strings or timestamps to readable HH:MM.
+    // beginDate/endDate 已是平台本地墙钟，禁止用浏览器时区 new Date().getHours()。
     formatDateTime(val) {
-      if (!val) return "";
-      // If it's already a short time string like "15:00", return as-is
-      if (typeof val === "string" && /^\d{1,2}:\d{2}/.test(val)) return val;
-      // Try parsing as date
-      const d = new Date(val);
-      if (!isNaN(d.getTime())) {
-        return (
-          String(d.getHours()).padStart(2, "0") +
-          ":" +
-          String(d.getMinutes()).padStart(2, "0")
-        );
+      if (!val && val !== 0) return "";
+      if (typeof val === "string") {
+        const clock = val.match(/(\d{1,2}):(\d{2})/);
+        if (clock) {
+          return String(clock[1]).padStart(2, "0") + ":" + clock[2];
+        }
       }
-      return String(val);
+      const ts = typeof val === "number" ? val : Number(val);
+      if (!Number.isFinite(ts) || ts <= 0) return String(val);
+      try {
+        const parts = new Intl.DateTimeFormat("en-US", {
+          timeZone: "America/New_York",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }).formatToParts(new Date(ts));
+        const hour = (parts.find((p) => p.type === "hour") || {}).value || "00";
+        const minute =
+          (parts.find((p) => p.type === "minute") || {}).value || "00";
+        return hour.padStart(2, "0") + ":" + minute.padStart(2, "0");
+      } catch (e) {
+        return String(val);
+      }
     },
 
     // Format roundKey like "202603191500" → "2026-03-19 15:00"
