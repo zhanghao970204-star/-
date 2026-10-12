@@ -61,7 +61,11 @@
             <div class="addr-card__right">
               <p class="addr-card__title">{{ $lang.common_txt249 }}</p>
               <p class="addr-card__url">{{ infoDetail.url }}</p>
-              <button type="button" class="addr-card__copy" @click="copyText">
+              <button
+                type="button"
+                class="addr-card__copy btn-3d-yellow"
+                @click="copyText"
+              >
                 <img
                   class="addr-card__copy-icon"
                   src="../../../assets/img/recharge/copy_i.png"
@@ -298,14 +302,10 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@gold: #ffa300;
-@gold-soft: #ffe4b5;
-@gold-deep: #e9a843;
-@gold-grad: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
-@card-bg: linear-gradient(0deg, #1a0a28 13.46%, #2d1545 100%);
-
 .pay-order {
   min-height: 100%;
+  background: @background-color;
+  color: @font-color;
 }
 
 .pay-order__body {
@@ -313,8 +313,8 @@ export default {
 }
 
 .depo_cont {
-  background: @card-bg;
-  border: 1px solid fade(@gold-deep, 40%);
+  background: linear-gradient(180deg, @cell-bg 0%, @cont-bg 100%);
+  border: 1px solid fade(@border-color, 55%);
   padding: 22px 18px 24px;
   position: relative;
   min-height: 360px;
@@ -331,7 +331,6 @@ export default {
     z-index: 0;
     pointer-events: none;
     opacity: 0.22;
-    /* 蓝灰线稿 → 金色水印 */
     filter: brightness(0) saturate(100%) invert(72%) sepia(58%) saturate(650%)
       hue-rotate(359deg) brightness(1.05);
   }
@@ -346,7 +345,7 @@ export default {
   width: 78%;
   max-width: 280px;
   margin: 0 auto;
-  border-radius: 32px;
+  border-radius: 999px;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -354,9 +353,12 @@ export default {
   justify-content: center;
 
   &--countdown {
-    background: @gold-grad;
-    color: #573900;
-    padding: 10px 12px 12px;
+    background: @primary-gradient;
+    color: @primary-text-on;
+    padding: 10px 16px 12px;
+    box-shadow:
+      inset 0 2px 2px 0 fade(#fff6c8, 55%),
+      inset 0 -3px 0 0 fade(@primary-color2, 55%);
   }
 
   &--success,
@@ -364,28 +366,32 @@ export default {
     flex-direction: row;
     gap: 8px;
     padding: 12px 14px;
-    color: #fff;
+    color: @wihte-color;
   }
 
   &--success {
-    background: #23b975;
+    background: @btn-3d-green-grad;
   }
 
   &--wait {
-    background: #6e6e6e;
+    background: fade(@gary-color, 35%);
+    color: @wihte-color;
   }
 
   &__label {
     margin: 0;
     font-weight: 800;
     font-size: 13px;
+    color: @primary-text-on;
   }
 
   &__time {
     margin: 4px 0 0;
-    font-weight: 800;
-    font-size: 22px;
+    font-weight: 900;
+    font-size: 24px;
     letter-spacing: 0.5px;
+    color: @primary-text-on;
+    line-height: 1.1;
   }
 
   &__text {
@@ -404,21 +410,20 @@ export default {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    color: @gold-soft;
+    color: @title-color;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
   }
 
   &__icon {
     display: block;
-    /* 浅蓝钱包 → 金色 */
     filter: brightness(0) saturate(100%) invert(72%) sepia(58%) saturate(650%)
       hue-rotate(359deg) brightness(1.08);
   }
 
   &__value {
     margin: 12px 0 0;
-    color: #fff;
+    color: @wihte-color;
     font-size: 26px;
     font-weight: 800;
     line-height: 1.2;
@@ -427,8 +432,9 @@ export default {
 
   &__type {
     margin: 6px 0 0;
-    color: fade(@gold-soft, 75%);
+    color: fade(@info-color, 80%);
     font-size: 13px;
+    font-weight: 600;
   }
 }
 
@@ -438,10 +444,9 @@ export default {
   gap: 14px;
   margin-top: 26px;
   padding: 16px;
-  background: #2d1545;
-  border: 1px solid fade(@gold-deep, 40%);
+  background: fade(@popup-bg, 72%);
+  border: 1px solid fade(@border-color, 50%);
   border-radius: 16px;
-  color: @gold-soft;
 
   &__qr {
     flex-shrink: 0;
@@ -449,7 +454,7 @@ export default {
     height: 108px;
     border-radius: 10px;
     overflow: hidden;
-    background: #fff;
+    background: @wihte-color;
     padding: 4px;
     box-sizing: border-box;
   }
@@ -467,16 +472,16 @@ export default {
     margin: 0;
     font-size: 13px;
     font-weight: 700;
-    color: @gold-soft;
+    color: @title-color;
   }
 
   &__url {
     margin: 0;
-    background: #12021a;
-    border: 1px solid fade(@gold-deep, 35%);
+    background: @black-color;
+    border: 1px solid fade(@border-color, 45%);
     border-radius: 8px;
     padding: 8px 10px;
-    color: @gold-soft;
+    color: @wihte-color;
     font-size: 11px;
     line-height: 1.4;
     word-break: break-all;
@@ -485,24 +490,17 @@ export default {
   }
 
   &__copy {
-    display: flex;
-    align-items: center;
-    justify-content: center;
     gap: 6px;
     width: 100%;
-    border: none;
-    cursor: pointer;
-    background: @gold-grad;
-    padding: 9px 10px;
-    border-radius: 10px;
-    color: #573900;
-    font-size: 13px;
-    font-weight: 700;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    height: 36px;
+    font-size: 12px;
+    letter-spacing: 0.2px;
+    text-transform: none;
   }
 
   &__copy-icon {
     display: block;
+    flex-shrink: 0;
     filter: brightness(0) saturate(100%) invert(22%) sepia(55%) saturate(900%)
       hue-rotate(8deg);
   }
@@ -510,7 +508,7 @@ export default {
 
 .tips {
   margin-top: 24px;
-  color: fade(#fff, 88%);
+  color: fade(@wihte-color, 90%);
   font-size: 13px;
   font-weight: 500;
   line-height: 1.55;

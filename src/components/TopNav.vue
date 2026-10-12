@@ -35,7 +35,24 @@
         </div>
       </div>
       <div class="nav--coe" :key="timer">
-        <div class="nav--ct">
+        <!-- H5 未登录：Sign In / Sign Up -->
+        <div v-if="showH5AuthButtons" class="nav-auth-btns">
+          <button
+            type="button"
+            class="nav-auth-btns__btn btn-3d-yellow"
+            @click="goLogin(0)"
+          >
+            {{ $lang.Entrar || "Sign In" }}
+          </button>
+          <button
+            type="button"
+            class="nav-auth-btns__btn btn-3d-green"
+            @click="goLogin(1)"
+          >
+            {{ $lang.Registro || "Sign Up" }}
+          </button>
+        </div>
+        <div v-else class="nav--ct">
           <div class="nav-balance">
             <img
               class="nav-balance__coin"
@@ -46,11 +63,16 @@
             <span class="nav-balance__num" @click="toggleRotation">{{
               $formatNumberWithCommas(token ? InitDate2.balance || 0 : 0)
             }}</span>
-            <div class="nav-balance__add btn-press" @click="gotoDep">
+            <div class="nav-balance__deposit btn-press" @click="gotoDep">
               <img
-                class="nav-balance__add-img"
-                src="@/assets/img/home/top_add.png"
+                class="nav-balance__deposit-img"
+                src="@/assets/img/home/top_deposit.png"
                 alt="deposit"
+              />
+              <img
+                class="nav-balance__deposit-bonus"
+                src="@/assets/img/home/top_deposit_bonus.png"
+                alt=""
               />
             </div>
           </div>
@@ -303,6 +325,7 @@ import { avatarImg } from "@/utils/avatarAssets";
 import { normalizeHomeDataList } from "@/utils/homeGameList";
 import { applyCountryLanguage } from "@/utils/locale";
 import { isGuestUser } from "@/utils/guestAuth";
+import { isH5WebClient, isNativeAppShell } from "@/utils/nativeApp";
 export default {
   name: "TopNav",
   components: {},
@@ -375,6 +398,9 @@ export default {
     vipBadgeSrc() {
       const lv = this.InitDate.vipLevel != null ? this.InitDate.vipLevel : 0;
       return vipImg(`V${lv}`);
+    },
+    showH5AuthButtons() {
+      return !this.token && isH5WebClient();
     },
   },
   mounted() {
@@ -584,7 +610,11 @@ export default {
         } else {
           if (isGuestUser()) {
             this.show = false;
-            this.$bus.emit("openGuestUpgrade");
+            if (isNativeAppShell()) {
+              this.$bus.emit("openGuestUpgrade");
+            } else {
+              this.goLogin(0);
+            }
             return;
           }
           this.$jumpTo("./bankAdd");
@@ -677,7 +707,11 @@ export default {
     },
     goToSaque() {
       if (isGuestUser()) {
-        this.$bus.emit("openGuestUpgrade");
+        if (isNativeAppShell()) {
+          this.$bus.emit("openGuestUpgrade");
+        } else {
+          this.goLogin(0);
+        }
         return;
       }
       this.$jumpTo("/bankAdd");
@@ -1061,24 +1095,29 @@ export default {
 .nav-cont {
   width: 100%;
   max-width: 450px;
-  height: 60px;
+  height: 67px;
   background: #27033c url(@/assets/img/home/top_nav_bg.png) center / 100% 100%
     no-repeat;
   border-bottom: none;
   display: flex;
   align-items: center;
+  justify-content: center;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1999;
-  padding-top: 0;
+  padding: 0;
   margin: 0 auto;
   box-sizing: border-box;
+  overflow: visible;
 }
 .nav-cont > .d-flex-s {
   min-width: 0;
+  width: 100%;
+  height: 100%;
   flex-wrap: nowrap;
+  align-items: center;
 }
 // .shadow {
 //   background: url('../assets/img/home/bg-show.png') no-repeat !important;
@@ -1135,6 +1174,22 @@ export default {
   margin-right: 10px;
   flex-shrink: 0;
 }
+
+.nav-auth-btns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &__btn {
+    width: auto;
+    min-width: 78px;
+    height: 34px;
+    padding: 0 14px;
+    font-size: 12px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+}
 .nav--ct {
   // height: 25px;
   // border-radius: 32px;
@@ -1166,18 +1221,19 @@ export default {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   min-width: 0;
   height: 40px;
-  padding: 0 4px 0 8px;
+  padding: 3px 3px 3px 3px;
   box-sizing: border-box;
-  background: rgba(20, 0, 45, 0.72);
-  border: 1px solid #6837e3;
+  background: #190c31;
+  border: 1px solid #6b4498;
   border-radius: 999px;
+  overflow: visible;
 
   &__coin {
-    width: 22px;
-    height: 22px;
+    width: 31px;
+    height: 31px;
     object-fit: contain;
     flex-shrink: 0;
     cursor: pointer;
@@ -1185,29 +1241,40 @@ export default {
 
   &__num {
     color: #fff;
-    font-size: 14px;
-    font-weight: 700;
+    font-size: 18px;
+    font-weight: 800;
     line-height: 1;
     white-space: nowrap;
     cursor: pointer;
+    padding-right: 2px;
   }
 
-  &__add {
+  &__deposit {
     position: relative;
     flex-shrink: 0;
-    width: 28px;
-    height: 28px;
-    margin-left: 2px;
+    width: 88px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  &__add-img {
-    width: 28px;
-    height: 28px;
+  &__deposit-img {
+    width: 88px;
+    height: 31px;
     object-fit: contain;
     display: block;
+  }
+
+  &__deposit-bonus {
+    position: absolute;
+    top: -6px;
+    right: -4px;
+    width: 37px;
+    height: auto;
+    object-fit: contain;
+    pointer-events: none;
+    z-index: 2;
   }
 }
 
@@ -1223,8 +1290,8 @@ export default {
 
 .nav-mail-btn {
   position: relative;
-  background: rgba(20, 0, 45, 0.72);
-  border: 1px solid #6837e3;
+  background: #190c31;
+  border: 1px solid #6b4498;
   border-radius: 12px;
   width: 40px;
   height: 40px;
@@ -1234,28 +1301,33 @@ export default {
   margin-left: 8px;
   flex-shrink: 0;
   box-sizing: border-box;
+  overflow: visible;
 
   &__icon {
-    width: 30px;
+    width: 31px;
     object-fit: contain;
     display: block;
   }
 
   &__badge {
     position: absolute;
-    top: -6px;
-    right: -8px;
+    top: -5px;
+    right: -5px;
     min-width: 16px;
     height: 16px;
     padding: 0 4px;
+    border: none;
     border-radius: 999px;
-    background: #ff3b4a;
+    background: linear-gradient(180deg, #df3f3f 0%, #961212 100%);
     color: #fff;
     font-size: 10px;
     font-weight: 700;
     line-height: 16px;
     text-align: center;
     box-sizing: border-box;
+    box-shadow: none;
+    outline: none;
+    -webkit-appearance: none;
   }
 }
 
@@ -1271,7 +1343,7 @@ export default {
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  border: 2px solid #c084fc;
+  border: 2px solid #6b4498;
   box-sizing: border-box;
   overflow: visible;
   background: #2a0a4a;

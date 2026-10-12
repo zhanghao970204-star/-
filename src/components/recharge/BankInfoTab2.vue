@@ -30,8 +30,16 @@
 
     <button type="button" class="wd-manage__add" @click="showBankF">
       <span class="wd-manage__add-icon">
-        <img class="wd-manage__add-frame" src="@/assets/img/recharge/wd_icon_frame.png" alt="" />
-        <img class="wd-manage__add-card" src="@/assets/img/recharge/wd_card_icon.png" alt="" />
+        <img
+          class="wd-manage__add-frame"
+          src="@/assets/img/recharge/wd_icon_frame.png"
+          alt=""
+        />
+        <img
+          class="wd-manage__add-card"
+          src="@/assets/img/recharge/wd_card_icon.png"
+          alt=""
+        />
       </span>
       <span class="wd-manage__add-text">
         <strong>{{ $lang.BankInfo_txt6 || "ADD ACCOUNT" }}</strong>
@@ -558,7 +566,7 @@ export default {
     padding: 16px 16px 14px;
     border-radius: 16px;
     border: 1.5px solid @gold;
-    background: linear-gradient(180deg, #7a2a9a 0%, #5a1d78 100%);
+    background: #411c59;
   }
 
   &__title {
@@ -633,7 +641,8 @@ export default {
     padding: 14px 16px;
     border: none;
     border-radius: 18px;
-    background: url("@/assets/img/recharge/wd_add_bg.png") center / 100% 100% no-repeat;
+    background: url("@/assets/img/recharge/wd_add_bg.png") center / 100% 100%
+      no-repeat;
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
     cursor: pointer;
     text-align: left;
@@ -671,20 +680,26 @@ export default {
     flex-direction: column;
     gap: 2px;
 
-    strong {
-      color: @gold;
-      font-size: 16px;
-      font-weight: 800;
-      letter-spacing: 0.4px;
+    strong,
+    em {
+      background: linear-gradient(180deg, #feb403 0%, #fbd760 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
       text-transform: uppercase;
     }
 
+    strong {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+    }
+
     em {
+      color: #ffffff;
       font-style: normal;
-      color: #fff;
-      font-size: 13px;
-      font-weight: 700;
-      text-transform: uppercase;
+      font-size: 14px;
+      font-weight: 800;
     }
   }
 }
@@ -879,14 +894,14 @@ export default {
   height: 52px;
   border-radius: 12px;
   background: #000;
-  border: 1px solid #c9b3ff;
+  border: 1px solid #633488;
   box-sizing: border-box;
   overflow: hidden;
   cursor: text;
 
   &--focus {
-    border-color: #e93dfe;
-    box-shadow: 0 0 0 1px rgba(233, 61, 254, 0.35);
+    border-color: #633488;
+    box-shadow: 0 0 0 1px rgba(99, 52, 136, 0.45);
   }
 
   &__native {
@@ -918,7 +933,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    border-right: 1px solid rgba(201, 179, 255, 0.55);
+    border-right: 1px solid #633488;
     box-sizing: border-box;
 
     &:last-child {

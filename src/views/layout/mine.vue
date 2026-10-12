@@ -1,11 +1,7 @@
 <template>
   <div class="mine-page">
     <div class="mine-user">
-      <div
-        class="mine-user__avatar"
-        role="button"
-        @click="goEditProfile"
-      >
+      <div class="mine-user__avatar" role="button" @click="goEditProfile">
         <img
           v-if="avatarSrc"
           :src="avatarSrc"
@@ -233,6 +229,7 @@
 <script>
 import { Init, GameBalanceList, Logout, VipInit } from "@/api/common";
 import { clearGuestFlags, isGuestUser } from "@/utils/guestAuth";
+import { isNativeAppShell } from "@/utils/nativeApp";
 import { avatarImg } from "@/utils/avatarAssets";
 import { resetPageScroll } from "@/utils/scrollReset";
 
@@ -397,7 +394,11 @@ export default {
         return;
       }
       if (isGuestUser()) {
-        this.$bus.emit("openGuestUpgrade");
+        if (isNativeAppShell()) {
+          this.$bus.emit("openGuestUpgrade");
+        } else {
+          this.$bus.emit("openLogin", 0);
+        }
         return;
       }
       await this.Init();
@@ -478,12 +479,11 @@ export default {
 
 .mine-user__avatar {
   position: relative;
-  width: 64px;
-  height: 64px;
+  width: 59px;
+  height: 59px;
   border-radius: 50%;
   overflow: visible;
-  border: 2px solid #c084fc;
-  box-shadow: 0 0 10px rgba(192, 132, 252, 0.55);
+  border: 2px solid #6b4498;
   flex-shrink: 0;
   cursor: pointer;
   box-sizing: border-box;
@@ -534,7 +534,7 @@ export default {
   margin-bottom: 10px;
 
   span {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 700;
     color: #fff;
     overflow: hidden;
@@ -591,7 +591,7 @@ export default {
   z-index: 1;
   flex-shrink: 0;
   margin-left: 6px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   color: #fff;
   line-height: 21px;
@@ -695,14 +695,14 @@ export default {
   background: #430063;
 
   .lab {
-    font-size: 11px;
+    font-size: 12px;
     color: #e7deff;
     font-weight: 700;
     line-height: 1.2;
   }
 
   .val {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
     color: #ffee00;
     line-height: 1.2;
@@ -766,7 +766,7 @@ export default {
 
 .mine-records__tile {
   width: 100%;
-  min-height: 98px;
+  min-height: 88px;
   padding: 8px 4px 10px;
   box-sizing: border-box;
   display: flex;
@@ -828,6 +828,7 @@ export default {
     font-size: 14px;
     color: #fff;
     line-height: 1.2;
+    font-weight: 700;
   }
 }
 

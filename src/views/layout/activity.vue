@@ -1,5 +1,26 @@
 <template>
   <div class="activity-page">
+    <div class="activity-banner">
+      <van-swipe
+        class="activity-banner__swipe"
+        :autoplay="3500"
+        :show-indicators="false"
+        @change="onBannerChange"
+      >
+        <van-swipe-item v-for="(img, index) in bannerList" :key="index">
+          <img class="activity-banner__img" :src="img" alt="" />
+        </van-swipe-item>
+      </van-swipe>
+      <div class="activity-banner__indicators">
+        <span
+          v-for="(_, index) in bannerList.length"
+          :key="index"
+          class="activity-banner__dot"
+          :class="{ active: bannerIndex === index }"
+        ></span>
+      </div>
+    </div>
+
     <!-- 双列六入口：紫框底 + 黑内容区 + 底部绿按钮 -->
     <div class="promo-grid">
       <div
@@ -33,6 +54,9 @@ import iconGifts from "@/assets/img/activity/promo/gifts.png";
 import iconCheckin from "@/assets/img/activity/promo/checkin.png";
 import iconLoss from "@/assets/img/activity/promo/loss.png";
 import iconVip from "@/assets/img/activity/promo/vip.png";
+import bannerLoss from "@/assets/img/activity/promo/banner_loss.png";
+import bannerWelcome from "@/assets/img/activity/promo/banner_welcome.png";
+import bannerDeposit from "@/assets/img/activity/promo/banner_deposit.png";
 
 export default {
   name: "Activity",
@@ -40,6 +64,8 @@ export default {
     return {
       showLogin: false,
       newbieVisible: false,
+      bannerList: [bannerLoss, bannerWelcome, bannerDeposit],
+      bannerIndex: 0,
     };
   },
   computed: {
@@ -124,6 +150,9 @@ export default {
         console.error("NewPlayerGiftPackInit error", e);
       }
     },
+    onBannerChange(index) {
+      this.bannerIndex = index;
+    },
     onCardClick(card) {
       this.goTo(card.path);
     },
@@ -139,13 +168,56 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@frame: #7e3fb8;
+@frame: linear-gradient(180deg, #8b3cbf 0%, #6b388d 100%);
 
 .activity-page {
   padding: 10px 12px 100px;
   min-height: 100vh;
   color: #fff;
   box-sizing: border-box;
+}
+
+.activity-banner {
+  margin: 15px 0;
+
+  &__swipe {
+    width: 100%;
+    height: 136px;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  &__img {
+    display: block;
+    width: 100%;
+    height: 136px;
+    object-fit: cover;
+    border-radius: 16px;
+  }
+
+  /* 指示器在 banner 下方 */
+  &__indicators {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  &__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #654979;
+    transition: all 0.25s ease;
+  }
+
+  &__dot.active {
+    width: 18px;
+    height: 6px;
+    border-radius: 999px;
+    background: #fff;
+  }
 }
 
 .promo-grid {
@@ -158,8 +230,8 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  min-height: 228px;
-  padding: 5px 5px 10px;
+  min-height: 208px;
+  padding: 8px 8px 10px;
   box-sizing: border-box;
   border-radius: 16px;
   background: @frame;
@@ -180,7 +252,7 @@ export default {
     min-height: 0;
     padding: 12px 8px 10px;
     box-sizing: border-box;
-    border-radius: 12px;
+    border-radius: 16px;
     background: #000;
   }
 
@@ -189,7 +261,7 @@ export default {
     width: 100%;
     text-align: center;
     font-size: 12px;
-    font-weight: 800;
+    font-weight: 700;
     letter-spacing: 0.3px;
     color: #fff;
     line-height: 1.2;
@@ -216,14 +288,14 @@ export default {
     margin: 0;
     width: 100%;
     text-align: center;
-    font-size: 11px;
+    font-size: 12px;
     line-height: 1.35;
     color: #fff;
-    font-weight: 600;
+    font-weight: 700;
 
     :deep(em) {
       font-style: normal;
-      color: #ffd400;
+      color: #ffd404;
       font-weight: 800;
     }
   }
@@ -231,9 +303,9 @@ export default {
   &__btn {
     width: calc(100% - 16px);
     margin: 10px auto 0;
-    height: 36px !important;
-    font-size: 13px !important;
-    font-weight: 900 !important;
+    height: 38px !important;
+    font-size: 18px !important;
+    font-weight: 800 !important;
     letter-spacing: 0.5px;
     text-transform: uppercase;
   }

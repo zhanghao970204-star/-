@@ -17,14 +17,6 @@
       1 {{ rateCurrency }} = {{ usdToUsdt }} USDT
     </p>
 
-    <img
-      class="home-support__brand"
-      loading="lazy"
-      decoding="async"
-      src="@/assets/img/tabbar/tabqb.png"
-      alt=""
-    />
-
     <div class="home-support__badges">
       <a
         href="https://ton.app/gambling/vpbet?id=4498"
@@ -186,13 +178,6 @@ export default {
     margin: 10px 0 16px;
     font-size: 12px;
     color: #b8b8b8;
-  }
-
-  &__brand {
-    display: block;
-    max-width: 78%;
-    height: auto;
-    margin: 0 auto 14px;
   }
 
   &__badges {

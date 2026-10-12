@@ -309,8 +309,8 @@
                 }}
               </button>
 
-              <!-- 仅登录页：游客登录（deviceId 由 Flutter 注入） -->
-              <div v-if="selectIndex === 0" class="sg">
+              <!-- 仅 App 内登录页：游客登录（deviceId 由 Flutter 注入）；H5 不展示 -->
+              <div v-if="selectIndex === 0 && showGuestLogin" class="sg">
                 <button
                   type="button"
                   class="login-popup__google button kj"
@@ -432,6 +432,7 @@ import { applyCountryLanguage } from "@/utils/locale";
 import { isUsAreaCode, isValidUsPhone } from "@/utils/phoneValidate";
 import { getClientId } from "@/utils/nativeDevice";
 import { reloadAppEntry, saveLoginSession } from "@/utils/guestAuth";
+import { isNativeAppShell } from "@/utils/nativeApp";
 export default {
   components: { Vcode },
   name: "Login",
@@ -521,6 +522,10 @@ export default {
         style.left = "unset";
       }
       return style;
+    },
+    /** 游客登录仅 iOS App / Android APK */
+    showGuestLogin() {
+      return isNativeAppShell();
     },
     isGhsCurrency() {
       return localStorage.getItem("currency") === "GHS";
@@ -1131,6 +1136,7 @@ export default {
      * 只需 uuid（+ 拦截器自动 platform/currency 等）；不要传 account/passwd
      */
     async handleGuestLogin() {
+      if (!isNativeAppShell()) return;
       if (this.guestLoading) return;
       if (!this.agree) {
         this.showFormToast(this.$lang.login_txt22, "info");

@@ -1,5 +1,5 @@
 <template>
-  <div class="content" style="min-height: 100vh; overflow: auto">
+  <div class="content">
     <!-- <div class="d-flex-s">
       <div
         v-for="(item, index) in MenList"
@@ -156,11 +156,11 @@
           v-for="item in homeActList"
           :key="item.key"
           class="home-act-list__item"
+          :class="'is-' + item.key"
           @click="onHomeActClick(item)"
         >
           <div class="home-act-list__art">
-            <img class="home-act-list__icon" :src="item.icon" alt="" />
-            <img class="home-act-list__title" :src="item.titleImg" alt="" />
+            <img class="home-act-list__entry" :src="item.entryImg" alt="" />
           </div>
           <button
             type="button"
@@ -171,10 +171,12 @@
                 : 'btn-3d-green'
             "
           >
-            <template v-if="item.key === 'envelope' && isCountdownActive">
-              {{ envelopeCountdownText }}
-            </template>
-            <template v-else>{{ item.btn }}</template>
+            <span class="home-act-list__btn-text">
+              <template v-if="item.key === 'envelope' && isCountdownActive">
+                {{ envelopeCountdownText }}
+              </template>
+              <template v-else>{{ item.btn }}</template>
+            </span>
           </button>
         </div>
       </div>
@@ -214,6 +216,18 @@
                 class="content-tab--c"
                 style="margin-left: 12px; margin-right: 12px"
               >
+                <!-- 类型不足 3 个：插图直接放在分类栏下方 -->
+                <div
+                  v-if="shouldShowStakeChestBeforeTypes(item)"
+                  class="home-stake-chest"
+                >
+                  <img
+                    class="home-stake-chest__img"
+                    :src="stakeRewardChestImg"
+                    alt=""
+                  />
+                </div>
+
                 <div v-if="index === 0 && hotGames.length" class="home-hot">
                   <div class="home-hot__title">
                     <span class="home-hot__name">🔥 Hot</span>
@@ -269,19 +283,31 @@
                     />
                   </div>
                 </div>
-                <div
-                  v-else
-                  v-for="(item2, index2) in getVisibleTypes(item)"
-                  :key="item2.code || item2.name || index2"
-                >
-                  <resher-siper2
-                    v-if="!allOpen && item2"
-                    :siderData="item2"
-                    :siderIndex="index"
-                    @getBack="getBacks"
-                    ref="swipe2"
-                  ></resher-siper2>
-                </div>
+                <template v-else>
+                  <template
+                    v-for="(item2, index2) in getVisibleTypes(item)"
+                    :key="item2.code || item2.name || index2"
+                  >
+                    <resher-siper2
+                      v-if="!allOpen && item2"
+                      :siderData="item2"
+                      :siderIndex="index"
+                      @getBack="getBacks"
+                      ref="swipe2"
+                    ></resher-siper2>
+                    <!-- 第 3 个分类游戏后插入 -->
+                    <div
+                      v-if="shouldShowStakeChestAfterType(item, index2)"
+                      class="home-stake-chest"
+                    >
+                      <img
+                        class="home-stake-chest__img"
+                        :src="stakeRewardChestImg"
+                        alt=""
+                      />
+                    </div>
+                  </template>
+                </template>
               </div>
               <!-- <keep-alive>
               <resher-content
@@ -295,8 +321,15 @@
             </keep-alive> -->
             </van-tab>
 
-            <div class="content-bbttom" style="padding: 20px 0 50px">
-              <div style="width: 90%; margin: 0 auto">
+            <div class="content-bbttom">
+              <div class="content-bbttom__inner">
+                <img
+                  class="content-bbttom__brand"
+                  loading="lazy"
+                  decoding="async"
+                  src="@/assets/img/tabbar/tabqb.png"
+                  alt=""
+                />
                 <p class="t-c">{{ $lang.common_txt358 }}</p>
 
                 <div class="t-c m-t-20 home-community-icons">
@@ -469,22 +502,19 @@ import { normalizeHomeDataList, getCategoryGames } from "@/utils/homeGameList";
 // import ResherSiper from '../../components/home/ResherSiper.vue'
 import ResherSiper2 from "../../components/home/ResherSiper2.vue";
 import HomeSupportFooter from "../../components/home/HomeSupportFooter.vue";
-import actIconSpin from "@/assets/img/home/act/icon_spin.png";
-import actIconEnvelope from "@/assets/img/home/act/icon_envelope.png";
-import actIconCheckin from "@/assets/img/home/act/icon_checkin.png";
-import actIconChest from "@/assets/img/home/act/icon_chest.png";
-import actIconRescue from "@/assets/img/home/act/icon_rescue.png";
-import actTitleSpin from "@/assets/img/home/act/title_spin.png";
-import actTitleEnvelope from "@/assets/img/home/act/title_envelope.png";
-import actTitleCheckin from "@/assets/img/home/act/title_checkin.png";
-import actTitleChest from "@/assets/img/home/act/title_chest.png";
-import actTitleRescue from "@/assets/img/home/act/title_rescue.png";
+import actEntrySpin from "@/assets/img/home/act/entry_spin.png";
+import actEntryEnvelope from "@/assets/img/home/act/entry_envelope.png";
+import actEntryCheckin from "@/assets/img/home/act/entry_checkin.png";
+import actEntryChest from "@/assets/img/home/act/entry_chest.png";
+import actEntryRescue from "@/assets/img/home/act/entry_rescue.png";
+import stakeRewardChestImg from "@/assets/img/home/stake_reward_chest.png";
 export default {
   name: "Home",
   components: { ResherSiper2, HomeSupportFooter },
 
   data() {
     return {
+      stakeRewardChestImg,
       selectMenIndex: 1,
       totalSeconds: 1800,
       timer5: null,
@@ -565,36 +595,31 @@ export default {
         {
           key: "spin",
           path: "/luckyReferral",
-          icon: actIconSpin,
-          titleImg: actTitleSpin,
+          entryImg: actEntrySpin,
           btn: L.activity_spin || "SPIN",
         },
         {
           key: "envelope",
           path: "/redPacket",
-          icon: actIconEnvelope,
-          titleImg: actTitleEnvelope,
+          entryImg: actEntryEnvelope,
           btn: L.activity_spin || "SPIN",
         },
         {
           key: "checkin",
           path: "/dailyCheckIn",
-          icon: actIconCheckin,
-          titleImg: actTitleCheckin,
+          entryImg: actEntryCheckin,
           btn: L.activity_card_daily_btn || "DAILY",
         },
         {
           key: "chest",
           action: "treasure",
-          icon: actIconChest,
-          titleImg: actTitleChest,
+          entryImg: actEntryChest,
           btn: L.activity_spin || "SPIN",
         },
         {
           key: "rescue",
           path: "/weeklyMissions",
-          icon: actIconRescue,
-          titleImg: actTitleRescue,
+          entryImg: actEntryRescue,
           btn: L.activity_spin || "SPIN",
         },
       ];
@@ -791,6 +816,18 @@ export default {
       // 厂商宫格很轻，一次全量
       if (item.sortType === 1) return item.types;
       return item.types.slice(0, this.visibleTypeCount);
+    },
+    getGameTypeCount(item) {
+      if (!item || !Array.isArray(item.types)) return 0;
+      return item.types.length;
+    },
+    shouldShowStakeChestBeforeTypes(item) {
+      if (!item || item.sortType === 1) return false;
+      return this.getGameTypeCount(item) < 3;
+    },
+    shouldShowStakeChestAfterType(item, index2) {
+      if (!item || item.sortType === 1) return false;
+      return this.getGameTypeCount(item) >= 3 && index2 === 2;
     },
     stopTypeReveal() {
       if (this.typeRevealTimer == null) return;
@@ -1300,7 +1337,7 @@ export default {
 }
 .content {
   // padding-top: 60px;
-  margin-bottom: 12%;
+  margin-bottom: 0;
   // background: @background-color;
   // background: url('../../assets/img/page_bg2.png') no-repeat center center;
   background-size: cover;
@@ -1409,8 +1446,8 @@ export default {
   }
 
   &__search-icon {
-    width: 20px;
-    height: 20px;
+    width: 15px;
+    height: 15px;
     object-fit: contain;
     display: block;
   }
@@ -1449,7 +1486,7 @@ export default {
   }
 
   :deep(.van-tabs__nav) {
-    height: 48px;
+    height: 50px;
     box-sizing: border-box;
     background: none;
     align-items: center;
@@ -1473,15 +1510,15 @@ export default {
   }
 
   :deep(.van-tab) {
-    height: 32px;
+    height: 28px;
     line-height: 1;
     border-radius: 999px;
-    padding: 0 14px;
+    padding: 0 12px;
     margin: auto 4px;
     flex: none;
     color: #fff;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 500;
     border-right: none;
     display: flex;
     align-items: center;
@@ -1491,10 +1528,10 @@ export default {
 
   :deep(.van-tab--active) {
     font-size: 14px;
-    font-weight: 700;
-    background: #1a0a2e;
+    font-weight: 500;
+    background: #210031;
     color: #fff !important;
-    border: 1.5px solid #ffd400;
+    border: 1.5px solid #ffd404;
     box-sizing: border-box;
   }
 
@@ -1585,6 +1622,20 @@ export default {
 }
 
 /* Hot：自动无缝滚动 + 触摸时可左右滑动 */
+.home-stake-chest {
+  width: 100%;
+  margin: 0 0 12px;
+  box-sizing: border-box;
+
+  &__img {
+    display: block;
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 12px;
+  }
+}
+
 .home-hot {
   margin: 0 0 14px;
 
@@ -1701,13 +1752,31 @@ export default {
 
 .content-bbttom {
   width: 100%;
-  // padding-bottom: 10%;
-  // padding-top: 12px;
-  // margin-top: 3%;
-  // background: url('../../assets/img/home/home_bottom_bg.jpg') no-repeat;
-  // height: 435px;
-  // background-size: 100% 100%; /* 宽度和高度都拉伸到 100% */
-  padding-bottom: 15px;
+  margin-top: 12px;
+  /* 盖住 content-main 的 tabbar 等高底部留白，保持纯黑衔接 */
+  margin-bottom: calc(
+    -1 * (var(--tabbar-bar-height, 66px) + env(safe-area-inset-bottom, 0px))
+  );
+  padding: 20px 0
+    calc(
+      24px + var(--tabbar-bar-height, 66px) + env(safe-area-inset-bottom, 0px)
+    );
+  background: #000000;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+
+  &__inner {
+    width: 90%;
+    margin: 0 auto;
+  }
+
+  &__brand {
+    display: block;
+    max-width: 78%;
+    height: auto;
+    margin: 0 auto 16px;
+  }
 }
 
 .content-line {
@@ -2096,87 +2165,124 @@ export default {
   color: #573900 !important;
   border-bottom: 1px solid #ffa300 !important;
 }
-/* 首页活动入口列表 */
+/* 首页活动入口：按参考图单独控制每项大小与间距 */
 .home-act-list {
   display: flex;
-  align-items: stretch;
-  justify-content: space-between;
-  gap: 4px;
-  margin: 2px 10px 0;
-  padding: 2px 4px 4px;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 6px;
+  margin: -5px 8px 0;
+  padding: 2px 2px 4px;
   box-sizing: border-box;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
 
   &__item {
     flex: 1 1 0;
-    min-width: 62px;
-    max-width: 78px;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: flex-end;
     cursor: pointer;
   }
 
-  /* 标题图叠在主图底部（文字在图片上） */
   &__art {
-    position: relative;
-    width: 64px;
+    width: 100%;
+    height: 76px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  &__entry {
+    display: block;
+    object-fit: contain;
+    object-position: center bottom;
+  }
+
+  /* 各入口视觉大小（对齐参考：转盘略圆、红包偏高、宝箱略宽、救援最宽） */
+  &__item.is-spin &__entry {
+    width: 75px;
+    height: 60px;
+  }
+  &__item.is-envelope &__entry {
+    width: 60px;
+    height: 68px;
+  }
+  &__item.is-checkin &__entry {
+    width: 56px;
     height: 64px;
   }
-
-  &__icon {
-    position: absolute;
-    left: 50%;
-    top: 4px;
-    transform: translateX(-50%);
-    width: 50px;
-    height: 50px;
-    object-fit: contain;
-    display: block;
-    z-index: 1;
+  &__item.is-chest &__entry {
+    width: 78px;
+    height: 58px;
+  }
+  &__item.is-rescue &__entry {
+    width: 76px;
+    height: 66px;
   }
 
-  &__title {
-    position: absolute;
-    left: 50%;
-    bottom: -2px;
-    transform: translateX(-50%);
-    width: 100%;
-    max-width: 68px;
-    height: 26px;
-    object-fit: contain;
-    display: block;
-    z-index: 2;
-    pointer-events: none;
+  &__item.is-rescue {
+    flex: 1.18 1 0;
+  }
+  &__item.is-envelope {
+    flex: 0.92 1 0;
   }
 
   &__btn {
-    width: 100%;
-    max-width: 70px;
-    height: 22px !important;
-    margin-top: 2px;
-    padding: 0 4px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 64px !important;
+    min-width: 64px !important;
+    max-width: 64px !important;
+    height: 20px !important;
+    margin-top: 4px;
+    padding: 0 2px !important;
     border: none;
     border-radius: 999px;
     font-size: 10px !important;
-    font-weight: 900 !important;
-    letter-spacing: 0.2px;
-    line-height: 1;
+    font-weight: 800 !important;
+    letter-spacing: 0;
+    line-height: 1 !important;
     text-transform: uppercase;
     white-space: nowrap;
+    box-sizing: border-box;
+    box-shadow:
+      inset 0 1px 1px 0 fade(#a2e7cb, 75%),
+      inset 0 -2px 0 0 #006c3f !important;
+
+    &:active:not(:disabled) {
+      transform: translateY(1px);
+      box-shadow:
+        inset 0 1px 1px 0 fade(#a2e7cb, 60%),
+        inset 0 -1px 0 0 #006c3f !important;
+    }
 
     &.is-timer {
-      background: #732d95 !important;
+      width: 64px;
+      min-width: 64px;
+      max-width: 64px;
+      background: linear-gradient(180deg, #8b3bb8 0%, #5c1f8a 100%) !important;
       color: #fff !important;
-      box-shadow: none !important;
+      box-shadow:
+        inset 0 1px 1px 0 fade(#c48be8, 55%),
+        inset 0 -2px 0 0 #3d1460 !important;
       font-variant-numeric: tabular-nums;
-      font-size: 9px !important;
+      font-size: 10px !important;
+      font-weight: 800 !important;
+      letter-spacing: 0;
+      padding: 0 2px !important;
     }
+  }
+
+  &__btn-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    line-height: 1;
+    box-sizing: border-box;
   }
 }
 

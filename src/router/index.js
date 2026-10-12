@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { resetPageScroll, resetPageScrollAfterRoute } from '@/utils/scrollReset'
 import bus from '@/utils/eventBus'
 import { isGuestUser } from '@/utils/guestAuth'
+import { isNativeAppShell } from '@/utils/nativeApp'
 import { normalizeCountryCode, readCountryCode } from '@/utils/country'
 import { consumeRouteMotion } from '@/utils/routeMotion'
 
@@ -493,18 +494,21 @@ router.beforeEach((to, from, next) => {
   const needAuthPaths = ['/rechargeCont', '/mine', '/share']
   const currentPath = to.path.replace(/^\/[^/]+/, '') || '/'
 
-  // 游客不能进入提现页：停留当前页并打开账号升级弹窗。
+  // 游客不能进入提现页：App 内升级弹窗；H5 打开登录。
   if (currentPath === '/bankAdd' && isGuestUser()) {
     const redirectPath = finalPrefix ? `/${finalPrefix}/home` : '/home'
-    const openUpgrade = () => {
-      setTimeout(() => bus.emit('openGuestUpgrade'), 0)
+    const openGate = () => {
+      setTimeout(() => {
+        if (isNativeAppShell()) bus.emit('openGuestUpgrade')
+        else bus.emit('openLogin', 0)
+      }, 0)
     }
     if (!from.fullPath || from.fullPath === '/') {
       next(redirectPath)
     } else {
       next(false)
     }
-    openUpgrade()
+    openGate()
     return
   }
 

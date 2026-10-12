@@ -218,7 +218,7 @@ export default {
 @page-bg: #15031d;
 @card-bg: #411c59;
 @label-color: #ffffff;
-@value-color: #ffd467;
+@value-color: #ffd404;
 
 .content {
   padding: 0 0 20%;
@@ -293,10 +293,10 @@ export default {
   height: 32px;
   padding: 0 14px;
   box-sizing: border-box;
-  color: #ffffff;
+  color: #d7a2fa;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 500;
   line-height: 1;
   border-radius: 999px;
   border: 1.5px solid transparent;
@@ -305,9 +305,9 @@ export default {
 
 .tab-item.active {
   color: #ffffff;
-  font-weight: 700;
-  border-color: #ffd400;
-  background: #1a0a2e;
+  font-weight: 500;
+  border-color: #ffd404;
+  background: #210031;
 }
 
 .stat-grid {
@@ -342,7 +342,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.25;
   font-weight: 600;
   color: @label-color;
@@ -368,8 +368,8 @@ export default {
 
 .stat-card__value {
   margin: 0;
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 800;
   line-height: 1.2;
   color: @value-color;
   word-break: break-all;

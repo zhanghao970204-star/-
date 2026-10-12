@@ -38,7 +38,11 @@
       <template v-else>
         <template v-if="payTypeList.length > 1">
           <p class="gps__label">
-            {{ $lang.gift_pay_method || $lang.rc_select_channel || "Select Channel" }}
+            {{
+              $lang.gift_pay_method ||
+              $lang.rc_select_channel ||
+              "Select Channel"
+            }}
           </p>
           <div class="gps__grid">
             <div
@@ -105,7 +109,9 @@
         </div>
 
         <p class="gps__label">
-          {{ $lang.rc_confirm_order || $lang.gift_pay_amount || "Confirm Order" }}
+          {{
+            $lang.rc_confirm_order || $lang.gift_pay_amount || "Confirm Order"
+          }}
         </p>
         <div class="gps__order">
           <div class="gps__row">
@@ -347,7 +353,7 @@ export default {
   background: @panel-head;
   color: #fff;
   text-align: center;
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 800;
   padding: 14px 40px;
 }
@@ -374,7 +380,7 @@ export default {
 }
 
 .gps__body {
-  padding: 14px 14px calc(18px + env(safe-area-inset-bottom, 0px));
+  padding: 0 14px calc(18px + env(safe-area-inset-bottom, 0px));
   background: linear-gradient(180deg, #7a2190 0%, #532276 100%);
   max-height: calc(78vh - 48px);
   overflow-y: auto;
@@ -391,8 +397,9 @@ export default {
 .gps__label {
   margin: 10px 0 8px;
   color: #fff;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 800;
+  text-align: center;
 }
 
 .gps__grid {
@@ -404,8 +411,9 @@ export default {
 .gps__chip {
   position: relative;
   width: calc(33.33% - 7px);
-  min-height: 78px;
-  border-radius: 14px;
+  min-height: 85px;
+  width: 92px;
+  border-radius: 16px;
   background: transparent;
   display: flex;
   flex-direction: column;
@@ -416,7 +424,7 @@ export default {
   box-sizing: border-box;
   cursor: pointer;
   color: #333;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   overflow: hidden;
 
@@ -474,12 +482,14 @@ export default {
   justify-content: space-between;
   padding: 10px 0;
   color: #fff;
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 700;
 
   em {
     font-style: normal;
-    color: @gold;
+    color: #ffd404;
     font-weight: 800;
+    font-size: 18px;
   }
 }
 

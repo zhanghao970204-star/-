@@ -58,6 +58,40 @@
         </div>
       </van-popup>
 
+      <!-- 首页中奖滚动条：banner 上方 -->
+      <div
+        v-if="$route.path.includes('/home') && winTickerList.length"
+        class="home-win-ticker"
+        ref="winTickerWrap"
+      >
+        <div
+          class="home-win-ticker__track"
+          :style="winTickerTrackStyle"
+          ref="winTickerTrack"
+        >
+          <div
+            v-for="(item, index) in winTickerDisplayList"
+            :key="'win-ticker-' + index"
+            class="home-win-ticker__card"
+            :class="{ 'is-active': winTickerActiveIndex === index }"
+          >
+            <img class="home-win-ticker__icon" :src="item.gameIcon" alt="" />
+            <div class="home-win-ticker__meta">
+              <p class="home-win-ticker__user">{{ item.userName }}</p>
+              <div class="home-win-ticker__amount">
+                <img
+                  class="home-win-ticker__coin"
+                  src="@/assets/img/home/top_coin.png"
+                  alt=""
+                />
+                <span>{{ $formatNumberWithCommas(item.amount) || 0 }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- banner 轮播（临时注释，改用静态图）
       <div
         v-if="$route.path.includes('/home') && bannerList.length"
         class="content-swiper-bg"
@@ -103,6 +137,18 @@
           ></span>
         </div>
       </div>
+      -->
+      <div
+        v-if="$route.path.includes('/home')"
+        class="content-swiper-bg"
+        style="margin-top: 6px"
+      >
+        <img
+          class="content-swiper--img content-swiper--img-static"
+          :src="require('@/assets/img/home/banner_welcome.png')"
+          alt=""
+        />
+      </div>
       <router-view v-slot="{ Component, route }">
         <transition
           :name="route.meta.routeTransition || 'route-motion-forward'"
@@ -122,8 +168,14 @@
 
     <Tabbar @need-login="handleOpenLogin" />
 
-    <login v-model="showPopup" overlay @close-key="close"></login>
+    <login
+      v-model="showPopup"
+      overlay
+      :loginType="loginType"
+      @close-key="close"
+    ></login>
     <guest-upgrade-popup
+      v-if="isNativeApp"
       v-model="showGuestUpgradePopup"
       @success="handleGuestUpgradeSuccess"
     />
@@ -204,6 +256,7 @@
 import TopNav from "../../components/TopNav.vue"; //顶部导航栏
 import Tabbar from "../../components/Tabbar.vue";
 import GuestUpgradePopup from "../../components/GuestUpgradePopup.vue";
+import { isNativeAppShell } from "@/utils/nativeApp";
 import {
   Init,
   VnRechargeInitS,
@@ -212,6 +265,7 @@ import {
   ActivitygetRegisterAward,
   GetInvitationID,
   GetBannerList,
+  GetHomeWinningGameList,
 } from "@/api/common";
 import { consumeOpenLoginAfterPlatformSwitch } from "@/utils/platformAuth";
 export default {
@@ -250,6 +304,16 @@ export default {
         !path.includes("/Support")
       );
     },
+    winTickerDisplayList() {
+      const list = this.winTickerList;
+      if (!list.length) return [];
+      return [...list, ...list];
+    },
+    winTickerTrackStyle() {
+      return {
+        transform: `translate3d(${this.winTickerOffsetX}px, 0, 0)`,
+      };
+    },
   },
   data() {
     return {
@@ -274,7 +338,14 @@ export default {
       timer: null,
       topDownloadHeight: 0,
       showPopup: false, //登录弹窗开关
+      loginType: 0,
       showGuestUpgradePopup: false,
+      isNativeApp: isNativeAppShell(),
+      winTickerList: [],
+      winTickerOffsetX: 0,
+      winTickerSetWidth: 0,
+      winTickerRafId: null,
+      winTickerActiveIndex: 0,
       // tabBar: [
       //   {
       //     title: this.$lang.Início,
@@ -323,6 +394,11 @@ export default {
         if (to.query.isValue === "isLogin") {
           this.showPopup = true;
         }
+        if (to.path && to.path.includes("/home")) {
+          this.fetchWinTickerList();
+        } else {
+          this.stopWinTickerScroll();
+        }
       },
       immediate: true,
     },
@@ -359,6 +435,7 @@ export default {
     });
   },
   beforeUnmount() {
+    this.stopWinTickerScroll();
     this.$bus.off("openLogin", this.handleOpenLogin);
     this.$bus.off("openGuestUpgrade", this.handleOpenGuestUpgrade);
   },
@@ -379,16 +456,22 @@ export default {
     handleTopDownloadLayout({ height }) {
       this.topDownloadHeight = height;
     },
-    handleOpenLogin() {
+    handleOpenLogin(tab) {
+      this.loginType = typeof tab === "number" ? tab : 0;
       this.showPopup = true;
     },
     handleOpenGuestUpgrade() {
+      // 游客升级弹窗仅 iOS App / Android APK
+      if (!isNativeAppShell()) {
+        this.handleOpenLogin(0);
+        return;
+      }
       this.showGuestUpgradePopup = true;
     },
     handleGuestUpgradeSuccess() {
       // 绑定接口的新 Token 已保存；按产品流程继续打开登录页。
       this.$nextTick(() => {
-        this.showPopup = true;
+        this.handleOpenLogin(0);
       });
     },
     async GetInvitationID() {
@@ -450,6 +533,89 @@ export default {
       } catch (e) {
         console.error("fetchBannerList error", e);
       }
+    },
+    async fetchWinTickerList() {
+      if (!(this.$route.path || "").includes("/home")) return;
+      try {
+        const data = await GetHomeWinningGameList({});
+        if (data.status === "ok" && data.content) {
+          const list = data.content.dataList || data.content.list || [];
+          this.winTickerList = Array.isArray(list) ? list : [];
+          this.winTickerOffsetX = 0;
+          this.$nextTick(() => this.startWinTickerScroll());
+        }
+      } catch (e) {
+        console.error("fetchWinTickerList error", e);
+      }
+    },
+    measureWinTickerWidth() {
+      const track = this.$refs.winTickerTrack;
+      if (track && track.scrollWidth > 0) {
+        this.winTickerSetWidth = track.scrollWidth / 2;
+        return this.winTickerSetWidth;
+      }
+      this.winTickerSetWidth = 0;
+      return 0;
+    },
+    wrapWinTickerOffset() {
+      const w = this.winTickerSetWidth || this.measureWinTickerWidth();
+      if (!w) return;
+      // 从左到右：offset 增大；越界后回绕
+      while (this.winTickerOffsetX >= 0) this.winTickerOffsetX -= w;
+      while (this.winTickerOffsetX < -w) this.winTickerOffsetX += w;
+    },
+    updateWinTickerActive() {
+      const wrap = this.$refs.winTickerWrap;
+      const track = this.$refs.winTickerTrack;
+      if (!wrap || !track) return;
+      const cards = track.children;
+      if (!cards || !cards.length) return;
+      const centerX = wrap.getBoundingClientRect().left + wrap.clientWidth / 2;
+      let bestIdx = 0;
+      let bestDist = Infinity;
+      for (let i = 0; i < cards.length; i++) {
+        const rect = cards[i].getBoundingClientRect();
+        const mid = rect.left + rect.width / 2;
+        const dist = Math.abs(mid - centerX);
+        if (dist < bestDist) {
+          bestDist = dist;
+          bestIdx = i;
+        }
+      }
+      if (this.winTickerActiveIndex !== bestIdx) {
+        this.winTickerActiveIndex = bestIdx;
+      }
+    },
+    stopWinTickerScroll() {
+      if (this.winTickerRafId) {
+        cancelAnimationFrame(this.winTickerRafId);
+        this.winTickerRafId = null;
+      }
+    },
+    startWinTickerScroll() {
+      this.stopWinTickerScroll();
+      if (!this.winTickerList.length) return;
+      this.$nextTick(() => {
+        this.measureWinTickerWidth();
+        if (!this.winTickerSetWidth) return;
+        // 初始落在中间副本，便于左右无缝回绕
+        this.winTickerOffsetX = -this.winTickerSetWidth;
+        let frame = 0;
+        const tick = () => {
+          if (!this.winTickerSetWidth || this.winTickerSetWidth < 10) {
+            this.measureWinTickerWidth();
+          }
+          if (this.winTickerSetWidth) {
+            // 从左到右：内容向右移动
+            this.winTickerOffsetX += 0.6;
+            this.wrapWinTickerOffset();
+            frame += 1;
+            if (frame % 6 === 0) this.updateWinTickerActive();
+          }
+          this.winTickerRafId = requestAnimationFrame(tick);
+        };
+        this.winTickerRafId = requestAnimationFrame(tick);
+      });
     },
     onBannerImgError(e) {
       if (e && e.target) e.target.style.display = "none";
@@ -786,9 +952,12 @@ export default {
 }
 
 .has-tabbar .content-main {
-  /* 给中间凸起 logo 留一点呼吸，内容仍在 Tab 顶边之上 */
-  padding-bottom: 20px;
+  /* Tab 固定悬浮且背景透明：预留整条 Tab 高度，避免底部内容被挡住 */
+  padding-bottom: calc(
+    var(--tabbar-bar-height, 66px) + env(safe-area-inset-bottom, 0px)
+  );
   box-sizing: border-box;
+  background: transparent;
 }
 
 /* 公告栏 - 图中样式：深色背景、圆角、阴影、白字 */
@@ -919,6 +1088,102 @@ export default {
   display: block;
   border-radius: 10px;
   cursor: pointer;
+}
+.content-swiper--img-static {
+  height: 171px;
+  cursor: default;
+}
+
+/* 首页中奖滚动条 */
+.home-win-ticker {
+  height: 46px;
+  margin: 18px 0 10px;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  /* 右侧渐隐：卡片滑出时淡出 */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    #000 0%,
+    #000 calc(100% - 48px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    #000 0%,
+    #000 calc(100% - 48px),
+    transparent 100%
+  );
+}
+.home-win-ticker__track {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  height: 100%;
+  width: max-content;
+  gap: 8px;
+  padding: 0 8px;
+  box-sizing: border-box;
+  will-change: transform;
+}
+.home-win-ticker__card {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 46px;
+  padding: 0 8px 0 4px;
+  border-radius: 8px;
+  box-sizing: border-box;
+  background: #302f30;
+  border: 1px solid #512d6c;
+  box-shadow: inset 0 0 0 0 transparent;
+}
+.home-win-ticker__card.is-active {
+  background: linear-gradient(90deg, #a531ba 0%, #5e41bd 100%);
+  border-color: #512d6c;
+  box-shadow: inset 2px 0 3.9px 0 #341f76;
+}
+.home-win-ticker__icon {
+  width: 30px;
+  height: 42px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+  display: block;
+}
+.home-win-ticker__meta {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
+}
+.home-win-ticker__user {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.2;
+  color: #fff;
+  white-space: nowrap;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+.home-win-ticker__amount {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 700;
+  color: #24ee89;
+  white-space: nowrap;
+}
+.home-win-ticker__coin {
+  width: 11px;
+  height: 13px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 .swipe-fixed-height {
   width: 100%;

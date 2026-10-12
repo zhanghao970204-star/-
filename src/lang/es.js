@@ -1235,10 +1235,10 @@ export default {
   share_rules_first_deposit_title: "II. Recompensa por el primer depósito",
   share_rules_first_deposit_desc:
     "Después de que tus amigos se registren a través de tu enlace de invitación exclusivo y completen exitosamente su primer depósito, podrás recibir la recompensa correspondiente por el primer depósito.",
-  share_rules_fd_col_amount: "Primer depósito de un amigo",
-  share_rules_fd_col_l1: "Recompensa de nivel 1",
-  share_rules_fd_col_l2: "Recompensa de nivel 2",
-  share_rules_fd_col_l3: "Recompensa de nivel 3",
+  share_rules_fd_col_amount: "Primer depósito<br>de un amigo",
+  share_rules_fd_col_l1: "Recompensa<br>de nivel 1",
+  share_rules_fd_col_l2: "Recompensa<br>de nivel 2",
+  share_rules_fd_col_l3: "Recompensa<br>de nivel 3",
   share_rules_first_deposit_note:
     "Nota: Los amigos deben completar exitosamente su primer depósito. Sólo se acreditarán las recompensas calificadas por el primer depósito.",
   share_rules_betting_title: "III. Reembolso de apuestas en tiempo real",
@@ -1255,10 +1255,10 @@ export default {
     "IV. Recompensa acumulativa por recuento de invitaciones",
   share_rules_cumulative_desc:
     "Cuando el número total histórico de usuarios de recarga invitados alcanza un nivel específico, puede recibir las recompensas de agente correspondientes de Nivel 1, Nivel 2 y Nivel 3.",
-  share_rules_cum_col_count: "Total de usuarios de recarga invitados",
-  share_rules_cum_col_l1: "Recompensa del agente de nivel 1",
-  share_rules_cum_col_l2: "Recompensa del agente de nivel 2",
-  share_rules_cum_col_l3: "Recompensa del agente de nivel 3",
+  share_rules_cum_col_count: "Total de usuarios<br>de recarga invitados",
+  share_rules_cum_col_l1: "Recompensa del<br>agente de nivel 1",
+  share_rules_cum_col_l2: "Recompensa del<br>agente de nivel 2",
+  share_rules_cum_col_l3: "Recompensa del<br>agente de nivel 3",
   share_rules_invite_method_title: "V. Método de invitación",
   share_rules_invite_method_desc:
     "Invita a tus amigos a unirse al juego a través de tu enlace de invitación exclusivo. Se admite compartir a través del sitio web, Facebook, Instagram, TikTok, Telegram, WhatsApp, YouTube y más.",

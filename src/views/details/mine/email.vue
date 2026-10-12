@@ -57,10 +57,7 @@
       <div class="mail-detail" v-if="currentNotice">
         <h3 class="mail-detail__title">{{ currentNotice.title }}</h3>
         <p class="mail-detail__time">{{ currentNotice.sendTime }}</p>
-        <div
-          class="mail-detail__content"
-          v-html="currentNotice.content"
-        ></div>
+        <div class="mail-detail__content" v-html="currentNotice.content"></div>
       </div>
     </van-popup>
   </div>
@@ -184,24 +181,24 @@ export default {
 }
 
 .mail-actions__btn {
-  flex: 1;
-  height: 36px;
-  display: flex;
+  flex: 0 0 auto;
+  width: auto;
+  height: 29px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
   padding: 0 12px;
   border-radius: 999px;
-  border: 1px solid #7a3fb0;
-  background: linear-gradient(180deg, #3a1a55 0%, #2a1040 100%);
+  border: 1px solid #590581;
+  background: #250a3d;
   color: #ffd467;
-  font-size: 13px;
+  font-size: 10px;
   font-weight: 700;
   cursor: pointer;
-
+  white-space: nowrap;
   img {
-    width: 16px;
-    height: 16px;
+    width: 21px;
     object-fit: contain;
     display: block;
   }
@@ -229,7 +226,9 @@ export default {
     linear-gradient(180deg, #ba65db 0%, #5d4fae 100%) border-box;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
   cursor: pointer;
-  transition: transform 0.12s ease, opacity 0.12s ease;
+  transition:
+    transform 0.12s ease,
+    opacity 0.12s ease;
 
   &:active {
     transform: scale(0.98);

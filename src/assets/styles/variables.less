@@ -36,6 +36,16 @@ ul {
   box-sizing: border-box;
 }
 
+html,
+body,
+#app,
+button,
+input,
+textarea,
+select {
+  font-family: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
 // 阿里字体图标设置
 .icon,
 .iconfont {
@@ -101,7 +111,7 @@ ul {
   --van-dialog-background: @popup-bg;
   --van-popup-background: @popup-bg;
   --van-nav-bar-background: #15031d;
-  --van-nav-bar-height: 55px;
+  --van-nav-bar-height: 67px;
   --van-tabbar-background: transparent;
   /* 底部 Tab 占位：栏高 66 + 间距 + 全面屏安全区 */
   --tabbar-safe-bottom: calc(86px + env(safe-area-inset-bottom, 0px));
@@ -286,7 +296,7 @@ ul {
 
 // 标题栏相关（与 --van-nav-bar-height 保持一致，避免内容贴顶）
 .van-nav-bar {
-  --van-nav-bar-height: 55px;
+  --van-nav-bar-height: 67px;
   --van-nav-bar-background: #15031d;
   background: #15031d !important;
   background-color: #15031d !important;
@@ -306,7 +316,8 @@ ul {
 }
 .van-nav-bar__title {
   color: @wihte-color;
-  font-weight: bold;
+  font-size: 20px;
+  font-weight: 700;
   line-height: 1.2;
 }
 .van-nav-bar__left,
@@ -334,7 +345,7 @@ ul {
   padding: 0 16px;
   box-sizing: border-box;
   input.van-field__control::-webkit-input-placeholder {
-    font-family: "Roboto", sans-serif !important;
+    font-family: "Manrope", system-ui, sans-serif !important;
     font-weight: 400;
     font-size: 14px;
     color: #9b86c9 !important;

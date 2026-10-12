@@ -278,14 +278,14 @@ export default {
   height: 52px;
   border-radius: 12px;
   background: #000;
-  border: 1px solid #c9b3ff;
+  border: 1px solid #633488;
   box-sizing: border-box;
   overflow: hidden;
   cursor: text;
 
   &--focus {
-    border-color: #e93dfe;
-    box-shadow: 0 0 0 1px rgba(233, 61, 254, 0.35);
+    border-color: #633488;
+    box-shadow: 0 0 0 1px rgba(99, 52, 136, 0.45);
   }
 
   &--error {
@@ -323,7 +323,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    border-right: 1px solid rgba(201, 179, 255, 0.55);
+    border-right: 1px solid #633488;
     box-sizing: border-box;
 
     &:last-child {

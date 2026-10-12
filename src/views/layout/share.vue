@@ -15,7 +15,7 @@
       :ellipsis="false"
       :swipeable="false"
       sticky
-      :offset-top="60"
+      :offset-top="68"
     >
       <van-tab
         v-for="(item, index) in [
@@ -69,7 +69,7 @@ export default {
 }
 
 .share-page__banner-wrap {
-  margin: 8px 12px 0;
+  margin: 20px 12px 0;
   border-radius: 14px;
   overflow: hidden;
 }
@@ -160,7 +160,7 @@ export default {
     box-sizing: border-box;
     color: @muted;
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 700;
     line-height: 1.15;
     text-align: center;
     border-radius: 16px;
@@ -171,7 +171,7 @@ export default {
   .tab-text.active {
     background: @tab-btn-grad;
     color: #fff !important;
-    font-weight: 800;
+    font-weight: 700;
     box-shadow: 0 2px 10px fade(#9f24c9, 45%);
   }
 }

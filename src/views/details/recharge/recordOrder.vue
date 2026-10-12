@@ -14,57 +14,52 @@
         :key="index"
         @click="goToD(item)"
       >
-        <div class="d-flex">
-          <!-- <img src="../../../assets/img/home/pix-H.png" height="30" /> -->
-          <div class="m-l-10">
-            <p v-if="item.orderType === 'pay'">{{ $lang.Recarregar }}</p>
-            <p v-else>
-              <span>{{ $lang.recordOrder_txt }} {{ $lang.account }}</span
-              >({{ item.bankName }} {{ formatCardNumber(item.bankCard) }})
-            </p>
-
-            <p class="font-color m-t-10">{{ item.createDate }}</p>
-          </div>
+        <div class="order-list__left">
+          <p v-if="item.orderType === 'pay'" class="order-list__title">
+            {{ $lang.Recarregar }}
+          </p>
+          <p v-else class="order-list__title">
+            <span>{{ $lang.recordOrder_txt }} {{ $lang.account }}</span
+            >({{ item.bankName }} {{ formatCardNumber(item.bankCard) }})
+          </p>
+          <p class="order-list__date">{{ item.createDate }}</p>
         </div>
-        <div>
-          <div style="text-align: right">
-            <p v-if="item.orderType === 'wd'" class="error-color">
-              - {{ $formatNumberWithCommas(item.orderAmount) }}
-            </p>
-            <p v-else class="primary-color">
-              + {{ $formatNumberWithCommas(item.orderAmount) }}
-            </p>
-          </div>
-          <div class="m-t-10">
-            <p v-if="item.isReversed" style="color: var(--primary-color)">
-              <van-icon name="success" size="12" style="margin-right: 2px" />
-              {{ $lang.recharge_success || "Recharge Successful" }}
-            </p>
-            <p
-              v-else-if="
-                ['withdraw$success', 'pay$success'].includes(item.orderStatus)
-              "
-              style="color: var(--primary-color)"
-            >
-              <van-icon name="success" size="12" style="margin-right: 2px" />
-              {{
-                item.orderType === "pay"
-                  ? $lang.recharge_success || "Recarga bem-sucedida"
-                  : item.orderStatusName
-              }}
-            </p>
-            <p
-              class="error-color"
-              v-else-if="
-                ['withdraw$failed', 'pay$failed'].includes(item.orderStatus)
-              "
-            >
-              {{ item.orderStatusName }}
-            </p>
-            <p v-else class="error-color">
-              {{ item.orderStatusName }}
-            </p>
-          </div>
+        <div class="order-list__right">
+          <p
+            class="order-list__amount"
+            :class="{ 'is-wd': item.orderType === 'wd' }"
+          >
+            {{ item.orderType === "wd" ? "-" : "+" }}
+            {{ $formatNumberWithCommas(item.orderAmount) }}
+          </p>
+          <p v-if="item.isReversed" class="order-list__status is-success">
+            <van-icon name="success" size="12" style="margin-right: 2px" />
+            {{ $lang.recharge_success || "Recharge Successful" }}
+          </p>
+          <p
+            v-else-if="
+              ['withdraw$success', 'pay$success'].includes(item.orderStatus)
+            "
+            class="order-list__status is-success"
+          >
+            <van-icon name="success" size="12" style="margin-right: 2px" />
+            {{
+              item.orderType === "pay"
+                ? $lang.recharge_success || "Recarga bem-sucedida"
+                : item.orderStatusName
+            }}
+          </p>
+          <p
+            class="order-list__status is-error"
+            v-else-if="
+              ['withdraw$failed', 'pay$failed'].includes(item.orderStatus)
+            "
+          >
+            {{ item.orderStatusName }}
+          </p>
+          <p v-else class="order-list__status is-pending">
+            {{ item.orderStatusName }}
+          </p>
         </div>
       </div>
       <van-empty
@@ -153,14 +148,69 @@ export default {
   padding: 0 10px;
 }
 .order-list--item {
-  font-size: 12px;
   .record-list-card();
   margin-bottom: 10px;
-  padding: 10px 10px;
+  padding: 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 10px;
 }
+
+.order-list__left {
+  flex: 1;
+  min-width: 0;
+}
+
+.order-list__right {
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.order-list__title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #d7a2fa;
+  line-height: 1.3;
+}
+
+.order-list__amount {
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffee00;
+  line-height: 1.3;
+
+  &.is-wd {
+    color: @error-color;
+  }
+}
+
+.order-list__date,
+.order-list__status {
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.order-list__date {
+  color: @wihte-color;
+}
+
+.order-list__status {
+  &.is-success {
+    color: #31ff6f;
+  }
+
+  &.is-error {
+    color: @error-color;
+  }
+
+  &.is-pending {
+    color: #e8c03c;
+  }
+}
+
 :deep(.van-loading) {
   background: transparent;
   padding-top: 0%;

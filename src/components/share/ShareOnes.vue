@@ -60,10 +60,10 @@
         </p>
         <div class="invite-table invite-table--4col">
           <div class="invite-table__head">
-            <p>{{ $lang.share_rules_fd_col_amount }}</p>
-            <p>{{ $lang.share_rules_fd_col_l1 }}</p>
-            <p>{{ $lang.share_rules_fd_col_l2 }}</p>
-            <p>{{ $lang.share_rules_fd_col_l3 }}</p>
+            <p v-html="$lang.share_rules_fd_col_amount"></p>
+            <p v-html="$lang.share_rules_fd_col_l1"></p>
+            <p v-html="$lang.share_rules_fd_col_l2"></p>
+            <p v-html="$lang.share_rules_fd_col_l3"></p>
           </div>
           <div
             v-for="(item, index) in firstDepositRows"
@@ -108,10 +108,10 @@
         </p>
         <div class="invite-table invite-table--4col invite-table--compact">
           <div class="invite-table__head">
-            <p>{{ $lang.share_rules_cum_col_count }}</p>
-            <p>{{ $lang.share_rules_cum_col_l1 }}</p>
-            <p>{{ $lang.share_rules_cum_col_l2 }}</p>
-            <p>{{ $lang.share_rules_cum_col_l3 }}</p>
+            <p v-html="$lang.share_rules_cum_col_count"></p>
+            <p v-html="$lang.share_rules_cum_col_l1"></p>
+            <p v-html="$lang.share_rules_cum_col_l2"></p>
+            <p v-html="$lang.share_rules_cum_col_l3"></p>
           </div>
           <div
             v-for="(item, index) in cumulativeRows"
@@ -360,7 +360,7 @@ export default {
   background: @copy-grad;
   color: #fff;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.3px;
   border-radius: 16px;
@@ -487,6 +487,11 @@ export default {
   background: #512275;
   color: #d7a2fa;
   font-weight: 700;
+  align-items: center;
+
+  p {
+    white-space: normal;
+  }
 }
 
 .invite-table__row {
@@ -524,8 +529,14 @@ export default {
 .invite-table--4col {
   .invite-table__head p,
   .invite-table__row p {
-    width: 25%;
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
     font-size: 11px;
+    line-height: 1.35;
+    padding: 0 2px;
+    box-sizing: border-box;
+    word-break: break-word;
   }
 }
 

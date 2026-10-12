@@ -8,12 +8,15 @@
     :border="false"
     class="y7-tabbar"
   >
-    <van-tabbar-item @click="toTop">
+    <van-tabbar-item>
       <span :class="{ activeSpan: active === 0 }">{{
-        $lang.tab_game || "Game"
+        $lang.tab_reward || $lang.tab_promotions || "Reward"
       }}</span>
       <template #icon>
-        <div class="img" :class="active !== 0 ? 'img1' : 'img1A'"></div>
+        <div
+          class="img reward-tab-icon"
+          :class="active !== 0 ? 'img4' : 'img4A'"
+        ></div>
       </template>
     </van-tabbar-item>
 
@@ -26,9 +29,9 @@
       </template>
     </van-tabbar-item>
 
-    <van-tabbar-item>
-      <span class="wallet-label" :class="{ activeSpan: active === 2 }">{{
-        $lang.Depósito
+    <van-tabbar-item @click="toTop">
+      <span :class="{ activeSpan: active === 2 }">{{
+        $lang.tab_game || "Game"
       }}</span>
       <template #icon>
         <div class="boxBg">
@@ -38,14 +41,11 @@
     </van-tabbar-item>
 
     <van-tabbar-item>
-      <span :class="{ activeSpan: active === 3 }">{{
-        $lang.tab_reward || $lang.tab_promotions || "Reward"
+      <span class="wallet-label" :class="{ activeSpan: active === 3 }">{{
+        $lang.Depósito
       }}</span>
       <template #icon>
-        <div
-          class="img reward-tab-icon"
-          :class="active !== 3 ? 'img4' : 'img4A'"
-        ></div>
+        <div class="img" :class="active !== 3 ? 'img1' : 'img1A'"></div>
       </template>
     </van-tabbar-item>
 
@@ -71,26 +71,27 @@ export default {
   emits: ["need-login"],
   data() {
     return {
-      active: 0,
+      active: 2,
     };
   },
   computed: {
     routePrefix() {
       return this.$route.params.prefix || localStorage.getItem("country") || "";
     },
+    // Reward / Invite / Game / Deposit / Account
     routerArr() {
       const p = this.routePrefix;
       return [
-        `/${p}/home`,
-        `/${p}/share`,
-        `/${p}/rechargeCont`,
         `/${p}/activity`,
+        `/${p}/share`,
+        `/${p}/home`,
+        `/${p}/rechargeCont`,
         `/${p}/mine`,
       ];
     },
-    // deposit / share / mine 需登录；home / activity 可游客
+    // Invite / Deposit / Account 需登录；Reward / Game 可游客
     needLoginIndexes() {
-      return [1, 2, 4];
+      return [1, 3, 4];
     },
     visible() {
       const path = this.$route.path;
@@ -112,16 +113,16 @@ export default {
   },
   methods: {
     syncActive(path) {
-      if (path.includes("/share")) {
+      if (path.includes("/activity") || path.includes("/bonus")) {
+        this.active = 0;
+      } else if (path.includes("/share")) {
         this.active = 1;
-      } else if (path.includes("/rechargeCont")) {
+      } else if (path.includes("/home")) {
         this.active = 2;
-      } else if (path.includes("/activity") || path.includes("/bonus")) {
+      } else if (path.includes("/rechargeCont")) {
         this.active = 3;
       } else if (path.includes("/mine")) {
         this.active = 4;
-      } else if (path.includes("/home")) {
-        this.active = 0;
       }
     },
     toTop() {
@@ -174,7 +175,10 @@ export default {
 }
 
 .y7-tabbar {
-  position: relative;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
   flex-shrink: 0;
   width: 100%;
   max-width: 450px;

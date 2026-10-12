@@ -2,23 +2,22 @@
   <div class="wd-page">
     <title-bar :title="$lang.Saque || 'Withdraw'" />
 
-    <div class="wd-tabs">
-      <button
-        v-for="(item, index) in tabList"
-        :key="index"
-        type="button"
-        class="wd-tabs__item"
-        :class="{ 'is-active': selectIndex === index }"
-        @click="selectF(index)"
-      >
-        {{ item }}
-      </button>
+    <div class="wd-tabs-bar">
+      <div class="wd-tabs">
+        <button
+          v-for="(item, index) in tabList"
+          :key="index"
+          type="button"
+          class="wd-tabs__item"
+          :class="{ 'is-active': selectIndex === index }"
+          @click="selectF(index)"
+        >
+          {{ item }}
+        </button>
+      </div>
     </div>
 
-    <bank-info-tab1
-      v-if="selectIndex === 0"
-      @goToActive="goToActive"
-    />
+    <bank-info-tab1 v-if="selectIndex === 0" @goToActive="goToActive" />
     <bank-info-tab2 v-if="selectIndex === 1" />
   </div>
 </template>
@@ -60,37 +59,42 @@ export default {
   color: #fff;
 }
 
+.wd-tabs-bar {
+  margin-top: 10px;
+  background: url("@/assets/img/recharge/wd_tabs_bg.png") center / 100% 100%
+    no-repeat;
+  border-bottom: 1px solid #5c1078;
+}
+
 .wd-tabs {
+  position: relative;
+  z-index: 1;
   display: flex;
-  margin: 10px 14px 0;
-  height: 44px;
-  padding: 3px;
-  border-radius: 14px;
+  width: 60%;
+  max-width: 320px;
+  height: 28px;
+  margin: 0 auto;
   overflow: hidden;
-  background-color: #14041c;
-  background-image: url("@/assets/img/recharge/wd_tab_bg.png");
-  background-position: center;
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
+  border: 1px solid #662475;
+  border-bottom: none;
+  border-radius: 12px 12px 0 0;
   box-sizing: border-box;
-  border: 1px solid rgba(177, 120, 220, 0.4);
 
   &__item {
     flex: 1;
     height: 100%;
     border: none;
-    border-radius: 12px;
-    background: transparent;
-    color: fade(#fff, 55%);
-    font-size: 14px;
+    border-radius: 0;
+    background: #1b1226;
+    color: #a9a7ab;
+    font-size: 12px;
     font-weight: 700;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
 
     &.is-active {
-      background: linear-gradient(180deg, #8f3ab0 0%, #6a228c 100%);
-      color: #fff;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+      background: #491257;
+      color: #ffffff;
     }
   }
 }

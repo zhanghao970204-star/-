@@ -10,7 +10,7 @@
         />
         <div class="rc-wallet__inner">
           <h2 class="rc-wallet__title">WALLET</h2>
-          <div class="rc-wallet__actions">
+          <div class="rc-wallet__actions" style="margin-top: 12px">
             <button
               type="button"
               class="rc-wallet__btn btn-press"
@@ -21,12 +21,15 @@
                   border-radius: 999px;
                   border: 1px solid #8b57d5;
                   background: #280d4e;
-                  padding: 3px;
+                  padding: 2px;
                 "
               >
                 <img :src="imgHistory" alt="" />
               </div>
-              <span>{{ $lang.rp_history || "History" }}</span>
+              <span
+                style="font-size: 10px; font-weight: 700; margin-top: 6px"
+                >{{ $lang.rp_history || "History" }}</span
+              >
             </button>
             <button
               type="button"
@@ -38,12 +41,15 @@
                   border-radius: 999px;
                   border: 1px solid #8b57d5;
                   background: #280d4e;
-                  padding: 3px;
+                  padding: 2px;
                 "
               >
                 <img :src="imgContact" alt="" />
               </div>
-              <span>{{ $lang.common_txt22 }}</span>
+              <span
+                style="font-size: 10px; font-weight: 700; margin-top: 6px"
+                >{{ $lang.common_txt22 }}</span
+              >
             </button>
           </div>
         </div>
@@ -84,7 +90,35 @@
           </div>
         </div>
       </div>
-
+      <div
+        v-if="showRechargeActivity"
+        class="rc-activity-row"
+        :class="{ 'is-active': agree }"
+        @click="agree = !agree"
+      >
+        <img
+          class="rc-activity-row__icon"
+          :class="agree ? 'is-checked' : 'is-unchecked'"
+          :src="agree ? imgCheck : imgUncheck"
+          alt=""
+        />
+        <p
+          v-if="promoCode === 'first_recharge_new_1'"
+          class="rc-activity-row__text"
+        >
+          {{ $lang.RechargeCont_txt6 }} {{ getCurrency }}
+          <span style="margin-left: 2px; color: #fbff00">{{
+            activityBonusSample
+          }}</span>
+        </p>
+        <p
+          v-else-if="promoCode === 'first_recharge_new_2'"
+          class="rc-activity-row__text"
+        >
+          {{ $lang.RechargeCont_txt7 }}
+        </p>
+        <p v-else class="rc-activity-row__text">{{ activityBannerText }}</p>
+      </div>
       <p class="rc-hint">{{ $lang.common_txt311 }} {{ displayMinAmount }}</p>
       <van-field
         v-model="amount"
@@ -110,32 +144,6 @@
       </van-field>
 
       <div class="rc-bonus-panel">
-        <div
-          v-if="showRechargeActivity"
-          class="rc-activity-row"
-          :class="{ 'is-active': agree }"
-          @click="agree = !agree"
-        >
-          <img
-            class="rc-activity-row__icon"
-            :src="agree ? imgCheck : imgUncheck"
-            alt=""
-          />
-          <p
-            v-if="promoCode === 'first_recharge_new_1'"
-            class="rc-activity-row__text"
-          >
-            {{ $lang.RechargeCont_txt6 }} {{ getCurrency
-            }}{{ activityBonusSample }}
-          </p>
-          <p
-            v-else-if="promoCode === 'first_recharge_new_2'"
-            class="rc-activity-row__text"
-          >
-            {{ $lang.RechargeCont_txt7 }}
-          </p>
-          <p v-else class="rc-activity-row__text">{{ activityBannerText }}</p>
-        </div>
         <p class="rc-vip-row" @click="$jumpTo('/vipLevels')">
           <img class="rc-vip-badge" :src="vipPairIconSrc" alt="" />
           <span class="rc-vip-text">VIP {{ InitDate.vipLevel || 0 }}</span>
@@ -161,24 +169,23 @@
             v-if="showActivityBonus && currentBonus > 0"
             class="rc-pay-btn__badge"
           >
-            +{{ $formatNumberWithCommas(currentBonus) }}
+            <img class="rc-pay-btn__badge-bg" :src="imgRibbon" alt="" />
+            <em>+{{ $formatNumberWithCommas(currentBonus) }}</em>
           </span>
           {{ $lang.common_txt314 }} {{ getCurrency }} {{ amount }}
         </button>
       </div>
 
-      <div v-if="paymentKey !== 'usdt'" class="rc-account-block">
+      <!-- <div v-if="paymentKey !== 'usdt'" class="rc-account-block">
         <div class="rc-account-row">
           <img :src="GET_ICONURL" width="25" />
           <span class="rc-account-row__code">{{ GET_AREACODE }}</span>
           <span>{{ account }}</span>
         </div>
-      </div>
+      </div> -->
 
       <div class="rc-divider-row">
-        <img :src="imgLineL" height="2" width="28%" />
         <p>{{ $lang.common_txt317 }}</p>
-        <img :src="imgLineR" height="2" width="28%" />
       </div>
       <div v-html="$lang.common_txt30" class="l-h-20 rc-footer-note"></div>
     </div>
@@ -982,35 +989,54 @@ export default {
 
 <style lang="less" scoped>
 /* 图一 / 图二：紫金钱包充值 */
-@page-bg: #15031d;
+@page-bg-from: #0d0115;
+@page-bg-to: #1d032e;
+@page-bg: @page-bg-from;
 @panel: #4b0e5d;
 @panel-soft: #512275;
 @gold: #ffd404;
 @muted: #d7a2fa;
 @green: #12c27a;
 @green-deep: #0a8f56;
+@text-shadow: 0 2px 2px rgba(0, 0, 0, 0.62);
 
 .rc-page {
-  min-height: 100vh;
+  min-height: 100%;
   color: #fff;
-  padding-bottom: 100px;
+  /* 上下渐变作底色，叠加通用花纹（勿盖死花纹） */
+  background-color: @page-bg-from;
+  background-image:
+    url(@/assets/img/common/page_bg.png),
+    linear-gradient(180deg, @page-bg-from 0%, @page-bg-to 100%);
+  background-repeat: repeat, no-repeat;
+  background-position:
+    top center,
+    center;
+  background-size:
+    auto,
+    100% 100%;
+  /* 底部留白由 layout .content-main 的 tabbar 等高 padding 统一承担 */
+  padding-bottom: 24px;
   box-sizing: border-box;
 }
 
 .RechargeCont-cont {
-  padding: 8px 12px 24px;
+  width: 100%;
+  max-width: 450px;
+  margin: 0 auto;
+  padding: 8px 10px 24px;
   box-sizing: border-box;
 }
 
 .rc-wallet {
   position: relative;
-  margin: 0 -4px 8px;
+  margin: 14px 2px 0;
   overflow: hidden;
 
   &__bg {
     display: block;
     width: 100%;
-    height: auto;
+    height: 76px;
     vertical-align: top;
   }
 
@@ -1025,7 +1051,7 @@ export default {
     grid-template-columns: repeat(6, 1fr);
     align-items: center;
     box-sizing: border-box;
-    padding: 0 2% 0 3%;
+    padding: 0 0 0 3%;
   }
 
   &__title {
@@ -1036,7 +1062,7 @@ export default {
     font-weight: 800;
     letter-spacing: 0.6px;
     color: #fff;
-    text-shadow: 0 3px 0 rgba(90, 40, 160, 0.45);
+    text-shadow: @text-shadow;
     line-height: 1;
   }
 
@@ -1083,32 +1109,38 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 10px 0 16px;
+  margin: 10px 0 5px;
 
   &__title {
     margin: 10px 0 5px;
-    font-size: 15px;
+    font-size: 18px;
     font-weight: 700;
     color: #fff;
     text-align: center;
     letter-spacing: 0.2px;
+    text-shadow: @text-shadow;
   }
 }
 
+/* 素材比：未选中 158×192，选中外框 187×222（等比外扩一层） */
 .amount-box-list {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 18px 10px;
+  /* 左右间距与上下间距对齐 */
+  column-gap: 14px;
+  row-gap: 14px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 10px 2px 8px;
 }
 
 .amount-card {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  height: 134px;
-  min-height: 134px;
+  width: 100%;
+  aspect-ratio: 158 / 192;
+  height: auto;
+  margin-bottom: 12px;
   box-sizing: border-box;
   border-radius: 16px;
   background: transparent;
@@ -1118,7 +1150,6 @@ export default {
 
   &.active {
     z-index: 2;
-    padding-bottom: 38px;
   }
 
   &__bg {
@@ -1132,7 +1163,7 @@ export default {
     border-radius: 16px;
   }
 
-  /* 整张高亮图放大，中间和未选中一样大；不裁圆角，四角用图片自带透明 */
+  /* 选中外框放大，内容仍相对卡面居中 */
   &.active &__bg {
     inset: auto;
     left: 50%;
@@ -1141,16 +1172,19 @@ export default {
     height: calc(100% * 222 / 192);
     transform: translate(-50%, -50%);
     border-radius: 0;
+    object-fit: fill;
   }
 
   &__ribbon {
     position: absolute;
-    top: -10px;
+    top: -8%;
     left: 50%;
     transform: translateX(-50%);
     z-index: 6;
-    width: 100%;
-    min-height: 27px;
+    /* badge 再宽一点 */
+    width: 105%;
+    height: 22%;
+    min-height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1175,40 +1209,55 @@ export default {
     object-fit: fill;
   }
 
+  /* 金币固定在卡面中部，选中/未选中同一套定位 */
   &__coin {
-    position: relative;
+    position: absolute;
+    left: 50%;
+    top: 44%;
+    transform: translate(-50%, -50%);
     z-index: 2;
-    width: 72px;
-    height: 72px;
+    width: 66%;
+    height: auto;
+    aspect-ratio: 1;
     object-fit: contain;
-    margin: 8px 0 10px;
+    margin: 0;
+    pointer-events: none;
   }
 
+  /* 绿色价签：未选中贴底铺满；选中仅左右收窄，露出金框，高度不变 */
   &__price {
-    position: relative;
-    z-index: 1;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 3;
     width: 100%;
-    height: 38px;
+    height: 24%;
+    min-height: 26px;
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
+    border-radius: 0 0 14px 14px;
+    box-sizing: border-box;
 
     span {
       position: relative;
       z-index: 1;
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 800;
       color: #fff;
+      white-space: nowrap;
     }
   }
 
   &.active &__price {
-    position: absolute;
-    left: 50%;
-    bottom: 2px;
-    width: 96%;
-    transform: translateX(-50%);
-    height: 36px;
+    left: 2%;
+    right: 2%;
+    width: auto;
+    bottom: 3px;
+    height: 22%;
+    border-radius: 0 0 10px 10px;
   }
 
   &__price-bg {
@@ -1223,8 +1272,8 @@ export default {
 }
 
 .rc-hint {
-  color: @muted;
-  margin: 12px 0 0;
+  color: #ffffff;
+  margin: 12px 5px;
   font-size: 13px;
 }
 
@@ -1232,7 +1281,7 @@ export default {
   margin-top: 8px !important;
   height: 48px !important;
   background: #000 !important;
-  border: none !important;
+  border: 1px solid #3b1253 !important;
   border-radius: 25px !important;
   padding: 0 16px !important;
   box-sizing: border-box;
@@ -1262,23 +1311,34 @@ export default {
   align-items: center;
   gap: 8px;
   margin-bottom: 8px;
-  padding: 8px 4px;
+  padding: 10px 12px;
   cursor: pointer;
+  background: fade(#5c0883, 41%);
+  border-radius: 12px;
+  box-sizing: border-box;
 
   &__icon {
-    width: 22px;
-    height: 22px;
     object-fit: contain;
     flex-shrink: 0;
+
+    &.is-checked {
+      width: 18px;
+      height: 18px;
+    }
+
+    &.is-unchecked {
+      width: 15px;
+      height: 15px;
+    }
   }
 
   &__text {
     flex: 1;
     margin: 0;
     color: #fff;
-    font-size: 12px;
+    font-size: 11px;
     line-height: 1.4;
-    font-weight: 600;
+    font-weight: 700;
   }
 }
 
@@ -1303,44 +1363,45 @@ export default {
 }
 
 .rc-vip-text {
-  font-size: 14px;
-  font-weight: 800;
-  color: @gold;
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
 }
 
 .rc-vip-desc {
-  color: @gold;
+  color: #b97ae0;
   font-size: 12px;
+  font-weight: 500;
 }
 
 .rc-vip-link {
   margin-left: auto;
-  color: @gold;
+  color: #fbff00;
   text-decoration: underline;
   font-size: 12px;
   font-weight: 700;
 }
 
 .rc-total-card {
-  background: #0d0218;
+  background: #000000;
   border-radius: 999px;
   padding: 12px 16px;
   margin-top: 8px;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 6px;
+  border: 1px solid #3b1253;
 
   &__label {
-    color: #fff;
-    font-size: 14px;
+    color: #d7a2fa;
+    font-size: 12px;
     font-weight: 700;
   }
 
   &__val {
-    color: #fff;
-    font-weight: 800;
-    font-size: 16px;
+    color: #d7a2fa;
+    font-weight: 700;
+    font-size: 12px;
   }
 }
 
@@ -1352,21 +1413,45 @@ export default {
   .btn-3d-green();
   position: relative;
   height: 50px;
-  font-size: 16px;
+  font-size: 18px;
+  font-weight: 700;
 
+  /* 与金额卡同款红色飘带角标 */
   &__badge {
     position: absolute;
-    top: -10px;
+    top: -14px;
     left: 50%;
     transform: translateX(-50%);
-    min-width: 52px;
-    padding: 2px 10px;
-    border-radius: 8px;
-    background: #e11d48;
-    color: #fff;
-    font-size: 11px;
-    font-weight: 800;
-    line-height: 1.3;
+    z-index: 2;
+    width: 96px;
+    height: 28px;
+    min-width: 0;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+
+    em {
+      position: relative;
+      z-index: 1;
+      font-style: normal;
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  &__badge-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
   }
 }
 
@@ -1462,21 +1547,22 @@ export default {
     background: @panel-soft;
     color: #fff;
     text-align: center;
-    font-size: 16px;
+    font-size: 20px;
     font-weight: 800;
     padding: 14px 40px;
   }
 
   &__body {
-    padding: 14px 14px 18px;
+    padding: 0 14px 18px;
     background: linear-gradient(180deg, #7a2190 0%, #532276 100%);
   }
 
   &__label {
     margin: 10px 0 8px;
     color: #fff;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 800;
+    text-align: center;
   }
 
   &__grid {
@@ -1488,8 +1574,9 @@ export default {
   &__chip {
     position: relative;
     width: calc(33.33% - 7px);
-    min-height: 78px;
-    border-radius: 14px;
+    min-height: 85px;
+    width: 92px;
+    border-radius: 16px;
     background: transparent;
     box-shadow: none;
     display: flex;
@@ -1501,7 +1588,7 @@ export default {
     box-sizing: border-box;
     cursor: pointer;
     color: #333;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
     overflow: hidden;
 
@@ -1557,8 +1644,9 @@ export default {
     justify-content: space-between;
     padding: 10px 0;
     border-bottom: 1px dashed #9346a9;
-    color: #fff;
-    font-size: 13px;
+    color: #d7a2fa;
+    font-size: 14px;
+    font-weight: 700;
 
     &:last-child {
       border-bottom: none;
@@ -1568,6 +1656,7 @@ export default {
       font-style: normal;
       color: @gold;
       font-weight: 800;
+      font-size: 18px;
     }
   }
 

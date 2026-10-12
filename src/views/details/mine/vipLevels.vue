@@ -74,7 +74,11 @@
 
       <!-- VIP PROGRESS：落在舞台反光地面上 —— 底座 23434 + 箭头条 23445 + 钻石框 23443 -->
       <section class="vip-progress">
-        <h2 class="vip-progress__title">VIP PROGRESS</h2>
+        <img
+          class="vip-progress__title"
+          :src="imgProgressTitle"
+          alt="VIP PROGRESS"
+        />
         <div class="vip-progress__stage">
           <img class="vip-progress__base" :src="imgBase" alt="" />
           <div class="vip-progress__hud">
@@ -107,165 +111,200 @@
       </section>
     </section>
 
-    <!-- Exclusive Privileges -->
-    <section v-if="currentViewLevel > 0" class="vip-benefits">
-      <h2 class="vip-section-title">
-        {{ $lang.vip_exclusive_privileges || "Exclusive Privileges" }}
-      </h2>
-      <div class="benefit-grid">
-        <div
-          v-for="(item, idx) in privileges"
-          :key="idx"
-          class="benefit-card"
-          :class="{
-            'is-locked': isLocked,
-            'is-full': item.full,
-            'is-claimable':
-              item.claimKey && !isLocked && getGiftStatus(item.claimKey) === 1,
-          }"
-          @click="onBenefitClick(item)"
-        >
-          <img class="benefit-card__bg" :src="imgPrivilegeBg" alt="" />
-          <div class="benefit-card__icon">
-            <img class="benefit-card__frame" :src="imgIconFrame" alt="" />
-            <img
-              class="benefit-card__pic"
-              :src="privilegeIcons[idx] || privilegeIcons[0]"
-              alt=""
-            />
-            <van-icon v-if="isLocked" class="benefit-card__lock" name="lock" />
-          </div>
-          <div class="benefit-card__text">
-            <div class="tit">{{ item.label }}</div>
-            <div class="describe">{{ item.value }}</div>
-            <div
-              v-if="item.claimKey && !isLocked"
-              class="claim-status"
-              :class="{
-                'is-ready': getGiftStatus(item.claimKey) === 1,
-                'is-done': getGiftStatus(item.claimKey) === 2,
-              }"
-            >
-              {{
-                getGiftClaiming(item.claimKey)
-                  ? "..."
-                  : btnText(getGiftStatus(item.claimKey))
-              }}
+    <!-- 紧贴 Hero 底边的分割线 -->
+    <div class="vip-page__divider"></div>
+
+    <div class="vip-page__body">
+      <!-- Exclusive Privileges -->
+      <section v-if="currentViewLevel > 0" class="vip-benefits">
+        <h2 class="vip-section-title">
+          {{ $lang.vip_exclusive_privileges || "Exclusive Privileges" }}
+        </h2>
+        <div class="benefit-grid">
+          <div
+            v-for="(item, idx) in privileges"
+            :key="idx"
+            class="benefit-card"
+            :class="{
+              'is-locked': isLocked,
+              'is-full': item.full,
+              'is-claimable':
+                item.claimKey &&
+                !isLocked &&
+                getGiftStatus(item.claimKey) === 1,
+            }"
+            @click="onBenefitClick(item)"
+          >
+            <img class="benefit-card__bg" :src="imgPrivilegeBg" alt="" />
+            <div class="benefit-card__icon">
+              <img class="benefit-card__frame" :src="imgIconFrame" alt="" />
+              <img
+                class="benefit-card__pic"
+                :src="privilegeIcons[idx] || privilegeIcons[0]"
+                alt=""
+              />
+              <img
+                v-if="
+                  isLocked ||
+                  (item.claimKey && getGiftStatus(item.claimKey) === 0)
+                "
+                class="benefit-card__lock"
+                :src="imgPrivilegeLock"
+                alt=""
+              />
+            </div>
+            <div class="benefit-card__text">
+              <div class="tit">{{ item.label }}</div>
+              <div class="describe">{{ item.value }}</div>
+              <button
+                v-if="item.claimKey"
+                type="button"
+                class="benefit-card__btn"
+                :class="
+                  !isLocked && getGiftStatus(item.claimKey) === 1
+                    ? 'btn-3d-yellow'
+                    : 'benefit-card__btn--grey'
+                "
+                @click.stop="onBenefitClick(item)"
+              >
+                {{
+                  getGiftClaiming(item.claimKey)
+                    ? "..."
+                    : isLocked
+                      ? $lang.vip_not_reached || "Not Reached"
+                      : btnText(getGiftStatus(item.claimKey))
+                }}
+              </button>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- 图二：Level 列表 -->
-    <section v-if="vipList.length" class="vip-levels">
-      <h2 class="vip-section-title">Level</h2>
+      <!-- 图二：Level 列表 -->
+      <section v-if="vipList.length" class="vip-levels">
+        <h2 class="vip-section-title">Level</h2>
 
-      <div
-        v-if="canShowTopLevelExpand"
-        class="lv-show-more"
-        @click="toggleLevelSteps"
-      >
-        <div class="lv-flow-arrow" :class="{ 'is-up': !showAllSteps }">
-          <svg width="19" height="18" viewBox="0 0 19 18" fill="none">
-            <defs>
-              <linearGradient
-                id="lvArrowGradTop"
-                x1="9.5"
-                y1="0"
-                x2="9.5"
-                y2="18"
-              >
-                <stop stop-color="#F7DD9A" />
-                <stop offset="1" stop-color="#FFA300" />
-              </linearGradient>
-            </defs>
-            <path
-              class="lv-arrow-chevron lv-arrow-chevron-1"
-              d="M9.04702 17.589L18.274 11.9263L16.9385 10L9.04702 13.7945L1.26535 10.2919L0.000244141 12.1599L9.04702 17.589Z"
-              fill="url(#lvArrowGradTop)"
-            />
-            <path
-              class="lv-arrow-chevron lv-arrow-chevron-2"
-              d="M9.04702 7.58905L18.274 1.92632L16.9385 0L9.04702 3.79446L1.26535 0.291917L0.000244141 2.15991L9.04702 7.58905Z"
-              fill="url(#lvArrowGradTop)"
-            />
-          </svg>
-        </div>
-      </div>
-
-      <div class="lv-list">
         <div
-          v-for="item in displayVipList"
-          :key="item.vipLevel"
-          class="lv-item"
+          v-if="canShowTopLevelExpand"
+          class="lv-show-more"
+          @click="toggleLevelSteps"
         >
-          <div class="lv-track">
+          <div class="lv-flow-arrow" :class="{ 'is-up': !showAllSteps }">
+            <svg width="19" height="18" viewBox="0 0 19 18" fill="none">
+              <defs>
+                <linearGradient
+                  id="lvArrowGradTop"
+                  x1="9.5"
+                  y1="0"
+                  x2="9.5"
+                  y2="18"
+                >
+                  <stop stop-color="#F7DD9A" />
+                  <stop offset="1" stop-color="#FFA300" />
+                </linearGradient>
+              </defs>
+              <path
+                class="lv-arrow-chevron lv-arrow-chevron-1"
+                d="M9.04702 17.589L18.274 11.9263L16.9385 10L9.04702 13.7945L1.26535 10.2919L0.000244141 12.1599L9.04702 17.589Z"
+                fill="url(#lvArrowGradTop)"
+              />
+              <path
+                class="lv-arrow-chevron lv-arrow-chevron-2"
+                d="M9.04702 7.58905L18.274 1.92632L16.9385 0L9.04702 3.79446L1.26535 0.291917L0.000244141 2.15991L9.04702 7.58905Z"
+                fill="url(#lvArrowGradTop)"
+              />
+            </svg>
+          </div>
+        </div>
+
+        <div class="lv-list">
+          <div
+            v-for="item in displayVipList"
+            :key="item.vipLevel"
+            class="lv-item"
+          >
+            <div class="lv-track">
+              <div
+                class="lv-dot"
+                :class="{
+                  'is-achieved': item.vipLevel < currentLevel,
+                  'is-current': item.vipLevel === currentLevel,
+                  'is-locked': item.vipLevel > currentLevel,
+                }"
+              >
+                <img
+                  v-if="item.vipLevel > currentLevel"
+                  class="lv-dot-lock"
+                  :src="imgPrivilegeLock"
+                  alt=""
+                />
+              </div>
+            </div>
+
             <div
-              class="lv-dot"
+              class="lv-card"
               :class="{
-                'is-achieved': item.vipLevel < currentLevel,
                 'is-current': item.vipLevel === currentLevel,
                 'is-locked': item.vipLevel > currentLevel,
               }"
+              @click="onLevelCardClick(item)"
             >
-              <van-icon
-                v-if="item.vipLevel > currentLevel"
-                name="lock"
-                class="lv-dot-lock"
-              />
-            </div>
-          </div>
+              <div class="lv-card-body">
+                <div class="lv-card-top">
+                  <img
+                    class="lv-card-badge"
+                    :class="{ 'is-dim': item.vipLevel > currentLevel }"
+                    :src="resolveVipPairIcon(item.vipLevel)"
+                    alt=""
+                  />
+                  <div class="lv-card-content">
+                    <div class="lv-card-head">
+                      <div class="lv-card-head-left">
+                        <div
+                          class="lv-card-level"
+                          :class="{
+                            'is-current': item.vipLevel === currentLevel,
+                            'is-achieved': item.vipLevel < currentLevel,
+                            'is-locked': item.vipLevel > currentLevel,
+                          }"
+                        >
+                          VIP {{ item.vipLevel }}
+                        </div>
+                        <div
+                          class="lv-card-tag"
+                          :class="`is-${getLevelStatus(item)}`"
+                        >
+                          {{ getLevelStatusText(item) }}
+                        </div>
+                      </div>
+                    </div>
 
-          <div
-            class="lv-card"
-            :class="{
-              'is-current': item.vipLevel === currentLevel,
-              'is-locked': item.vipLevel > currentLevel,
-            }"
-            @click="onLevelCardClick(item)"
-          >
-            <div class="lv-card-body">
-              <img
-                class="lv-card-badge"
-                :class="{ 'is-dim': item.vipLevel > currentLevel }"
-                :src="resolveVipPairIcon(item.vipLevel)"
-                alt=""
-              />
-              <div class="lv-card-content">
-                <div class="lv-card-head">
-                  <div class="lv-card-head-left">
-                    <div class="lv-card-level">VIP {{ item.vipLevel }}</div>
                     <div
-                      class="lv-card-tag"
-                      :class="`is-${getLevelStatus(item)}`"
+                      v-if="item.vipLevel === currentLevel"
+                      class="lv-card-exp"
                     >
-                      {{ getLevelStatusText(item) }}
+                      <span class="exp-cur">{{
+                        $formatNumberWithCommas(rechargeAmount)
+                      }}</span>
+                      / {{ $formatNumberWithCommas(nextRechargeAmount) }}
+                    </div>
+                    <div
+                      v-else-if="item.vipLevel > currentLevel"
+                      class="lv-card-unlock"
+                    >
+                      {{ getUnlockText(item) }}
+                    </div>
+
+                    <div
+                      v-if="item.vipLevel === currentLevel && !isMaxVip"
+                      class="lv-card-progress"
+                    >
+                      <div
+                        class="lv-card-progress-fill"
+                        :style="{ width: rechargePercent + '%' }"
+                      ></div>
                     </div>
                   </div>
-                </div>
-
-                <div v-if="item.vipLevel === currentLevel" class="lv-card-exp">
-                  <span class="exp-cur">{{
-                    $formatNumberWithCommas(rechargeAmount)
-                  }}</span>
-                  / {{ $formatNumberWithCommas(nextRechargeAmount) }}
-                </div>
-                <div
-                  v-else-if="item.vipLevel > currentLevel"
-                  class="lv-card-unlock"
-                >
-                  {{ getUnlockText(item) }}
-                </div>
-
-                <div
-                  v-if="item.vipLevel === currentLevel && !isMaxVip"
-                  class="lv-card-progress"
-                >
-                  <div
-                    class="lv-card-progress-fill"
-                    :style="{ width: rechargePercent + '%' }"
-                  ></div>
                 </div>
 
                 <div class="lv-benefit-grid">
@@ -282,41 +321,41 @@
             </div>
           </div>
         </div>
-      </div>
 
-      <div
-        v-if="canShowBottomLevelExpand"
-        class="lv-show-more"
-        @click="toggleLevelSteps"
-      >
-        <div class="lv-flow-arrow" :class="{ 'is-up': showAllSteps }">
-          <svg width="19" height="18" viewBox="0 0 19 18" fill="none">
-            <defs>
-              <linearGradient
-                id="lvArrowGradBottom"
-                x1="9.5"
-                y1="0"
-                x2="9.5"
-                y2="18"
-              >
-                <stop stop-color="#F7DD9A" />
-                <stop offset="1" stop-color="#FFA300" />
-              </linearGradient>
-            </defs>
-            <path
-              class="lv-arrow-chevron lv-arrow-chevron-1"
-              d="M9.04702 17.589L18.274 11.9263L16.9385 10L9.04702 13.7945L1.26535 10.2919L0.000244141 12.1599L9.04702 17.589Z"
-              fill="url(#lvArrowGradBottom)"
-            />
-            <path
-              class="lv-arrow-chevron lv-arrow-chevron-2"
-              d="M9.04702 7.58905L18.274 1.92632L16.9385 0L9.04702 3.79446L1.26535 0.291917L0.000244141 2.15991L9.04702 7.58905Z"
-              fill="url(#lvArrowGradBottom)"
-            />
-          </svg>
+        <div
+          v-if="canShowBottomLevelExpand"
+          class="lv-show-more"
+          @click="toggleLevelSteps"
+        >
+          <div class="lv-flow-arrow" :class="{ 'is-up': showAllSteps }">
+            <svg width="19" height="18" viewBox="0 0 19 18" fill="none">
+              <defs>
+                <linearGradient
+                  id="lvArrowGradBottom"
+                  x1="9.5"
+                  y1="0"
+                  x2="9.5"
+                  y2="18"
+                >
+                  <stop stop-color="#F7DD9A" />
+                  <stop offset="1" stop-color="#FFA300" />
+                </linearGradient>
+              </defs>
+              <path
+                class="lv-arrow-chevron lv-arrow-chevron-1"
+                d="M9.04702 17.589L18.274 11.9263L16.9385 10L9.04702 13.7945L1.26535 10.2919L0.000244141 12.1599L9.04702 17.589Z"
+                fill="url(#lvArrowGradBottom)"
+              />
+              <path
+                class="lv-arrow-chevron lv-arrow-chevron-2"
+                d="M9.04702 7.58905L18.274 1.92632L16.9385 0L9.04702 3.79446L1.26535 0.291917L0.000244141 2.15991L9.04702 7.58905Z"
+                fill="url(#lvArrowGradBottom)"
+              />
+            </svg>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   </div>
 </template>
 
@@ -433,6 +472,18 @@ function resolveVipCardTier(level) {
   return VIP_CARD_TIERS[vipCardTierIndex(level)];
 }
 
+/** 等级文字色：1-2 / 3-4 / … / 13 */
+function resolveVipLevelFontColor(level) {
+  const lv = Number(level) || 0;
+  if (lv <= 2) return "#FFC470";
+  if (lv <= 4) return "#C2C4EA";
+  if (lv <= 6) return "#FFD9DA";
+  if (lv <= 8) return "#03FE9E";
+  if (lv <= 10) return "#CAEBFE";
+  if (lv <= 12) return "#EDC3FF";
+  return "#FFC0A6";
+}
+
 /** 等级角标 / Current Level 胶囊样式 */
 function resolveVipLevelTagStyle(level) {
   const t = resolveVipCardTier(level);
@@ -440,7 +491,7 @@ function resolveVipLevelTagStyle(level) {
     background: `linear-gradient(${t.bg[0]}, ${t.bg[1]}) padding-box, linear-gradient(180deg, ${t.border[0]}, ${t.border[1]}) border-box`,
     border: "1px solid transparent",
     boxShadow: `inset 0 3px 8px ${t.shadow}`,
-    color: "#fff",
+    color: resolveVipLevelFontColor(level),
   };
 }
 
@@ -452,9 +503,11 @@ const IMG_ARROW = vipAsset("vip_arrow.png");
 /** 进度条左侧钻石徽章框（资源名 image 23443） */
 const IMG_BADGE = vipAsset("image 23443.png");
 const IMG_PROGRESS_BAR = vipAsset("image 23445.png");
+const IMG_PROGRESS_TITLE = vipAsset("image 23447.png");
 const IMG_BASE = vipAsset("image 23434.png");
 const IMG_PRIVILEGE_BG = vipAsset("Rectangle 666.png");
 const IMG_ICON_FRAME = vipAsset("Rectangle 34626434.png");
+const IMG_PRIVILEGE_LOCK = vipAsset("privilege_lock.png");
 const PRIVILEGE_ICONS = [
   vipAsset("3042c070-6679-490a-8784-101c9d3c2617 1.png"),
   vipAsset("image 23408.png"),
@@ -728,9 +781,11 @@ export default {
       imgArrow: IMG_ARROW,
       imgBadge: IMG_BADGE,
       imgProgressBar: IMG_PROGRESS_BAR,
+      imgProgressTitle: IMG_PROGRESS_TITLE,
       imgBase: IMG_BASE,
       imgPrivilegeBg: IMG_PRIVILEGE_BG,
       imgIconFrame: IMG_ICON_FRAME,
+      imgPrivilegeLock: IMG_PRIVILEGE_LOCK,
       privilegeIcons: PRIVILEGE_ICONS,
       balance: 0,
       currentLevel: 0,
@@ -915,6 +970,7 @@ export default {
   methods: {
     resolveVipPairIcon,
     resolveVipPairCard,
+    resolveVipLevelFontColor,
     getShowerDelay(line) {
       const dur = parseFloat(line.duration);
       const phase = (line.id - 1) / cardShowerList.length;
@@ -955,12 +1011,12 @@ export default {
         {
           key: "upgrade",
           label: this.$lang.vip_level_up_reward || "VIP Upgrade",
-          value: c + this.$formatNumberWithCommas(item.upgradeBonus || 0),
+          value: c + " " + this.$formatNumberWithCommas(item.upgradeBonus || 0),
         },
         {
           key: "daily",
           label: this.$lang.vip_daily_reward || "Daily Reward",
-          value: c + this.$formatNumberWithCommas(daily),
+          value: c + " " + this.$formatNumberWithCommas(daily),
         },
         {
           key: "betFlow",
@@ -1019,7 +1075,7 @@ export default {
       return "--";
     },
     btnText(s) {
-      if (s === 0) return this.$lang.vip_not_reached || "Locked";
+      if (s === 0) return this.$lang.vip_not_reached || "Not Reached";
       if (s === 1) return this.$lang.ng_claim || "Claim";
       if (s === 2) return this.$lang.vip_claimed || "Claimed";
       return "--";
@@ -1199,17 +1255,48 @@ export default {
 
 <style lang="less" scoped>
 @bg: #15031d;
-@gold: #ffd400;
+@gold: #ffd600;
 @purple: #7400ae;
 
 .vip-page {
   min-height: 100vh;
-  background: @bg url(@/assets/img/common/page_bg.png) 0 0 repeat;
-  background-attachment: fixed;
+  /* 避免 Hero 底部露缝时出现整块黑色 */
+  background: #481a8f;
   color: #fff;
-  padding-bottom: 28px;
   box-sizing: border-box;
   overflow-x: hidden;
+}
+
+/* 紧贴上方背景图底边 */
+.vip-page__divider {
+  width: 100%;
+  height: 3px;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(90deg, #ba64dd 0%, #4f00ce 100%);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 6;
+}
+
+/* 线以下：花纹 + #481A8F → #240338 纵向渐变 */
+.vip-page__body {
+  min-height: calc(100vh - 427px);
+  padding-bottom: 28px;
+  box-sizing: border-box;
+  background-color: #240338;
+  background-image:
+    url(@/assets/img/common/page_bg.png),
+    linear-gradient(180deg, #481a8f 0%, #481a8f 10%, #240338 20%, #240338 100%);
+  background-repeat: repeat, no-repeat;
+  background-size:
+    auto,
+    100% 100%;
+  background-position:
+    0 0,
+    center top;
+  position: relative;
+  z-index: 5;
 }
 
 .vip-page__topnav {
@@ -1232,6 +1319,7 @@ export default {
   padding: 0;
   overflow: hidden;
   box-sizing: border-box;
+  padding-top: 10px;
 }
 
 .vip-hero__bg {
@@ -1361,8 +1449,8 @@ export default {
 
   img {
     display: block;
-    width: 18px;
-    height: 24px;
+    width: 25px;
+    height: 34px;
     margin: 0 auto;
     object-fit: contain;
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
@@ -1404,7 +1492,7 @@ export default {
   z-index: 2;
   padding: 2px 8px;
   border-radius: 999px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 800;
   color: #fff;
   line-height: 1.2;
@@ -1423,7 +1511,7 @@ export default {
   padding: 3px 12px;
   border-radius: 999px;
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 600;
   white-space: nowrap;
   color: #fff;
   pointer-events: none;
@@ -1448,25 +1536,21 @@ export default {
   width: 100%;
   max-width: 450px;
   margin: 0 auto;
-  padding: 0 0 2px;
+  padding: 0;
   box-sizing: border-box;
 }
 
 .vip-progress__title {
   position: absolute;
-  left: 0;
-  right: 0;
+  left: 50%;
   top: 18%;
   z-index: 3;
   margin: 0;
-  text-align: center;
-  font-size: 21px;
-  font-weight: 900;
-  letter-spacing: 1px;
-  color: #fff;
-  text-shadow:
-    0 2px 0 #3a0a78,
-    0 0 10px rgba(180, 60, 255, 0.95);
+  height: 22px;
+  width: auto;
+  transform: translateX(-50%);
+  display: block;
+  object-fit: contain;
   pointer-events: none;
 }
 
@@ -1475,15 +1559,17 @@ export default {
   width: 100%;
   height: 168px;
   margin-top: 0;
+  overflow: hidden;
 }
 
 .vip-progress__base {
   position: absolute;
   left: 50%;
-  bottom: 0;
+  /* 下移裁掉 PNG 底部透明边，避免透出黑色空隙 */
+  bottom: -22px;
   transform: translateX(-50%);
   width: 100%;
-  height: 100%;
+  height: calc(100% + 22px);
   object-fit: contain;
   object-position: center bottom;
   z-index: 0;
@@ -1507,8 +1593,8 @@ export default {
 .vip-progress__badge {
   position: relative;
   z-index: 3;
-  width: 72px;
-  height: 72px;
+  width: 80px;
+  height: 80px;
   flex-shrink: 0;
   margin-right: -40px;
   display: flex;
@@ -1538,8 +1624,8 @@ export default {
 
   i {
     font-style: normal;
-    font-size: 9px;
-    font-weight: 800;
+    font-size: 12px;
+    font-weight: 700;
     letter-spacing: 0.4px;
     color: #ffe27a;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
@@ -1548,8 +1634,8 @@ export default {
   em {
     margin-top: 1px;
     font-style: normal;
-    font-size: 18px;
-    font-weight: 900;
+    font-size: 20px;
+    font-weight: 700;
     color: #ffe27a;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
   }
@@ -1630,9 +1716,10 @@ export default {
 /* ===== Privileges ===== */
 .vip-section-title {
   margin: 0 0 12px;
-  font-size: 16px;
+  font-size: 24px;
   font-weight: 800;
   color: #fff;
+  text-align: center;
 }
 
 .vip-benefits,
@@ -1644,21 +1731,8 @@ export default {
 
 .vip-benefits {
   position: relative;
-  margin-top: 18px;
-  padding-top: 16px;
-
-  /* 分割线：#BA64DD → #4F00CE */
-  &::before {
-    content: "";
-    position: absolute;
-    left: 50%;
-    top: 0;
-    width: 100vw;
-    height: 1px;
-    transform: translateX(-50%);
-    background: linear-gradient(90deg, #ba64dd 0%, #4f00ce 100%);
-    pointer-events: none;
-  }
+  margin-top: 16px;
+  padding-top: 0;
 
   .vip-section-title {
     text-align: center;
@@ -1674,106 +1748,151 @@ export default {
 .benefit-card {
   position: relative;
   overflow: hidden;
-  padding: 10px 10px 10px 12px;
+  padding: 10px;
   box-sizing: border-box;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   gap: 8px;
   cursor: pointer;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  /* 外卡片：斜向紫渐变 */
+  background:
+    linear-gradient(135deg, #b033d5 0%, #4435c0 100%) padding-box,
+    linear-gradient(135deg, #bb64dd 0%, #6354b9 100%) border-box;
+  box-shadow: inset 0 4px 4px rgba(142, 83, 202, 0.77);
 
   &.is-full {
     grid-column: 1 / -1;
   }
 
   &.is-locked {
-    opacity: 0.85;
+    opacity: 0.9;
   }
 
   &.is-claimable {
-    box-shadow: 0 0 0 1px fade(@gold, 55%);
+    box-shadow:
+      inset 0 4px 4px rgba(142, 83, 202, 0.77),
+      0 0 0 1px fade(@gold, 55%);
   }
 }
 
 .benefit-card__bg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: fill;
-  z-index: 0;
-  pointer-events: none;
+  display: none;
 }
 
 .benefit-card__icon {
   position: relative;
   z-index: 1;
-  width: 52px;
-  height: 40px;
+  width: 102px;
+  height: 64px;
   flex-shrink: 0;
+  align-self: center;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 内框背景：渐变 + 金边 + 双内阴影 */
+  background:
+    linear-gradient(135deg, #6e0a9e 0%, #7516ad 100%) padding-box,
+    linear-gradient(135deg, #ffe06a 0%, #ffb304 100%) border-box;
+  box-shadow:
+    inset 0 8px 8.9px #47036b,
+    inset 0 -4px 4px #812fe3;
 }
 
 .benefit-card__frame {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: fill;
+  display: none;
 }
 
 .benefit-card__pic {
-  position: absolute;
-  left: 50%;
-  top: 46%;
-  transform: translate(-50%, -50%);
-  width: 34px;
-  height: 30px;
+  position: relative;
+  z-index: 1;
+  width: 78%;
+  height: 78%;
+  max-width: 80px;
+  max-height: 52px;
   object-fit: contain;
+  display: block;
 }
 
 .benefit-card__lock {
   position: absolute;
-  right: 2px;
-  bottom: 2px;
+  right: -7px;
+  bottom: -3px;
   z-index: 2;
-  font-size: 12px !important;
-  color: #fff !important;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6));
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.55));
 }
 
 .benefit-card__text {
   position: relative;
   z-index: 1;
-  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
   min-width: 0;
 
   .tit {
-    font-size: 11px;
-    font-weight: 600;
+    font-size: 12px;
+    font-weight: 700;
     color: #fff;
-    line-height: 1.25;
+    line-height: 1.2;
+    word-break: break-word;
   }
 
   .describe {
-    margin-top: 3px;
-    font-size: 14px;
-    font-weight: 800;
-    color: @gold;
-    line-height: 1.2;
-  }
-
-  .claim-status {
     margin-top: 2px;
-    font-size: 10px;
-    color: #c9b4e8;
+    font-size: 15px;
+    font-weight: 800;
+    color: #ffd400;
+    line-height: 1.15;
+    word-break: break-word;
+  }
+}
 
-    &.is-ready {
-      color: #ffd467;
-      font-weight: 700;
-    }
+.benefit-card__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 3px;
+  min-width: 88px;
+  width: auto;
+  height: 26px !important;
+  padding: 0 12px 2px;
+  border: none;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: none;
+  cursor: pointer;
+  box-sizing: border-box;
+}
 
-    &.is-done {
-      color: #9b86c9;
-    }
+.benefit-card__btn--grey {
+  background: linear-gradient(180deg, #9a9a9a 0%, #6a6a6a 100%);
+  box-shadow:
+    inset 0 2px 2px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -3px 0 0 #555;
+  color: #f2f2f2;
+
+  &:active {
+    box-shadow:
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.2),
+      inset 0 -2px 0 0 #555;
+    transform: translateY(1px);
   }
 }
 
@@ -1828,29 +1947,27 @@ export default {
 }
 
 .lv-track {
-  width: 16px;
+  width: 22px;
   flex-shrink: 0;
   position: relative;
   align-self: stretch;
-  padding-top: 28px;
+  padding-top: 20px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
 
+  /* 竖线贯穿节点中心 */
   &::after {
     content: "";
     position: absolute;
     left: 50%;
-    top: 36px;
-    bottom: -40px;
+    top: 31px;
+    bottom: -28px;
     width: 2px;
     margin-left: -1px;
-    background: linear-gradient(
-      180deg,
-      #9b3dff 0%,
-      rgba(116, 0, 174, 0.35) 100%
-    );
+    background: #6f498b;
+    z-index: 0;
   }
 }
 
@@ -1859,8 +1976,8 @@ export default {
 }
 
 .lv-dot {
-  width: 16px;
-  height: 16px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   flex-shrink: 0;
   position: relative;
@@ -1872,17 +1989,28 @@ export default {
 
   &.is-achieved,
   &.is-current {
-    background: linear-gradient(180deg, #ffe27a 0%, #e8a820 100%);
-    box-shadow: 0 0 8px rgba(255, 200, 60, 0.55);
+    /* 外圈光晕 #D092FF 50% */
+    background: rgba(208, 146, 255, 0.5);
+    /* 内圆：上下金色渐变 */
+    &::before {
+      content: "";
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #f1d17e 0%, #e1a429 100%);
+      box-shadow: 0 0 8px 2px rgba(241, 209, 126, 0.55);
+    }
   }
 
   &.is-locked {
-    background: #411c59;
-    border: 1px solid #411c59;
+    background: transparent;
 
     .lv-dot-lock {
-      font-size: 9px;
-      color: #fff;
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+      display: block;
+      pointer-events: none;
     }
   }
 }
@@ -1890,41 +2018,25 @@ export default {
 .lv-card {
   flex: 1;
   min-width: 0;
-  border-radius: 14px;
-  background: #411c59;
-  border: 1px solid #411c59;
+  height: 109px;
+  border-radius: 16px;
+  /* 左右渐变：左深 → 右亮 */
+  background: linear-gradient(90deg, #170e3c 0%, #301547 100%);
+  border: 1px solid #8d66e2;
   box-sizing: border-box;
   overflow: hidden;
   cursor: pointer;
 
   &.is-current {
     position: relative;
-    border: none;
-    background: linear-gradient(135deg, #7a2fd0 0%, #3b1490 45%, #24105a 100%);
+    border: 1px solid #ffbf00;
+    background: linear-gradient(90deg, #4b35c2 0%, #a936d3 100%);
     box-shadow: 0 0 14px rgba(180, 80, 255, 0.35);
-
-    &::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: 14px;
-      padding: 1.5px;
-      background: linear-gradient(180deg, #ffe27a 0%, #ffb000 100%);
-      -webkit-mask:
-        linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask:
-        linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-      mask-composite: exclude;
-      pointer-events: none;
-    }
   }
 
   &.is-locked {
-    background: #411c59;
-    border-color: #411c59;
+    background: linear-gradient(90deg, #170e3c 0%, #301547 100%);
+    border-color: #8d66e2;
   }
 }
 
@@ -1932,8 +2044,18 @@ export default {
   position: relative;
   z-index: 1;
   display: flex;
+  flex-direction: column;
+  gap: 4px;
+  height: 100%;
+  padding: 8px 10px 8px 8px;
+  box-sizing: border-box;
+}
+
+.lv-card-top {
+  display: flex;
   gap: 8px;
-  padding: 12px 10px 12px 8px;
+  align-items: flex-start;
+  min-width: 0;
 }
 
 .lv-card-badge {
@@ -1972,11 +2094,22 @@ export default {
   font-size: 16px;
   font-weight: 800;
   line-height: 1;
-  color: #fff;
-}
+  /* 上下渐变字 */
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 
-.lv-card.is-current .lv-card-level {
-  color: @gold;
+  /* 当前 / 已达成 */
+  &.is-current,
+  &.is-achieved {
+    background-image: linear-gradient(180deg, #f1d17c 0%, #e0a021 100%);
+  }
+
+  /* 未达到 */
+  &.is-locked {
+    background-image: linear-gradient(180deg, #e8e8e8 0%, #d1d1d1 100%);
+  }
 }
 
 .lv-card-tag {
@@ -2006,43 +2139,46 @@ export default {
 
 .lv-card-exp {
   width: 100%;
-  margin-bottom: 4px;
-  font-size: 11px;
+  font-size: 12px;
+  font-weight: 600;
   line-height: 14px;
-  color: #c9b4e8;
+  color: #d39eff;
 
   .exp-cur {
     color: #fff;
-    font-weight: 700;
+    font-weight: 600;
   }
 }
 
 .lv-card-unlock {
+  margin-top: 10px;
   width: 100%;
-  margin-bottom: 4px;
   font-size: 11px;
   line-height: 14px;
   font-weight: 600;
-  color: @gold;
+  color: #fcca00;
 }
 
 .lv-card-progress {
-  height: 6px;
-  margin: 0 0 8px;
-  background: rgba(10, 4, 24, 0.55);
+  height: 13px;
+  background: #1d103f;
   border-radius: 999px;
   overflow: hidden;
+  padding: 1px;
+  border: 1px solid #8d66e2;
 }
 
 .lv-card-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #ffe27a 0%, #ffb000 100%);
+  background: linear-gradient(180deg, #fafaa3 0%, #e96807 100%);
   border-radius: 999px;
 }
 
 .lv-benefit-grid {
   display: flex;
   flex-wrap: nowrap;
+  justify-content: flex-start;
+  width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 
@@ -2067,17 +2203,19 @@ export default {
 }
 
 .lv-benefit-label {
-  font-size: 9px;
-  color: #b8a8d4;
+  font-size: 10px;
+  font-weight: 600;
+  color: #ead2fe;
   white-space: nowrap;
 }
 
 .lv-benefit-val {
   margin-top: 2px;
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 800;
   color: @gold;
   white-space: nowrap;
+  text-align: center;
 }
 
 @media (min-width: 769px) {

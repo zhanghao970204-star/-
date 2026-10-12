@@ -1,49 +1,54 @@
 <template>
   <div class="wd-tab">
-    <div class="wd-balance">
-      <div class="wd-balance__row">
-        <span>{{ $lang.BankInfo_txt }}</span>
-        <em>{{ $formatNumberWithCommas(balance) }}</em>
-        <button
-          type="button"
-          class="wd-balance__refresh"
-          @click="toggleRotation"
-        >
-          <svg
-            :class="{ rotating: isRotating }"
-            viewBox="0 0 24 24"
-            width="13"
-            height="13"
-            aria-hidden="true"
+    <div class="wd-stats">
+      <div class="wd-stat">
+        <div class="wd-stat__label">
+          <span
+            v-html="$lang.BankInfo_stat_balance || $lang.BankInfo_txt"
+          ></span>
+          <button
+            type="button"
+            class="wd-stat__refresh"
+            @click="toggleRotation"
           >
-            <path
-              d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"
-              fill="none"
-              stroke="#fff"
-              stroke-width="2.6"
-              stroke-linecap="round"
+            <img
+              :class="{ rotating: isRotating }"
+              src="@/assets/img/recharge/wd_refresh.png"
+              width="12"
+              height="12"
+              alt=""
             />
-            <path
-              d="M19.8 4.2V9h-4.8"
-              fill="none"
-              stroke="#fff"
-              stroke-width="2.6"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </button>
+          </button>
+        </div>
+        <i class="wd-stat__line"></i>
+        <em class="wd-stat__num wd-stat__num--gold">{{
+          $formatNumberWithCommas(balance)
+        }}</em>
       </div>
-      <div class="wd-balance__row">
-        <span>{{ $lang.BankInfo_txt_withdrawable }}</span>
-        <em>{{ $formatNumberWithCommas(balLimit > 0 ? 0 : balWdl) }}</em>
+      <div class="wd-stat">
+        <div class="wd-stat__label">
+          <span
+            v-html="$lang.BankInfo_stat_wd || $lang.BankInfo_txt_withdrawable"
+          ></span>
+        </div>
+        <i class="wd-stat__line"></i>
+        <em class="wd-stat__num wd-stat__num--gold">{{
+          $formatNumberWithCommas(balLimit > 0 ? 0 : balWdl)
+        }}</em>
       </div>
-      <div class="wd-balance__row wd-balance__row--wrap">
-        <span>
-          {{ $lang.BankInfo_txt3 }}
-          <em>{{ $formatNumberWithCommas(balLimit) }}</em>
-          {{ $lang.BankInfo_txt4 }}
-        </span>
+      <div class="wd-stat">
+        <div class="wd-stat__label">
+          <span
+            v-html="
+              $lang.BankInfo_stat_need ||
+              $lang.BankInfo_txt3 + ' ' + $lang.BankInfo_txt4
+            "
+          ></span>
+        </div>
+        <i class="wd-stat__line"></i>
+        <em class="wd-stat__num wd-stat__num--green">{{
+          $formatNumberWithCommas(balLimit)
+        }}</em>
       </div>
     </div>
 
@@ -321,51 +326,85 @@ export default {
   box-sizing: border-box;
 }
 
-.wd-balance {
-  padding: 16px 16px 14px;
-  border-radius: 16px;
-  background: #411c59;
+.wd-stats {
+  display: flex;
+  gap: 8px;
+}
 
-  &__row {
+.wd-stat {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 6px 14px;
+  border-radius: 14px;
+  background: #411c59;
+  box-sizing: border-box;
+
+  &__label {
+    min-height: 48px;
     display: flex;
     align-items: center;
-    flex-wrap: nowrap;
-    gap: 6px;
-    font-size: 13px;
-    line-height: 1.5;
+    justify-content: center;
+    gap: 4px;
+    padding: 0 2px;
     color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: center;
+  }
 
-    & + & {
-      margin-top: 8px;
+  &__line {
+    display: block;
+    height: 1px;
+    margin: 8px 10px 10px;
+    background: repeating-linear-gradient(
+      to right,
+      #924fbe 0,
+      #924fbe 4px,
+      transparent 4px,
+      transparent 10px
+    );
+  }
+
+  &__num {
+    margin-top: auto;
+    font-style: normal;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+
+    &--gold {
+      color: #ffd404;
     }
 
-    &--wrap {
-      flex-wrap: wrap;
-    }
-
-    em {
-      font-style: normal;
-      color: #3ee08a;
-      font-weight: 800;
+    &--green {
+      color: #4cff00;
     }
   }
 
   &__refresh {
-    width: 22px;
-    height: 22px;
-    margin-left: 4px;
+    width: 18px;
+    height: 18px;
     padding: 0;
     border: none;
     border-radius: 50%;
-    background: #b06cff;
+    background: #8932b1;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     flex-shrink: 0;
 
-    svg {
+    img {
       display: block;
+      width: 12px;
+      height: 12px;
+      object-fit: contain;
+      mix-blend-mode: screen;
     }
   }
 }
@@ -564,14 +603,14 @@ export default {
   height: 52px;
   border-radius: 12px;
   background: #000;
-  border: 1px solid #c9b3ff;
+  border: 1px solid #633488;
   box-sizing: border-box;
   overflow: hidden;
   cursor: text;
 
   &--focus {
-    border-color: #e93dfe;
-    box-shadow: 0 0 0 1px rgba(233, 61, 254, 0.35);
+    border-color: #633488;
+    box-shadow: 0 0 0 1px rgba(99, 52, 136, 0.45);
   }
 
   &--error {
@@ -607,7 +646,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    border-right: 1px solid rgba(201, 179, 255, 0.55);
+    border-right: 1px solid #633488;
     box-sizing: border-box;
 
     &:last-child {

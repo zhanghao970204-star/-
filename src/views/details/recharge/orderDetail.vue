@@ -193,13 +193,14 @@ export default {
   margin: 12px auto 0;
 }
 .b-active {
-  background: @primary-color !important;
+  background: #ffa300 !important;
+  color: #fff;
 }
 .sqa-sta {
   color: #e84c3c;
 }
 .c-active {
-  color: @primary-color !important;
+  color: #31ff6f !important;
 }
 .p-line {
   background: #2d1545;

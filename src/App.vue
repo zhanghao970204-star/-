@@ -865,6 +865,7 @@ body {
   padding: 0;
   color: var(--wihte-color);
   font-size: 12px;
+  font-family: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 ul,
 p,
@@ -873,15 +874,16 @@ h3 {
   padding: 0;
 }
 
-/* 全局页面背景：原图尺寸平铺拼接，不拉伸 */
+/* 全局页面背景：底纹平铺 + 底色从上到下三色渐变 */
 #app,
 #app-content {
-  background-color: var(--background-color, #27033C);
-  background-image: url(./assets/img/common/page_bg.png);
-  background-repeat: repeat;
-  background-size: auto;
-  background-position: top center;
-  background-attachment: fixed;
+  background-color: #150319;
+  background-image: url(./assets/img/common/page_bg.png),
+    linear-gradient(180deg, #010000 0%, #15031a 50%, #150319 100%);
+  background-repeat: repeat, no-repeat;
+  background-size: auto, 100% 100%;
+  background-position: top center, center;
+  background-attachment: fixed, fixed;
 }
 
 /* 基础样式 */
@@ -891,17 +893,19 @@ h3 {
   margin: 0 auto;
   transition: all 0.3s ease;
   color: var(--font-color, #fff);
+  font-family: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 /* 移动端样式 */
 @media (max-width: 768px) {
   body {
-    background-color: var(--background-color, #27033C);
-    background-image: url(./assets/img/common/page_bg.png);
-    background-repeat: repeat;
-    background-size: auto;
-    background-position: top center;
-    background-attachment: fixed;
+    background-color: #150319;
+    background-image: url(./assets/img/common/page_bg.png),
+      linear-gradient(180deg, #010000 0%, #15031a 50%, #150319 100%);
+    background-repeat: repeat, no-repeat;
+    background-size: auto, 100% 100%;
+    background-position: top center, center;
+    background-attachment: fixed, fixed;
     min-height: 100vh;
     height: 100vh;
     overflow-y: scroll;
