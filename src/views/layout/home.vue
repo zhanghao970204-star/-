@@ -477,11 +477,6 @@
         width="38"
       />
     </van-popup>
-    <activity-popup
-      v-model="isShowPopup2"
-      @closeActive="closeActive"
-      @closeActive2="closeActive2"
-    ></activity-popup>
   </div>
 </template>
 <script>
@@ -2202,23 +2197,27 @@ export default {
 
   /* 各入口视觉大小（对齐参考：转盘略圆、红包偏高、宝箱略宽、救援最宽） */
   &__item.is-spin &__entry {
-    width: 75px;
+    width: 80px;
     height: 60px;
+    margin-bottom: -7px;
   }
   &__item.is-envelope &__entry {
     width: 60px;
     height: 68px;
+    margin-bottom: -5px;
   }
   &__item.is-checkin &__entry {
     width: 56px;
     height: 64px;
+    margin-bottom: -5px;
   }
   &__item.is-chest &__entry {
     width: 78px;
     height: 58px;
+    margin-bottom: -2px;
   }
   &__item.is-rescue &__entry {
-    width: 76px;
+    width: 65px;
     height: 66px;
   }
 

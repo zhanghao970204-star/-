@@ -130,7 +130,7 @@ export default {
   VIP: "VIP",
   Saque: "Withdrawal",
   Registro: "Sign Up",
-  Entrar: "Sign ln",
+  Entrar: "Sign In",
   Apostas: "Bets",
   Agente: "Agent",
   Promoção: "Promotion",

@@ -180,6 +180,14 @@
         @payment-closed="checkTreasureBox"
       />
 
+      <!-- 送金币优先于首充和其他弹窗 -->
+      <register-award-popup
+        ref="awardPopup"
+        v-model="showRegisterAward"
+        @settled="onAwardSettled"
+        @closed="onAwardClosed"
+      />
+
       <!-- Global First Recharge Popup -->
       <first-recharge-popup
         v-model="showFirstRechargePopup"
@@ -213,10 +221,12 @@ import {
   getCsItemUrl,
 } from "@/utils/csLink";
 import { requestRouteMotion } from "@/utils/routeMotion";
+import RegisterAwardPopup from "@/components/RegisterAwardPopup.vue";
 
 export default {
   name: "App",
   components: {
+    RegisterAwardPopup,
     TreasureBoxPopup: defineAsyncComponent(
       () => import("@/components/TreasureBoxPopup.vue"),
     ),
@@ -243,6 +253,10 @@ export default {
       frRedDot: false,
       frPackData: null,
       showFirstRechargePopup: false,
+      showRegisterAward: false,
+      homePopupPhase: "boot",
+      awardChecked: false,
+      frChecked: false,
       frAutoShown: false,
       frNowTs: Math.floor(Date.now() / 1000),
       frTickTimer: null,
@@ -338,11 +352,9 @@ export default {
   mounted() {
     this.checkRedPacket();
     this.checkTreasureBox();
-    this.checkFirstRecharge();
-    this.checkLuckyReferral();
-    this.checkDailyCheckInPopup();
     this.checkCsFloatLink();
     this.checkGoogleCallback();
+    this.$nextTick(() => this.onEnterHome());
     window.addEventListener("resize", this.onFloaterResize);
     this.$bus.on("openTreasureBox", this.openTreasureBox);
   },
@@ -354,15 +366,22 @@ export default {
     this.$bus.off("openTreasureBox", this.openTreasureBox);
   },
   watch: {
+    showFirstRechargePopup(val) {
+      if (!val && this.homePopupPhase === "first") {
+        this.homePopupPhase = "rest";
+        this.checkLuckyReferral();
+        this.checkDailyCheckInPopup();
+      }
+    },
     // 切换路由到首页时重新拉宝箱 / 转盘入口状态
     $route(to, from) {
       this.historyNavigationPending = false;
       if (to.path !== from.path && to.path.includes("/home")) {
         this.checkTreasureBox();
-        this.checkLuckyReferral();
-        this.checkDailyCheckInPopup();
         this.checkCsFloatLink();
+        this.onEnterHome();
       } else if (to.path !== from.path) {
+        this.showRegisterAward = false;
         this.lrPopupVisible = false;
         this.checkInPopupVisible = false;
       }
@@ -503,7 +522,11 @@ export default {
       this.showTreasureBoxPopup = true;
     },
     async checkFirstRecharge() {
-      if (!localStorage.getItem("token")) return;
+      if (!localStorage.getItem("token")) {
+        this.frChecked = true;
+        this.frVisible = false;
+        return;
+      }
       try {
         const res = await NewPlayerGiftPackInit({});
         if (res && res.status === "ok" && res.content) {
@@ -513,12 +536,11 @@ export default {
           this.frPackData = c;
           if (this.frVisible) {
             this.startFrTick();
-            if (!this.frAutoShown) {
-              this.frAutoShown = true;
-              this.showFirstRechargePopup = true;
-            }
           } else {
             this.stopFrTick();
+            if (this.showFirstRechargePopup && this.homePopupPhase === "first") {
+              this.showFirstRechargePopup = false;
+            }
           }
         } else {
           this.frVisible = false;
@@ -528,6 +550,65 @@ export default {
         }
       } catch (e) {
         // silent
+      } finally {
+        this.frChecked = true;
+        this.openFirstOrRest();
+      }
+    },
+    async onEnterHome() {
+      if (!this.isHomePage) return;
+      this.awardChecked = false;
+      this.homePopupPhase = "boot";
+      this.lrPopupVisible = false;
+      this.checkInPopupVisible = false;
+      await this.checkFirstRecharge();
+      this.$nextTick(() => {
+        if (this.$refs.awardPopup) this.$refs.awardPopup.fetchAward();
+        else this.onAwardSettled(false);
+      });
+    },
+    onAwardSettled(show) {
+      this.awardChecked = true;
+      if (!this.isHomePage) {
+        this.showRegisterAward = false;
+        return;
+      }
+      if (show) {
+        this.homePopupPhase = "award";
+        this.showFirstRechargePopup = false;
+        this.lrPopupVisible = false;
+        this.checkInPopupVisible = false;
+        this.showRegisterAward = true;
+        return;
+      }
+      this.showRegisterAward = false;
+      if (this.homePopupPhase === "boot" || this.homePopupPhase === "award") {
+        this.homePopupPhase = "first";
+        this.openFirstOrRest();
+      }
+    },
+    onAwardClosed() {
+      this.showRegisterAward = false;
+      this.homePopupPhase = "first";
+      this.openFirstOrRest();
+    },
+    openFirstOrRest() {
+      if (!this.awardChecked || !this.frChecked || !this.isHomePage) return;
+      if (this.homePopupPhase === "award" || this.showRegisterAward) return;
+      if (this.homePopupPhase === "first") {
+        if (this.showFirstRechargePopup) return;
+        if (this.frVisible && !this.frAutoShown) {
+          this.frAutoShown = true;
+          this.lrPopupVisible = false;
+          this.checkInPopupVisible = false;
+          this.showFirstRechargePopup = true;
+          return;
+        }
+        this.homePopupPhase = "rest";
+      }
+      if (this.homePopupPhase === "rest" && !this.showFirstRechargePopup) {
+        this.checkLuckyReferral();
+        this.checkDailyCheckInPopup();
       }
     },
     startFrTick() {
@@ -551,11 +632,18 @@ export default {
     },
     checkLuckyReferral() {
       // 登录后在首页弹出转盘宣传图（替代原悬浮入口）
-      if (!localStorage.getItem("token") || this.lrPopupClosed) {
+      if (
+        this.homePopupPhase !== "rest" ||
+        this.showRegisterAward ||
+        this.showFirstRechargePopup ||
+        !localStorage.getItem("token") ||
+        this.lrPopupClosed ||
+        !this.isHomePage
+      ) {
         this.lrPopupVisible = false;
         return;
       }
-      this.lrPopupVisible = this.isHomePage;
+      this.lrPopupVisible = true;
     },
     closeLuckySpinPopup() {
       this.lrPopupVisible = false;

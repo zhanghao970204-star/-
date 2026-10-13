@@ -296,18 +296,26 @@
                 {{ apiError }}
               </p>
 
-              <button
-                class="login-popup__submit button dlzc"
-                :class="{ 'login-popup__submit--disabled': !isBtnEnable }"
-                :disabled="!isBtnEnable"
-                @click="LoginBtn"
-              >
-                {{
-                  selectIndex === 0
-                    ? $lang.Entrar || "LOG IN"
-                    : $lang.Registro || "Register"
-                }}
-              </button>
+              <div class="login-popup__submit-wrap">
+                <button
+                  class="login-popup__submit button dlzc"
+                  :class="{ 'login-popup__submit--disabled': !isBtnEnable }"
+                  :disabled="!isBtnEnable"
+                  @click="LoginBtn"
+                >
+                  {{
+                    selectIndex === 0
+                      ? $lang.Entrar || "LOG IN"
+                      : $lang.Registro || "Register"
+                  }}
+                </button>
+                <img
+                  v-if="selectIndex === 1"
+                  class="login-popup__bonus-badge"
+                  src="@/assets/img/home/registerAward/signup_bonus_badge.png"
+                  alt=""
+                />
+              </div>
 
               <!-- 仅 App 内登录页：游客登录（deviceId 由 Flutter 注入）；H5 不展示 -->
               <div v-if="selectIndex === 0 && showGuestLogin" class="sg">
@@ -1815,9 +1823,26 @@ export default {
   backdrop-filter: none;
 }
 
-.login-popup__submit {
-  margin-top: 22px;
+.login-popup__submit-wrap {
+  position: relative;
+  margin-top: 10px;
   margin-bottom: 4px;
+  padding-top: 18px;
+}
+
+.login-popup__bonus-badge {
+  position: absolute;
+  right: 20px;
+  top: 8px;
+  z-index: 2;
+  width: 86px;
+  height: auto;
+  pointer-events: none;
+}
+
+.login-popup__submit {
+  margin-top: 0;
+  margin-bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;

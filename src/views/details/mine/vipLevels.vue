@@ -15,61 +15,74 @@
         <img class="vip-hero__logo" :src="imgLogo" alt="CLUB VIP" />
       </div>
 
-      <div class="vip-carousel">
-        <img
-          v-if="peekPrevCardSrc"
-          class="vip-carousel__peek is-left"
-          :src="peekPrevCardSrc"
-          alt=""
-        />
-        <img
-          v-if="peekNextCardSrc"
-          class="vip-carousel__peek is-right"
-          :src="peekNextCardSrc"
-          alt=""
-        />
-
-        <div class="vip-carousel__center">
-          <button
-            v-if="peekPrevCardSrc"
-            type="button"
-            class="vip-carousel__arrow"
-            aria-label="prev"
-            @click="prevLevel"
+      <div
+        ref="vipCarousel"
+        class="vip-carousel"
+        :class="{ 'is-dragging': swipeDragging }"
+        @pointerdown="onCarouselPointerDown"
+        @pointermove="onCarouselPointerMove"
+        @pointerup="onCarouselPointerUp"
+        @pointercancel="onCarouselPointerCancel"
+      >
+        <div
+          class="vip-carousel__track"
+          :class="{ 'is-instant': trackInstant }"
+          :style="trackStyle"
+        >
+          <div
+            v-for="lv in carouselLevels"
+            :key="lv"
+            class="vip-carousel__slide"
+            :style="slideStyle(lv)"
           >
-            <img :src="imgArrow" alt="" />
-          </button>
-
-          <div class="vip-carousel__main" :class="{ 'is-locked': isLocked }">
-            <img class="vip-carousel__card" :src="viewPairCardSrc" alt="" />
-            <span class="vip-carousel__lv" :style="viewLevelTagStyle">
-              VIP {{ currentViewLevel }}
-            </span>
-            <span
-              class="vip-carousel__tag"
-              :class="{
-                'is-current': currentViewLevel === currentLevel,
-                'is-achieved': currentViewLevel < currentLevel,
-                'is-locked': currentViewLevel > currentLevel,
-              }"
-              :style="
-                currentViewLevel > currentLevel ? null : viewLevelTagStyle
-              "
+            <div
+              class="vip-carousel__main"
+              :class="{ 'is-locked': lv > currentLevel }"
             >
-              {{ levelTagText }}
-            </span>
+              <img
+                class="vip-carousel__card"
+                :src="resolveVipPairCard(lv)"
+                alt=""
+                draggable="false"
+              />
+              <span class="vip-carousel__lv" :style="resolveVipLevelTagStyle(lv)">
+                VIP {{ lv }}
+              </span>
+              <span
+                class="vip-carousel__tag"
+                :class="{
+                  'is-current': lv === currentLevel,
+                  'is-achieved': lv < currentLevel,
+                  'is-locked': lv > currentLevel,
+                }"
+                :style="lv > currentLevel ? null : resolveVipLevelTagStyle(lv)"
+              >
+                {{ levelTagOf(lv) }}
+              </span>
+            </div>
           </div>
-
-          <button
-            v-if="peekNextCardSrc"
-            type="button"
-            class="vip-carousel__arrow is-next"
-            aria-label="next"
-            @click="nextLevel"
-          >
-            <img :src="imgArrow" alt="" />
-          </button>
         </div>
+
+        <button
+          v-if="peekPrevCardSrc"
+          type="button"
+          class="vip-carousel__arrow"
+          aria-label="prev"
+          @pointerdown.stop
+          @click.stop="prevLevel"
+        >
+          <img :src="imgArrow" alt="" />
+        </button>
+        <button
+          v-if="peekNextCardSrc"
+          type="button"
+          class="vip-carousel__arrow is-next"
+          aria-label="next"
+          @pointerdown.stop
+          @click.stop="nextLevel"
+        >
+          <img :src="imgArrow" alt="" />
+        </button>
       </div>
 
       <!-- VIP PROGRESS：落在舞台反光地面上 —— 底座 23434 + 箭头条 23445 + 钻石框 23443 -->
@@ -806,6 +819,16 @@ export default {
       cashBackAmount: 0,
       claimingCashBack: false,
       showAllSteps: false,
+      swipeStartX: 0,
+      swipeStartY: 0,
+      swipeTracking: false,
+      swipeDragging: false,
+      slideLock: false,
+      animX: 0,
+      trackInstant: true,
+      slideW: 200,
+      slideGap: 16,
+      slideTimer: null,
     };
   },
   computed: {
@@ -875,6 +898,25 @@ export default {
     peekNextCardSrc() {
       if (this.currentViewLevel >= this.maxViewLevel) return "";
       return resolveVipPairCard(this.currentViewLevel + 1);
+    },
+    carouselLevels() {
+      const cur = this.currentViewLevel;
+      const levels = [];
+      if (cur > 0) levels.push(cur - 1);
+      levels.push(cur);
+      if (cur < this.maxViewLevel) levels.push(cur + 1);
+      return levels;
+    },
+    slideStep() {
+      return this.slideW + this.slideGap;
+    },
+    trackStyle() {
+      const idx = Math.max(0, this.carouselLevels.indexOf(this.currentViewLevel));
+      const x = -(idx * this.slideStep + this.slideW / 2) + this.animX;
+      return {
+        gap: this.slideGap + "px",
+        transform: `translate3d(${x}px, 0, 0)`,
+      };
     },
     currentViewConfig() {
       return (
@@ -961,16 +1003,23 @@ export default {
     },
   },
   mounted() {
+    this.$nextTick(() => this.measureCarousel());
+    window.addEventListener("resize", this.measureCarousel);
     if (this.token) {
       this.loadBalance();
       this.loadVipInit();
       this.loadGiftStatuses();
     }
   },
+  beforeUnmount() {
+    window.removeEventListener("resize", this.measureCarousel);
+    clearTimeout(this.slideTimer);
+  },
   methods: {
     resolveVipPairIcon,
     resolveVipPairCard,
     resolveVipLevelFontColor,
+    resolveVipLevelTagStyle,
     getShowerDelay(line) {
       const dur = parseFloat(line.duration);
       const phase = (line.id - 1) / cardShowerList.length;
@@ -1031,7 +1080,51 @@ export default {
       ];
     },
     onLevelCardClick(item) {
+      this.trackInstant = true;
+      this.animX = 0;
       this.currentViewLevel = Number(item.vipLevel) || 0;
+      this.$nextTick(() => {
+        requestAnimationFrame(() => {
+          this.trackInstant = false;
+        });
+      });
+    },
+    levelTagOf(lv) {
+      if (lv === this.currentLevel) return "Current Level";
+      if (lv < this.currentLevel) return "Achieved";
+      return "Locked";
+    },
+    slideStyle(lv) {
+      const idx = this.carouselLevels.indexOf(lv);
+      const curIdx = Math.max(
+        0,
+        this.carouselLevels.indexOf(this.currentViewLevel),
+      );
+      const offset = (idx - curIdx) * this.slideStep + this.animX;
+      const dist = Math.min(Math.abs(offset) / this.slideStep, 1);
+      const scale = 1 - dist * 0.26;
+      const bright = 1 - dist * 0.3;
+      return {
+        width: this.slideW + "px",
+        flexBasis: this.slideW + "px",
+        transform: `scale(${scale})`,
+        filter: `brightness(${bright})`,
+      };
+    },
+    measureCarousel() {
+      const el = this.$refs.vipCarousel;
+      if (!el) return;
+      const w = el.clientWidth || 0;
+      if (!w) return;
+      this.slideW = Math.min(w * 0.58, 218);
+      this.slideGap = Math.round(Math.max(12, w * 0.045));
+      if (this.trackInstant && !this.slideLock && !this.swipeDragging) {
+        this.$nextTick(() => {
+          requestAnimationFrame(() => {
+            if (!this.slideLock && !this.swipeDragging) this.trackInstant = false;
+          });
+        });
+      }
     },
     onBenefitClick(item) {
       if (this.isLocked || item.isDisplayOnly) return;
@@ -1133,10 +1226,108 @@ export default {
       }
     },
     prevLevel() {
-      if (this.currentViewLevel > 0) this.currentViewLevel--;
+      this.shiftLevel(-1);
     },
     nextLevel() {
-      if (this.currentViewLevel < this.maxViewLevel) this.currentViewLevel++;
+      this.shiftLevel(1);
+    },
+    shiftLevel(delta) {
+      if (this.slideLock) return;
+      this.commitShift(delta);
+    },
+    springCarousel() {
+      this.trackInstant = false;
+      this.$nextTick(() => {
+        requestAnimationFrame(() => {
+          this.animX = 0;
+        });
+      });
+    },
+    commitShift(delta) {
+      const next = this.currentViewLevel + delta;
+      if (next < 0 || next > this.maxViewLevel) {
+        this.springCarousel();
+        return;
+      }
+      this.slideLock = true;
+      const target = delta > 0 ? -this.slideStep : this.slideStep;
+      const finish = () => {
+        this.trackInstant = true;
+        this.currentViewLevel = next;
+        this.animX = 0;
+        this.$nextTick(() => {
+          requestAnimationFrame(() => {
+            this.trackInstant = false;
+            this.slideLock = false;
+          });
+        });
+      };
+      this.trackInstant = false;
+      this.$nextTick(() => {
+        requestAnimationFrame(() => {
+          this.animX = target;
+          clearTimeout(this.slideTimer);
+          this.slideTimer = setTimeout(finish, 440);
+        });
+      });
+    },
+    onCarouselPointerDown(e) {
+      if (this.slideLock) return;
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      this.swipeStartX = e.clientX;
+      this.swipeStartY = e.clientY;
+      this.swipeTracking = true;
+      this.swipeDragging = false;
+    },
+    onCarouselPointerMove(e) {
+      if (!this.swipeTracking || this.slideLock) return;
+      const dx = e.clientX - this.swipeStartX;
+      const dy = e.clientY - this.swipeStartY;
+      if (!this.swipeDragging) {
+        if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+        if (Math.abs(dy) > Math.abs(dx)) {
+          this.swipeTracking = false;
+          return;
+        }
+        this.swipeDragging = true;
+        this.trackInstant = true;
+        if (e.currentTarget.setPointerCapture) {
+          try {
+            e.currentTarget.setPointerCapture(e.pointerId);
+          } catch (err) {
+            /* ignore */
+          }
+        }
+      }
+      let x = dx;
+      const atStart = this.currentViewLevel <= 0;
+      const atEnd = this.currentViewLevel >= this.maxViewLevel;
+      if ((atStart && x > 0) || (atEnd && x < 0)) x *= 0.32;
+      const limit = this.slideStep * 1.05;
+      this.animX = Math.max(-limit, Math.min(limit, x));
+    },
+    onCarouselPointerUp(e) {
+      if (!this.swipeTracking && !this.swipeDragging) return;
+      const wasDragging = this.swipeDragging;
+      const dx = e.clientX - this.swipeStartX;
+      const dy = e.clientY - this.swipeStartY;
+      this.swipeTracking = false;
+      this.swipeDragging = false;
+      if (wasDragging) {
+        const threshold = Math.max(28, this.slideStep * 0.18);
+        if (this.animX <= -threshold) this.commitShift(1);
+        else if (this.animX >= threshold) this.commitShift(-1);
+        else this.springCarousel();
+        return;
+      }
+      if (Math.abs(dx) < 36 || Math.abs(dx) <= Math.abs(dy)) return;
+      if (dx < 0) this.commitShift(1);
+      else this.commitShift(-1);
+    },
+    onCarouselPointerCancel() {
+      if (this.swipeDragging) this.springCarousel();
+      this.swipeTracking = false;
+      this.swipeDragging = false;
     },
     async loadGiftStatuses() {
       try {
@@ -1387,7 +1578,7 @@ export default {
   filter: drop-shadow(0 0 12px rgba(255, 100, 255, 0.3));
 }
 
-/* 中间主卡大，两侧卡缩小露边（图一图二） */
+/* 中间主卡大，两侧卡缩小露边；三张一起平移并缩放 */
 .vip-carousel {
   position: relative;
   z-index: 1;
@@ -1395,50 +1586,45 @@ export default {
   height: 148px;
   margin: 50px 0 0;
   overflow: hidden;
+  touch-action: pan-y;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+
+  &.is-dragging {
+    cursor: grabbing;
+  }
 }
 
-.vip-carousel__peek {
+.vip-carousel__track {
   position: absolute;
-  top: 50%;
-  width: 52%;
-  max-width: 188px;
-  height: auto;
-  object-fit: contain;
-  opacity: 0.92;
-  filter: brightness(0.72);
-  pointer-events: none;
-  z-index: 0;
-
-  &.is-left {
-    left: 0;
-    transform: translate(-58%, -50%) scale(0.72);
-    transform-origin: center center;
-  }
-
-  &.is-right {
-    right: 0;
-    transform: translate(58%, -50%) scale(0.72);
-    transform-origin: center center;
-  }
-}
-
-.vip-carousel__center {
-  position: relative;
-  z-index: 2;
-  width: 58%;
-  max-width: 218px;
+  left: 50%;
+  top: 0;
   height: 100%;
-  margin: 0 auto;
   display: flex;
   align-items: center;
-  justify-content: center;
+  will-change: transform;
+  transition: transform 0.42s cubic-bezier(0.22, 0.82, 0.24, 1);
+
+  &.is-instant,
+  &.is-instant .vip-carousel__slide {
+    transition: none;
+  }
+}
+
+.vip-carousel__slide {
+  flex: 0 0 auto;
+  pointer-events: none;
+  transform-origin: center center;
+  transition: transform 0.42s cubic-bezier(0.22, 0.82, 0.24, 1),
+    filter 0.42s cubic-bezier(0.22, 0.82, 0.24, 1);
 }
 
 .vip-carousel__arrow {
   position: absolute;
   z-index: 4;
   top: 50%;
-  left: -26px;
+  left: calc(21% - 26px);
   transform: translateY(-50%);
   width: 22px;
   height: 30px;
@@ -1458,7 +1644,7 @@ export default {
 
   &.is-next {
     left: auto;
-    right: -26px;
+    right: calc(21% - 26px);
 
     img {
       transform: scaleX(-1);
@@ -1468,7 +1654,6 @@ export default {
 
 .vip-carousel__main {
   position: relative;
-  z-index: 2;
   width: 100%;
   filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.5));
 

@@ -60,9 +60,13 @@
               alt=""
               @click="toggleRotation"
             />
-            <span class="nav-balance__num" @click="toggleRotation">{{
-              $formatNumberWithCommas(token ? InitDate2.balance || 0 : 0)
-            }}</span>
+            <balance-roll
+              class="nav-balance__num"
+              :value="token ? InitDate2.balance || 0 : 0"
+              :decimals="2"
+              :font-size="18"
+              @click="toggleRotation"
+            />
             <div class="nav-balance__deposit btn-press" @click="gotoDep">
               <img
                 class="nav-balance__deposit-img"
@@ -326,9 +330,11 @@ import { normalizeHomeDataList } from "@/utils/homeGameList";
 import { applyCountryLanguage } from "@/utils/locale";
 import { isGuestUser } from "@/utils/guestAuth";
 import { isH5WebClient, isNativeAppShell } from "@/utils/nativeApp";
+import BalanceRoll from "@/components/BalanceRoll.vue";
+
 export default {
   name: "TopNav",
-  components: {},
+  components: { BalanceRoll },
   props: {
     topOffset: {
       type: Number,
