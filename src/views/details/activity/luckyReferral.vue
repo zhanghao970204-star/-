@@ -71,47 +71,59 @@
           >
         </div>
 
-        <van-progress
-          class="lr-kpbox__prog"
-          :percentage="progressPercent"
-          track-color="#8D8D8D"
-          color="linear-gradient(90deg, #F7DD9A 0%, #FFA300 100%)"
-          stroke-width="8"
-        />
+        <div class="lr-kpbox__bar">
+          <van-progress
+            class="lr-kpbox__prog"
+            :percentage="progressPercent"
+            :show-pivot="false"
+            track-color="transparent"
+            color="linear-gradient(180deg, #F7DD9A 0%, #FFA300 100%)"
+            stroke-width="12"
+          />
+          <span
+            class="lr-kpbox__pct"
+            :style="{
+              left: `clamp(18px, ${progressPercent}%, calc(100% - 18px))`,
+            }"
+            >{{ progressPercent }}%</span
+          >
+        </div>
 
         <p class="lr-kpbox__hint">{{ $lang.lr_spins_hint }}</p>
 
         <button class="lr-kpbox__invite" @click="showNoSpins = true">
-          <img src="@/assets/img/activity/turntable/Frame.svg" alt="" />
-          <span>{{
-            $lang.lr_invite_spins || "Invite Friends to Earn Spins"
-          }}</span>
+          <span class="lr-kpbox__invite-inner">
+            <img
+              src="@/assets/img/activity/turntable/invite_link_icon.png"
+              alt=""
+            />
+            <span>{{
+              $lang.lr_invite_spins || "Invite Friends to Earn Spins"
+            }}</span>
+          </span>
         </button>
       </section>
 
       <!-- Referral Link -->
       <section class="lr-referral">
         <label class="lr-referral__label">{{ $lang.lr_referral_link }}</label>
-        <div class="lr-referral__row">
-          <div class="lr-referral__link">{{ referralLink }}</div>
-          <button
-            type="button"
-            class="lr-referral__copy btn-3d-yellow"
-            @click="copyLink"
-          >
-            {{ $lang.lr_copy }}
-          </button>
+        <div class="lr-referral__card">
+          <p class="lr-referral__my">{{ $lang.common_txt57 }}</p>
+          <div class="lr-referral__row">
+            <div class="lr-referral__link">{{ referralLink }}</div>
+            <button type="button" class="lr-referral__copy" @click="copyLink">
+              {{ $lang.lr_copy }}
+            </button>
+          </div>
+          <div class="lr-rules">
+            <p class="lr-rules__text">
+              <span class="lr-rules__highlight">{{
+                $lang.lr_rules_highlight
+              }}</span>
+              {{ $lang.lr_rules_desc }}
+            </p>
+          </div>
         </div>
-      </section>
-
-      <!-- Rules -->
-      <section class="lr-rules">
-        <p class="lr-rules__text">
-          <span class="lr-rules__highlight">{{
-            $lang.lr_rules_highlight
-          }}</span>
-          {{ $lang.lr_rules_desc }}
-        </p>
       </section>
 
       <!-- Recent Winners -->
@@ -586,12 +598,11 @@ export default {
   margin: 12px auto 0;
   border-radius: 12px;
   box-sizing: border-box;
-  padding: 15px 15px 18px;
+  padding: 10px 15px 10px;
   position: relative;
   overflow: hidden;
-  background: url("@/assets/img/activity/turntable/lr_kpbox_bg.png") center /
-    100% 100% no-repeat;
-  border: none;
+  background: linear-gradient(90deg, #a936d3 0%, #4b35c2 100%);
+  border: 1px solid #ffbf00;
 
   &__claim {
     position: absolute;
@@ -630,8 +641,8 @@ export default {
   }
 
   &__label {
-    font-size: 12px;
-    font-weight: 500;
+    font-size: 14px;
+    font-weight: 700;
     color: #fff;
     margin-top: 4px;
     padding-right: 110px;
@@ -664,12 +675,51 @@ export default {
     font-weight: 600;
   }
 
-  &__prog {
+  &__bar {
+    position: relative;
     margin-top: 4px;
+    padding-bottom: 22px;
+  }
+
+  &__prog {
+    margin-top: 0;
+  }
+
+  &__pct {
+    position: absolute;
+    top: 20px;
+    z-index: 1;
+    transform: translateX(-50%);
+    min-width: 36px;
+    height: 18px;
+    padding: 0 7px;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #f7dd9a 0%, #ffa300 100%);
+    color: #1a1208;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+    pointer-events: none;
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: -4px;
+      transform: translateX(-50%);
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-bottom: 5px solid #ffb84a;
+    }
   }
 
   &__hint {
-    padding: 12px 0;
+    padding: 4px 0 12px;
     box-sizing: border-box;
     font-size: 12px;
     font-weight: 500;
@@ -680,56 +730,78 @@ export default {
 
   &__invite {
     min-height: 45px;
-    padding: 0 12px;
+    padding: 0 16px;
     font-size: 13px;
     font-weight: 700;
     width: 100%;
     text-align: center;
-    background: linear-gradient(
-      90deg,
-      #b58f46 0%,
-      #eebe6a 38.46%,
-      #fbfb77 100%
-    );
-    color: #000;
-    border-radius: 20px;
+    background: linear-gradient(180deg, #4f8eff 0%, #487af5 100%);
+    color: #fff;
+    border-radius: 999px;
     border: none;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
     box-sizing: border-box;
+    box-shadow:
+      inset 0 5px 4.7px rgba(107, 150, 255, 0.75),
+      inset 0 -3px 0 0 #2a4b9a;
+
+    &:active {
+      opacity: 0.92;
+    }
+  }
+
+  &__invite-inner {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    max-width: 100%;
+    line-height: 1.2;
+    text-align: center;
 
     span {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      text-align: center;
     }
 
     img {
-      width: 19px;
-      height: 19px;
+      width: 18px;
+      height: 18px;
       flex-shrink: 0;
-    }
-
-    &:active {
-      opacity: 0.9;
+      object-fit: contain;
+      display: block;
     }
   }
 }
 
-:deep(.lr-kpbox__prog .van-progress__pivot) {
-  color: #282215;
+:deep(.lr-kpbox__prog.van-progress) {
+  height: 16px !important;
+  padding: 1px;
+  border-radius: 33px;
+  overflow: hidden;
+  background: #170e3c !important;
+  border: 1px solid #8d66e2;
+  box-sizing: border-box;
 }
 
-// ====== REFERRAL ======
+:deep(.lr-kpbox__prog .van-progress__portion) {
+  top: 1px;
+  left: 1px;
+  height: calc(100% - 2px);
+  max-width: calc(100% - 2px);
+  border-radius: 33px;
+  background: linear-gradient(180deg, #f7dd9a 0%, #ffa300 100%) !important;
+}
+
+// ====== REFERRAL（背景、按钮复用分享页） ======
 .lr-referral {
   padding: 0 16px;
-  margin-top: 24px;
+  margin-top: 15px;
 
   &__label {
-    font-size: 14px;
+    font-size: 20px;
     font-weight: 700;
     text-transform: capitalize;
     letter-spacing: 0;
@@ -739,80 +811,106 @@ export default {
     text-align: center;
   }
 
+  &__card {
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: 76px 16px 25px;
+    background-color: #361a50;
+    background-image: url("@/assets/img/share/share_list2.png");
+    background-repeat: no-repeat;
+    background-position: top center;
+    background-size: 100% 100%;
+    box-shadow: 0 0 22px fade(#9b6dff, 40%);
+  }
+
+  &__my {
+    margin: 18px 0 0px;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1;
+    color: #edd8fb;
+    text-align: center;
+  }
+
   &__row {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 6px 6px 6px 16px;
-    border: 0.25px solid #ffe4b5;
-    border-radius: 8px;
+    gap: 10px;
+    width: 100%;
+    min-width: 0;
+    height: 68px;
+    box-sizing: border-box;
+    padding: 7px 21px 0 25px;
+    background-image: url("@/assets/img/share/share_link_bg.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 100% 100%;
   }
 
   &__link {
     flex: 1;
     min-width: 0;
-    background: transparent;
-    border: none;
-    padding: 6px 0;
     font-size: 12px;
-    color: @wihte-color;
+    color: #fff;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-weight: 500;
+    font-weight: 700;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
   }
 
   &__copy {
-    flex: 0 0 auto;
-    width: auto;
-    min-width: 72px;
-    height: 32px;
-    padding: 0 16px;
-    border-radius: 33px;
-    font-size: 12px;
-    font-weight: 700;
+    flex-shrink: 0;
+    width: 54px;
+    height: 26px;
+    padding: 0;
+    border: none;
+    outline: none;
+    cursor: pointer;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
+    background: linear-gradient(180deg, #e5d939 0%, #e68014 100%);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    text-transform: uppercase;
+    border-radius: 19.5px;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+    box-shadow:
+      inset 0 5px 4.7px 0 #fff47c,
+      inset 0 -3px 0 0 #82520b;
   }
 }
 
 // ====== RULES ======
 .lr-rules {
-  margin: 16px 16px 0;
-  background: #231e15;
-  padding: 5px 20px;
-  border-radius: 10px;
-  border: 0.25px solid #fff200;
-  position: relative;
-
-  &::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 6px;
-    border-radius: 12px 0 0 12px;
-    background: linear-gradient(180deg, #f7dd9a 0%, #ffa300 100%);
-  }
+  margin: 12px 4px 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: fade(#8542c6, 40%);
+  border: 1px solid #e8b7fc;
+  text-align: center;
+  font-weight: 700;
 
   &__text {
+    margin: 0;
     font-size: 12px;
-    line-height: 1.6;
-    color: @wihte-color;
+    line-height: 1.5;
+    color: #fff;
   }
 
   &__highlight {
-    color: @wihte-color;
+    color: #fff;
     font-weight: 700;
   }
 }
 
 // ====== WINNERS ======
 .lr-winners {
-  padding: 16px;
+  padding: 0px 16px 16px;
   margin-top: 8px;
 
   &__header {
@@ -824,7 +922,7 @@ export default {
   }
 
   &__title {
-    font-size: 14px;
+    font-size: 20px;
     font-weight: 700;
     text-transform: capitalize;
     letter-spacing: 0;
@@ -844,8 +942,8 @@ export default {
     padding: 8px 0 15px;
     font-size: 12px;
     text-transform: uppercase;
-    color: @wihte-color;
-    font-weight: 500;
+    color: #b784d9;
+    font-weight: 700;
   }
 
   &__marquee {
@@ -866,11 +964,9 @@ export default {
     align-items: center;
     margin-bottom: 12px;
     padding: 10px 16px;
-    background: transparent
-      url("@/assets/img/activity/turntable/lr_winner_row_bg.png") 0 0 / 100%
-      100% no-repeat;
+    background: #512275;
     border: none;
-    border-radius: 8px;
+    border-radius: 16px;
     font-size: 12px;
   }
 
@@ -881,11 +977,8 @@ export default {
 
   &__amount {
     font-weight: 700;
-    font-size: 16px;
-    background: linear-gradient(90deg, #f7dd9a 0%, #ffa300 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    font-size: 14px;
+    color: #fbff00;
   }
 }
 

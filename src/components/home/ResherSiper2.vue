@@ -1,13 +1,12 @@
 <template>
-  <div class="nav-cont m-b-10">
+  <div class="nav-cont">
     <div>
-      <div
-        v-if="gamesList.length > 0"
-        class="game_title-ss d-flex-s"
-      >
+      <div v-if="gamesList.length > 0" class="game_title-ss d-flex-s">
         <div class="d-flex m-t-5 game_title-ss__left">
           <img :src="siderData.icon" class="m-l-5" height="28px" />
-          <span class="m-l-5">{{ siderData.name }}</span>
+          <span class="m-l-5" style="font-size: 16px; font-weight: 700">{{
+            siderData.name
+          }}</span>
         </div>
 
         <div class="d-flex game_title-ss__right">
@@ -87,107 +86,107 @@
   </div>
 </template>
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions } from "vuex";
 export default {
-  name: 'ResherSiper',
+  name: "ResherSiper",
   components: {},
   props: {
     siderIndex: {
-      type: Number
+      type: Number,
     },
     siderData: {
       type: Object,
-      default: () => ({ games: [] })
-    }
+      default: () => ({ games: [] }),
+    },
   },
   data() {
     return {
-      currentPage2: 0
-    }
+      currentPage2: 0,
+    };
   },
   computed: {
-    ...mapState(['favorites']),
+    ...mapState(["favorites"]),
     gamesList() {
-      return (this.siderData && this.siderData.games) || []
+      return (this.siderData && this.siderData.games) || [];
     },
     pages() {
-      const pages = []
-      const games = this.gamesList
+      const pages = [];
+      const games = this.gamesList;
       for (let i = 0; i < games.length; i += 6) {
-        pages.push(games.slice(i, i + 6))
+        pages.push(games.slice(i, i + 6));
       }
-      return pages
+      return pages;
     },
     favoriteGidSet() {
       const currencyGroup = this.favorites.find(
-        (group) => group.currency === this.getCurrency
-      )
+        (group) => group.currency === this.getCurrency,
+      );
       if (!currencyGroup || !Array.isArray(currencyGroup.list)) {
-        return new Set()
+        return new Set();
       }
-      return new Set(currencyGroup.list.map((fav) => fav.gid))
-    }
+      return new Set(currencyGroup.list.map((fav) => fav.gid));
+    },
   },
   mounted() {},
   methods: {
-    ...mapActions(['addFavorite', 'removeFavorite']),
+    ...mapActions(["addFavorite", "removeFavorite"]),
     isFavorite(item) {
-      return this.favoriteGidSet.has(item.gid)
+      return this.favoriteGidSet.has(item.gid);
     },
     openAll() {
-      const base = typeof this.siderIndex === 'number' ? this.siderIndex : 0
-      const partCode = (this.siderData && this.siderData.code) || ''
-      this.$jumpTo('/category', { gameTab: base + 1, partCode })
+      const base = typeof this.siderIndex === "number" ? this.siderIndex : 0;
+      const partCode = (this.siderData && this.siderData.code) || "";
+      this.$jumpTo("/category", { gameTab: base + 1, partCode });
     },
     onChange(index) {
-      this.currentPage2 = index
+      this.currentPage2 = index;
     },
     prevPage() {
       if (this.currentPage2 > 0 && this.$refs.swipe) {
-        this.$refs.swipe.swipeTo(this.currentPage2 - 1)
+        this.$refs.swipe.swipeTo(this.currentPage2 - 1);
       }
     },
     nextPage() {
       if (this.currentPage2 < this.pages.length - 1 && this.$refs.swipe) {
-        this.$refs.swipe.swipeTo(this.currentPage2 + 1)
+        this.$refs.swipe.swipeTo(this.currentPage2 + 1);
       }
     },
     toggleFavorite(item) {
       const payload = {
         currency: this.getCurrency,
-        item: item
-      }
+        item: item,
+      };
       if (this.isFavorite(item)) {
-        this.removeFavorite(payload)
+        this.removeFavorite(payload);
       } else {
-        this.addFavorite(payload)
+        this.addFavorite(payload);
       }
     },
     goToGame(v, v2) {
       if (this.token) {
-        const game = v2 || { gid: v }
+        const game = v2 || { gid: v };
         const lotteryIds = [
           1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-          21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32
-        ]
+          21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+        ];
         const isLottery =
           lotteryIds.includes(v) ||
-          ['2000701', '2000702'].includes(this.siderData.code)
+          ["2000701", "2000702"].includes(this.siderData.code);
         const jumpPayload = isLottery
           ? {
-              type: 'lottery',
+              type: "lottery",
               lotteryType: game.gameCode,
               lotteryName: game.gameName,
-              typeCate: 1
+              typeCate: 1,
             }
-          : { type: 'hall', gid: v, isDemo: 0, from: 'game' }
-        this.$launchGame(jumpPayload)
+          : { type: "hall", gid: v, isDemo: 0, from: "game" };
+        this.$launchGame(jumpPayload);
       } else if (this.$bus) {
-        this.$bus.emit('openLogin')
+        this.$bus.emit("openLogin");
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 <style lang="less" scoped>
 .my-swipe {
@@ -210,7 +209,7 @@ export default {
   min-height: 120px;
 }
 .swipe-item::after {
-  content: '';
+  content: "";
   width: 31.5%; /* 与.item宽度一致 */
   height: 0; /* 不占用高度 */
 }
@@ -239,9 +238,9 @@ export default {
 .resher-view-all {
   padding: 6px 4px;
   margin-right: 8px;
-  color: #fff;
-  font-size: 13px;
-  font-weight: 600;
+  color: #c9c9c9;
+  font-size: 12px;
+  font-weight: 700;
   white-space: nowrap;
   cursor: pointer;
   background: transparent;
@@ -264,7 +263,7 @@ export default {
   background: none;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
     background: url(../../assets/img/otgame/beijin_12.png) no-repeat;

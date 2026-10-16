@@ -22,7 +22,7 @@
         >
           <template #left-icon>
             <img
-              src="../../../assets/img/common/ssk_com.png"
+              src="@/assets/img/home/top_search.png"
               width="18"
               class="search-icon"
             />
@@ -267,7 +267,7 @@ export default {
   background: @background-color;
 }
 .search-game-content {
-  padding: 12px 12px 60px;
+  padding: 25px 12px 60px;
 }
 .search-input-wrap {
   margin-bottom: 20px;
@@ -342,7 +342,7 @@ export default {
   border: 1px solid #ffd404;
   color: @wihte-color;
   padding: 8px 14px;
-  border-radius: 8px;
+  border-radius: 999px;
   font-size: 13px;
   cursor: pointer;
   position: relative;

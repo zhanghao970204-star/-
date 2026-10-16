@@ -315,6 +315,15 @@ select {
   align-items: center;
 }
 .van-nav-bar__title {
+  position: static !important;
+  left: auto !important;
+  right: auto !important;
+  flex: 1;
+  min-width: 0;
+  max-width: none !important;
+  margin: 0 !important;
+  transform: none !important;
+  text-align: left;
   color: @wihte-color;
   font-size: 20px;
   font-weight: 700;
@@ -322,10 +331,18 @@ select {
 }
 .van-nav-bar__left,
 .van-nav-bar__right {
-  top: 0;
-  bottom: 0;
+  position: static !important;
+  top: auto;
+  bottom: auto;
   display: flex;
   align-items: center;
+  flex-shrink: 0;
+}
+.van-nav-bar__left {
+  padding: 0 4px 0 12px !important;
+}
+.van-nav-bar__right {
+  margin-left: auto;
 }
 
 .van-field__value {

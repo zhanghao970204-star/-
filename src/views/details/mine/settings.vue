@@ -529,12 +529,13 @@ export default {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  min-height: 58px;
+  min-height: 48px;
   margin-bottom: 10px;
   padding: 5px 10px;
   border-radius: 999px;
   background: @settings-row;
   cursor: pointer;
+  border: 1px solid #633488;
 
   &--static {
     cursor: default;
@@ -589,8 +590,7 @@ export default {
   }
 
   &__icon-img {
-    width: 22px;
-    height: 22px;
+    width: 20px;
     object-fit: contain;
     display: block;
     flex-shrink: 0;

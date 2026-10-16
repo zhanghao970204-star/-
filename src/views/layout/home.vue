@@ -1,156 +1,6 @@
 <template>
   <div class="content">
-    <!-- <div class="d-flex-s">
-      <div
-        v-for="(item, index) in MenList"
-        :key="index"
-        @click="goToMen(index)"
-        :class="{ 'select-Men': selectMenIndex === index }"
-        style="width: 50%; border-bottom: 1px solid #d1e6e2"
-      >
-        <div class="d-flex" style="justify-content: center; padding: 12px 0">
-          <img :src="item.img" width="30" class="m-r-5" />
-          <p class="f-t-15 f-w">{{ item.name }}</p>
-        </div>
-      </div>
-    </div> -->
     <div class="mask-cont">
-      <!-- <div
-        class="d-flex"
-        style="
-          width: 95%;
-          margin: 5px auto;
-          justify-content: space-between;
-          overflow: auto;
-        "
-      >
-        <img
-          v-for="(item, index) in [
-            `https://file.otgame.bet/static/${getCurrency}/10.png`,
-            `https://file.otgame.bet/static/${getCurrency}/11.png`,
-            `https://file.otgame.bet/static/${getCurrency}/12.png`,
-            `https://file.otgame.bet/static/${getCurrency}/13.png`,
-            `https://file.otgame.bet/static/${getCurrency}/14.png`
-          ]"
-          :key="index"
-          :src="item"
-          width="31.5%"
-          style="border-radius: 10px; margin-right: 10px"
-          @click="gotoAc(index)"
-        />
-      </div> -->
-      <!-- <div class="container">
-        <common-swiper
-          :slides="images"
-          :interval="5000"
-          :transitionDuration="1000"
-          :showArrows="true"
-          :showIndicators="true"
-        >
-          <template #default="{ item }">
-            <img
-              :src="item"
-              style="width: 100%; height: 100%; object-fit: cover"
-            />
-          </template>
-        </common-swiper>
-      </div> -->
-      <!-- <div class="content-jack">
-        <div class="content-jack--c">
-          <div class="content-jack--i">
-            <div class="number-display">
-              <div v-for="(char, index) in formattedNumber" :key="index">
-                <img
-                  :src="getImagePath(char)"
-                  class="number-image"
-                  :class="{ 'font-bd': ['.', ','].includes(char) }"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> -->
-
-      <!-- <div class="content-winner">
-        <div class="d-flex">
-          <img
-            src="../../assets/img/common/game-icon.png"
-            width="20px"
-            style="margin-top: -2px"
-          />
-          <p class="f-t-15 m-l-5 f-w">{{ $lang.home_txt2 }}</p>
-        </div>
-        <div
-          class="winner-carousel-wrap"
-          ref="winnerCarouselWrap"
-          @touchstart="onWinnerTouchStart"
-          @touchmove="onWinnerTouchMove"
-          @touchend="onWinnerTouchEnd"
-        >
-          <div
-            class="winner-carousel-track"
-            :class="{ 'winner-carousel-no-transition': winnerNoTransition }"
-            :style="winnerTrackStyle"
-            ref="winnerCarouselTrack"
-          >
-            <div
-              v-for="(item, index) in winnerDisplayList"
-              :key="'winner-' + index"
-              class="item-sider winner-carousel-item"
-            >
-              <div style="position: relative">
-                <van-image
-                  class="swiper-slide--img"
-                  :src="item.gameIcon"
-                  lazy-load
-                  style="height: 82px"
-                >
-                  <template v-slot:loading>
-                    <van-loading size="20" color="#ffa300" vertical />
-                  </template>
-                </van-image>
-
-                <p
-                  class="d-flex"
-                  style="
-                    position: absolute;
-                    right: 0;
-                    left: 0;
-                    bottom: 2px;
-                    margin: 0 auto;
-                    font-size: 10px;
-                    background: rgba(15, 20, 30, 0.72);
-                    height: 35px;
-                    justify-content: center;
-                    padding-bottom: 5px;
-                    padding-top: 5px;
-                    border-radius: 0 0 8px 8px;
-                    color: var(--wihte-color);
-                    text-align: center;
-                  "
-                >
-                  {{ item.gameName }}
-                </p>
-              </div>
-
-              <div class="item-sider--t">
-                <div class="d-flex" style="margin: 8px 0 0">
-                  <img
-                    src="../../assets/img/common/logo_winner.png"
-                    width="10"
-                  />
-                  <p class="m-l-5">{{ item.userName }}</p>
-                </div>
-                <p class="primary-color content-winner--t">
-                  {{ $formatNumberWithCommas(item.amount) || 0 }}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> -->
-
-      <!-- 首页活动入口列表 -->
       <div class="home-act-list">
         <div
           v-for="item in homeActList"
@@ -218,7 +68,7 @@
               >
                 <!-- 类型不足 3 个：插图直接放在分类栏下方 -->
                 <div
-                  v-if="shouldShowStakeChestBeforeTypes(item)"
+                  v-if="index === 0 && shouldShowStakeChestBeforeTypes(item)"
                   class="home-stake-chest"
                 >
                   <img
@@ -297,7 +147,10 @@
                     ></resher-siper2>
                     <!-- 第 3 个分类游戏后插入 -->
                     <div
-                      v-if="shouldShowStakeChestAfterType(item, index2)"
+                      v-if="
+                        index === 0 &&
+                        shouldShowStakeChestAfterType(item, index2)
+                      "
                       class="home-stake-chest"
                     >
                       <img
@@ -309,16 +162,6 @@
                   </template>
                 </template>
               </div>
-              <!-- <keep-alive>
-              <resher-content
-                v-if="
-                  item.types[typeIndex] &&
-                  item.types[typeIndex].games.length > 12 &&
-                  allOpen
-                "
-                :contData="item.types[typeIndex]"
-              ></resher-content>
-            </keep-alive> -->
             </van-tab>
 
             <div class="content-bbttom">
@@ -361,13 +204,6 @@
                   />
                 </div>
 
-                <!-- <img src="../../assets/img/common/logo_h.png" width="100" />
-              <p class="m-t-10">
-                {{ $lang.common_txt164 }}
-              </p> -->
-
-                <!-- <p class="content-line m-t-10"></p> -->
-                <!-- <img src="../../assets/img/common/cmc_1.png" width="90%" /> -->
                 <p class="content-line m-t-10"></p>
 
                 <template v-if="tgChannelList.length">
@@ -401,90 +237,12 @@
 
     <login v-model="showPopup" overlay></login>
     <lucky-roulette v-model="isShowPopup" overlay></lucky-roulette>
-
-    <van-popup
-      v-model:show="showDialog"
-      class="custom-popup2"
-      :closeable="false"
-      :close-on-click-overlay="false"
-    >
-      <div class="cont-redim">
-        <!-- <van-button
-          @click="submit2"
-          size="large"
-          class="custom-button"
-          style="width: 80%"
-        >
-          {{ $lang.home_txt9 }}
-        </van-button> -->
-        <!-- <div
-          style="width: 55%; height: 58px; margin: 0 auto"
-          @click="submit2"
-        ></div> -->
-      </div>
-      <div class="d-flex-s m-t-10">
-        <div class="d-flex">
-          <van-checkbox
-            v-model="agree"
-            shape="square"
-            icon-size="16px"
-            icon-color="#202A39"
-            style="
-              border: 1px solid #6f7887;
-              margin-right: 3px;
-              border-radius: 5px;
-            "
-          ></van-checkbox>
-          <p style="color: var(--wihte-color); font-size: 11px">
-            {{ $lang.home_txt7 }}
-          </p>
-        </div>
-        <div class="d-flex">
-          <van-checkbox
-            v-model="agree2"
-            shape="square"
-            icon-size="16px"
-            icon-color="#202A39"
-            style="
-              border: 1px solid #6f7887;
-              margin-right: 3px;
-              border-radius: 5px;
-            "
-          ></van-checkbox>
-          <p style="color: var(--wihte-color); font-size: 11px">
-            {{ $lang.home_txt8 }}
-          </p>
-        </div>
-      </div>
-      <!-- <div v-if="isCountdownActive" class="counw-cont">
-        <div>
-          <div class="d-flex-s f-w">
-            <p class="counw-cont-bg2">MIN</p>
-            <p class="counw-cont-bg2">SEC</p>
-          </div>
-          <div class="d-flex-s">
-            <p class="counw-cont-bg m-r-10">{{ formattedMinutes }}</p>
-            <p class="f-w" style="font-size: 25px; color: var(--wihte-color)">:</p>
-            <p class="counw-cont-bg m-l-10">{{ formattedSeconds }}</p>
-          </div>
-        </div>
-      </div>  -->
-
-      <img
-        class="m-t-10"
-        @click="closeF()"
-        src="../../assets/img/lucky_jackpot/img_cancel.png"
-        width="38"
-      />
-    </van-popup>
   </div>
 </template>
 <script>
 import {
-  GetHomeWinningGameList,
   GetHomeGameList,
   GetIsFbReport,
-  ActivitygetRegisterAward,
   GetPlatformList,
   GetInvitationID,
   GetCsLink,
@@ -494,7 +252,6 @@ import { logoutIfReloginRequiredWithToken } from "@/utils/platformAuth";
 import { normalizeCountryCode } from "@/utils/country";
 import { applyCountryLanguage } from "@/utils/locale";
 import { normalizeHomeDataList, getCategoryGames } from "@/utils/homeGameList";
-// import ResherSiper from '../../components/home/ResherSiper.vue'
 import ResherSiper2 from "../../components/home/ResherSiper2.vue";
 import HomeSupportFooter from "../../components/home/HomeSupportFooter.vue";
 import actEntrySpin from "@/assets/img/home/act/entry_spin.png";
@@ -510,43 +267,17 @@ export default {
   data() {
     return {
       stakeRewardChestImg,
-      selectMenIndex: 1,
       totalSeconds: 1800,
       timer5: null,
       isCountdownActive: true,
-      agree2: false,
-      agree: false,
-      isRegister: localStorage.getItem("isRegister"),
-      showDialog: false,
-      isShowPopup2: false,
       isShowPopup: false,
       showPopup: false,
-      itemWidth: 72,
       activeTab: 0,
-      prizeAmount: 11002030,
-      typeIndex: null,
       allOpen: false,
       loading: false,
-      winDate: [],
       pgDate: {},
-      winnerOffsetX: 0,
-      winnerTouchStartX: 0,
-      winnerNoTransition: false,
-      winnerAutoplayTimer: null,
-      winnerItemWidth: 65,
-      winnerGap: 10,
-      timer: null,
-      serachName: "",
-      filteredDataList: [],
-      allItems: [],
-      currentPage: 0,
-      itemsPerPage: 5,
-      timer3: null,
-      isOtgame: [],
-      // Lobby 游戏分类分批挂载
       visibleTypeCount: 3,
       typeRevealTimer: null,
-      // Hot 区游戏（dataList 第一项，不进 tab）
       hotGames: [],
       hotOffsetX: 0,
       hotRafId: null,
@@ -571,12 +302,6 @@ export default {
     },
   },
   computed: {
-    formattedMinutes() {
-      return Math.floor(this.totalSeconds / 60);
-    },
-    formattedSeconds() {
-      return this.formatNumber(this.totalSeconds % 60);
-    },
     envelopeCountdownText() {
       const t = Math.max(0, this.totalSeconds | 0);
       const h = this.formatNumber(Math.floor(t / 3600));
@@ -619,22 +344,6 @@ export default {
         },
       ];
     },
-    winnerList() {
-      return (this.winDate && this.winDate.dataList) || [];
-    },
-    winnerDisplayList() {
-      const list = this.winnerList;
-      if (!list.length) return [];
-      return [...list, ...list, ...list];
-    },
-    winnerTrackStyle() {
-      const w = this.winnerItemWidth + this.winnerGap;
-      const total = this.winnerDisplayList.length * w;
-      return {
-        width: total + "px",
-        transform: `translate3d(${this.winnerOffsetX}px, 0, 0)`,
-      };
-    },
     hotTrackStyle() {
       return {
         transform: `translate3d(${-this.hotOffsetX}px, 0, 0)`,
@@ -660,62 +369,32 @@ export default {
     this.GetInvitationID();
     this.GetHomeGameList();
     this.fetchCsHomeLinks();
-    // 中奖轮播 UI 已注释，暂不请求，避免多余接口与失败时 loading 卡住
   },
   async mounted() {
     this.GetPlatformList();
     this.initCountdown();
-    const today = new Date().toISOString().split("T")[0];
-
-    if (sessionStorage.getItem("neverShowToday2") === today) {
-      this.showDialog = false;
-    } else if (localStorage.getItem("neverShow2")) {
-      this.showDialog = false;
-    } else {
-      // this.showDialog = true
-    }
-    // if (
-    //   localStorage.getItem('isRegister') === 'isRegister' &&
-    //   this.isShowPopup2 === false
-    // ) {
-    //   this.showDialog = true
-    // this.resetCountdown()
-    // }
     this.$bus.on("message-sent", (v) => {
       this.scrollToTarget();
       this.activeTab = v;
     });
   },
   activated() {
-    if (this.winnerList.length) {
-      this.winnerStartAutoplay();
-    }
     if (this.isCountdownActive && !this.timer5) {
       this.initCountdown();
     }
     this.$nextTick(() => this.startHotAutoScroll());
   },
   deactivated() {
-    this.winnerStopAutoplay();
     this.stopTypeReveal();
     this.stopCountdown();
     this.stopHotAutoScroll();
     this.clearHotResumeTimer();
-    if (this.timer3) {
-      clearInterval(this.timer3);
-      this.timer3 = null;
-    }
   },
   beforeUnmount() {
-    this.winnerStopAutoplay();
     this.stopTypeReveal();
     this.stopCountdown();
     this.stopHotAutoScroll();
     this.clearHotResumeTimer();
-    if (this.timer3) {
-      clearInterval(this.timer3);
-      this.timer3 = null;
-    }
     this.$bus.off("message-sent");
   },
   methods: {
@@ -930,42 +609,12 @@ export default {
           if (next.countryName)
             localStorage.setItem("countryName", next.countryName);
           if (next.country) localStorage.setItem("country", next.country);
-          // setTimeout(() => {
-          //   window.location.reload()
-          // }, 200)
         }
       } else {
         this.$toast({
           message: data.msg,
           icon: "cross",
         });
-      }
-    },
-    // noticeText(dataArr) {
-    //   if (dataArr) {
-    //     return dataArr
-    //       .map(
-    //         (item) =>
-    //           `${item.userName} : ${
-    //             this.$lang.home_txt
-    //           } ${this.$formatNumberWithCommas(item.amount)} ${
-    //             this.$lang.BRL
-    //           }  `
-    //       )
-    //       .join('  |  ') // 使用分隔符区分不同通知
-    //   }
-    // },
-    gotoAc(i) {
-      if (i === 0) {
-        this.$jumpTo("/Crowdfunding");
-      } else if (i === 1) {
-        this.$jumpTo("/signIn");
-      } else if (i === 2) {
-        this.$jumpTo("/redPacket");
-      } else if (i === 3) {
-        this.$jumpTo("/referFriend");
-      } else if (i === 4) {
-        this.$jumpTo("/cashBack");
       }
     },
     onHomeActClick(item) {
@@ -978,27 +627,6 @@ export default {
         return;
       }
       if (item.path) this.$jumpTo(item.path);
-    },
-    serachGo() {
-      this.$jumpTo("/category");
-    },
-    closeActive() {
-      this.showDialog = false;
-    },
-    closeActive2() {
-      this.showDialog = true;
-    },
-    async ActivitygetRegisterAward() {
-      const data = await ActivitygetRegisterAward();
-      if (data.status === "ok") {
-        if (data.content.receiveStatus === 1) {
-          this.isShowPopup2 = true;
-        } else {
-          this.isShowPopup2 = false;
-        }
-      } else if (data.status === "need_login") {
-        this.isShowPopup2 = true;
-      }
     },
     resetCountdown() {
       // 重置倒计时
@@ -1048,32 +676,6 @@ export default {
         this.startCountdown();
       }
     },
-    closeF() {
-      if (this.agree) {
-        // 今日不显示
-        const today = new Date().toISOString().split("T")[0];
-        sessionStorage.setItem("neverShowToday2", today);
-      }
-      if (this.agree2) {
-        // 永久不显示
-        localStorage.setItem("neverShow2", true);
-      }
-      this.showDialog = false;
-    },
-    submit2() {
-      localStorage.removeItem("isRegister");
-      sessionStorage.removeItem("neverShowToday2");
-      localStorage.removeItem("neverShow2");
-      this.showDialog = false;
-      // this.$router.push('/recharge')
-      if (this.token) {
-        this.isShowPopup2 = false;
-        this.$jumpTo("/rechargeCont");
-      } else {
-        this.isShowPopup2 = false;
-        this.showPopup = true;
-      }
-    },
     async GetIsFbReport() {
       const data = await GetIsFbReport({
         inviteCode: localStorage.getItem("id"),
@@ -1109,49 +711,6 @@ export default {
       }
     },
 
-    getImagePath(char) {
-      return this.numberImages[char];
-    },
-    // addRandomValue() {
-    //   // 随机增加整数部分 1-100
-    //   const integerRandom = Math.floor(Math.random() * 100) + 1
-    //   // 随机增加小数部分 0.01-0.99
-    //   const decimalRandom = (Math.floor(Math.random() * 100) / 100).toFixed(2)
-    //   // 将小数部分转换为数值
-    //   const decimalValue = parseFloat(decimalRandom)
-    //   // 更新当前值
-    //   this.currentValue += integerRandom + decimalValue
-    //   // 确保小数点后两位
-    //   this.currentValue = parseFloat(this.currentValue.toFixed(2))
-    //   // 保存到 localStorage
-    //   localStorage.setItem('savedValue', this.currentValue)
-    // },
-    // startTimer() {
-    //   this.timer2 = setInterval(() => {
-    //     this.addRandomValue()
-    //   }, 1000)
-    // },
-    startTimer2() {
-      this.timer3 = setInterval(() => {
-        this.currentPage++;
-        if (this.currentPage * this.itemsPerPage >= this.allItems.length) {
-          this.currentPage = 0;
-        }
-      }, 3000); // 每 3 秒切换一次
-    },
-    loadSavedValue() {
-      const savedValue = localStorage.getItem("savedValue");
-      if (savedValue) {
-        // if (savedValue > 99999999) {
-        //   this.currentValue = 10029898.87
-        // } else {
-        this.currentValue = parseFloat(savedValue);
-        // }
-      }
-    },
-    gotoRefer() {
-      this.$jumpTo("/referFriend");
-    },
     async scrollToTarget() {
       if (!this.$refs.targetElement) return;
       const { default: scrollIntoView } =
@@ -1170,16 +729,6 @@ export default {
     },
     goVendor(vendor) {
       this.$jumpTo("/category", { vendorCode: vendor.code });
-    },
-    // 是否展开全部
-    openAll(item, index) {
-      this.allOpen = true;
-      this.typeIndex = index;
-      this.$jumpTo("/category");
-      // scrollIntoView(this.$refs.targetElement, {
-      //   behavior: 'smooth', // 平滑滚动
-      //   block: 'start' // 垂直方向对齐方式
-      // })
     },
     goToHotGame(game) {
       if (!game) return;
@@ -1228,116 +777,13 @@ export default {
         this.resetVisibleTypes();
       }
     },
-    async GetHomeWinningGameList() {
-      this.loading = true;
-      try {
-        const data = await GetHomeWinningGameList();
-        if (data.status === "ok") {
-          this.winDate = data.content;
-          this.allItems = data.content.dataList;
-          this.winnerOffsetX = -(
-            this.winnerList.length *
-            (this.winnerItemWidth + this.winnerGap)
-          );
-          this.$nextTick(() => this.winnerStartAutoplay());
-        }
-      } finally {
-        this.loading = false;
-      }
-    },
-    // 中奖轮播：将 offset 限制在中间段，避免露馅
-    winnerClampOffset() {
-      const list = this.winnerList;
-      if (!list.length) return;
-      const w = this.winnerItemWidth + this.winnerGap;
-      const segment = list.length * w;
-      if (this.winnerOffsetX >= 0) {
-        this.winnerNoTransition = true;
-        this.winnerOffsetX = -segment;
-        this.$nextTick(() => {
-          this.winnerNoTransition = false;
-        });
-      } else if (this.winnerOffsetX <= -segment * 2) {
-        this.winnerNoTransition = true;
-        this.winnerOffsetX = -segment;
-        this.$nextTick(() => {
-          this.winnerNoTransition = false;
-        });
-      }
-    },
-    onWinnerTouchStart(e) {
-      this.winnerStopAutoplay();
-      this.winnerTouchStartX = e.touches[0].clientX;
-    },
-    onWinnerTouchMove(e) {
-      const dx = e.touches[0].clientX - this.winnerTouchStartX;
-      this.winnerTouchStartX = e.touches[0].clientX;
-      this.winnerOffsetX += dx;
-    },
-    onWinnerTouchEnd() {
-      this.winnerClampOffset();
-      this.winnerStartAutoplay();
-    },
-    winnerStartAutoplay() {
-      this.winnerStopAutoplay();
-      if (!this.winnerList.length) return;
-      const w = this.winnerItemWidth + this.winnerGap;
-      this.winnerAutoplayTimer = setInterval(() => {
-        this.winnerOffsetX -= w;
-        this.winnerClampOffset();
-      }, 3000);
-    },
-    winnerStopAutoplay() {
-      if (this.winnerAutoplayTimer) {
-        clearInterval(this.winnerAutoplayTimer);
-        this.winnerAutoplayTimer = null;
-      }
-    },
-    goToDetail(i) {
-      if (i === 0) {
-        this.$jumpToh("/vipSignIn");
-      } else if (i === 1) {
-        this.$jumpTo("/cashBack");
-      } else if (i === 2) {
-        this.$jumpTo("/signIn");
-      } else if (i === 3) {
-        this.$jumpTo("/share");
-      }
-    },
   },
 };
 </script>
 <style lang="less" scoped>
-.otag-gg {
-  // background: url('../../assets/img/otgame/gonggao_07.png') no-repeat;
-  height: 45px;
-  background-size: 100% 100%;
-}
-.image-bottom—container {
-  display: flex; /* 使用 Flex 布局 */
-  flex-direction: row; /* 水平排列 */
-  justify-content: space-between; /* 可选值：space-between / center / space-around / space-evenly */
-  align-items: center; /* 垂直居中 */
-  padding-bottom: 15px;
-}
-.image—logo {
-  width: auto;
-  height: 30px;
-  object-fit: cover;
-  border-radius: 0px;
-}
-.image-bottom—text {
-  font-size: 12px;
-  word-wrap: break-word;
-}
 .content {
-  // padding-top: 60px;
   margin-bottom: 0;
-  // background: @background-color;
-  // background: url('../../assets/img/page_bg2.png') no-repeat center center;
   background-size: cover;
-  // height: 100vh;
-  // overflow-y: scroll;
   /* 隐藏滚动条样式 */
   &::-webkit-scrollbar {
     display: none;
@@ -1352,42 +798,6 @@ export default {
     overflow-x: auto;
     white-space: nowrap;
   }
-}
-.content-swiper {
-  width: 100%;
-  text-align: center;
-}
-// ====== BANNER SWIPER ======
-.banner-swiper {
-  padding: 0 12px;
-  margin-bottom: 10px;
-
-  &__swipe {
-    border-radius: 10px;
-    overflow: hidden;
-  }
-
-  &__img {
-    width: 100%;
-    display: block;
-    border-radius: 10px;
-  }
-
-  :deep(.van-swipe__indicator--active) {
-    background: #ffa300;
-    width: 16px;
-    border-radius: 4px;
-  }
-
-  :deep(.van-swipe__indicator) {
-    background: rgba(255, 255, 255, 0.4);
-  }
-}
-.content-swiper--img {
-  border-radius: 10px;
-  width: 100%;
-  margin-top: 10px;
-  padding: 0 15px;
 }
 .content-serach {
   display: none;
@@ -1534,19 +944,6 @@ export default {
     display: none;
   }
 }
-.custom-field {
-  padding: 0 16px;
-  height: 48px;
-  background: #000 !important;
-  border-radius: 25px !important;
-  border: none !important;
-  :deep(.van-field__control) {
-    color: #fff;
-  }
-  &:focus-within {
-    box-shadow: 0 0 0 1px #ffd400;
-  }
-}
 .van-cell {
   color: @wihte-color;
 }
@@ -1561,56 +958,7 @@ export default {
   border-radius: 8px;
   font-size: 12px;
 }
-.content-winner {
-  width: 94%;
-  margin: 15px auto 0;
-}
 /* 自定义中奖轮播：从左到右、可左右滑动、无限循环 */
-.winner-carousel-wrap {
-  margin-top: 15px;
-  overflow: hidden;
-  touch-action: pan-y pinch-zoom;
-  height: 145px;
-}
-.winner-carousel-track {
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: flex-start;
-  transition: transform 0.3s ease-out;
-}
-.winner-carousel-no-transition {
-  transition: none !important;
-}
-.winner-carousel-item {
-  flex-shrink: 0;
-  width: 65px;
-  margin-right: 10px;
-}
-
-.content-winne--swiper {
-  .swiper-slide {
-    text-align: center;
-    font-size: 10px;
-  }
-  .swiper-slide .swiper-slide--img {
-    border-radius: 8px;
-    height: 80px;
-    width: 120px;
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: cover;
-  }
-}
-.tab-icon {
-  height: 22px;
-  width: auto;
-  max-width: 40px;
-  margin-right: 6px;
-  object-fit: contain;
-  object-position: center;
-  flex-shrink: 0;
-  display: block;
-}
 
 :deep(.van-sticky--fixed) {
   top: 50px;
@@ -1632,8 +980,6 @@ export default {
 }
 
 .home-hot {
-  margin: 0 0 14px;
-
   &__title {
     display: flex;
     justify-content: space-between;
@@ -1701,33 +1047,6 @@ export default {
   border-radius: 12px;
   object-fit: contain;
   background: #2d1545;
-}
-.vendor-grid__name {
-  margin-top: 6px;
-  font-size: 11px;
-  color: #c4c4c4;
-  text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 70px;
-}
-.content-tab--ct {
-  margin: 0 0 5px;
-  justify-content: space-between;
-}
-.content-tab--ctt {
-  // background-color: #262e3d;
-  border-radius: 10px;
-  padding: 6px 9px;
-}
-.content-tab--ctt2 {
-  background: url(../../assets/img/home/selecct-game.png) no-repeat; /* 浅蓝色透明背景 */
-  background-size: 100% 100%;
-  min-width: 42px;
-  text-align: center;
-  padding: 5px 0;
-  color: @font-color;
 }
 .home-community-icons {
   display: flex;
@@ -1803,27 +1122,10 @@ export default {
   width: 88%;
   margin: 2% auto 0;
 }
-.item-sider {
-  width: 65px; /* 单个元素的宽度 */
-  // height: 85px; /* 单个元素的高度 */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  :deep(.van-image__img) {
-    border-radius: 8px;
-  }
-}
 .my-swipe {
   margin-top: 15px;
   position: relative;
   height: 108px;
-  text-align: center;
-}
-.item-sider--t {
-  position: relative;
-  bottom: 0;
-  font-size: 9px;
   text-align: center;
 }
 .jackpot-c {
@@ -1904,7 +1206,6 @@ export default {
   }
   .resher-content--img {
     width: 31.2%;
-    // height: 145px;
     margin-bottom: 10px;
   }
   .resher-content--b > div:last-child {
@@ -1932,246 +1233,26 @@ export default {
     width: 42px;
   }
 }
-.content-c3--Copy {
-  background: url("../../assets/img/common/top-3-game.png") no-repeat; /* 指定背景图片的路径 */
-  background-size: 100% 100%; /* 宽度和高度都拉伸到 100% */
-  width: 92%;
-  height: 70px;
-  margin: 0 auto 18px;
-  padding: 10px 20px;
-}
-.content-c3 {
-  background: url("../../assets/img/common/top-2-game.png") no-repeat; /* 指定背景图片的路径 */
-  background-size: 100% 100%; /* 宽度和高度都拉伸到 100% */
-  width: 92%;
-  height: 70px;
-  margin: 0 auto 18px;
-  padding: 10px 20px;
-  .content-c3--f {
-    background: #f8da29;
-    color: @black-color;
-    padding: 5px;
-    text-align: center;
-    border-radius: 15px;
-    width: 210px;
-    font-size: 10px;
-    font-weight: bold;
-    margin-top: 3px;
-  }
-}
-.content-jack {
-  .content-jack--c {
-    margin-top: 12px;
-    margin-bottom: 12px;
-    width: 100%;
-    .content-jack--i {
-      background: url("../../assets/img/common/jiangc-1.png") no-repeat center
-        center;
-      background-size: 100% 100%;
-      text-align: center;
-      height: 103px;
-      padding-top: 48px;
-      width: 90%;
-      margin: 0 auto;
-    }
-  }
-}
-.number-display {
-  display: flex;
-  align-items: flex-end;
-  gap: 5px; /* 调整图片间距 */
-  justify-content: center;
-}
 
-.number-image {
-  // width: 14px;
-  height: 20px;
-  object-fit: cover;
-}
-.font-bd {
-  width: 6px;
-  height: 7px;
-}
-.jackt-temp {
-  width: 94%;
-  margin: 0 auto;
-}
-.jackt-temp2 {
-  width: 94%;
-  margin: 5px auto 0;
-  background: #2d1545;
-  border-radius: 7px;
-  padding: 8px 10px;
-}
 .content-tab--s {
   :deep(.van-loading) {
     background: transparent;
   }
 }
-.notice-bar {
-  display: flex;
-  align-items: center;
-  margin: 10px;
-  font-size: 14px;
-  color: @black-color;
-}
 
-.notice-text-wrapper {
-  display: flex;
-  align-items: center;
-  background-color: #edf9f5a8;
-  margin-right: 10px;
-  border-radius: 6px;
-  padding: 6px;
-  flex: 1;
-  overflow: hidden;
-  position: relative;
-}
-
-.inner-icon {
-  width: 18px;
-  height: 14px;
-  flex-shrink: 0;
-  margin-right: 6px;
-}
-
-.scroll-container {
-  overflow: hidden;
-  white-space: nowrap;
-  flex: 1;
-  position: relative;
-}
-
-.notice-text {
-  display: inline-block;
-  white-space: nowrap;
-  font-weight: 500;
-  animation: scroll-text 10s linear infinite;
-  animation-play-state: running !important;
-}
-
-.notice-text-wrapper:hover .notice-text {
-  animation-play-state: paused;
-}
-
-@keyframes scroll-text {
-  0% {
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(-100%);
-  }
-}
-
-.news-icon {
-  height: 21px;
-  width: auto;
-  flex-shrink: 0;
-}
-.custom-popup2 {
-  width: 86%;
-  text-align: center;
-  background-color: transparent; /* 设置背景色 */
-  // z-index: 2004 !important;
-  .cont-redim {
-    // padding-top: 330px;
-    background: url(../../assets/img/common/syhd.png) no-repeat;
-    background-size: 100% 100%;
-    height: 420px;
-    border-radius: 15px;
-  }
-
-  :deep(.van-checkbox__icon .van-icon) {
-    border: none;
-  }
-  :deep(.van-checkbox__icon--checked .van-icon) {
-    background-color: @primary-color3 !important;
-  }
-  .van-overlay {
-    z-index: 2001 !important;
-  }
-}
-.counw-cont {
-  display: flex;
-  justify-content: center;
-  .counw-cont-bg {
-    background: linear-gradient(to bottom, #fe1300, #ff4a01, #ff8a00);
-    font-weight: bold;
-    padding: 8px 20px;
-    border-radius: 8px;
-    font-size: 25px;
-    color: @wihte-color;
-  }
-  .counw-cont-bg2 {
-    padding: 8px 20px;
-    color: @wihte-color;
-  }
-}
-// .mask-cont {
-//   background: url(../../assets/img/home/mask_bg.png) no-repeat;
-//   background-size: 100% 100%;
-//   background: linear-gradient(to right, #14141e, #14141e, #14141e, #3a1c2b);
-//   padding-bottom: 10px;
-// }
-// .content-swiper-bg {
-//   background: url('../../assets/img/home/bg-show2.png') no-repeat;
-//   background-size: 100% 100%;
-// }
-.van-notice-bar {
-  // height: 32px;
-  width: 93%;
-  border-radius: 10px;
-  margin-left: 3%;
-  padding: 0 10px;
-  background: rgba(255, 255, 255, 0.04);
-}
-.bot-swiper-b {
-  :deep(.van-swipe__indicator--active) {
-    width: 25px !important;
-    border-radius: 10px !important;
-  }
-  :deep(.van-swipe__indicator) {
-    width: 12px;
-    border-radius: 10px !important;
-  }
-  :deep(.van-swipe__indicators) {
-    bottom: 0px;
-  }
-}
-.content-bbttom--1 {
-  text-align: center;
-}
-.content-bbttom--1 :first-child img {
-  width: 138px;
-  height: 28px;
-  margin-top: 15px;
-}
-.content-bbttom--1 :nth-child(2) img {
-  width: 40px;
-  height: 50px;
-}
-.content-bbttom--1 :nth-child(3) img {
-  width: 50px;
-  height: 50px;
-  margin-left: 10px;
-}
-.select-Men {
-  background: #ffa300 !important;
-  color: #573900 !important;
-  border-bottom: 1px solid #ffa300 !important;
-}
 /* 首页活动入口：按参考图单独控制每项大小与间距 */
 .home-act-list {
   display: flex;
   align-items: flex-end;
-  justify-content: center;
-  gap: 6px;
-  margin: -5px 8px 0;
-  padding: 2px 2px 4px;
+  justify-content: space-between;
+  gap: 0;
+  margin: -5px 8px 10px;
+  padding: 2px 0 4px;
   box-sizing: border-box;
 
   &__item {
     flex: 1 1 0;
+    width: 0;
     min-width: 0;
     display: flex;
     flex-direction: column;
@@ -2182,59 +1263,57 @@ export default {
 
   &__art {
     width: 100%;
-    height: 76px;
+    height: 65px;
     flex-shrink: 0;
     display: flex;
     align-items: flex-end;
     justify-content: center;
+    overflow: hidden;
   }
 
   &__entry {
     display: block;
+    max-width: 100%;
     object-fit: contain;
     object-position: center bottom;
   }
 
-  /* 各入口视觉大小（对齐参考：转盘略圆、红包偏高、宝箱略宽、救援最宽） */
+  /* 各入口视觉大小，宽度不超过列宽，保证五列等比 */
   &__item.is-spin &__entry {
-    width: 80px;
+    max-width: 80px;
     height: 60px;
     margin-bottom: -7px;
   }
   &__item.is-envelope &__entry {
-    width: 60px;
+    width: 100%;
+    max-width: 60px;
     height: 68px;
     margin-bottom: -5px;
   }
   &__item.is-checkin &__entry {
-    width: 56px;
+    width: 100%;
+    max-width: 55px;
     height: 64px;
     margin-bottom: -5px;
   }
   &__item.is-chest &__entry {
-    width: 78px;
+    max-width: 70px;
     height: 58px;
     margin-bottom: -2px;
   }
   &__item.is-rescue &__entry {
-    width: 65px;
+    width: 100%;
+    max-width: 63px;
     height: 66px;
-  }
-
-  &__item.is-rescue {
-    flex: 1.18 1 0;
-  }
-  &__item.is-envelope {
-    flex: 0.92 1 0;
   }
 
   &__btn {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    width: 64px !important;
-    min-width: 64px !important;
-    max-width: 64px !important;
+    width: 62px !important;
+    min-width: 62px !important;
+    max-width: 62px !important;
     height: 20px !important;
     margin-top: 4px;
     padding: 0 2px !important;
@@ -2287,13 +1366,6 @@ export default {
 
 /* PC 端样式 */
 @media (min-width: 769px) {
-  .cont-redim {
-    height: 477px !important;
-    padding-top: 383px !important;
-  }
-  .custom-popup2 {
-    width: 370px !important;
-  }
   :deep(.van-sticky--fixed) {
     top: 110px !important;
   }

@@ -3,9 +3,11 @@
     <title-bar :title="$lang.activity_daily_checkin || 'Daily Check-in'">
       <template #right>
         <button type="button" class="checkin-history" @click="goRewardHistory">
-          <span class="checkin-history__icon">
-            <van-icon name="clock-o" size="12" color="#ffd467" />
-          </span>
+          <img
+            class="checkin-history__icon"
+            src="@/assets/img/activity/checkin_history_clock.png"
+            alt=""
+          />
           <span>{{ $lang.reward_history || "Reward History" }}</span>
         </button>
       </template>
@@ -299,8 +301,8 @@ export default {
   :deep(.van-nav-bar__title) {
     text-transform: uppercase;
     letter-spacing: 0.02em;
-    font-size: 15px;
-    max-width: 46%;
+    font-size: 18px;
+    font-weight: 700;
   }
 
   :deep(.van-nav-bar__right) {
@@ -317,20 +319,19 @@ export default {
   border: 1px solid #590581;
   border-radius: 999px;
   background: #250a3d;
-
+  color: #ffe500;
   font-size: 10px;
   font-weight: 700;
   line-height: 1;
   cursor: pointer;
 
   &__icon {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 20px;
+    height: 20px;
+    display: block;
+    object-fit: contain;
     flex-shrink: 0;
+    mix-blend-mode: screen;
   }
 }
 
@@ -342,7 +343,7 @@ export default {
 
 .checkin-banner {
   position: relative;
-  margin: -16px 12px 2px;
+  margin: -16px 12px 6px;
 
   &__img {
     display: block;
@@ -354,12 +355,12 @@ export default {
     position: absolute;
     left: 14%;
     right: 14%;
-    bottom: 16%;
+    bottom: 10%;
     margin: 0;
     text-align: center;
     color: #fff;
-    font-size: 14px;
-    font-weight: 800;
+    font-size: 18px;
+    font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     pointer-events: none;
@@ -428,21 +429,23 @@ export default {
     min-height: 0;
     border-radius: 10px;
     background: #050308;
+    border: 1px solid #f2ca96;
+    box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
   &__icon {
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     object-fit: contain;
     display: block;
     flex-shrink: 0;
 
     &--lock {
-      width: 36px;
-      height: 40px;
+      width: 32px;
+      height: 35px;
     }
   }
 
@@ -490,7 +493,7 @@ export default {
     height: 24px;
     border-radius: 999px;
     background: #8d8d96;
-    color: #fff;
+    color: #dddddd;
     font-size: 10px;
     font-weight: 800;
     letter-spacing: 0.04em;

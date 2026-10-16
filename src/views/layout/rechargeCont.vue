@@ -5,7 +5,7 @@
       <section class="rc-wallet">
         <img
           class="rc-wallet__bg"
-          src="../../assets/img/recharge/wupeng.png"
+          src="../../assets/img/recharge/banner_wupeng.png"
           alt=""
         />
         <div class="rc-wallet__inner">
@@ -85,7 +85,15 @@
           </span>
           <img class="amount-card__coin" :src="coinSrc(index)" alt="" />
           <div class="amount-card__price">
-            <img class="amount-card__price-bg" :src="imgPriceBg" alt="" />
+            <img
+              class="amount-card__price-bg"
+              :src="
+                index === selectAmountIndex || item.isActive
+                  ? imgPriceBgActive
+                  : imgPriceBg
+              "
+              alt=""
+            />
             <span>$ {{ $formatNumberWithCommas(item.amount) }}</span>
           </div>
         </div>
@@ -451,23 +459,24 @@ function rcAsset(name) {
 }
 
 const AMOUNT_COIN_IMGS = [
-  rcAsset("image 23424.png"),
-  rcAsset("image 23424 (1).png"),
-  rcAsset("image 23424 (2).png"),
-  rcAsset("image 23424 (3).png"),
-  rcAsset("image 23424 (4).png"),
-  rcAsset("image 23424 (5).png"),
-  rcAsset("image 23424 (6).png"),
-  rcAsset("image 23424 (7).png"),
+  rcAsset("amount_coin_01.png"),
+  rcAsset("amount_coin_02.png"),
+  rcAsset("amount_coin_03.png"),
+  rcAsset("amount_coin_04.png"),
+  rcAsset("amount_coin_05.png"),
+  rcAsset("amount_coin_06.png"),
+  rcAsset("amount_coin_07.png"),
+  rcAsset("amount_coin_08.png"),
 ];
-const IMG_HISTORY = rcAsset("0fb7527a-9065-4851-ae85-9e675d0f3397 1.png");
-const IMG_CONTACT = rcAsset("55cd8f0e-6e58-4776-98b2-fefc18f36364 2.png");
-const IMG_RIBBON = rcAsset("image 23425.png");
-const IMG_PRICE_BG = rcAsset("Rectangle 34626414.png");
-const IMG_CHECK = rcAsset("image 23135.png");
-const IMG_UNCHECK = rcAsset("Ellipse 346.png");
-const IMG_CARD = rcAsset("Rectangle 34626420 (1).png");
-const IMG_CARD_ACTIVE = rcAsset("Rectangle 34626420.png");
+const IMG_HISTORY = rcAsset("icon_history.png");
+const IMG_CONTACT = rcAsset("icon_contact.png");
+const IMG_RIBBON = rcAsset("amount_ribbon.png");
+const IMG_PRICE_BG = rcAsset("amount_price.png");
+const IMG_PRICE_BG_ACTIVE = rcAsset("amount_price_active.png");
+const IMG_CHECK = rcAsset("icon_check.png");
+const IMG_UNCHECK = rcAsset("icon_uncheck.png");
+const IMG_CARD = rcAsset("amount_card.png");
+const IMG_CARD_ACTIVE = rcAsset("amount_card_active.png");
 const IMG_LINE_L = rcAsset("Rectangle 133.png");
 const IMG_LINE_R = rcAsset("Rectangle 34626426.png");
 const IMG_CHIP_ON = rcAsset("Rectangle 480.png");
@@ -518,6 +527,7 @@ export default {
       imgContact: IMG_CONTACT,
       imgRibbon: IMG_RIBBON,
       imgPriceBg: IMG_PRICE_BG,
+      imgPriceBgActive: IMG_PRICE_BG_ACTIVE,
       imgCheck: IMG_CHECK,
       imgUncheck: IMG_UNCHECK,
       imgCard: IMG_CARD,

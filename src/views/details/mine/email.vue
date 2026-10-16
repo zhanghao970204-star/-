@@ -222,7 +222,7 @@ export default {
   border: 1px solid transparent;
   /* 设计稿：块背景 #9D2DB9 → #5C3BB9，描边 #BA65DB → #5D4FAE */
   background:
-    linear-gradient(180deg, #9d2db9 0%, #5c3bb9 100%) padding-box,
+    linear-gradient(90deg, #9d2db9 0%, #5c3bb9 100%) padding-box,
     linear-gradient(180deg, #ba65db 0%, #5d4fae 100%) border-box;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
   cursor: pointer;

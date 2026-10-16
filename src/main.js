@@ -17,8 +17,8 @@ import bus from "./utils/eventBus";
 import toast from "./utils/toast";
 import { getFingerprint } from "./utils/common.js";
 import { readCountryCode } from "./utils/country.js";
-import { DEFAULT_LOCALE, STORAGE_KEYS } from './utils/appConstants.js';
-import { LOCALE_LOADERS, LOCAL_LOCALES } from './utils/locale.js';
+import { DEFAULT_LOCALE, STORAGE_KEYS } from "./utils/appConstants.js";
+import { LOCALE_LOADERS, LOCAL_LOCALES } from "./utils/locale.js";
 import { resetPageScrollAfterRoute } from "./utils/scrollReset.js";
 import {
   resolveClientIdSync,
@@ -73,10 +73,12 @@ async function loadLocaleMessages(locale) {
   const messages = {};
   // Fetch the selected language and fallback concurrently, without loading others.
   const keys = key === DEFAULT_LOCALE ? [key] : [key, DEFAULT_LOCALE];
-  await Promise.all(keys.map(async language => {
-    const mod = await LOCALE_LOADERS[language]();
-    messages[language] = mod.default || mod;
-  }));
+  await Promise.all(
+    keys.map(async (language) => {
+      const mod = await LOCALE_LOADERS[language]();
+      messages[language] = mod.default || mod;
+    }),
+  );
   return { locale: key, messages };
 }
 
@@ -181,10 +183,6 @@ async function bootstrap() {
     defineAsyncComponent(() => import("./components/LotteryOrder.vue")),
   );
   app.component(
-    "CommonSwiper",
-    defineAsyncComponent(() => import("./components/CommonSwiper.vue")),
-  );
-  app.component(
     "RechargeCont",
     defineAsyncComponent(() => import("./components/RechargeCont.vue")),
   );
@@ -211,10 +209,6 @@ async function bootstrap() {
   app.component(
     "ServicePopup",
     defineAsyncComponent(() => import("./components/ServicePopup.vue")),
-  );
-  app.component(
-    "ActivityPopup",
-    defineAsyncComponent(() => import("./components/ActivityPopup.vue")),
   );
 
   installGlobalClickSound();

@@ -1,18 +1,6 @@
 <template>
   <div class="content support-page">
-    <header class="support-header">
-      <button
-        class="support-header__back"
-        type="button"
-        @click="$router.go(-1)"
-      >
-        <van-icon name="arrow-left" size="20" color="var(--wihte-color)" />
-      </button>
-      <h1 class="support-header__title">
-        {{ $lang.common_txt274 || "- PLAYER SUPPORT -" }}
-      </h1>
-      <div class="support-header__spacer"></div>
-    </header>
+    <title-bar :title="$lang.common_txt274 || 'Player Support'" />
 
     <div class="need_help">
       <img
@@ -24,7 +12,7 @@
         <p class="need_help_second_t f-t-15 f-w">
           {{ $lang.common_txt274 }}
         </p>
-        <p class="need_help_second__hint m-t-10">{{ $lang.common_txt275 }}</p>
+        <p class="need_help_second__hint m-t-5">{{ $lang.common_txt275 }}</p>
         <div class="support-cs-btn" role="button" @click.stop="goToDDD">
           <img
             class="support-cs-btn__img"
@@ -146,72 +134,35 @@ export default {
   box-sizing: border-box;
 }
 
-.support-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: @cont-bg;
-  border-bottom: 1px solid fade(@border-color, 25%);
-
-  &__back {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
-
-  &__title {
-    font-size: 16px;
-    font-weight: 700;
-    color: @wihte-color;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  &__spacer {
-    width: 40px;
-  }
-}
-
-.need_help {
-  padding: 8px 12px 0;
-}
-
 .need_help__hero {
   display: block;
   width: 100%;
   height: auto;
-  border-radius: 12px;
 }
 
 .need_help_second {
   position: relative;
   z-index: 1;
-  margin-top: 10px;
+  margin: -20px 14px 0;
   padding: 16px 12px 14px;
   background: url("@/assets/img/otgame/Support_3.png") no-repeat center / 100%
     100%;
-  border: 1px solid fade(@border-color, 55%);
-  border-radius: 14px;
+  border-radius: 18px;
   box-sizing: border-box;
   cursor: pointer;
 }
 
 .need_help_second_t {
-  color: @primary-color;
+  color: #fbff00;
   letter-spacing: 0.5px;
+  font-size: 16px;
+  font-weight: 700;
 }
 
 .need_help_second__hint {
-  color: fade(#fff, 88%);
+  color: #ffffff;
   font-size: 12px;
+  font-weight: 500;
   line-height: 1.4;
   padding: 0 8px;
 }
@@ -245,15 +196,17 @@ export default {
   position: relative;
   z-index: 2;
   text-decoration: underline;
-  color: @primary-color;
+  color: #24ee89;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
   pointer-events: auto;
+  font-size: 12px;
+  font-weight: 500;
 }
 
 .faq-section-title {
-  color: @primary-color;
+  color: #fbff00;
 }
 
 .common-problems {
@@ -296,12 +249,12 @@ export default {
   transition: all 0.3s ease;
 }
 .details_faq_left {
-  background: linear-gradient(90deg, transparent, @border-color);
+  background: linear-gradient(90deg, transparent, #fbff00);
   width: 25%;
   height: 2px;
 }
 .details_faq_right {
-  background: linear-gradient(90deg, @border-color, transparent);
+  background: linear-gradient(90deg, #fbff00, transparent);
   width: 25%;
   height: 2px;
 }

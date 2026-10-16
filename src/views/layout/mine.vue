@@ -745,11 +745,11 @@ export default {
 }
 
 .mine-qb__cz {
-  background-image: url(@/assets/img/mine/czmy.png);
+  background-image: url(@/assets/img/mine/txmy.png);
 }
 
 .mine-qb__tx {
-  background-image: url(@/assets/img/mine/txmy.png);
+  background-image: url(@/assets/img/mine/czmy.png);
 }
 
 .mine-records {

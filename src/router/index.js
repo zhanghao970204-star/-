@@ -1,15 +1,18 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import { resetPageScroll, resetPageScrollAfterRoute } from '@/utils/scrollReset'
-import bus from '@/utils/eventBus'
-import { isGuestUser } from '@/utils/guestAuth'
-import { isNativeAppShell } from '@/utils/nativeApp'
-import { normalizeCountryCode, readCountryCode } from '@/utils/country'
-import { consumeRouteMotion } from '@/utils/routeMotion'
+import { createRouter, createWebHistory } from "vue-router";
+import {
+  resetPageScroll,
+  resetPageScrollAfterRoute,
+} from "@/utils/scrollReset";
+import bus from "@/utils/eventBus";
+import { isGuestUser } from "@/utils/guestAuth";
+import { isNativeAppShell } from "@/utils/nativeApp";
+import { normalizeCountryCode, readCountryCode } from "@/utils/country";
+import { consumeRouteMotion } from "@/utils/routeMotion";
 
 // 禁止浏览器自动恢复滚动位置（从长页进二级页停在半截的根因之一）
 try {
-  if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
-    window.history.scrollRestoration = 'manual'
+  if (typeof window !== "undefined" && "scrollRestoration" in window.history) {
+    window.history.scrollRestoration = "manual";
   }
 } catch (e) {
   /* ignore */
@@ -19,447 +22,438 @@ const router = createRouter({
   history: createWebHistory(),
   scrollBehavior(to, from, savedPosition) {
     // 始终回到顶部；实际滚动容器是 #app / #app-content
-    resetPageScroll()
+    resetPageScroll();
     return new Promise((resolve) => {
       requestAnimationFrame(() => {
-        resetPageScroll()
-        resolve({ left: 0, top: 0 })
-      })
-    })
+        resetPageScroll();
+        resolve({ left: 0, top: 0 });
+      });
+    });
   },
   routes: [
     {
-      path: '/:prefix?',
-      component: () => import('@/views/layout'),
+      path: "/:prefix?",
+      component: () => import("@/views/layout"),
       children: [
         {
-          path: 'Crowdfunding',
-          name: 'Crowdfunding',
-          component: () => import('@/views/layout/Crowdfunding'),
-          meta: { keepAlive: true }
+          path: "Crowdfunding",
+          name: "Crowdfunding",
+          component: () => import("@/views/layout/Crowdfunding"),
+          meta: { keepAlive: true },
         },
         {
-          path: 'Country',
-          name: 'Country',
-          component: () => import('@/views/layout/Country'),
-          meta: { keepAlive: true }
+          path: "Country",
+          name: "Country",
+          component: () => import("@/views/layout/Country"),
+          meta: { keepAlive: true },
         },
         {
-          path: 'home',
-          name: 'Home',
-          component: () => import('@/views/layout/home'),
-          meta: { keepAlive: true }
+          path: "home",
+          name: "Home",
+          component: () => import("@/views/layout/home"),
+          meta: { keepAlive: true },
         },
         // 旧 menu 入口重定向到邀请页
         {
-          path: 'menu',
+          path: "menu",
           redirect: (to) => ({
-            name: 'Share',
-            params: { prefix: to.params.prefix }
-          })
+            name: "Share",
+            params: { prefix: to.params.prefix },
+          }),
         },
         {
-          path: 'appDetail',
-          name: 'AppDetail',
-          component: () => import('@/views/layout/appDetail'),
-          meta: { keepAlive: false }
+          path: "appDetail",
+          name: "AppDetail",
+          component: () => import("@/views/layout/appDetail"),
+          meta: { keepAlive: false },
         },
         {
-          path: 'Support',
-          name: 'Support',
-          component: () => import('@/views/layout/Support'),
-          meta: { keepAlive: true }
+          path: "Support",
+          name: "Support",
+          component: () => import("@/views/layout/Support"),
+          meta: { keepAlive: true },
         },
         {
-          path: 'bonus',
-          name: 'Bonus',
-          component: () => import('@/views/layout/bonus'),
-          meta: { keepAlive: true }
+          path: "lottery",
+          name: "Lottery",
+          component: () => import("@/views/layout/lottery"),
+          meta: { keepAlive: true },
         },
         {
-          path: 'lottery',
-          name: 'Lottery',
-          component: () => import('@/views/layout/lottery'),
-          meta: { keepAlive: true }
+          path: "share",
+          name: "Share",
+          component: () => import("@/views/layout/share"),
+          meta: { keepAlive: true },
         },
         {
-          path: 'share',
-          name: 'Share',
-          component: () => import('@/views/layout/share'),
-          meta: { keepAlive: true }
+          path: "mine",
+          name: "Mine",
+          component: () => import("@/views/layout/mine"),
+          meta: { keepAlive: true },
         },
         {
-          path: 'mine',
-          name: 'Mine',
-          component: () => import('@/views/layout/mine'),
-          meta: { keepAlive: true }
+          path: "activity",
+          name: "Activity",
+          component: () => import("@/views/layout/activity"),
+          meta: { keepAlive: true },
         },
         {
-          path: 'activity',
-          name: 'Activity',
-          component: () => import('@/views/layout/activity'),
-          meta: { keepAlive: true }
+          path: "rechargeCont",
+          name: "RechargeCont",
+          component: () => import("@/views/layout/rechargeCont"),
         },
         {
-          path: 'rechargeCont',
-          name: 'RechargeCont',
-          component: () => import('@/views/layout/rechargeCont')
+          path: "firstDepositGift",
+          name: "FirstDepositGift",
+          component: () => import("@/views/details/activity/firstDepositGift"),
         },
         {
-          path: 'firstDepositGift',
-          name: 'FirstDepositGift',
-          component: () => import('@/views/details/activity/firstDepositGift')
+          path: "newbieGift",
+          name: "NewbieGift",
+          component: () => import("@/views/details/activity/newbieGift"),
         },
-        {
-          path: 'newbieGift',
-          name: 'NewbieGift',
-          component: () => import('@/views/details/activity/newbieGift')
-        }
-      ]
+      ],
     },
     {
-      path: '/:prefix?/activityFistRecharge',
-      name: 'ActivityFistRecharge',
-      component: () => import('@/views/details/bonus/activityFistRecharge')
+      path: "/:prefix?/activityFistRecharge",
+      name: "ActivityFistRecharge",
+      component: () => import("@/views/details/bonus/activityFistRecharge"),
     },
     {
-      path: '/:prefix?/activityRecharge',
-      name: 'ActivityRecharge',
-      component: () => import('@/views/details/bonus/activityRecharge')
+      path: "/:prefix?/activityRecharge",
+      name: "ActivityRecharge",
+      component: () => import("@/views/details/bonus/activityRecharge"),
     },
     {
-      path: '/:prefix?/activityCooperate',
-      name: 'ActivityCooperate',
-      component: () => import('@/views/details/bonus/activityCooperate')
+      path: "/:prefix?/activityCooperate",
+      name: "ActivityCooperate",
+      component: () => import("@/views/details/bonus/activityCooperate"),
     },
     {
-      path: '/:prefix?/cashBack',
-      name: 'CashBack',
-      component: () => import('@/views/details/bonus/cashBack')
+      path: "/:prefix?/cashBack",
+      name: "CashBack",
+      component: () => import("@/views/details/bonus/cashBack"),
     },
     {
-      path: '/:prefix?/teamRebates',
-      name: 'TeamRebates',
-      component: () => import('@/views/details/bonus/teamRebates')
+      path: "/:prefix?/teamRebates",
+      name: "TeamRebates",
+      component: () => import("@/views/details/bonus/teamRebates"),
     },
     {
-      path: '/:prefix?/redPacket',
-      name: 'RedPacket',
-      component: () => import('@/views/details/bonus/redPacket')
+      path: "/:prefix?/redPacket",
+      name: "RedPacket",
+      component: () => import("@/views/details/bonus/redPacket"),
     },
     {
-      path: '/:prefix?/signIn',
-      name: 'SignIn',
-      component: () => import('@/views/details/bonus/signIn')
+      path: "/:prefix?/signIn",
+      name: "SignIn",
+      component: () => import("@/views/details/bonus/signIn"),
     },
     {
-      path: '/:prefix?/dailyCheckIn',
-      name: 'DailyCheckIn',
-      component: () => import('@/views/details/activity/dailyCheckIn')
+      path: "/:prefix?/dailyCheckIn",
+      name: "DailyCheckIn",
+      component: () => import("@/views/details/activity/dailyCheckIn"),
     },
     {
-      path: '/:prefix?/rewardHistory',
-      name: 'RewardHistory',
-      component: () => import('@/views/details/activity/rewardHistory')
+      path: "/:prefix?/rewardHistory",
+      name: "RewardHistory",
+      component: () => import("@/views/details/activity/rewardHistory"),
     },
     {
-      path: '/:prefix?/seasonPass',
-      name: 'SeasonPass',
-      component: () => import('@/views/details/activity/seasonPass')
+      path: "/:prefix?/seasonPass",
+      name: "SeasonPass",
+      component: () => import("@/views/details/activity/seasonPass"),
     },
     {
-      path: '/:prefix?/seasonHistory',
-      name: 'SeasonHistory',
-      component: () => import('@/views/details/activity/seasonHistory')
+      path: "/:prefix?/seasonHistory",
+      name: "SeasonHistory",
+      component: () => import("@/views/details/activity/seasonHistory"),
     },
     {
-      path: '/:prefix?/weeklyMissions',
-      name: 'WeeklyMissions',
-      component: () => import('@/views/details/activity/weeklyMissions')
+      path: "/:prefix?/weeklyMissions",
+      name: "WeeklyMissions",
+      component: () => import("@/views/details/activity/weeklyMissions"),
     },
     {
-      path: '/:prefix?/luckyReferral',
-      name: 'LuckyReferral',
-      component: () => import('@/views/details/activity/luckyReferral')
+      path: "/:prefix?/luckyReferral",
+      name: "LuckyReferral",
+      component: () => import("@/views/details/activity/luckyReferral"),
     },
     {
-      path: '/:prefix?/referFriend',
-      name: 'ReferFriend',
-      component: () => import('@/views/details/bonus/referFriend')
+      path: "/:prefix?/referFriend",
+      name: "ReferFriend",
+      component: () => import("@/views/details/bonus/referFriend"),
     },
     {
-      path: '/:prefix?/bankAdd',
-      name: 'BankAdd',
-      component: () => import('@/views/details/recharge/bankAdd')
+      path: "/:prefix?/bankAdd",
+      name: "BankAdd",
+      component: () => import("@/views/details/recharge/bankAdd"),
     },
     {
-      path: '/:prefix?/authName',
-      name: 'AuthName',
-      component: () => import('@/views/details/recharge/authName')
+      path: "/:prefix?/authName",
+      name: "AuthName",
+      component: () => import("@/views/details/recharge/authName"),
     },
     {
-      path: '/:prefix?/setPassWord',
-      name: 'SetPassWord',
-      component: () => import('@/views/details/recharge/setPassWord')
+      path: "/:prefix?/setPassWord",
+      name: "SetPassWord",
+      component: () => import("@/views/details/recharge/setPassWord"),
     },
     {
-      path: '/:prefix?/Alliance',
-      name: 'Alliance',
-      component: () => import('@/views/details/mine/Alliance')
+      path: "/:prefix?/Alliance",
+      name: "Alliance",
+      component: () => import("@/views/details/mine/Alliance"),
     },
     {
-      path: '/:prefix?/vip',
-      name: 'Vip',
-      component: () => import('@/views/details/mine/vip')
+      path: "/:prefix?/profile",
+      name: "Profile",
+      component: () => import("@/views/details/mine/profile"),
     },
     {
-      path: '/:prefix?/profile',
-      name: 'Profile',
-      component: () => import('@/views/details/mine/profile')
+      path: "/:prefix?/passwordLogin",
+      name: "PsswordLogin",
+      component: () => import("@/views/details/mine/passwordLogin"),
     },
     {
-      path: '/:prefix?/passwordLogin',
-      name: 'PsswordLogin',
-      component: () => import('@/views/details/mine/passwordLogin')
+      path: "/:prefix?/bank",
+      name: "Bank",
+      component: () => import("@/views/details/mine/bank"),
     },
     {
-      path: '/:prefix?/bank',
-      name: 'Bank',
-      component: () => import('@/views/details/mine/bank')
+      path: "/:prefix?/avatar",
+      name: "Avatar",
+      component: () => import("@/views/details/mine/avatar"),
     },
     {
-      path: '/:prefix?/avatar',
-      name: 'Avatar',
-      component: () => import('@/views/details/mine/avatar')
+      path: "/:prefix?/privacy",
+      name: "Privacy",
+      component: () => import("@/views/details/mine/privacy"),
     },
     {
-      path: '/:prefix?/privacy',
-      name: 'Privacy',
-      component: () => import('@/views/details/mine/privacy')
+      path: "/:prefix?/billGame",
+      name: "BillGame",
+      component: () => import("@/views/details/mine/billGame"),
     },
     {
-      path: '/:prefix?/billGame',
-      name: 'BillGame',
-      component: () => import('@/views/details/mine/billGame')
+      path: "/:prefix?/gameHall",
+      name: "GameHall",
+      component: () => import("@/views/details/mine/gameHall"),
     },
     {
-      path: '/:prefix?/gameHall',
-      name: 'GameHall',
-      component: () => import('@/views/details/mine/gameHall')
+      path: "/:prefix?/payOrder",
+      name: "PayOrder",
+      component: () => import("@/views/details/mine/payOrder"),
     },
     {
-      path: '/:prefix?/payOrder',
-      name: 'PayOrder',
-      component: () => import('@/views/details/mine/payOrder')
+      path: "/:prefix?/joinUs",
+      name: "JoinUs",
+      component: () => import("@/views/details/bonus/joinUs"),
     },
     {
-      path: '/:prefix?/joinUs',
-      name: 'JoinUs',
-      component: () => import('@/views/details/bonus/joinUs')
+      path: "/:prefix?/recordOrder",
+      name: "RecordOrder",
+      component: () => import("@/views/details/recharge/recordOrder"),
     },
     {
-      path: '/:prefix?/recordOrder',
-      name: 'RecordOrder',
-      component: () => import('@/views/details/recharge/recordOrder')
+      path: "/:prefix?/rewardRecord",
+      name: "RewardRecord",
+      component: () => import("@/views/details/mine/rewardRecord"),
     },
     {
-      path: '/:prefix?/rewardRecord',
-      name: 'RewardRecord',
-      component: () => import('@/views/details/mine/rewardRecord')
+      path: "/:prefix?/orderDetail",
+      name: "OrderDetail",
+      component: () => import("@/views/details/recharge/orderDetail"),
     },
     {
-      path: '/:prefix?/orderDetail',
-      name: 'OrderDetail',
-      component: () => import('@/views/details/recharge/orderDetail')
+      path: "/:prefix?/firstRegister",
+      name: "FirstRegister",
+      component: () => import("@/views/details/bonus/firstRegister"),
     },
     {
-      path: '/:prefix?/firstRegister',
-      name: 'FirstRegister',
-      component: () => import('@/views/details/bonus/firstRegister')
+      path: "/:prefix?/cp",
+      name: "Cp",
+      component: () => import("@/views/details/mine/cp"),
     },
     {
-      path: '/:prefix?/cp',
-      name: 'Cp',
-      component: () => import('@/views/details/mine/cp')
+      path: "/:prefix?/email",
+      name: "Email",
+      component: () => import("@/views/details/mine/email"),
     },
     {
-      path: '/:prefix?/email',
-      name: 'Email',
-      component: () => import('@/views/details/mine/email')
+      path: "/:prefix?/myCollection",
+      name: "MyCollection",
+      component: () => import("@/views/details/mine/myCollection"),
     },
     {
-      path: '/:prefix?/myCollection',
-      name: 'MyCollection',
-      component: () => import('@/views/details/mine/myCollection')
+      path: "/:prefix?/category",
+      name: "Category",
+      component: () => import("@/views/details/home/category"),
     },
     {
-      path: '/:prefix?/category',
-      name: 'Category',
-      component: () => import('@/views/details/home/category')
+      path: "/:prefix?/messageCenter",
+      name: "MessageCenter",
+      component: () => import("@/views/details/home/messageCenter"),
     },
     {
-      path: '/:prefix?/messageCenter',
-      name: 'MessageCenter',
-      component: () => import('@/views/details/home/messageCenter')
+      path: "/:prefix?/searchGame",
+      name: "SearchGame",
+      component: () => import("@/views/details/home/searchGame"),
     },
     {
-      path: '/:prefix?/searchGame',
-      name: 'SearchGame',
-      component: () => import('@/views/details/home/searchGame')
+      path: "/:prefix?/gameDetail",
+      name: "GameDetail",
+      component: () => import("@/views/details/home/gameDetail"),
     },
     {
-      path: '/:prefix?/gameDetail',
-      name: 'GameDetail',
-      component: () => import('@/views/details/home/gameDetail')
+      path: "/:prefix?/lotteryDetail",
+      name: "LotteryDetail",
+      component: () => import("@/views/details/lottery/lotteryDetail"),
     },
     {
-      path: '/:prefix?/lotteryDetail',
-      name: 'LotteryDetail',
-      component: () => import('@/views/details/lottery/lotteryDetail')
+      path: "/:prefix?/betHistory",
+      name: "BetHistory",
+      component: () => import("@/views/details/lottery/betHistory"),
     },
     {
-      path: '/:prefix?/betHistory',
-      name: 'BetHistory',
-      component: () => import('@/views/details/lottery/betHistory')
+      path: "/:prefix?/latestResults",
+      name: "LatestResults",
+      component: () => import("@/views/details/lottery/latestResults"),
     },
     {
-      path: '/:prefix?/latestResults',
-      name: 'LatestResults',
-      component: () => import('@/views/details/lottery/latestResults')
+      path: "/:prefix?/bettingDetails",
+      name: "BettingDetails",
+      component: () => import("@/views/details/lottery/bettingDetails"),
     },
     {
-      path: '/:prefix?/bettingDetails',
-      name: 'BettingDetails',
-      component: () => import('@/views/details/lottery/bettingDetails')
+      path: "/:prefix?/settings",
+      name: "Settings",
+      component: () => import("@/views/details/mine/settings"),
     },
     {
-      path: '/:prefix?/settings',
-      name: 'Settings',
-      component: () => import('@/views/details/mine/settings')
+      path: "/:prefix?/editProfile",
+      name: "EditProfile",
+      component: () => import("@/views/details/mine/editProfile"),
     },
     {
-      path: '/:prefix?/editProfile',
-      name: 'EditProfile',
-      component: () => import('@/views/details/mine/editProfile')
+      path: "/:prefix?/vipLevels",
+      name: "VipLevels",
+      component: () => import("@/views/details/mine/vipLevels"),
     },
     {
-      path: '/:prefix?/vipLevels',
-      name: 'VipLevels',
-      component: () => import('@/views/details/mine/vipLevels')
+      path: "/:prefix?/passwordSuccess",
+      name: "PasswordSuccess",
+      component: () => import("@/views/details/mine/passwordSuccess"),
     },
     {
-      path: '/:prefix?/passwordSuccess',
-      name: 'PasswordSuccess',
-      component: () => import('@/views/details/mine/passwordSuccess')
+      path: "/:prefix?/transactionRecords",
+      name: "TransactionRecords",
+      component: () => import("@/views/details/mine/transactionRecords"),
     },
     {
-      path: '/:prefix?/transactionRecords',
-      name: 'TransactionRecords',
-      component: () => import('@/views/details/mine/transactionRecords')
+      path: "/:prefix?/phoneUnbound",
+      name: "PhoneUnbound",
+      component: () => import("@/views/details/mine/phoneUnbound"),
     },
     {
-      path: '/:prefix?/phoneUnbound',
-      name: 'PhoneUnbound',
-      component: () => import('@/views/details/mine/phoneUnbound')
+      path: "/:prefix?/googlePhoneBind",
+      name: "GooglePhoneBind",
+      component: () => import("@/views/details/mine/googlePhoneBind"),
     },
-    {
-      path: '/:prefix?/googlePhoneBind',
-      name: 'GooglePhoneBind',
-      component: () => import('@/views/details/mine/googlePhoneBind')
-    }
-  ]
-})
+  ],
+});
 
 router.beforeEach((to, from, next) => {
-  to.meta.routeTransition = consumeRouteMotion()
-  const urlSearch = new URLSearchParams(window.location.search)
-  const rawCode = to.query.code || urlSearch.get('code')
+  to.meta.routeTransition = consumeRouteMotion();
+  const urlSearch = new URLSearchParams(window.location.search);
+  const rawCode = to.query.code || urlSearch.get("code");
   if (rawCode) {
-    console.log('[Google OAuth] Router guard: Google callback detected, letting App.vue handle it')
-    return next()
+    console.log(
+      "[Google OAuth] Router guard: Google callback detected, letting App.vue handle it",
+    );
+    return next();
   }
 
   // 写死美国；中间页选国家逻辑先关掉
-  const defaultCountry = 'US'
+  const defaultCountry = "US";
   // 强制美国，忽略本地已存国家（中间页逻辑关闭期间）
-  localStorage.setItem('country', defaultCountry)
-  if (!localStorage.getItem('platform')) {
-    localStorage.setItem('platform', 'usbet')
+  localStorage.setItem("country", defaultCountry);
+  if (!localStorage.getItem("platform")) {
+    localStorage.setItem("platform", "usbet");
   }
-  if (!localStorage.getItem('currency')) {
-    localStorage.setItem('currency', 'usd')
+  if (!localStorage.getItem("currency")) {
+    localStorage.setItem("currency", "usd");
   }
-  if (!localStorage.getItem('areaCode')) {
-    localStorage.setItem('areaCode', '+1')
+  if (!localStorage.getItem("areaCode")) {
+    localStorage.setItem("areaCode", "+1");
   }
-  if (!localStorage.getItem('defaultLanguage')) {
-    localStorage.setItem('defaultLanguage', 'en')
+  if (!localStorage.getItem("defaultLanguage")) {
+    localStorage.setItem("defaultLanguage", "en");
   }
   // const savedCountry = readCountryCode()
-  const savedCountry = defaultCountry
-  const rawRoutePrefix = to.params.prefix || ''
-  const routePrefix = normalizeCountryCode(rawRoutePrefix)
-  const pathSegments = to.path.split('/').filter(Boolean)
+  const savedCountry = defaultCountry;
+  const rawRoutePrefix = to.params.prefix || "";
+  const routePrefix = normalizeCountryCode(rawRoutePrefix);
+  const pathSegments = to.path.split("/").filter(Boolean);
   if (pathSegments[0]) {
-    pathSegments[0] = normalizeCountryCode(pathSegments[0])
+    pathSegments[0] = normalizeCountryCode(pathSegments[0]);
   }
 
   if (rawRoutePrefix && routePrefix && rawRoutePrefix !== routePrefix) {
-    const pathWithoutPrefix = to.path.replace(/^\/[^/]+/, '') || ''
+    const pathWithoutPrefix = to.path.replace(/^\/[^/]+/, "") || "";
     return next({
       path: `/${routePrefix}${pathWithoutPrefix}`,
       query: to.query,
       hash: to.hash,
-      replace: true
-    })
+      replace: true,
+    });
   }
 
-  if (pathSegments[0] === 'appDetail') {
-    localStorage.setItem('country', defaultCountry)
-    const childPath = pathSegments[1] || 'appDetail'
+  if (pathSegments[0] === "appDetail") {
+    localStorage.setItem("country", defaultCountry);
+    const childPath = pathSegments[1] || "appDetail";
     return next({
       path: `/${defaultCountry}/${childPath}`,
       query: to.query,
       hash: to.hash,
-      replace: true
-    })
+      replace: true,
+    });
   }
 
-  let finalPrefix = ''
+  let finalPrefix = "";
 
   if (savedCountry) {
-    finalPrefix = savedCountry
+    finalPrefix = savedCountry;
     if (routePrefix !== savedCountry) {
-      const pathWithoutPrefix = to.path.replace(/^\/[^/]+/, '') || ''
-      const correctPath = `/${savedCountry}${pathWithoutPrefix}`
-      if (localStorage.getItem('googleAuthCode')) {
-        window.location.href = correctPath
-        return
+      const pathWithoutPrefix = to.path.replace(/^\/[^/]+/, "") || "";
+      const correctPath = `/${savedCountry}${pathWithoutPrefix}`;
+      if (localStorage.getItem("googleAuthCode")) {
+        window.location.href = correctPath;
+        return;
       }
-      return next(correctPath)
+      return next(correctPath);
     }
   } else {
     // finalPrefix = routePrefix || ''
     // if (finalPrefix) {
     //   localStorage.setItem('country', finalPrefix)
     // }
-    finalPrefix = defaultCountry
-    localStorage.setItem('country', defaultCountry)
+    finalPrefix = defaultCountry;
+    localStorage.setItem("country", defaultCountry);
   }
 
   const validSubPaths = [
-    'Crowdfunding',
-    'Country',
-    'home',
-    'appDetail',
-    'menu',
-    'Support',
-    'bonus',
-    'lottery',
-    'share',
-    'mine',
-    'activity'
-  ]
+    "Crowdfunding",
+    "Country",
+    "home",
+    "appDetail",
+    "menu",
+    "Support",
+    "bonus",
+    "lottery",
+    "share",
+    "mine",
+    "activity",
+  ];
 
   if (pathSegments.length === 0) {
     // 中间页逻辑注释掉，直接进美国首页
@@ -468,7 +462,7 @@ router.beforeEach((to, from, next) => {
     //   return
     // }
     // return next('/Country')
-    return next(`/${defaultCountry}/home`)
+    return next(`/${defaultCountry}/home`);
   } else if (
     pathSegments.length === 1 &&
     !validSubPaths.includes(pathSegments[0])
@@ -478,66 +472,66 @@ router.beforeEach((to, from, next) => {
     // const targetPath = `/${prefix}/home`
     // window.location.href = targetPath
     // return
-    localStorage.setItem('country', defaultCountry)
-    return next(`/${defaultCountry}/home`)
-  } else if (pathSegments[0] === 'Country') {
+    localStorage.setItem("country", defaultCountry);
+    return next(`/${defaultCountry}/home`);
+  } else if (pathSegments[0] === "Country") {
     // 直接访问中间页也跳美国首页
-    return next(`/${defaultCountry}/home`)
+    return next(`/${defaultCountry}/home`);
   }
 
   // /US/Country 等带前缀的中间页也跳过
-  if (to.name === 'Country' || pathSegments.includes('Country')) {
-    return next(`/${defaultCountry}/home`)
+  if (to.name === "Country" || pathSegments.includes("Country")) {
+    return next(`/${defaultCountry}/home`);
   }
 
   // 底部 Deposit / Mine 及分享页需登录；未登录回首页并弹登录框
-  const needAuthPaths = ['/rechargeCont', '/mine', '/share']
-  const currentPath = to.path.replace(/^\/[^/]+/, '') || '/'
+  const needAuthPaths = ["/rechargeCont", "/mine", "/share"];
+  const currentPath = to.path.replace(/^\/[^/]+/, "") || "/";
 
   // 游客不能进入提现页：App 内升级弹窗；H5 打开登录。
-  if (currentPath === '/bankAdd' && isGuestUser()) {
-    const redirectPath = finalPrefix ? `/${finalPrefix}/home` : '/home'
+  if (currentPath === "/bankAdd" && isGuestUser()) {
+    const redirectPath = finalPrefix ? `/${finalPrefix}/home` : "/home";
     const openGate = () => {
       setTimeout(() => {
-        if (isNativeAppShell()) bus.emit('openGuestUpgrade')
-        else bus.emit('openLogin', 0)
-      }, 0)
-    }
-    if (!from.fullPath || from.fullPath === '/') {
-      next(redirectPath)
+        if (isNativeAppShell()) bus.emit("openGuestUpgrade");
+        else bus.emit("openLogin", 0);
+      }, 0);
+    };
+    if (!from.fullPath || from.fullPath === "/") {
+      next(redirectPath);
     } else {
-      next(false)
+      next(false);
     }
-    openGate()
-    return
+    openGate();
+    return;
   }
 
   if (needAuthPaths.includes(currentPath)) {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem("token");
     if (!token) {
-      const redirectPath = finalPrefix ? `/${finalPrefix}/home` : '/home'
+      const redirectPath = finalPrefix ? `/${finalPrefix}/home` : "/home";
       const openLogin = () => {
-        setTimeout(() => bus.emit('openLogin'), 0)
-      }
+        setTimeout(() => bus.emit("openLogin"), 0);
+      };
       if (!from.fullPath) {
-        next(redirectPath)
-        openLogin()
+        next(redirectPath);
+        openLogin();
       } else {
         setTimeout(() => {
-          next(redirectPath)
-          openLogin()
-        }, 0)
+          next(redirectPath);
+          openLogin();
+        }, 0);
       }
-      return
+      return;
     }
   }
 
-  next()
-})
+  next();
+});
 
 // Tab 切换 / 进二级页：强制滚到顶部（修复停在上一页半截的问题）
 router.afterEach(() => {
-  resetPageScrollAfterRoute()
-})
+  resetPageScrollAfterRoute();
+});
 
-export default router
+export default router;

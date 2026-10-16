@@ -250,7 +250,7 @@ export default {
     flex-direction: column;
     align-items: center;
     min-height: 0;
-    padding: 12px 8px 10px;
+    padding: 5px;
     box-sizing: border-box;
     border-radius: 16px;
     background: #000;
@@ -263,21 +263,21 @@ export default {
     font-size: 12px;
     font-weight: 700;
     letter-spacing: 0.3px;
-    color: #fff;
     line-height: 1.2;
     text-transform: uppercase;
+    color: #24ee89;
   }
 
   &__art {
-    width: 100%;
-    height: 76px;
+    width: 71px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 8px;
+    min-height: 71px;
 
     img {
-      max-width: 92%;
+      width: 71px;
       max-height: 100%;
       object-fit: contain;
       display: block;
@@ -290,7 +290,7 @@ export default {
     text-align: center;
     font-size: 12px;
     line-height: 1.35;
-    color: #fff;
+    color: #c9c9c9;
     font-weight: 700;
 
     :deep(em) {

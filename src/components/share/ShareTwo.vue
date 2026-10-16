@@ -327,8 +327,8 @@ export default {
   border: none;
   border-radius: 16px;
   box-sizing: border-box;
-  min-height: 88px;
-  padding: 10px 8px 12px;
+  min-height: 95px;
+  padding: 3px 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -377,7 +377,7 @@ export default {
 
 .section-title {
   display: block;
-  margin: 14px 10px 10px;
+  margin: 10px;
   font-size: 14px;
   font-weight: 800;
   color: #fff;

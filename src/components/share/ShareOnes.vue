@@ -189,10 +189,6 @@ export default {
         //   img: require("@/assets/img/common/douyin.png"),
         //   name: "TikTok",
         // },
-        // {
-        //   img: require("@/assets/img/common/img_x.png"),
-        //   name: "X",
-        // },
       ],
       firstDepositRows: [
         { amount: "9.99", l1: "3", l2: "2", l3: "1" },
@@ -299,8 +295,9 @@ export default {
 @gold: #ffd36a;
 @gold-soft: #ffe9a8;
 @muted: #d7a2fa;
-@copy-grad: linear-gradient(180deg, #3be59f 0%, #00b56a 100%);
+@copy-grad: linear-gradient(180deg, #e5d939 0%, #e68014 100%);
 @title-bg: url("../../assets/img/share/share_title.png");
+@link-bg: url("../../assets/img/share/share_link_bg.png");
 
 .invite {
   padding: 4px 12px 80px;
@@ -313,32 +310,44 @@ export default {
   overflow: hidden;
   box-sizing: border-box;
   /* 头区留给链标装饰，内容落在空心紫区内 */
-  padding: 78px 18px 20px;
+  padding: 76px 18px 20px;
   background-color: @panel;
   background-image: url("../../assets/img/share/share_list2.png");
   background-repeat: no-repeat;
   background-position: top center;
   background-size: 100% 100%;
   box-shadow: 0 0 22px fade(@purple-soft, 40%);
-  min-height: 260px;
+  min-height: 282px;
 }
 
 .invite-card__label {
-  margin: 20px 0 8px;
+  margin: 12px 0 6px;
   font-size: 12px;
   font-weight: 700;
-  color: #edd8fb;
+  line-height: 1;
+  color: #ffffff;
 }
 
 .invite-link {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  width: 100%;
   min-width: 0;
-  background: rgba(10, 2, 22, 0.75);
-  border: 1px solid fade(@purple-line, 50%);
-  border-radius: 999px;
-  padding: 6px 8px 6px 12px;
+  height: 68px;
+  min-height: 68px;
+  box-sizing: border-box;
+  /* 左右避开礼盒金币装饰区 */
+  padding: 7px 23px 0 28px;
+  background-color: transparent;
+  background-image: @link-bg;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 100% 100%;
+  border: none;
+  border-radius: 0;
 }
 
 .invite-link__url {
@@ -346,30 +355,43 @@ export default {
   min-width: 0;
   margin: 0;
   font-size: 12px;
-  line-height: 1.4;
-  color: #ffffff;
-  word-break: break-all;
   font-weight: 700;
+  line-height: 1;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: normal;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
 }
 
 .invite-link__copy {
   flex-shrink: 0;
+  width: 54px;
+  height: 26px;
+  padding: 0;
   border: none;
   outline: none;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: @copy-grad;
-  color: #fff;
+  color: #ffffff;
   font-size: 12px;
   font-weight: 700;
+  line-height: 1;
   text-transform: uppercase;
-  letter-spacing: 0.3px;
-  border-radius: 16px;
-  padding: 7px 14px;
-  box-shadow: 0 3px 0 #007a48;
+  letter-spacing: 0;
+  border-radius: 19.5px;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+  box-shadow:
+    inset 0 5px 4.7px 0 #fff47c,
+    inset 0 -3px 0 0 #82520b;
 }
 
 .invite-card__share-title {
-  margin: 16px 0 10px;
+  margin: 2px 0 10px;
   font-size: 12px;
   font-weight: 700;
   color: #edd8fb;
@@ -397,18 +419,17 @@ export default {
 }
 
 .invite-share__icon {
-  width: 42px;
-  height: 42px;
+  width: 35px;
+  height: 35px;
   margin: 0 auto;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.28);
 
   img {
-    width: 42px;
-    height: 42px;
+    width: 35px;
+    height: 35px;
     object-fit: contain;
   }
 }

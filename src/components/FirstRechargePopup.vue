@@ -107,11 +107,18 @@
               :disabled="!price"
               @click="buyGiftPack"
             >
-              <span class="fr-popup__btn-main">{{ ctaText }}</span>
-              <span v-if="upToBonusPlain" class="fr-popup__btn-sub">
-                {{ $lang.fr_up_to_prefix || "Receive up to" }}
-                <em>{{ upToBonusPlain }}</em>
-                {{ $lang.fr_rewards || "Rewards" }}
+              <img
+                class="fr-popup__btn-bg"
+                src="@/assets/img/bonus/firstrecharge/deposit_btn.png"
+                alt=""
+              />
+              <span class="fr-popup__btn-text">
+                <span class="fr-popup__btn-main">{{ ctaText }}</span>
+                <span v-if="upToBonusPlain" class="fr-popup__btn-sub">
+                  {{ $lang.fr_up_to_prefix || "Receive up to" }}
+                  <em>{{ upToBonusPlain }}</em>
+                  {{ $lang.fr_rewards || "Rewards" }}
+                </span>
               </span>
             </button>
             <p class="fr-popup__disclaimer">
@@ -522,7 +529,7 @@ export default {
 
   &__hero {
     display: block;
-    width: 92%;
+    width: 80%;
     max-width: 300px;
     margin: 0 auto -6px;
     height: auto;
@@ -531,7 +538,7 @@ export default {
 
   &__title-img {
     display: block;
-    width: 94%;
+    width: 78%;
     max-width: 320px;
     margin: -68px auto 0;
     height: auto;
@@ -560,9 +567,9 @@ export default {
   &__ribbon {
     position: absolute;
     left: 50%;
-    top: 0;
+    top: 5px;
     z-index: 2;
-    width: 52%;
+    width: 66%;
     max-width: 168px;
     transform: translateX(-50%);
   }
@@ -587,7 +594,7 @@ export default {
   &__original-price {
     font-size: 11px;
     font-weight: 800;
-    color: #fff;
+    color: #ffe0e0;
     text-decoration: line-through;
     white-space: nowrap;
   }
@@ -595,8 +602,8 @@ export default {
   &__discount {
     font-size: 10px;
     font-weight: 900;
-    color: #fff;
-    background: #c2183a;
+    color: #24ee89;
+    background: #830000;
     border-radius: 999px;
     padding: 1px 6px;
     line-height: 1.3;
@@ -624,19 +631,14 @@ export default {
     box-sizing: border-box;
   }
 
-  &__price-currency {
-    font-size: 28px;
-    font-weight: 600;
-    color: @fr-yellow;
-  }
-
+  &__price-currency,
   &__price {
-    font-size: 28px;
-    font-weight: 600;
+    font-size: 30px;
+    font-weight: 800;
     color: @fr-yellow;
     line-height: 1;
-    letter-spacing: -0.5px;
-    text-shadow: 0 0 10px fade(@fr-yellow, 35%);
+    letter-spacing: -0.4px;
+    text-shadow: 0 2px 0 fade(#6a3a00, 35%);
   }
 
   &__timer {
@@ -649,8 +651,8 @@ export default {
 
   &__timer-label {
     margin: 0 0 10px;
-    font-size: 13px;
-    font-weight: 800;
+    font-size: 14px;
+    font-weight: 700;
     color: #fff;
     letter-spacing: 1.2px;
     text-transform: uppercase;
@@ -723,28 +725,63 @@ export default {
   }
 
   &__btn {
-    .btn-3d-green();
-    height: auto;
-    min-height: 52px;
-    padding: 8px 12px 10px;
+    position: relative;
+    width: calc(100% + 28px);
+    margin: -20px -14px -35px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    aspect-ratio: 682 / 262;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.55;
+    }
+  }
+
+  &__btn-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+  }
+
+  &__btn-text {
+    position: relative;
+    z-index: 1;
+    display: flex;
     flex-direction: column;
-    gap: 2px;
-    font-size: 16px;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    width: 58%;
+    margin-top: -2%;
+    pointer-events: none;
   }
 
   &__btn-main {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 900;
-    letter-spacing: 0.5px;
+    color: #fff;
+    letter-spacing: 0.4px;
+    line-height: 1.1;
     text-transform: uppercase;
+    text-shadow: 0 2px 0 fade(#067a3a, 55%);
   }
 
   &__btn-sub {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
-    color: fade(#fff, 92%);
+    color: #fff;
     text-transform: none;
     letter-spacing: 0;
+    line-height: 1.2;
+    white-space: nowrap;
 
     em {
       font-style: normal;

@@ -152,7 +152,6 @@
         </button>
       </div>
       <div class="add-popup__content">
-
         <!-- Real Name -->
         <div class="add-popup__field">
           <label>{{ $lang.common_txt46 || "Real Name" }}</label>
@@ -677,8 +676,8 @@ export default {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
 
     img {
-      width: 14px;
-      height: 14px;
+      width: 20px;
+      height: 20px;
       object-fit: contain;
       display: block;
     }

@@ -91,63 +91,30 @@
         </div>
       </div>
 
-      <!-- banner 轮播（临时注释，改用静态图）
       <div
-        v-if="$route.path.includes('/home') && bannerList.length"
-        class="content-swiper-bg"
+        v-if="$route.path.includes('/home')"
+        class="content-swiper-bg home-banner-swipe"
         style="margin-top: 6px"
       >
         <van-swipe
-          ref="bannerSwipe"
           :autoplay="3500"
           class="swipe-fixed-height"
           :show-indicators="false"
-          @change="onBannerChange"
+          :touchable="true"
         >
           <van-swipe-item
-            v-for="(item, index) in bannerList"
-            :key="item.advertisementImg || index"
-            @click="onBannerClick(item)"
+            v-for="(img, index) in homeBannerList"
+            :key="'home-banner-' + index"
           >
             <img
-              class="content-swiper--img"
-              :src="item.advertisementImg"
+              class="content-swiper--img content-swiper--img-static"
+              :src="img"
               alt=""
               :loading="index === 0 ? 'eager' : 'lazy'"
-              :fetchpriority="index === 0 ? 'high' : 'auto'"
               decoding="async"
-              @error="onBannerImgError"
             />
           </van-swipe-item>
         </van-swipe>
-        <div class="banner-arrow-wrap">
-          <div class="banner-arrow banner-arrow-left" @click="bannerPrev">
-            <van-icon name="arrow-left" size="16" color="var(--wihte-color)" />
-          </div>
-          <div class="banner-arrow banner-arrow-right" @click="bannerNext">
-            <van-icon name="arrow" size="16" color="var(--wihte-color)" />
-          </div>
-        </div>
-        <div class="banner-indicators">
-          <span
-            v-for="(item, index) in bannerList.length"
-            :key="index"
-            class="banner-dot"
-            :class="{ active: currentBannerIndex === index }"
-          ></span>
-        </div>
-      </div>
-      -->
-      <div
-        v-if="$route.path.includes('/home')"
-        class="content-swiper-bg"
-        style="margin-top: 6px"
-      >
-        <img
-          class="content-swiper--img content-swiper--img-static"
-          :src="require('@/assets/img/home/banner_welcome.png')"
-          alt=""
-        />
       </div>
       <router-view v-slot="{ Component, route }">
         <transition
@@ -194,60 +161,6 @@
         />
       </div>
     </div> -->
-    <!-- <van-popup
-      v-if="['/lottery', '/home'].includes($route.path)"
-      v-model:show="showDialog"
-      class="custom-popup2"
-      :closeable="false"
-      :close-on-click-overlay="false"
-    >
-      <div v-if="isff2" class="cont-redim"></div>
-
-      <div v-if="isff" class="cont-redim2"></div>
-
-      <div v-if="isff2" class="d-flex-s m-t-10">
-        <div class="d-flex">
-          <van-checkbox
-            v-model="agree"
-            shape="square"
-            icon-size="16px"
-            icon-color="#202A39"
-            style="
-              border: 1px solid #6f7887;
-              margin-right: 3px;
-              border-radius: 5px;
-            "
-          ></van-checkbox>
-          <p style="color: var(--wihte-color); font-size: 11px">{{ $lang.home_txt7 }}</p>
-        </div>
-        <div class="d-flex">
-          <van-checkbox
-            v-model="agree2"
-            shape="square"
-            icon-size="16px"
-            icon-color="#202A39"
-            style="
-              border: 1px solid #6f7887;
-              margin-right: 3px;
-              border-radius: 5px;
-            "
-          ></van-checkbox>
-          <p style="color: var(--wihte-color); font-size: 11px">{{ $lang.home_txt8 }}</p>
-        </div>
-      </div>
-      <img
-        class="m-t-10"
-        @click="closeF()"
-        src="../../assets/img/lucky_jackpot/img_cancel.png"
-        width="38"
-      />
-    </van-popup> -->
-    <activity-popup
-      v-if="$route.path.includes('/lottery') || $route.path.includes('/home')"
-      v-model="isShowPopup2"
-      @closeActive="closeActive"
-      @closeActive2="closeActive2"
-    ></activity-popup>
   </div>
 </template>
 
@@ -262,12 +175,18 @@ import {
   VnRechargeInitS,
   GameBalanceList,
   WithdrawInit,
-  ActivitygetRegisterAward,
   GetInvitationID,
   GetBannerList,
   GetHomeWinningGameList,
 } from "@/api/common";
 import { consumeOpenLoginAfterPlatformSwitch } from "@/utils/platformAuth";
+import bannerVip from "@/assets/img/home/banner/01_vip.png";
+import bannerReferral from "@/assets/img/home/banner/02_referral.png";
+import bannerDeposit from "@/assets/img/home/banner/03_deposit.png";
+import bannerNewPlayer from "@/assets/img/home/banner/04_new_player.png";
+import bannerDaily from "@/assets/img/home/banner/05_daily.png";
+import bannerWelcome from "@/assets/img/home/banner/06_welcome.png";
+
 export default {
   components: {
     // TopDownload,
@@ -318,8 +237,6 @@ export default {
   data() {
     return {
       active: 0,
-      agree2: false,
-      agree: false,
       MenList: [
         {
           img: require("@/assets/img/home/men_1.png"),
@@ -332,9 +249,7 @@ export default {
       ],
       isFjShow: true,
       isFjShow2: true,
-      showDialog: false,
       isShowPopup: false,
-      isShowPopup2: false,
       timer: null,
       topDownloadHeight: 0,
       showPopup: false, //登录弹窗开关
@@ -381,10 +296,16 @@ export default {
       // ],
       // selectMenIndex: this.$route.path === '/home' ? 1 : 0
       selectMenIndex: 0,
-      isff: true,
-      isff2: false,
       currentBannerIndex: 0,
       bannerList: [],
+      homeBannerList: [
+        bannerVip,
+        bannerReferral,
+        bannerDeposit,
+        bannerNewPlayer,
+        bannerDaily,
+        bannerWelcome,
+      ],
       showNoticePopup: false,
     };
   },
@@ -413,17 +334,6 @@ export default {
     });
     // 页面加载时判断是否需要显示弹窗
     this.checkPopupStatus();
-    // this.ActivitygetRegisterAward()
-    const today = new Date().toISOString().split("T")[0];
-
-    if (sessionStorage.getItem("neverShowToday2") === today) {
-      this.showDialog = false;
-    } else if (localStorage.getItem("neverShow2")) {
-      // 检查永久不显示
-      this.showDialog = false;
-    } else {
-      this.showDialog = true;
-    }
 
     // 全局监听登录弹窗事件（未登录接口、活动页等场景统一触发）
     this.$bus.on("openLogin", this.handleOpenLogin);
@@ -659,7 +569,6 @@ export default {
         "/mine",
         "/share",
         "/vipLevels",
-        "/vip",
       ];
       return authRoutes.some((r) => p === r || p.startsWith(r + "/"));
     },
@@ -748,24 +657,6 @@ export default {
       path = path.replace(/^\/[A-Za-z]{2}(?=\/)/, "") || path;
       return { type: "route", target: path };
     },
-    closeActive() {
-      this.showDialog = false;
-    },
-    closeActive2() {
-      this.showDialog = true;
-    },
-    async ActivitygetRegisterAward() {
-      const data = await ActivitygetRegisterAward();
-      if (data.status === "ok") {
-        if (data.content.receiveStatus === 1) {
-          this.isShowPopup2 = true;
-        } else {
-          this.isShowPopup2 = false;
-        }
-      } else if (data.status === "need_login") {
-        this.isShowPopup2 = true;
-      }
-    },
     goToMen(i) {
       this.selectMenIndex = i;
       if (i === 0) {
@@ -791,31 +682,6 @@ export default {
         this.isFjShow2 = false;
       }
     },
-    closeF() {
-      if (this.agree) {
-        // 今日不显示
-        const today = new Date().toISOString().split("T")[0];
-        sessionStorage.setItem("neverShowToday2", today);
-      }
-      if (this.agree2) {
-        // 永久不显示
-        localStorage.setItem("neverShow2", true);
-      }
-      if (this.isff2) {
-        this.showDialog = false;
-      }
-      this.isff = false;
-      if (!this.isff) {
-        this.isff2 = true;
-        return;
-      }
-    },
-    submit2() {
-      localStorage.removeItem("isRegister");
-      this.showDialog = false;
-      // this.$router.push('/recharge')
-      this.$jumpTo("/rechargeCont");
-    },
     getLoging() {
       this.showPopup = true;
     },
@@ -831,17 +697,11 @@ export default {
       // 如果今天已经显示过或者今天关闭过，则不显示
       if (lastShownDate === today || isClosedToday) {
         this.isShowPopup = false;
-        // this.isShowPopup2 = false
       } else {
         this.isShowPopup = true;
-        // this.isShowPopup2 = true
-
         // 记录今天已经显示过弹窗
         localStorage.setItem("popupLastShownDate", today);
       }
-      // if (localStorage.getItem('isRegister') === 'isRegister') {
-      //   this.showDialog = true
-      // }
     },
     // 打开弹窗
     openPopup() {
@@ -852,7 +712,6 @@ export default {
         localStorage.getItem("popupLastShownDate") !== today
       ) {
         this.isShowPopup = true;
-        // this.isShowPopup2 = true
         localStorage.setItem("popupLastShownDate", today);
       }
     },
@@ -997,53 +856,12 @@ export default {
 // }
 /* PC 端样式 */
 @media (min-width: 769px) {
-  .cont-redim {
-    height: 477px !important;
-    padding-top: 383px !important;
-  }
-  .cont-redim2 {
-    height: 477px !important;
-    padding-top: 383px !important;
-  }
-  .custom-popup2 {
-    width: 370px !important;
-  }
   :deep(.van-sticky--fixed) {
     top: 110px !important;
   }
 }
 :deep(.van-overlay) {
   z-index: 1999 !important;
-}
-.custom-popup2 {
-  width: 86%;
-  text-align: center;
-  background-color: transparent; /* 设置背景色 */
-  // z-index: 2004 !important;
-  .cont-redim {
-    // padding-top: 330px;
-    background: url(../../assets/img/common/syhd.png) no-repeat;
-    background-size: 100% 100%;
-    height: 420px;
-    border-radius: 15px;
-  }
-  .cont-redim2 {
-    // padding-top: 330px;
-    background: url(../../assets/img/common/home_111.png) no-repeat;
-    background-size: 100% 100%;
-    height: 450px;
-    border-radius: 15px;
-  }
-
-  :deep(.van-checkbox__icon .van-icon) {
-    border: none;
-  }
-  :deep(.van-checkbox__icon--checked .van-icon) {
-    background-color: @primary-color3 !important;
-  }
-  .van-overlay {
-    z-index: 2001 !important;
-  }
 }
 .fj-cont {
   position: fixed;
@@ -1083,7 +901,7 @@ export default {
 .content-swiper--img {
   width: 94%;
   margin: 0 auto;
-  height: 182px;
+  height: 171px;
   object-fit: cover;
   display: block;
   border-radius: 10px;
@@ -1092,6 +910,19 @@ export default {
 .content-swiper--img-static {
   height: 171px;
   cursor: default;
+}
+.home-banner-swipe {
+  :deep(.van-swipe__indicators) {
+    display: none;
+  }
+  .swipe-fixed-height {
+    height: 171px;
+  }
+  .content-swiper--img {
+    width: calc(100% - 24px);
+    margin: 0 12px;
+    height: 171px;
+  }
 }
 
 /* 首页中奖滚动条 */

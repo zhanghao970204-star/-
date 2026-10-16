@@ -7,7 +7,10 @@
       @pointercancel="clearRouteSwipe"
     >
       <router-view v-slot="{ Component, route }">
-        <transition :name="route.meta.routeTransition || 'route-motion-forward'" mode="out-in">
+        <transition
+          :name="route.meta.routeTransition || 'route-motion-forward'"
+          mode="out-in"
+        >
           <keep-alive v-if="Component && isRootKeepAlive(route)">
             <component :is="Component" :key="rootKeepAliveKey(route)" />
           </keep-alive>
@@ -538,7 +541,10 @@ export default {
             this.startFrTick();
           } else {
             this.stopFrTick();
-            if (this.showFirstRechargePopup && this.homePopupPhase === "first") {
+            if (
+              this.showFirstRechargePopup &&
+              this.homePopupPhase === "first"
+            ) {
               this.showFirstRechargePopup = false;
             }
           }
@@ -917,11 +923,15 @@ export default {
 }
 .route-motion-forward-enter-active,
 .route-motion-back-enter-active {
-  transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1), opacity 160ms ease-out;
+  transition:
+    transform 200ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 160ms ease-out;
 }
 .route-motion-forward-leave-active,
 .route-motion-back-leave-active {
-  transition: transform 150ms ease-in, opacity 120ms ease-in;
+  transition:
+    transform 150ms ease-in,
+    opacity 120ms ease-in;
 }
 .route-motion-forward-enter-from {
   transform: translate3d(18px, 0, 0);
@@ -953,7 +963,12 @@ body {
   padding: 0;
   color: var(--wihte-color);
   font-size: 12px;
-  font-family: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family:
+    "Manrope",
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
 }
 ul,
 p,
@@ -966,11 +981,16 @@ h3 {
 #app,
 #app-content {
   background-color: #150319;
-  background-image: url(./assets/img/common/page_bg.png),
+  background-image:
+    url(./assets/img/common/page_bg.png),
     linear-gradient(180deg, #010000 0%, #15031a 50%, #150319 100%);
   background-repeat: repeat, no-repeat;
-  background-size: auto, 100% 100%;
-  background-position: top center, center;
+  background-size:
+    auto,
+    100% 100%;
+  background-position:
+    top center,
+    center;
   background-attachment: fixed, fixed;
 }
 
@@ -981,18 +1001,28 @@ h3 {
   margin: 0 auto;
   transition: all 0.3s ease;
   color: var(--font-color, #fff);
-  font-family: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family:
+    "Manrope",
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
 }
 
 /* 移动端样式 */
 @media (max-width: 768px) {
   body {
     background-color: #150319;
-    background-image: url(./assets/img/common/page_bg.png),
+    background-image:
+      url(./assets/img/common/page_bg.png),
       linear-gradient(180deg, #010000 0%, #15031a 50%, #150319 100%);
     background-repeat: repeat, no-repeat;
-    background-size: auto, 100% 100%;
-    background-position: top center, center;
+    background-size:
+      auto,
+      100% 100%;
+    background-position:
+      top center,
+      center;
     background-attachment: fixed, fixed;
     min-height: 100vh;
     height: 100vh;

@@ -10,9 +10,7 @@
       <div class="vip-hero__head">
         <button type="button" class="vip-hero__back" @click="$router.go(-1)">
           <img class="vip-hero__back-bg" :src="imgBackCircle" alt="" />
-          <img class="vip-hero__back-ico" :src="imgBackIco" alt="" />
         </button>
-        <img class="vip-hero__logo" :src="imgLogo" alt="CLUB VIP" />
       </div>
 
       <div
@@ -45,7 +43,10 @@
                 alt=""
                 draggable="false"
               />
-              <span class="vip-carousel__lv" :style="resolveVipLevelTagStyle(lv)">
+              <span
+                class="vip-carousel__lv"
+                :style="resolveVipLevelTagStyle(lv)"
+              >
                 VIP {{ lv }}
               </span>
               <span
@@ -415,13 +416,13 @@ function resolveVipPairIcon(level) {
 
 /** 两级共用一张 VIP 卡片：0-2 / 3-4 / 5-6 / 7-8 / 9-10 / 11-12 / 13 */
 const VIP_PAIR_CARDS = [
-  vipAsset("image 23435.png"), // 0-2 青铜
-  vipAsset("Group 1707485596.png"), // 3-4 紫丁香
-  vipAsset("Group 1707485597.png"), // 5-6 金红心
-  vipAsset("Group 1707485598.png"), // 7-8 绿黑桃
-  vipAsset("Group 1707485599.png"), // 9-10 蓝钻
-  vipAsset("Group 1707485600.png"), // 11-12 紫金冠
-  vipAsset("Group 1707485594.png"), // 13 黑金冠
+  vipAsset("vip_card_0_2.png"), // 0-2 青铜菱形
+  vipAsset("vip_card_3_4.png"), // 3-4 紫丁香梅花
+  vipAsset("vip_card_5_6.png"), // 5-6 金红心
+  vipAsset("vip_card_7_8.png"), // 7-8 绿黑桃
+  vipAsset("vip_card_9_10.png"), // 9-10 蓝钻
+  vipAsset("vip_card_11_12.png"), // 11-12 紫金冠
+  vipAsset("vip_card_13.png"), // 13 黑金冠
 ];
 
 function resolveVipPairCard(level) {
@@ -511,14 +512,13 @@ function resolveVipLevelTagStyle(level) {
 const IMG_HERO_BG = vipAsset("image 23433.png");
 const IMG_LOGO = vipAsset("image 23453.png");
 const IMG_BACK_CIRCLE = vipAsset("Ellipse 348.png");
-const IMG_BACK_ICO = vipAsset("back 1.png");
 const IMG_ARROW = vipAsset("vip_arrow.png");
 /** 进度条左侧钻石徽章框（资源名 image 23443） */
 const IMG_BADGE = vipAsset("image 23443.png");
 const IMG_PROGRESS_BAR = vipAsset("image 23445.png");
 const IMG_PROGRESS_TITLE = vipAsset("image 23447.png");
 const IMG_BASE = vipAsset("image 23434.png");
-const IMG_PRIVILEGE_BG = vipAsset("Rectangle 666.png");
+const IMG_PRIVILEGE_BG = vipAsset("privilege_card_bg.png");
 const IMG_ICON_FRAME = vipAsset("Rectangle 34626434.png");
 const IMG_PRIVILEGE_LOCK = vipAsset("privilege_lock.png");
 const PRIVILEGE_ICONS = [
@@ -790,7 +790,6 @@ export default {
       imgHeroBg: IMG_HERO_BG,
       imgLogo: IMG_LOGO,
       imgBackCircle: IMG_BACK_CIRCLE,
-      imgBackIco: IMG_BACK_ICO,
       imgArrow: IMG_ARROW,
       imgBadge: IMG_BADGE,
       imgProgressBar: IMG_PROGRESS_BAR,
@@ -911,7 +910,10 @@ export default {
       return this.slideW + this.slideGap;
     },
     trackStyle() {
-      const idx = Math.max(0, this.carouselLevels.indexOf(this.currentViewLevel));
+      const idx = Math.max(
+        0,
+        this.carouselLevels.indexOf(this.currentViewLevel),
+      );
       const x = -(idx * this.slideStep + this.slideW / 2) + this.animX;
       return {
         gap: this.slideGap + "px",
@@ -1121,7 +1123,8 @@ export default {
       if (this.trackInstant && !this.slideLock && !this.swipeDragging) {
         this.$nextTick(() => {
           requestAnimationFrame(() => {
-            if (!this.slideLock && !this.swipeDragging) this.trackInstant = false;
+            if (!this.slideLock && !this.swipeDragging)
+              this.trackInstant = false;
           });
         });
       }
@@ -1506,7 +1509,7 @@ export default {
 .vip-hero {
   position: relative;
   width: 100%;
-  height: 424px;
+  height: 338px;
   padding: 0;
   overflow: hidden;
   box-sizing: border-box;
@@ -1531,7 +1534,7 @@ export default {
 .vip-hero__head {
   position: relative;
   z-index: 2;
-  height: 72px;
+  height: 30px;
   padding: 0 8px;
   box-sizing: border-box;
 }
@@ -1557,34 +1560,12 @@ export default {
   object-fit: contain;
 }
 
-.vip-hero__back-ico {
-  position: absolute;
-  left: 60%;
-  top: 60%;
-  height: 20px;
-  transform: translate(-58%, -50%);
-  object-fit: contain;
-  filter: brightness(0) invert(1);
-}
-
-.vip-hero__logo {
-  position: relative;
-  z-index: 1;
-  display: block;
-  width: 80%;
-  margin: 4px auto 0;
-  object-fit: contain;
-  pointer-events: none;
-  filter: drop-shadow(0 0 12px rgba(255, 100, 255, 0.3));
-}
-
 /* 中间主卡大，两侧卡缩小露边；三张一起平移并缩放 */
 .vip-carousel {
   position: relative;
   z-index: 1;
   width: 100%;
   height: 148px;
-  margin: 50px 0 0;
   overflow: hidden;
   touch-action: pan-y;
   cursor: grab;
@@ -1616,7 +1597,8 @@ export default {
   flex: 0 0 auto;
   pointer-events: none;
   transform-origin: center center;
-  transition: transform 0.42s cubic-bezier(0.22, 0.82, 0.24, 1),
+  transition:
+    transform 0.42s cubic-bezier(0.22, 0.82, 0.24, 1),
     filter 0.42s cubic-bezier(0.22, 0.82, 0.24, 1);
 }
 
@@ -1751,9 +1733,9 @@ export default {
   position: absolute;
   left: 50%;
   /* 下移裁掉 PNG 底部透明边，避免透出黑色空隙 */
-  bottom: -22px;
+  bottom: -8px;
   transform: translateX(-50%);
-  width: 100%;
+  width: 90%;
   height: calc(100% + 22px);
   object-fit: contain;
   object-position: center bottom;
@@ -1933,20 +1915,18 @@ export default {
 .benefit-card {
   position: relative;
   overflow: hidden;
-  padding: 10px;
+  min-height: 164px;
+  padding: 12px 10px 10px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 8px;
+  gap: 6px;
   cursor: pointer;
-  border-radius: 14px;
-  border: 1px solid transparent;
-  /* 外卡片：斜向紫渐变 */
-  background:
-    linear-gradient(135deg, #b033d5 0%, #4435c0 100%) padding-box,
-    linear-gradient(135deg, #bb64dd 0%, #6354b9 100%) border-box;
-  box-shadow: inset 0 4px 4px rgba(142, 83, 202, 0.77);
+  border-radius: 16px;
+  border: none;
+  background: transparent;
+  box-shadow: none;
 
   &.is-full {
     grid-column: 1 / -1;
@@ -1957,36 +1937,39 @@ export default {
   }
 
   &.is-claimable {
-    box-shadow:
-      inset 0 4px 4px rgba(142, 83, 202, 0.77),
-      0 0 0 1px fade(@gold, 55%);
+    filter: drop-shadow(0 0 4px fade(@gold, 55%));
   }
 }
 
 .benefit-card__bg {
-  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: fill;
+  pointer-events: none;
+  user-select: none;
 }
 
 .benefit-card__icon {
   position: relative;
   z-index: 1;
   width: 102px;
-  height: 64px;
+  height: 58px;
   flex-shrink: 0;
   align-self: center;
+  margin-top: 2px;
   border-radius: 10px;
-  border: 1px solid transparent;
+  border: none;
   box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
-  /* 内框背景：渐变 + 金边 + 双内阴影 */
-  background:
-    linear-gradient(135deg, #6e0a9e 0%, #7516ad 100%) padding-box,
-    linear-gradient(135deg, #ffe06a 0%, #ffb304 100%) border-box;
-  box-shadow:
-    inset 0 8px 8.9px #47036b,
-    inset 0 -4px 4px #812fe3;
+  /* 金框已画在 privilege_card_bg 内 */
+  background: transparent;
+  box-shadow: none;
 }
 
 .benefit-card__frame {
@@ -2006,8 +1989,8 @@ export default {
 
 .benefit-card__lock {
   position: absolute;
-  right: -7px;
-  bottom: -3px;
+  right: -9px;
+  bottom: -9px;
   z-index: 2;
   width: 18px;
   height: 18px;
@@ -2020,6 +2003,7 @@ export default {
   position: relative;
   z-index: 1;
   width: 100%;
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2028,8 +2012,9 @@ export default {
   min-width: 0;
 
   .tit {
+    margin-top: 7px;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 800;
     color: #fff;
     line-height: 1.2;
     word-break: break-word;
@@ -2037,9 +2022,9 @@ export default {
 
   .describe {
     margin-top: 2px;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 800;
-    color: #ffd400;
+    color: #f6ff00;
     line-height: 1.15;
     word-break: break-word;
   }
@@ -2049,7 +2034,8 @@ export default {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-top: 3px;
+  align-self: center;
+  margin-top: auto;
   min-width: 88px;
   width: auto;
   height: 26px !important;

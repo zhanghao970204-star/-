@@ -855,7 +855,7 @@ export default {
         if (!this.token) {
           this.$emit("getLoging");
         } else {
-          this.$jumpTo("/vip");
+          this.$jumpTo("/vipLevels");
         }
       }
       this.show = false;
@@ -1227,16 +1227,16 @@ export default {
   position: relative;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
-  min-width: 0;
-  height: 40px;
+  height: 37px;
   padding: 3px 3px 3px 3px;
   box-sizing: border-box;
   background: #190c31;
   border: 1px solid #6b4498;
   border-radius: 999px;
   overflow: visible;
-
+  min-width: 230px;
   &__coin {
     width: 31px;
     height: 31px;

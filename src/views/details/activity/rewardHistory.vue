@@ -1,17 +1,12 @@
 <template>
   <div class="reward-page-wrap">
-    <!-- Header -->
-    <header class="reward-header">
-      <div class="reward-header__back" @click="goBack">
-        <van-icon name="arrow-left" size="20" color="var(--wihte-color)" />
-      </div>
-      <h1 class="reward-header__title">
-        {{ $lang.reward_history || "REWARD HISTORY" }}
-      </h1>
-      <div class="reward-header__filter" @click="showDatePicker = true">
-        <van-icon name="notes-o" size="22" color="var(--wihte-color)" />
-      </div>
-    </header>
+    <title-bar :title="$lang.reward_history || 'Reward History'">
+      <template #right>
+        <div class="reward-header__filter" @click="showDatePicker = true">
+          <van-icon name="notes-o" size="22" color="var(--wihte-color)" />
+        </div>
+      </template>
+    </title-bar>
 
     <div v-if="filterDate" class="reward-filter-tag">
       <span>{{ formatFilterDate(filterDate) }}</span>
@@ -36,7 +31,7 @@
               <!-- Icon -->
               <div class="reward-item__icon">
                 <img
-                  src="@/assets/img/activity/activity_icon/checkin/coin.png"
+                  src="@/assets/img/home/top_coin.png"
                   alt="coin"
                   width="100%"
                   height="100%"
@@ -151,9 +146,6 @@ export default {
     await this.fetchRewards();
   },
   methods: {
-    goBack() {
-      this.$router.go(-1);
-    },
     async fetchRewards() {
       try {
         const res = await GetSignDaily();
@@ -269,56 +261,16 @@ export default {
   padding-bottom: 40px;
 }
 
-// Header
-.reward-header {
+// Header filter (right slot of title-bar)
+.reward-header__filter {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background: @bg-dark;
-  border-bottom: 1px solid fade(@primary, 10%);
-
-  &__back {
-    width: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-
-    button,
-    div {
-      padding: 8px;
-      border-radius: 50%;
-      cursor: pointer;
-      &:active {
-        background: fade(@primary, 10%);
-      }
-    }
-  }
-
-  &__title {
-    color: @wihte-color;
-    font-size: 16px;
-    font-weight: bold;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    flex: 1;
-    text-align: center;
-  }
-
-  &__filter {
-    width: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 50%;
-    &:active {
-      background: fade(@primary, 10%);
-    }
+  justify-content: center;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  &:active {
+    background: fade(@primary, 10%);
   }
 }
 
@@ -352,7 +304,7 @@ export default {
 
   &__header {
     position: sticky;
-    top: 56px;
+    top: 67px;
     background: @bg-dark;
     padding: 12px 0;
     z-index: 10;
@@ -388,15 +340,19 @@ export default {
   }
 
   &__icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: fade(#eab308, 10%);
-    border: 1px solid fade(#eab308, 20%);
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
   }
 
   &__info {
@@ -442,7 +398,7 @@ export default {
     flex-shrink: 0;
 
     p {
-      color: @primary;
+      color: #fbff00;
       font-size: 18px;
       font-weight: bold;
     }

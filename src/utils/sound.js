@@ -30,7 +30,8 @@ const bufferCache = new Map();
 function readVolume() {
   const n = Number(localStorage.getItem(LS_VOLUME));
   if (Number.isFinite(n)) return Math.min(100, Math.max(0, n));
-  return 70;
+  // 未设置时：默认开音乐、音量一半
+  return 50;
 }
 
 function readMute() {

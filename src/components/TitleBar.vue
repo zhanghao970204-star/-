@@ -1,5 +1,5 @@
 <template>
-  <div class="title-bar">
+  <div class="title-bar" :class="{ 'title-bar--aside': hasRight }">
     <van-nav-bar
       :title="title"
       :border="false"
@@ -15,7 +15,7 @@
           color="var(--wihte-color)"
         />
       </template>
-      <template v-if="$slots.right" #right>
+      <template v-if="hasRight" #right>
         <slot name="right" />
       </template>
     </van-nav-bar>
@@ -23,28 +23,30 @@
 </template>
 <script>
 export default {
-  name: 'TitleBar',
+  name: "TitleBar",
   components: {},
   props: {
     title: {
       type: String,
-      default: ''
-    }
+      default: "",
+    },
   },
-  data() {
-    return {}
+  computed: {
+    hasRight() {
+      return !!this.$slots.right;
+    },
   },
   mounted() {
     this.$nextTick(() => {
-      window.scrollTo(0, 0)
-    })
+      window.scrollTo(0, 0);
+    });
   },
   methods: {
     onClickLeft() {
-      this.$router.go(-1)
-    }
-  }
-}
+      this.$router.go(-1);
+    },
+  },
+};
 </script>
 <style lang="less" scoped>
 .title-bar {
@@ -60,6 +62,32 @@ export default {
   :deep(.van-nav-bar__title) {
     font-size: 20px;
     font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* 右边没内容：标题相对整条顶栏居中 */
+  &:not(.title-bar--aside) {
+    :deep(.van-nav-bar__title) {
+      position: absolute !important;
+      left: 50% !important;
+      right: auto !important;
+      flex: none;
+      width: auto;
+      max-width: calc(100% - 96px) !important;
+      margin: 0 !important;
+      transform: translateX(-50%) !important;
+      text-align: center;
+    }
+  }
+
+  /* 右边有内容：紧挨返回按钮，再多 10px */
+  &--aside {
+    :deep(.van-nav-bar__title) {
+      text-align: left;
+      margin-left: 10px !important;
+    }
   }
 
   &__back {

@@ -1,5 +1,5 @@
 <template>
-  <div class="content" style="padding-top: 55px">
+  <div class="content category-page">
     <!-- <title-bar :title="$lang.common_txt63"></title-bar> -->
     <van-nav-bar
       :title="$lang.common_txt63"
@@ -12,114 +12,128 @@
         <van-icon name="arrow-left" size="20" color="var(--wihte-color)" />
       </template>
     </van-nav-bar>
-    <div class="cot-Search">
-      <van-field
-        v-model="gameValue"
-        :placeholder="$lang.common_txt144"
-        class="custom-field"
-      >
-        <template #right-icon>
-          <img src="../../../assets/img/common/ssk_com.png" width="18" />
-        </template>
-      </van-field>
-    </div>
-    <div v-if="dataList.length > 0" class="cot-cont">
-      <div class="cot-cont-r">
-        <div class="cot-cont-rt">
-          <div
-            class="cot-cont-rti"
-            v-for="(item2, index2) in ['All', 'Favorite']"
-            :key="index2"
-            :class="{ 'active-select2': index2 === selectIndex2 }"
-            @click="getSelect2(index2)"
-          >
-            {{ item2 }}
-          </div>
-        </div>
-        <div v-if="selectIndex2 === 0" class="cot-cont-rb" ref="targetElement">
-          <div
-            v-for="(item3, index) in allGames"
-            :key="'all-' + (item3.gid || index)"
-            class="cot-cont-rbi"
-            @click="goToGame(item3.gid, item3)"
-          >
-            <div class="cot-cont-rbi__cover">
-              <img :src="item3.gameIcon" alt="" loading="lazy" />
-            </div>
-            <template v-if="item3.gameIcon">
-              <img
-                v-if="!isFavorite(item3)"
-                class="cot-cont-rbi__fav"
-                @click.stop="toggleFavorite(item3)"
-                src="../../../assets/img/common/scyx.png"
-                width="20"
-                alt=""
-              />
-              <img
-                v-else
-                class="cot-cont-rbi__fav"
-                @click.stop="toggleFavorite(item3)"
-                src="../../../assets/img/common/scyx-a.png"
-                width="20"
-                alt=""
-              />
-              <div
-                v-if="
-                  dataList[selectIndex] &&
-                  dataList[selectIndex].types &&
-                  dataList[selectIndex].types[selectIndex2] &&
-                  dataList[selectIndex].types[selectIndex2].showName === 'yes'
-                "
-                class="cot-cont-rbi__name"
-              >
-                {{ item3.gameName }}
-              </div>
-            </template>
-          </div>
-          <div class="cot-cont-empty" v-if="allGames.length === 0">
-            <van-empty
-              :image="require('../../../assets/img/common/img_no_data.png')"
-              :description="$lang.common_txt145"
+    <div class="category-page__body">
+      <div class="cot-Search">
+        <van-field
+          v-model="gameValue"
+          :placeholder="$lang.common_txt144"
+          class="custom-field"
+        >
+          <template #right-icon>
+            <img
+              class="cot-Search__icon"
+              src="@/assets/img/home/top_search.png"
+              alt=""
             />
-          </div>
-        </div>
-        <div v-if="selectIndex2 === 1" class="cot-cont-rb" ref="targetElement">
-          <div
-            v-for="(item3, index) in favariteGames"
-            :key="'fav-' + (item3.gid || index)"
-            class="cot-cont-rbi"
-            @click="goToGame(item3.gid, item3)"
-          >
-            <div class="cot-cont-rbi__cover">
-              <img :src="item3.gameIcon" alt="" loading="lazy" />
+          </template>
+        </van-field>
+      </div>
+      <div v-if="dataList.length > 0" class="cot-cont">
+        <div class="cot-cont-r">
+          <div class="cot-cont-rt">
+            <div
+              class="cot-cont-rti"
+              v-for="(item2, index2) in ['All', 'Favorite']"
+              :key="index2"
+              :class="{ 'active-select2': index2 === selectIndex2 }"
+              @click="getSelect2(index2)"
+            >
+              {{ item2 }}
             </div>
-            <template v-if="item3.gameIcon">
-              <img
-                v-if="!isFavorite(item3)"
-                class="cot-cont-rbi__fav"
-                @click.stop="toggleFavorite(item3)"
-                src="../../../assets/img/common/scyx.png"
-                width="20"
-                alt=""
-              />
-              <img
-                v-else
-                class="cot-cont-rbi__fav"
-                @click.stop="toggleFavorite(item3)"
-                src="../../../assets/img/common/scyx-a.png"
-                width="20"
-                alt=""
-              />
-              <div class="cot-cont-rbi__name">
-                {{ item3.gameName }}
-              </div>
-            </template>
           </div>
-          <div class="cot-cont-empty" v-if="favariteGames.length === 0">
-            <van-empty
-              :image="require('../../../assets/img/common/img_no_data.png')"
-              :description="$lang.common_txt145"
-            />
+          <div
+            v-if="selectIndex2 === 0"
+            class="cot-cont-rb"
+            ref="targetElement"
+          >
+            <div
+              v-for="(item3, index) in allGames"
+              :key="'all-' + (item3.gid || index)"
+              class="cot-cont-rbi"
+              @click="goToGame(item3.gid, item3)"
+            >
+              <div class="cot-cont-rbi__cover">
+                <img :src="item3.gameIcon" alt="" loading="lazy" />
+              </div>
+              <template v-if="item3.gameIcon">
+                <img
+                  v-if="!isFavorite(item3)"
+                  class="cot-cont-rbi__fav"
+                  @click.stop="toggleFavorite(item3)"
+                  src="../../../assets/img/common/scyx.png"
+                  width="20"
+                  alt=""
+                />
+                <img
+                  v-else
+                  class="cot-cont-rbi__fav"
+                  @click.stop="toggleFavorite(item3)"
+                  src="../../../assets/img/common/scyx-a.png"
+                  width="20"
+                  alt=""
+                />
+                <div
+                  v-if="
+                    dataList[selectIndex] &&
+                    dataList[selectIndex].types &&
+                    dataList[selectIndex].types[selectIndex2] &&
+                    dataList[selectIndex].types[selectIndex2].showName === 'yes'
+                  "
+                  class="cot-cont-rbi__name"
+                >
+                  {{ item3.gameName }}
+                </div>
+              </template>
+            </div>
+            <div class="cot-cont-empty" v-if="allGames.length === 0">
+              <van-empty
+                :image="require('../../../assets/img/common/img_no_data.png')"
+                :description="$lang.common_txt145"
+              />
+            </div>
+          </div>
+          <div
+            v-if="selectIndex2 === 1"
+            class="cot-cont-rb"
+            ref="targetElement"
+          >
+            <div
+              v-for="(item3, index) in favariteGames"
+              :key="'fav-' + (item3.gid || index)"
+              class="cot-cont-rbi"
+              @click="goToGame(item3.gid, item3)"
+            >
+              <div class="cot-cont-rbi__cover">
+                <img :src="item3.gameIcon" alt="" loading="lazy" />
+              </div>
+              <template v-if="item3.gameIcon">
+                <img
+                  v-if="!isFavorite(item3)"
+                  class="cot-cont-rbi__fav"
+                  @click.stop="toggleFavorite(item3)"
+                  src="../../../assets/img/common/scyx.png"
+                  width="20"
+                  alt=""
+                />
+                <img
+                  v-else
+                  class="cot-cont-rbi__fav"
+                  @click.stop="toggleFavorite(item3)"
+                  src="../../../assets/img/common/scyx-a.png"
+                  width="20"
+                  alt=""
+                />
+                <div class="cot-cont-rbi__name">
+                  {{ item3.gameName }}
+                </div>
+              </template>
+            </div>
+            <div class="cot-cont-empty" v-if="favariteGames.length === 0">
+              <van-empty
+                :image="require('../../../assets/img/common/img_no_data.png')"
+                :description="$lang.common_txt145"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -337,26 +351,106 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.cot-Search {
+.category-page {
+  min-height: 100vh;
+  padding-top: var(--van-nav-bar-height, 67px);
+  box-sizing: border-box;
+}
+
+.category-page__body {
   width: 100%;
   max-width: 450px;
-  position: fixed;
-  padding: 10px 7px;
+  margin: 0 auto;
+  padding: 35px 16px 0;
+  box-sizing: border-box;
+}
+
+.cot-Search {
+  width: 100%;
+  box-sizing: border-box;
+
+  &__icon {
+    display: block;
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
 
   .custom-field {
-    background: #000 !important;
-    border-radius: 25px !important;
-    border: none !important;
+    display: flex !important;
+    align-items: center !important;
+    width: 100%;
     height: 48px !important;
+    min-height: 48px !important;
+    padding: 0 16px !important;
+    background: #000 !important;
+    border-radius: 999px !important;
+    border: 1px solid #633488 !important;
+    box-sizing: border-box !important;
+    overflow: visible;
 
     &:focus-within {
       box-shadow: 0 0 0 1px #ffd400;
+    }
+
+    :deep(.van-cell__value) {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      width: 100%;
+      min-width: 0;
+      height: auto;
+      overflow: visible;
+    }
+
+    :deep(.van-field__body) {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      width: 100%;
+      min-width: 0;
+      height: auto;
+      overflow: visible;
+    }
+
+    :deep(.van-field__control) {
+      flex: 1;
+      width: auto;
+      min-width: 0;
+      height: auto !important;
+      min-height: 0;
+      padding: 0 !important;
+      margin: 0;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 22px;
+      overflow: visible;
+    }
+
+    :deep(.van-field__control::placeholder) {
+      color: #d7a2fa;
+      line-height: 22px;
+      opacity: 1;
+    }
+
+    :deep(.van-field__right-icon) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 18px;
+      width: 18px;
+      height: auto;
+      margin: 0 0 0 10px;
+      padding: 0;
+      line-height: 1;
     }
   }
 }
 .cot-cont {
   display: flex;
-  margin-top: 65px;
+  margin-top: 12px;
   .cot-cont-l {
     display: flex;
     flex-flow: column;
@@ -384,49 +478,51 @@ export default {
   background: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%) !important;
   box-shadow: inset 0px -2px 0px 0px rgba(0, 0, 0, 0.15);
   color: #573900 !important;
+  border-radius: 999px;
 }
 .active-select2 {
   // background-image: linear-gradient(99deg, @info-color 0%, #7041f3 85%) !important;
   background: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%) !important;
-  box-shadow: inset 0px -2px 0px 0px rgba(0, 0, 0, 0.15);
+  // box-shadow: inset 0px -2px 0px 0px rgba(0, 0, 0, 0.15);
   color: #573900 !important;
+  border-radius: 999px !important;
 }
 .cot-cont-r {
-  position: fixed;
+  position: relative;
   margin-left: 0;
   width: 100%;
 }
 .cot-cont-rt {
-  position: fixed;
+  position: relative;
   display: flex;
   align-items: center;
   background: transparent;
-  margin-left: 10px;
-  // width: 100%;
-  // max-width: 365px;
+  margin-left: 0;
   .cot-cont-rti {
     background: #2d1545;
     border: 1px solid rgba(233, 168, 67, 0.25);
     color: #ffe4b5;
-    border-radius: 6px;
+    border-radius: 999px;
     text-align: center;
     min-width: 70px;
-    padding: 8px 0;
+    padding: 5px 12px;
     margin-right: 10px;
     cursor: pointer;
   }
 }
 .cot-cont-rb {
-  margin-top: 45px;
+  margin-top: 12px;
   width: 100%;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   overflow-x: hidden;
-  overflow-y: scroll;
-  max-height: 78vh;
+  overflow-y: auto;
+  max-height: calc(100vh - var(--van-nav-bar-height, 67px) - 140px);
   max-width: 450px;
-  padding: 0 7px 50px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 0 50px;
   box-sizing: border-box;
 }
 .cot-cont-rbi {

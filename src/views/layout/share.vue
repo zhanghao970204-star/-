@@ -69,7 +69,7 @@ export default {
 }
 
 .share-page__banner-wrap {
-  margin: 20px 12px 0;
+  margin: 25px 12px 0;
   border-radius: 14px;
   overflow: hidden;
 }
@@ -81,7 +81,7 @@ export default {
 }
 
 .share-tabs {
-  margin-top: 12px;
+  margin-top: 14px;
   position: relative;
   z-index: 2;
 
@@ -91,9 +91,9 @@ export default {
 
   /* 外框：1px 渐变边 #E93DFE → #3245A2，底 #1D022C，圆角 22.5 */
   :deep(.van-tabs__nav--line) {
-    margin: 0 12px 12px;
+    margin: 0 12px 9px;
     padding: 1px !important;
-    min-height: 37px;
+    min-height: 33px;
     border-radius: 22.5px;
     border: 1px solid transparent;
     background:
@@ -109,7 +109,7 @@ export default {
 
   :deep(.van-tab) {
     flex: 1;
-    padding: 0 2px !important;
+    padding: 0 1px !important;
     border: none !important;
   }
 

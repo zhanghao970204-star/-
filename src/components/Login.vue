@@ -34,7 +34,7 @@
             />
             <img
               v-else
-              class="logo"
+              class="logo2"
               src="@/assets/img/login/right.png"
               alt=""
             />
@@ -203,6 +203,16 @@
                 {{ vError2 }}
               </p>
 
+              <a
+                v-if="selectIndex === 0 && showPasswordField"
+                class="login-popup__forgot"
+                href="https://igagroup.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Forgot Password?
+              </a>
+
               <div v-if="showConfirmPasswordField" class="login-popup__field">
                 <p class="login-popup__label">
                   {{ $lang.login_txt6 || "Confirm Password" }}
@@ -343,16 +353,24 @@
               </div>
 
               <div class="login-popup__agree">
-                <van-checkbox
-                  v-model="agree"
-                  shape="square"
-                  checked-color="#31FF6F"
-                  icon-size="16px"
-                >
-                  <span class="login-popup__agree-text">{{
-                    $lang.common_txt271 ||
-                    "Agree or disagree with the Service Policy and Privacy Policy"
-                  }}</span>
+                <van-checkbox v-model="agree" icon-size="17px">
+                  <template #icon="props">
+                    <img
+                      class="login-popup__agree-icon"
+                      :src="
+                        props.checked
+                          ? require('@/assets/img/login/checkbox_on.png')
+                          : require('@/assets/img/login/checkbox_off.png')
+                      "
+                      alt=""
+                    />
+                  </template>
+                  <span class="login-popup__agree-text">
+                    Agree or disagree with the
+                    <em>Service Policy</em>
+                    and
+                    <em>Privacy Policy</em>
+                  </span>
                 </van-checkbox>
               </div>
             </div>
@@ -619,14 +637,16 @@ export default {
             this.isPhoneAccountValid &&
             /^\d{6}$/.test(this.captcha) &&
             !this.vError1 &&
-            !this.vErrorCaptcha
+            !this.vErrorCaptcha &&
+            this.agree
           );
         }
         return (
           this.isPhoneAccountValid &&
           this.passwd &&
           !this.vError1 &&
-          !this.vError2
+          !this.vError2 &&
+          this.agree
         );
       }
 
@@ -1286,7 +1306,7 @@ export default {
         this.vErrorEmail = "";
       }
 
-      if (!this.agree && this.selectIndex === 1) {
+      if (!this.agree) {
         this.showFormToast(this.$lang.login_txt22, "info");
         return;
       }
@@ -1436,26 +1456,25 @@ export default {
     z-index: 100;
   }
 
-  :deep(.van-checkbox__label) {
-    font-size: 12px;
-
-    span {
-      color: #31ff6f;
-      padding: 0 3px;
-    }
+  :deep(.van-checkbox__icon) {
+    width: 17px;
+    height: 17px;
+    border: none !important;
+    background: transparent !important;
+    font-size: 0;
+    line-height: 0;
   }
-}
 
-:deep(.van-checkbox__icon) {
-  border-radius: 3px;
-  overflow: hidden;
-}
+  :deep(.van-checkbox__icon .van-icon) {
+    display: none;
+  }
 
-:deep(.van-checkbox__label) {
-  color: #fff;
-
-  & > span {
-    color: #31ff6f !important;
+  :deep(.van-checkbox__label) {
+    margin-left: 8px;
+    color: #d7a2fa;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.4;
   }
 }
 
@@ -1514,12 +1533,13 @@ export default {
       .tab {
         display: flex;
         align-items: center;
-        margin: 8px 24px 0;
-        height: 44px;
-        padding: 3px;
+        margin: 22px 14px 0;
+        height: 54px;
+        padding: 6px;
         box-sizing: border-box;
         background: #000;
         border-radius: 999px;
+        border: 1px solid #430f60;
 
         .tab__item {
           flex: 1;
@@ -1527,9 +1547,9 @@ export default {
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 15px;
+          font-size: 16px;
           font-weight: 700;
-          color: #c9b3ff;
+          color: #d7a2fa;
           border-radius: 999px;
           cursor: pointer;
           transition:
@@ -1538,7 +1558,9 @@ export default {
 
           &.is-active {
             background: #ffd400;
-            color: #111;
+            color: #000000;
+            font-size: 16px;
+            font-weight: 700;
           }
         }
       }
@@ -1560,9 +1582,13 @@ export default {
       width: 100%;
 
       .logo {
-        width: 86%;
-        max-width: 320px;
-        height: auto;
+        height: 131px;
+        display: block;
+        margin: 0 auto;
+        object-fit: contain;
+      }
+      .logo2 {
+        height: 149px;
         display: block;
         margin: 0 auto;
         object-fit: contain;
@@ -1572,59 +1598,47 @@ export default {
 }
 
 .login-popup__form {
-  padding: 18px 22px 28px;
+  padding: 18px 14px 28px;
   box-sizing: border-box;
 }
 
 .login-popup__label {
-  margin: 0 0 8px;
-  padding: 0 2px;
+  margin: 0 0 6px 19px;
   color: #fff;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   line-height: 1.2;
 }
 
 .login-popup__field-row {
   position: relative;
   display: flex;
-  align-items: stretch;
+  align-items: center;
   gap: 0;
+  height: 51px;
   margin-bottom: 4px;
-  background: #000;
-  border-radius: 25px;
+  background: #000000;
+  border: 1px solid #430f60;
+  border-radius: 25.5px;
   overflow: hidden;
   box-sizing: border-box;
 
-  /* 选中边框叠在子元素之上，避免被黑底盖住 */
-  &::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 25px;
-    border: 1px solid transparent;
-    pointer-events: none;
-    z-index: 5;
-    box-sizing: border-box;
-  }
-
-  &--focus::after {
+  &--focus {
     border-color: #ffd400;
   }
 
-  &--error::after {
+  &--error {
     border-color: #ef4444;
   }
 }
 
 .login-popup__field {
-  margin-top: 14px;
-  margin-bottom: 4px;
+  margin-top: 20px;
 }
 
 .login-popup__flag {
-  width: 24px;
-  height: 16px;
+  width: 22px;
+  height: 15px;
   flex-shrink: 0;
   display: block;
   object-fit: cover;
@@ -1635,32 +1649,43 @@ export default {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 0 12px;
-  height: 48px;
-  min-width: 64px;
+  padding: 0 12px 0 16px;
+  height: 100%;
+  min-width: 56px;
   background: transparent;
   border: none;
-  border-right: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 0;
   flex-shrink: 0;
   position: relative;
   pointer-events: none;
-  transition: border-color 0.2s;
+
+  /* 竖杠短线，上下不贴边 */
+  &::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 19px;
+    background: rgba(255, 255, 255, 0.45);
+  }
 
   &-text {
     color: #fff;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 700;
+    line-height: 16px;
     white-space: nowrap;
   }
 }
 
-.login-popup__field-row--focus .login-popup__area-code {
-  border-right-color: #ffd400;
+.login-popup__field-row--focus .login-popup__area-code::after {
+  background: #ffd400;
 }
 
-.login-popup__field-row--error .login-popup__area-code {
-  border-right-color: #ef4444;
+.login-popup__field-row--error .login-popup__area-code::after {
+  background: #ef4444;
 }
 
 .login-popup__dropdown {
@@ -1704,49 +1729,105 @@ export default {
 }
 
 .login-popup__input {
-  height: 48px;
-  background: #000 !important;
-  border: none !important;
-  border-radius: 25px !important;
+  display: flex !important;
+  align-items: center !important;
+  height: 51px !important;
+  min-height: 51px !important;
+  padding: 0 16px !important;
+  background: #000000 !important;
+  border: 1px solid #430f60 !important;
+  border-radius: 25.5px !important;
   color: #fff;
-  font-size: 14px;
-  transition: box-shadow 0.2s;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+  box-sizing: border-box !important;
+  transition: border-color 0.2s;
+  overflow: hidden;
 
   .login-popup__field-row & {
+    border: none !important;
     border-radius: 0 !important;
     flex: 1;
-    /* 手机号整行边框由 field-row 负责，输入框本身不再画边 */
+    min-width: 0;
+    height: 100% !important;
+    min-height: 0 !important;
+    padding: 0 16px 0 12px !important;
     box-shadow: none !important;
   }
 
   &--focus {
-    /* 外描边不被内部黑底遮挡 */
-    box-shadow: 0 0 0 1px #ffd400 !important;
+    border-color: #ffd400 !important;
   }
 
   &--error {
-    box-shadow: 0 0 0 1px #ef4444 !important;
+    border-color: #ef4444 !important;
+  }
+
+  &--icon {
+    padding-right: 18px !important;
+    padding-left: 8px !important;
+  }
+
+  :deep(.van-cell__value),
+  :deep(.van-field__body) {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
   }
 
   :deep(.van-field__control) {
+    display: block;
+    flex: 1;
+    width: auto;
+    min-width: 0;
+    height: 16px;
+    min-height: 16px;
+    padding: 0;
+    margin: 0;
     color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 16px;
+    caret-color: #fff;
   }
 
   :deep(.van-field__control::placeholder) {
-    color: #9b86c9;
+    color: #d7a2fa;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 16px;
   }
 
   :deep(.van-field__left-icon),
   :deep(.van-field__right-icon) {
     display: flex;
     align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+  }
+
+  :deep(.van-field__button) {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0;
+    margin-left: 8px;
   }
 }
 
 .login-popup__eye {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   display: block;
+  flex-shrink: 0;
   cursor: pointer;
   object-fit: contain;
 }
@@ -1813,26 +1894,30 @@ export default {
 /* Sign In / Register：公共绿色立体按钮 */
 .dlzc {
   .btn-3d-green();
+  width: 100% !important;
+  height: 48px;
   font-size: 16px;
 }
 
 /* Play as Guest：公共蓝色立体按钮 */
 .kj {
   .btn-3d-blue();
+  width: 100% !important;
+  height: 48px;
   font-size: 16px;
   backdrop-filter: none;
 }
 
 .login-popup__submit-wrap {
   position: relative;
-  margin-top: 10px;
-  margin-bottom: 4px;
+  /* 相对屏宽左右 26px；表单已有 14px，再补 12px */
+  margin: 10px 12px 4px;
   padding-top: 18px;
 }
 
 .login-popup__bonus-badge {
   position: absolute;
-  right: 20px;
+  right: 8px;
   top: 8px;
   z-index: 2;
   width: 86px;
@@ -1854,19 +1939,58 @@ export default {
   }
 }
 
+.login-popup__forgot {
+  display: block;
+  margin: 8px 16px 0 0;
+  text-align: right;
+  color: #57d67f;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 14px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-skip-ink: none;
+  text-decoration-thickness: 1px;
+}
+
 .login-popup__agree {
-  margin: 0 5px;
-  margin-top: 18px;
+  margin: 12px 12px 0;
+
+  &-icon {
+    display: block;
+    width: 17px;
+    height: 17px;
+    object-fit: contain;
+  }
 
   &-text {
     font-size: 12px;
-    color: #fff;
+    font-weight: 700;
     line-height: 1.4;
+    color: #d7a2fa;
+
+    em {
+      font-style: normal;
+      color: #57d67f;
+    }
+  }
+
+  :deep(.van-checkbox) {
+    align-items: flex-start;
+  }
+
+  :deep(.van-checkbox__icon) {
+    width: 17px !important;
+    height: 17px !important;
+    margin-top: 1px;
+    border: none !important;
+    background: transparent !important;
   }
 
   :deep(.van-checkbox__label) {
-    margin-left: 6px;
+    margin-left: 8px;
     line-height: 1.4;
+    color: #d7a2fa;
   }
 }
 
@@ -1890,7 +2014,7 @@ export default {
   position: relative;
   overflow: visible;
   border-radius: 999px;
-  margin-top: 14px;
+  margin: 14px 12px 0;
 }
 
 .sg .login-popup__google {
