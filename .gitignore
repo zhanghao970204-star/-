@@ -10,6 +10,7 @@ node_modules
 /har
 /flutter_app
 /flutter_bridge
+/landing
 # local env files
 .env.local
 .env.*.local
