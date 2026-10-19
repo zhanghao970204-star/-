@@ -32,55 +32,76 @@
         </div>
       </section>
 
-      <!-- Reward Track：上内容区 + 下居中按钮 -->
+      <!-- Reward Track：单条背景 + 管子箭头衔接 -->
       <section class="ng-rewards">
-        <div
-          v-for="(day, idx) in days"
-          :key="idx"
-          class="ng-reward-card"
-          :class="{
-            'ng-reward-card--active': day.status === 'active',
-            'ng-reward-card--locked': day.status === 'locked',
-            'ng-reward-card--claimed': day.status === 'claimed',
-          }"
-        >
-          <div class="ng-reward-card__body">
-            <div class="ng-reward-card__icon">
-              <img :src="day.icon" class="ng-reward-card__icon-img" alt="" />
-            </div>
-            <div class="ng-reward-card__info">
-              <h3 class="ng-reward-card__title">{{ day.title }}</h3>
-              <p class="ng-reward-card__desc" v-html="day.desc"></p>
-            </div>
-          </div>
+        <div class="ng-rewards__track">
+          <img
+            class="ng-rewards__pipe-arrow ng-rewards__pipe-arrow--0"
+            src="../../../assets/img/activity/newbieGift/pipe_arrow.png"
+            alt=""
+          />
+          <template v-for="(day, idx) in days" :key="idx">
+            <div
+              class="ng-reward-card"
+              :class="{
+                'ng-reward-card--active': day.status === 'active',
+                'ng-reward-card--locked': day.status === 'locked',
+                'ng-reward-card--claimed': day.status === 'claimed',
+                [`ng-reward-card--day${idx + 1}`]: true,
+              }"
+            >
+              <div class="ng-reward-card__shell">
+                <h3 class="ng-reward-card__title">{{ day.title }}</h3>
+                <div class="ng-reward-card__body">
+                  <div class="ng-reward-card__icon">
+                    <img
+                      :src="day.icon"
+                      class="ng-reward-card__icon-img"
+                      alt=""
+                    />
+                  </div>
+                  <div class="ng-reward-card__info">
+                    <p class="ng-reward-card__desc" v-html="day.desc"></p>
+                  </div>
+                </div>
 
-          <button
-            v-if="day.status === 'active'"
-            class="ng-reward-card__btn ng-reward-card__btn--active btn-3d-green"
-            @click="claimReward(idx + 1)"
-          >
-            {{ $lang.ng_claim }}
-          </button>
-          <button
-            v-else-if="day.status === 'claimed'"
-            class="ng-reward-card__btn ng-reward-card__btn--disabled"
-            disabled
-          >
-            {{ $lang.ng_claimed }}
-          </button>
-          <button
-            v-else
-            class="ng-reward-card__btn ng-reward-card__btn--locked"
-            disabled
-          >
+                <button
+                  v-if="day.status === 'active'"
+                  class="ng-reward-card__btn ng-reward-card__btn--active btn-3d-green"
+                  @click="claimReward(idx + 1)"
+                >
+                  {{ $lang.ng_claim }}
+                </button>
+                <button
+                  v-else-if="day.status === 'claimed'"
+                  class="ng-reward-card__btn ng-reward-card__btn--disabled"
+                  disabled
+                >
+                  {{ $lang.ng_claimed }}
+                </button>
+                <button
+                  v-else
+                  class="ng-reward-card__btn ng-reward-card__btn--locked"
+                  disabled
+                >
+                  <img
+                    class="ng-reward-card__lock"
+                    src="../../../assets/img/activity/newbieGift/lock.png"
+                    alt=""
+                  />
+                  <span v-if="day.countdown">{{ day.countdown }}</span>
+                  <span v-else>{{ $lang.ng_claim }}</span>
+                </button>
+              </div>
+            </div>
             <img
-              class="ng-reward-card__lock"
-              src="../../../assets/img/activity/newbieGift/lock.png"
+              v-if="idx < days.length - 1"
+              class="ng-rewards__pipe-arrow"
+              :class="`ng-rewards__pipe-arrow--${idx + 1}`"
+              src="../../../assets/img/activity/newbieGift/pipe_arrow.png"
               alt=""
             />
-            <span v-if="day.countdown">{{ day.countdown }}</span>
-            <span v-else>{{ $lang.ng_claim }}</span>
-          </button>
+          </template>
         </div>
       </section>
 
@@ -89,32 +110,41 @@
 
     <!-- Footer (only when not purchased) -->
     <div v-if="!purchased" class="ng-footer">
-      <div class="ng-footer__row">
-        <div class="ng-footer__price">
-          <span class="ng-footer__price-label">{{
-            $lang.ng_limited_price
-          }}</span>
-          <div class="ng-footer__price-row">
-            <span class="ng-footer__price-current"
-              >{{ getCurrency }}{{ $formatNumberWithCommas(price) }}</span
-            >
-            <span
-              v-if="originalPrice && Number(originalPrice) > Number(price)"
-              class="ng-footer__price-original"
-              >{{ getCurrency
-              }}{{ $formatNumberWithCommas(originalPrice) }}</span
-            >
+      <button
+        type="button"
+        class="ng-footer__panel"
+        :aria-label="$lang.ng_buy_now || 'Buy now'"
+        @click="buyNow"
+      >
+        <img
+          class="ng-footer__bg"
+          src="../../../assets/img/activity/newbieGift/footer_bar_bg.png"
+          alt=""
+        />
+        <div class="ng-footer__overlay">
+          <div class="ng-footer__value">
+            <span class="ng-footer__value-label">
+              {{ $lang.ng_total_value || "TOTAL VALUE" }}
+            </span>
+            <span class="ng-footer__value-pct">{{ creditAmountText }}</span>
+          </div>
+          <div class="ng-footer__action">
+            <span class="ng-footer__price-label">{{
+              $lang.ng_limited_price
+            }}</span>
+            <div class="ng-footer__price-row">
+              <span class="ng-footer__price-current"
+                >{{ getCurrency }}{{ $formatNumberWithCommas(price) }}</span
+              >
+              <span
+                v-if="originalPrice && Number(originalPrice) > Number(price)"
+                class="ng-footer__price-original"
+                >{{ getCurrency
+                }}{{ $formatNumberWithCommas(originalPrice) }}</span
+              >
+            </div>
           </div>
         </div>
-        <div class="ng-footer__value">
-          <span class="ng-footer__value-pct">{{ creditAmountText }}</span>
-          <p class="ng-footer__value-label">
-            {{ $lang.ng_total_value || "TOTAL VALUE" }}
-          </p>
-        </div>
-      </div>
-      <button class="ng-footer__buy btn-3d-green" @click="buyNow">
-        {{ $lang.ng_buy_now }}
       </button>
       <p class="ng-footer__disclaimer">{{ $lang.ng_disclaimer }}</p>
     </div>
@@ -480,11 +510,6 @@ export default {
 @card-from: #8527b7;
 @card-to: #4339b6;
 @card-border: #cbb111;
-@tabbar-h: calc(
-  var(--tabbar-bar-height, 66px) + env(safe-area-inset-bottom, 0px)
-);
-@footer-h: 150px;
-
 .newbie-gift {
   min-height: 100vh;
   background: @page;
@@ -497,131 +522,248 @@ export default {
 .ng-main {
   max-width: 450px;
   margin: 0 auto;
-  /* 底部固定栏 + Tabbar，避免被挡住 */
-  padding-bottom: calc(@footer-h + @tabbar-h + 24px);
+  /* 底部固定购买栏，避免被挡住 */
+  padding-bottom: calc(160px + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
 }
 
-// ====== HERO ======
+// ====== HERO（375×190，通栏无左右边距） ======
 .ng-hero {
-  padding: 4px 12px 16px;
+  padding: 0 0 4px;
 
   &__img-wrap {
     width: 100%;
+    height: 190px;
     overflow: hidden;
     position: relative;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
   }
 
   &__img {
     width: 100%;
-    height: auto;
+    height: 190px;
     display: block;
-    object-fit: contain;
+    object-fit: cover;
+    object-position: center top;
   }
 }
 
-// ====== TIMER：标题在顶帽，倒计时在下区，均为白色 ======
+// ====== TIMER ======
 .ng-timer {
   display: flex;
   justify-content: center;
-  margin-bottom: 4px;
+  padding: 0 14px;
+  margin: 2px 0 -10px;
+  position: relative;
+  z-index: 2;
 
   &__frame {
     position: relative;
     width: 100%;
-    max-width: 320px;
+    max-width: none;
+    height: 118px;
   }
 
   &__bg {
     width: 100%;
-    height: auto;
+    height: 118px;
     display: block;
+    object-fit: fill;
     pointer-events: none;
   }
 
   &__inner {
     position: absolute;
-    left: 9%;
-    right: 9%;
-    top: 6%;
-    bottom: 10%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    inset: 0;
     box-sizing: border-box;
+    pointer-events: none;
   }
 
+  /* 第一处：LIMITED TIME REMAINING */
   &__label {
-    flex: 0 0 auto;
-    margin-top: 18px;
-    font-size: 10px;
+    position: absolute;
+    left: 50%;
+    top: 20%;
+    transform: translate(-50%, -50%);
+    font-family: Manrope, sans-serif;
+    font-size: 16px;
     font-weight: 800;
-    color: #ffffff;
+    line-height: 14px;
+    letter-spacing: 0;
     text-align: center;
     text-transform: uppercase;
-    letter-spacing: 1.2px;
-    line-height: 1.15;
     white-space: nowrap;
+    background: linear-gradient(180deg, #fdfdb7 0%, #fcb91f 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 1px 0 #000);
   }
 
+  /* 第二处：倒计时数字 */
   &__digits {
-    margin-top: 10px;
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: absolute;
+    left: 50%;
+    top: 62%;
+    transform: translate(-50%, -50%);
     width: 100%;
-    font-size: 30px;
-    font-weight: 900;
-    letter-spacing: 2px;
-    color: #ffffff;
-    text-align: center;
-    text-transform: uppercase;
+    font-family: Manrope, sans-serif;
+    font-size: 34px;
+    font-weight: 700;
     line-height: 1;
-    /* 设计稿：白字 + 0 2 #1F0002 */
+    letter-spacing: 0;
+    text-transform: uppercase;
+    text-align: center;
+    color: #fff;
+    -webkit-text-stroke: 1px #b45160;
+    paint-order: stroke fill;
     text-shadow: 0 2px 0 #1f0002;
   }
 
   &__frame--done &__digits {
-    color: #ffffff;
+    color: #fff;
   }
 }
 
-// ====== REWARD CARDS：上内容 / 下居中按钮 ======
+// 轨道图 681×1024：红卡 42–331、红管 333–373、绿卡叠在中间留白、绿管 672–713、蓝卡 714–1024
 .ng-rewards {
-  padding: 8px 12px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  padding: 0 4px;
+  margin-top: -8px;
+
+  &__track {
+    position: relative;
+    width: 100%;
+    max-width: 390px;
+    margin: 0 auto;
+    aspect-ratio: 681 / 1024;
+    background: url("../../../assets/img/activity/newbieGift/card_track_bg.png")
+      no-repeat center top;
+    background-size: 100% 100%;
+    margin-top: 10px;
+  }
+
+  &__pipe-arrow {
+    position: absolute;
+    /* 管子中心在图宽 352/681，不是 50% */
+    left: 51.7%;
+    z-index: 6;
+    display: block;
+    width: 22px;
+    height: 14px;
+    margin: 0;
+    object-fit: contain;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+
+    /* 倒计时下方红管 */
+    &--0 {
+      top: 2.5%;
+    }
+
+    /* 红卡与绿卡之间的红管 */
+    &--1 {
+      top: 34.8%;
+    }
+
+    /* 绿管中线 693/1024 */
+    &--2 {
+      top: 67.8%;
+    }
+  }
 }
 
 .ng-reward-card {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 10px;
-  padding: 8px 8px 12px;
-  border-radius: 14px;
-  /* 设计稿背景 #8527B7→#4339B6，描边 2px #CBB111 */
-  background: linear-gradient(180deg, @card-from 0%, @card-to 100%);
-  border: 2px solid @card-border;
+  position: absolute;
+  left: 0;
   box-sizing: border-box;
+  width: 100%;
+  pointer-events: none;
+
+  &--day1 {
+    top: 4.1%;
+    height: 28.2%;
+    z-index: 2;
+  }
+
+  &--day2 {
+    top: 36.5%;
+    left: 50%;
+    width: 86%;
+    height: 29.2%;
+    transform: translateX(-50%);
+    z-index: 4;
+  }
+
+  &--day3 {
+    top: 69.7%;
+    height: 29.6%;
+    z-index: 2;
+  }
+
+  &__shell {
+    pointer-events: auto;
+    position: relative;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-size: 100% 100%;
+  }
+
+  &--day2 &__shell {
+    background-image: url("../../../assets/img/activity/newbieGift/card_day2.png");
+  }
+
+  &__title {
+    position: absolute;
+    left: 8%;
+    right: 8%;
+    top: 4%;
+    margin: 0;
+    font-family: Manrope, sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 14px;
+    letter-spacing: 0;
+    text-align: center;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+  }
+
+  &--day2 &__title {
+    top: 2%;
+  }
 
   &__body {
+    position: absolute;
+    top: 22%;
+    height: 44%;
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px;
-    border-radius: 10px;
-    background: #0f0515;
     box-sizing: border-box;
-    border: 1px solid #764993;
+  }
+
+  &--day1 &__body {
+    left: 11%;
+    right: 10%;
+  }
+
+  &--day2 &__body {
+    left: 5%;
+    right: 10%;
+  }
+
+  &--day3 &__body {
+    left: 9%;
+    right: 10%;
   }
 
   &__icon {
-    width: 56px;
-    height: 56px;
+    width: 50px;
+    height: 50px;
     flex-shrink: 0;
     display: flex;
     align-items: center;
@@ -630,8 +772,8 @@ export default {
     border: none;
 
     &-img {
-      width: 52px;
-      height: 52px;
+      width: 48px;
+      height: 48px;
       object-fit: contain;
     }
   }
@@ -641,19 +783,13 @@ export default {
     min-width: 0;
   }
 
-  &__title {
-    margin: 0;
-    font-size: 15px;
-    font-weight: 800;
-    color: #ffffff;
-    line-height: 1.25;
-  }
-
   &__desc {
-    margin: 4px 0 0;
-    font-size: 12px;
-    color: @muted;
-    line-height: 1.35;
+    margin: 0;
+    font-family: Manrope, sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 18px;
 
     :deep(.highlight) {
       font-weight: 800;
@@ -671,17 +807,20 @@ export default {
   }
 
   &__lock {
-    width: 16px;
-    height: 18px;
+    width: 18px;
+    height: 20px;
     object-fit: contain;
     flex-shrink: 0;
   }
 
   &__btn {
-    align-self: center;
-    width: 168px;
-    max-width: 80%;
-    height: 40px;
+    position: absolute;
+    left: 50%;
+    bottom: 5%;
+    transform: translateX(-50%);
+    width: 58%;
+    max-width: 149px;
+    height: 36px;
     padding: 0 18px;
     font-size: 13px;
     font-weight: 900;
@@ -716,96 +855,175 @@ export default {
 }
 
 .ng-spacer {
-  height: 16px;
+  height: 12px;
 }
 
-// ====== FOOTER：抬到 Tabbar 上方 ======
+// ====== FOOTER：背景图内展示，固定 Tabbar 上方 ======
 .ng-footer {
   position: fixed;
   left: 0;
   right: 0;
-  bottom: @tabbar-h;
-  background: fade(@page, 96%);
-  backdrop-filter: blur(16px);
-  border-top: 1px solid fade(@gold, 28%);
-  padding: 12px 16px 14px;
+  bottom: 0;
+  padding: 0 0 env(safe-area-inset-bottom, 0px);
   max-width: 450px;
   margin: 0 auto;
   z-index: 50;
   box-sizing: border-box;
+  background: transparent;
 
-  &__row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
+  /* 盖住滑到购买栏后面的内容 */
+  &::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    z-index: -1;
+    width: 100vw;
+    max-width: 450px;
+    top: 0;
+    bottom: 0;
+    background: @page;
+    transform: translateX(-50%);
+    pointer-events: none;
   }
 
-  &__price {
+  &__panel {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 772 / 253;
+    min-height: 107px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  &__bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    pointer-events: none;
+  }
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  /* 紫色胶囊：TOTAL VALUE */
+  &__value {
+    position: absolute;
+    left: 52%;
+    top: 26%;
+    transform: translate(-50%, -50%);
     display: flex;
     flex-direction: column;
-
-    &-label {
-      font-size: 10px;
-      color: #ffffff;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-    }
-
-    &-row {
-      display: flex;
-      align-items: baseline;
-      gap: 6px;
-    }
-
-    &-current {
-      font-size: 18px;
-      font-weight: 600;
-      color: #fbff00;
-      text-shadow: 0 0 12px fade(@gold, 45%);
-    }
-
-    &-original {
-      font-size: 13px;
-      color: @muted;
-      text-decoration: line-through;
-    }
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 38%;
+    min-width: 120px;
   }
 
-  &__value {
-    text-align: right;
-
-    &-pct {
-      font-size: 18px;
-      font-weight: 600;
-      color: #fbff00;
-    }
-
-    &-label {
-      font-size: 10px;
-      color: #ffffff;
-      font-weight: 700;
-    }
-  }
-
-  &__buy {
-    width: 100%;
-    height: 48px;
-    font-size: 16px;
-    font-weight: 900;
+  &__value-label {
+    font-family: Manrope, sans-serif;
+    font-size: 8px;
+    font-weight: 800;
+    color: #fff;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    border: none;
-    cursor: pointer;
+    letter-spacing: 0;
+    line-height: 1.1;
+  }
+
+  &__value-pct {
+    margin-top: 2px;
+    font-family: Manrope, sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+    text-transform: uppercase;
+    background: linear-gradient(180deg, #f0ff25 0%, #e6a408 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.5));
+  }
+
+  /* 绿色按钮区：LIMITED PRICE + 价格 */
+  &__action {
+    position: absolute;
+    left: 15%;
+    right: 15%;
+    top: 40%;
+    bottom: 16%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 2px;
+  }
+
+  &__price-label {
+    font-family: Manrope, sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0;
+    line-height: 14px;
+    -webkit-text-stroke: 0.5px #000;
+    paint-order: stroke fill;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+  }
+
+  &__price-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: nowrap;
+    margin-top: 2px;
+  }
+
+  &__price-current {
+    font-family: Manrope, sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1;
+    text-transform: uppercase;
+    background: linear-gradient(180deg, #f0ff25 0%, #e6a408 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.5))
+      drop-shadow(0 0 3.5px rgba(255, 0, 0, 0.57));
+  }
+
+  &__price-original {
+    font-family: Manrope, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: #084029;
+    text-decoration: line-through;
+    line-height: 1;
+    text-transform: uppercase;
   }
 
   &__disclaimer {
     text-align: center;
     font-size: 10px;
-    color: @muted;
-    margin-top: 10px;
+    color: #c9c9c9;
+    margin: -10px auto 10px;
     font-weight: 500;
+    line-height: 1.35;
   }
 }
 

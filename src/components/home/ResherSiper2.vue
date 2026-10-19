@@ -205,21 +205,33 @@ export default {
   margin: 0 5px;
   min-height: 120px;
 }
+.swipe-item::after {
+  content: "";
+  width: 31.5%;
+  height: 0;
+}
 .swipe-item--placeholder {
   min-height: 120px;
 }
-.swipe-item::after {
-  content: "";
-  width: 31.5%; /* 与.item宽度一致 */
-  height: 0; /* 不占用高度 */
-}
 .item {
+  width: 31.5%;
+  height: auto;
   max-height: 160px;
-  width: 31.5%; /* 每个元素占 32% 的宽度 */
-  margin-bottom: 10px; /* 调整元素之间的间距 */
+  margin-bottom: 10px;
   text-align: center;
+  overflow: hidden;
   :deep(.van-image__img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 160px;
+    object-fit: contain;
     border-radius: 10px;
+  }
+  :deep(.van-image__loading),
+  :deep(.van-image__error) {
+    height: 100%;
+    max-height: 160px;
   }
   :deep(.van-loading__spinner) {
     display: none;

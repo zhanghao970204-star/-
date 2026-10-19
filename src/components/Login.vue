@@ -26,18 +26,20 @@
 
         <div class="title">
           <div class="left">
-            <img
-              v-if="selectIndex === 0"
-              class="logo"
-              src="@/assets/img/login/left.png"
-              alt=""
-            />
-            <img
-              v-else
-              class="logo2"
-              src="@/assets/img/login/right.png"
-              alt=""
-            />
+            <div class="login-popup__hero-frame">
+              <img
+                v-if="selectIndex === 0"
+                class="logo"
+                src="@/assets/img/login/left.png"
+                alt=""
+              />
+              <img
+                v-else
+                class="logo2"
+                src="@/assets/img/login/right.png"
+                alt=""
+              />
+            </div>
           </div>
         </div>
 
@@ -1581,6 +1583,15 @@ export default {
       justify-content: center;
       width: 100%;
 
+      .login-popup__hero-frame {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 149px;
+        flex-shrink: 0;
+      }
+
       .logo {
         height: 131px;
         display: block;
@@ -1958,8 +1969,8 @@ export default {
 
   &-icon {
     display: block;
-    width: 17px;
-    height: 17px;
+    width: 19px;
+    height: 19px;
     object-fit: contain;
   }
 

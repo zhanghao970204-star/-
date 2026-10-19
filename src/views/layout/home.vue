@@ -70,6 +70,8 @@
                 <div
                   v-if="index === 0 && shouldShowStakeChestBeforeTypes(item)"
                   class="home-stake-chest"
+                  role="button"
+                  @click="goWeeklyMissions"
                 >
                   <img
                     class="home-stake-chest__img"
@@ -112,6 +114,13 @@
                             loading="lazy"
                             decoding="async"
                           />
+                          <img class="home-hot__frame" :src="hotFrame" alt="" />
+                          <img
+                            v-if="hotWinSrc(hot.maxWinText)"
+                            class="home-hot__mult"
+                            :src="hotWinSrc(hot.maxWinText)"
+                            alt=""
+                          />
                         </div>
                       </div>
                     </div>
@@ -152,6 +161,8 @@
                         shouldShowStakeChestAfterType(item, index2)
                       "
                       class="home-stake-chest"
+                      role="button"
+                      @click="goWeeklyMissions"
                     >
                       <img
                         class="home-stake-chest__img"
@@ -173,7 +184,9 @@
                   src="@/assets/img/tabbar/tabqb.png"
                   alt=""
                 />
-                <p class="t-c">{{ $lang.common_txt358 }}</p>
+                <p class="t-c" style="font-size: 18px; font-weight: 700">
+                  {{ $lang.common_txt358 }}
+                </p>
 
                 <div class="t-c m-t-20 home-community-icons">
                   <img
@@ -207,7 +220,9 @@
                 <p class="content-line m-t-10"></p>
 
                 <template v-if="tgChannelList.length">
-                  <p class="t-c">{{ $lang.common_txt359 }}</p>
+                  <p class="t-c" style="font-size: 14px; font-weight: 700">
+                    {{ $lang.common_txt359 }}
+                  </p>
                   <div class="home-tg-list">
                     <div
                       v-for="(item, index) in tgChannelList"
@@ -260,6 +275,28 @@ import actEntryCheckin from "@/assets/img/home/act/entry_checkin.png";
 import actEntryChest from "@/assets/img/home/act/entry_chest.png";
 import actEntryRescue from "@/assets/img/home/act/entry_rescue.png";
 import stakeRewardChestImg from "@/assets/img/home/stake_reward_chest.png";
+import hotFrame from "@/assets/img/home/hot/frame.png";
+import hotX1000 from "@/assets/img/home/hot/x_1000.png";
+import hotX2000 from "@/assets/img/home/hot/x_2000.png";
+import hotX3000 from "@/assets/img/home/hot/x_3000.png";
+import hotX4000 from "@/assets/img/home/hot/x_4000.png";
+import hotX5000 from "@/assets/img/home/hot/x_5000.png";
+import hotX6000 from "@/assets/img/home/hot/x_6000.png";
+import hotX7000 from "@/assets/img/home/hot/x_7000.png";
+import hotX8000 from "@/assets/img/home/hot/x_8000.png";
+import hotX9000 from "@/assets/img/home/hot/x_9000.png";
+
+const HOT_WIN_IMGS = {
+  1000: hotX1000,
+  2000: hotX2000,
+  3000: hotX3000,
+  4000: hotX4000,
+  5000: hotX5000,
+  6000: hotX6000,
+  7000: hotX7000,
+  8000: hotX8000,
+  9000: hotX9000,
+};
 export default {
   name: "Home",
   components: { ResherSiper2, HomeSupportFooter },
@@ -267,6 +304,7 @@ export default {
   data() {
     return {
       stakeRewardChestImg,
+      hotFrame,
       totalSeconds: 1800,
       timer5: null,
       isCountdownActive: true,
@@ -410,9 +448,9 @@ export default {
         this.hotSetWidth = track.scrollWidth / 2;
         return this.hotSetWidth;
       }
-      // 图片未加载完时用固定尺寸估算：145 宽 + 10 间距
+      // 图片未加载完时用固定尺寸估算：137 宽 + 10 间距
       const n = this.hotGames.length;
-      this.hotSetWidth = n > 0 ? n * 155 : 0;
+      this.hotSetWidth = n > 0 ? n * 147 : 0;
       return this.hotSetWidth;
     },
     wrapHotOffset() {
@@ -628,6 +666,13 @@ export default {
       }
       if (item.path) this.$jumpTo(item.path);
     },
+    goWeeklyMissions() {
+      if (!this.token) {
+        this.$bus.emit("openLogin");
+        return;
+      }
+      this.$jumpTo("/weeklyMissions");
+    },
     resetCountdown() {
       // 重置倒计时
       this.stopCountdown();
@@ -729,6 +774,14 @@ export default {
     },
     goVendor(vendor) {
       this.$jumpTo("/category", { vendorCode: vendor.code });
+    },
+    hotWinSrc(text) {
+      const n = parseInt(
+        String(text == null ? "" : text).replace(/[^\d]/g, ""),
+        10,
+      );
+      if (!n) return "";
+      return HOT_WIN_IMGS[n] || "";
     },
     goToHotGame(game) {
       if (!game) return;
@@ -969,13 +1022,14 @@ export default {
   width: 100%;
   margin: 0 0 12px;
   box-sizing: border-box;
+  cursor: pointer;
 
   &__img {
     display: block;
     width: 100%;
-    height: 250px;
-    object-fit: cover;
-    border-radius: 12px;
+    height: 254px;
+    object-fit: contain;
+    margin: 0px 0 -25px;
   }
 }
 
@@ -993,7 +1047,7 @@ export default {
   &__marquee {
     overflow: hidden;
     width: 100%;
-    padding: 2px 0 8px;
+    padding: 2px 0 0px;
     touch-action: pan-y;
     cursor: grab;
   }
@@ -1012,18 +1066,47 @@ export default {
   }
 
   &__item {
-    flex: 0 0 145px;
-    width: 145px;
+    position: relative;
+    flex: 0 0 137px;
+    width: 137px;
+    height: 209px;
     cursor: pointer;
   }
 
   &__cover {
-    width: 145px;
-    height: auto;
+    position: absolute;
+    left: 11.7%;
+    top: 20%;
+    width: 100px;
+    height: 155px;
     display: block;
-    border-radius: 10px;
     object-fit: cover;
+    border-radius: 2px;
     pointer-events: none;
+    z-index: 0;
+  }
+
+  &__frame {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: fill;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  &__mult {
+    position: absolute;
+    left: 50%;
+    top: 9.8%;
+    width: 50.4%;
+    height: auto;
+    transform: translateX(-50%);
+    display: block;
+    pointer-events: none;
+    z-index: 2;
   }
 }
 .vendor-grid {
@@ -1087,18 +1170,18 @@ export default {
 
   &__brand {
     display: block;
-    max-width: 78%;
-    height: auto;
-    margin: 0 auto 16px;
+    height: 65px;
+    margin: 0 auto 15px;
   }
 }
 
 .content-line {
   margin: 15px auto;
-  width: 100%;
-  height: 1px;
-  background: #2d1545;
-  opacity: 0.7;
+  width: min(355px, calc(100% - 20px));
+  height: 0.5px;
+  border: none;
+  background: linear-gradient(90deg, #000000 0%, #6c6c7d 50%, #000000 100%);
+  opacity: 1;
 }
 .home-tg-list {
   display: flex;

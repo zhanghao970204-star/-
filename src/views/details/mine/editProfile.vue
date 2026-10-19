@@ -8,7 +8,11 @@
           :disabled="saving"
           @click="handleSave"
         >
-          <img class="ep-save-btn__icon" src="@/assets/img/mine/ep_save.png" alt="" />
+          <img
+            class="ep-save-btn__icon"
+            src="@/assets/img/mine/ep_save.png"
+            alt=""
+          />
           <span>{{ $lang.editProfile_save || "Save" }}</span>
         </button>
       </template>
@@ -26,7 +30,7 @@
           />
           <div v-else class="ep-avatar__placeholder"></div>
           <div class="ep-avatar__edit">
-            <van-icon name="edit" size="14" color="#fff" />
+            <img src="@/assets/img/mine/ep_edit.png" alt="" />
           </div>
         </div>
       </div>
@@ -72,9 +76,7 @@
           <p class="ep-field__text">
             <span :class="{ 'is-placeholder': !birthday }">
               {{
-                birthday ||
-                $lang.editProfile_birthday_ph ||
-                "Select Birthday"
+                birthday || $lang.editProfile_birthday_ph || "Select Birthday"
               }}
             </span>
           </p>
@@ -83,7 +85,7 @@
             class="ep-field__action"
             @click.stop="showBirthdayPicker = true"
           >
-            <van-icon name="calendar-o" size="14" color="#fff" />
+            <img src="@/assets/img/mine/ep_calendar.png" alt="" />
           </button>
         </div>
       </div>
@@ -296,6 +298,13 @@ export default {
     justify-content: center;
     border: 2px solid #532276;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+
+    img {
+      width: 16px;
+      height: 16px;
+      object-fit: contain;
+      display: block;
+    }
   }
 }
 
@@ -364,8 +373,8 @@ export default {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
 
     img {
-      width: 14px;
-      height: 14px;
+      width: 25px;
+      height: 20px;
       object-fit: contain;
       display: block;
     }

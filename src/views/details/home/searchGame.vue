@@ -265,6 +265,18 @@ export default {
   min-height: 100vh;
   padding-top: 55px;
   background: @background-color;
+
+  :deep(.van-nav-bar__title) {
+    position: absolute !important;
+    left: 50% !important;
+    right: auto !important;
+    flex: none;
+    width: auto;
+    max-width: calc(100% - 96px) !important;
+    margin: 0 !important;
+    transform: translateX(-50%) !important;
+    text-align: center;
+  }
 }
 .search-game-content {
   padding: 25px 12px 60px;

@@ -1227,8 +1227,8 @@ export default {
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  justify-content: flex-start;
+  gap: 0;
   height: 37px;
   padding: 3px 3px 3px 3px;
   box-sizing: border-box;
@@ -1252,10 +1252,13 @@ export default {
     line-height: 1;
     white-space: nowrap;
     cursor: pointer;
+    margin-left: 10px;
     padding-right: 2px;
+    flex: 0 0 auto;
   }
 
   &__deposit {
+    margin-left: auto;
     position: relative;
     flex-shrink: 0;
     width: 88px;

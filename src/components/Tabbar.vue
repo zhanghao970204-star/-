@@ -99,7 +99,8 @@ export default {
         !path.includes("/Country") &&
         !path.includes("/Crowdfunding") &&
         !path.includes("/appDetail") &&
-        !path.includes("/Support")
+        !path.includes("/Support") &&
+        !path.includes("/newbieGift")
       );
     },
   },
@@ -166,7 +167,7 @@ export default {
   box-shadow: none !important;
 
   .tabqb {
-    width: 75px;
+    width: 74px;
     height: auto;
     object-fit: contain;
     display: block;

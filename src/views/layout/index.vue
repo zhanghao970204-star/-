@@ -92,26 +92,30 @@
       </div>
 
       <div
-        v-if="$route.path.includes('/home')"
+        v-if="$route.path.includes('/home') && bannerList.length"
         class="content-swiper-bg home-banner-swipe"
         style="margin-top: 6px"
       >
         <van-swipe
+          ref="bannerSwipe"
           :autoplay="3500"
           class="swipe-fixed-height"
           :show-indicators="false"
           :touchable="true"
+          @change="onBannerChange"
         >
           <van-swipe-item
-            v-for="(img, index) in homeBannerList"
-            :key="'home-banner-' + index"
+            v-for="(item, index) in bannerList"
+            :key="item.advertisementImg || index"
+            @click="onBannerClick(item)"
           >
             <img
               class="content-swiper--img content-swiper--img-static"
-              :src="img"
+              :src="item.advertisementImg"
               alt=""
               :loading="index === 0 ? 'eager' : 'lazy'"
               decoding="async"
+              @error="onBannerImgError"
             />
           </van-swipe-item>
         </van-swipe>
@@ -180,12 +184,6 @@ import {
   GetHomeWinningGameList,
 } from "@/api/common";
 import { consumeOpenLoginAfterPlatformSwitch } from "@/utils/platformAuth";
-import bannerVip from "@/assets/img/home/banner/01_vip.png";
-import bannerReferral from "@/assets/img/home/banner/02_referral.png";
-import bannerDeposit from "@/assets/img/home/banner/03_deposit.png";
-import bannerNewPlayer from "@/assets/img/home/banner/04_new_player.png";
-import bannerDaily from "@/assets/img/home/banner/05_daily.png";
-import bannerWelcome from "@/assets/img/home/banner/06_welcome.png";
 
 export default {
   components: {
@@ -220,7 +218,8 @@ export default {
         !path.includes("/Country") &&
         !path.includes("/Crowdfunding") &&
         !path.includes("/appDetail") &&
-        !path.includes("/Support")
+        !path.includes("/Support") &&
+        !path.includes("/newbieGift")
       );
     },
     winTickerDisplayList() {
@@ -298,14 +297,6 @@ export default {
       selectMenIndex: 0,
       currentBannerIndex: 0,
       bannerList: [],
-      homeBannerList: [
-        bannerVip,
-        bannerReferral,
-        bannerDeposit,
-        bannerNewPlayer,
-        bannerDaily,
-        bannerWelcome,
-      ],
       showNoticePopup: false,
     };
   },

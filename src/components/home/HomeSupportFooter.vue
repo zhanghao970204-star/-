@@ -150,7 +150,8 @@ export default {
 
   &__title {
     color: #fff;
-    font-size: 13px;
+    font-size: 14px;
+    font-weight: 700;
     margin: 0 0 6px;
     letter-spacing: 0.4px;
   }
@@ -177,7 +178,8 @@ export default {
   &__rate {
     margin: 10px 0 16px;
     font-size: 12px;
-    color: #b8b8b8;
+    color: #c9c9c9;
+    font-weight: 500;
   }
 
   &__badges {
@@ -211,7 +213,8 @@ export default {
     width: 96%;
     font-size: 11px;
     line-height: 1.5;
-    color: #b0b0b0;
+    color: #c9c9c9;
+    font-weight: 500;
 
     a {
       color: #d4b275;

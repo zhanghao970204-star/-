@@ -355,6 +355,18 @@ export default {
   min-height: 100vh;
   padding-top: var(--van-nav-bar-height, 67px);
   box-sizing: border-box;
+
+  :deep(.van-nav-bar__title) {
+    position: absolute !important;
+    left: 50% !important;
+    right: auto !important;
+    flex: none;
+    width: auto;
+    max-width: calc(100% - 96px) !important;
+    margin: 0 !important;
+    transform: translateX(-50%) !important;
+    text-align: center;
+  }
 }
 
 .category-page__body {

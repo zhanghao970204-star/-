@@ -545,18 +545,10 @@ export default {
     paymentList() {
       if (this.paymentList.length > 0) {
         this.tabIndex(0);
-        if (
-          this.paymentList[0].quickSelect &&
-          this.paymentList[0].quickSelect.length > 1
-        ) {
-          this.selectAmount(1, this.paymentList[0].quickSelect[1]);
-          this.amount = this.paymentList[0].quickSelect[1].amount;
-        } else if (
-          this.paymentList[0].quickSelect &&
-          this.paymentList[0].quickSelect.length > 0
-        ) {
-          this.selectAmount(0, this.paymentList[0].quickSelect[0]);
-          this.amount = this.paymentList[0].quickSelect[0].amount;
+        const first = this.paymentList[0].quickSelect?.[0];
+        if (first) {
+          this.selectAmount(0, first);
+          this.amount = first.amount;
         }
         if (this.paymentList[0].paymentId === "USDT") {
           this.RefreshExchangeRate();
@@ -934,6 +926,14 @@ export default {
       this.awardRules = this.paymentList[i].awardRules;
       this.paymentIconUrl = this.paymentList[i].paymentIconUrl;
       this.paymentName = this.paymentList[i].paymentName;
+      const firstAmount = this.dataList[0];
+      if (firstAmount) {
+        this.selectAmount(0, firstAmount);
+      } else {
+        this.selectAmountIndex = null;
+        this.amount = "";
+        this.totalMount = 0;
+      }
       // 如果切换到USDT支付方式，刷新汇率
       if (this.paymentList[i].paymentId === "USDT") {
         this.RefreshExchangeRate();
