@@ -179,8 +179,6 @@ export default {
 
 <style lang="less">
 .ra-popup.van-popup {
-  width: min(88vw, 360px);
-  max-width: 360px;
   background: transparent !important;
   overflow: visible;
 }
@@ -245,9 +243,9 @@ export default {
 }
 
 .ra-popup__host {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 800;
-  line-height: 1.2;
+  line-height: 1.1;
   word-break: break-all;
 }
 

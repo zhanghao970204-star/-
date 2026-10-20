@@ -82,7 +82,14 @@
 
                 <div v-if="index === 0 && hotGames.length" class="home-hot">
                   <div class="home-hot__title">
-                    <span class="home-hot__name">🔥 Hot</span>
+                    <span class="home-hot__name">
+                      <img
+                        class="home-hot__icon"
+                        :src="hotFireIcon"
+                        alt=""
+                      />
+                      Hot
+                    </span>
                   </div>
                   <div
                     class="home-hot__marquee"
@@ -276,6 +283,7 @@ import actEntryChest from "@/assets/img/home/act/entry_chest.png";
 import actEntryRescue from "@/assets/img/home/act/entry_rescue.png";
 import stakeRewardChestImg from "@/assets/img/home/stake_reward_chest.png";
 import hotFrame from "@/assets/img/home/hot/frame.png";
+import hotFireIcon from "@/assets/img/home/hot/icon_fire.png";
 import hotX1000 from "@/assets/img/home/hot/x_1000.png";
 import hotX2000 from "@/assets/img/home/hot/x_2000.png";
 import hotX3000 from "@/assets/img/home/hot/x_3000.png";
@@ -305,6 +313,7 @@ export default {
     return {
       stakeRewardChestImg,
       hotFrame,
+      hotFireIcon,
       totalSeconds: 1800,
       timer5: null,
       isCountdownActive: true,
@@ -1042,6 +1051,20 @@ export default {
     font-weight: 700;
     font-size: 16px;
     color: #fff;
+  }
+
+  &__name {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  &__icon {
+    width: 18px;
+    height: 21px;
+    display: block;
+    flex-shrink: 0;
+    object-fit: contain;
   }
 
   &__marquee {

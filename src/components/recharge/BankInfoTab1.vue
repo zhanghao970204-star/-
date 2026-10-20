@@ -314,13 +314,13 @@ export default {
 @panel: linear-gradient(180deg, #7a2190 0%, #532276 100%);
 
 .wd-tab {
-  padding: 12px 14px 24px;
+  padding: 20px 14px 24px;
   color: #fff;
 }
 
 .wd-card {
   margin-top: 12px;
-  padding: 14px 14px 16px;
+  padding: 32px 14px 31px;
   border-radius: 16px;
   background: #411c59;
   box-sizing: border-box;
@@ -336,10 +336,11 @@ export default {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  padding: 12px 6px 14px;
+  padding: 6px 6px 14px;
   border-radius: 14px;
   background: #411c59;
   box-sizing: border-box;
+  min-height: 111px;
 
   &__label {
     min-height: 48px;
@@ -690,18 +691,20 @@ export default {
 
 .wd-tips {
   margin-top: 22px;
-  color: #fff;
-  font-size: 13px;
   line-height: 1.55;
 
   &__title {
     margin: 0 0 8px;
-    font-size: 15px;
-    font-weight: 800;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
     text-align: center;
   }
 
   p {
+    font-size: 12px;
+    font-weight: 500;
+    color: #d7a2fa;
     margin: 8px 0 0;
   }
 }

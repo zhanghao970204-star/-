@@ -185,17 +185,17 @@
           <span>{{ $lang.common_txt291 || "Online Customer Service" }}</span>
         </div>
       </div>
+      <div class="mine-menu__item" @click="showLogoutPopup = true">
+        <div class="mine-menu__left">
+          <img
+            class="mine-menu__icon"
+            src="@/assets/img/mine/menu_logout.png"
+            alt=""
+          />
+          <span>{{ $lang.mine_txt14 || "Log Out" }}</span>
+        </div>
+      </div>
     </section>
-
-    <div class="mine-logout">
-      <button
-        class="mine-logout__btn btn-3d-green"
-        type="button"
-        @click="showLogoutPopup = true"
-      >
-        {{ $lang.mine_txt14 || "LOG OUT" }}
-      </button>
-    </div>
 
     <van-popup
       v-model:show="showLogoutPopup"
@@ -838,15 +838,6 @@ export default {
   object-fit: contain;
   flex-shrink: 0;
   display: block;
-}
-
-.mine-logout {
-  padding: 18px 0 4px;
-}
-
-.mine-logout__btn {
-  /* 样式走公共 .btn-3d-green */
-  width: 100%;
 }
 
 .logout-popup {

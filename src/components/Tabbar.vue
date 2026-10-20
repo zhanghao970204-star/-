@@ -204,7 +204,7 @@ export default {
     bottom: 0;
     padding-top: 8px;
     padding-bottom: 6px;
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(255, 255, 255, 0.6);
     background: transparent !important;
   }
 
@@ -276,7 +276,7 @@ export default {
     font-size: 11px;
     line-height: 1.2;
     margin-top: 1px;
-    color: rgba(255, 255, 255, 0.85);
+    color: rgba(255, 255, 255, 0.6);
   }
 
   .wallet-label {
@@ -286,10 +286,11 @@ export default {
 
   :deep(.van-tabbar-item--active) {
     background: transparent !important;
+    color: #ffffff;
   }
 
   .activeSpan {
-    color: #fff;
+    color: #ffffff;
   }
 }
 

@@ -343,7 +343,7 @@ export default {
 
 .checkin-banner {
   position: relative;
-  margin: -16px 12px 6px;
+  margin: 15px 12px 6px;
 
   &__img {
     display: block;
@@ -372,10 +372,11 @@ export default {
   grid-template-columns: repeat(3, 1fr);
   gap: 8px 7px;
   padding: 4px 12px 16px;
+  overflow: visible;
 }
 
 .checkin-card {
-  aspect-ratio: 165 / 220;
+  position: relative;
   background: url("@/assets/img/activity/checkin/card_purple.png") center / 100%
     100% no-repeat;
   border-radius: 16px;
@@ -384,10 +385,23 @@ export default {
   flex-direction: column;
   align-items: stretch;
   box-sizing: border-box;
+  min-height: 154px;
+  overflow: visible;
 
   &--active {
+    z-index: 1;
     background-image: url("@/assets/img/activity/checkin/card_gold.png");
     padding: 8px 8px 8px;
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      pointer-events: none;
+      z-index: -1;
+      animation: checkin-active-glow 1.85s ease-in-out infinite;
+    }
 
     .checkin-card__day {
       color: #fff8d6;
@@ -398,7 +412,7 @@ export default {
     flex-shrink: 0;
     text-align: center;
     font-size: 12px;
-    font-weight: 800;
+    font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
     color: #fff;
@@ -464,8 +478,8 @@ export default {
   }
 
   &__amt {
-    font-size: 11px;
-    font-weight: 800;
+    font-size: 14px;
+    font-weight: 700;
     line-height: 1.05;
     text-transform: uppercase;
     white-space: nowrap;
@@ -559,6 +573,24 @@ export default {
   .checkin-page {
     max-width: 450px;
     margin: 0 auto;
+  }
+}
+
+@keyframes checkin-active-glow {
+  0%,
+  100% {
+    box-shadow:
+      inset 0 0 10px rgba(255, 214, 74, 0.28),
+      0 0 4px 0 rgba(255, 214, 74, 0.55),
+      0 0 10px 0 rgba(255, 180, 50, 0.35);
+  }
+
+  50% {
+    box-shadow:
+      inset 0 0 14px rgba(255, 232, 120, 0.45),
+      0 0 6px 0 rgba(255, 232, 120, 0.85),
+      0 0 14px 1px rgba(255, 200, 60, 0.55),
+      0 0 20px 2px rgba(255, 170, 40, 0.28);
   }
 }
 </style>

@@ -227,7 +227,12 @@ const router = createRouter({
     {
       path: "/:prefix?/privacy",
       name: "Privacy",
-      component: () => import("@/views/details/mine/privacy"),
+      component: () => import("@/views/details/login/privacyPolicy"),
+    },
+    {
+      path: "/:prefix?/termsOfUse",
+      name: "TermsOfUse",
+      component: () => import("@/views/details/login/termsOfUse"),
     },
     {
       path: "/:prefix?/billGame",

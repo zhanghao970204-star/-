@@ -50,6 +50,14 @@
                 <template v-slot:loading>
                   <van-loading size="20" color="#a665d8" vertical />
                 </template>
+                <div class="game-online">
+                  <img
+                    class="game-online__icon"
+                    src="../../assets/img/home/icon_online.png"
+                    alt=""
+                  />
+                  <span>{{ onlineCount(item) }}</span>
+                </div>
                 <img
                   v-if="!favoriteGidSet.has(item.gid)"
                   @click.stop="toggleFavorite(item)"
@@ -162,6 +170,17 @@ export default {
         this.addFavorite(payload);
       }
     },
+    onlineCount(item) {
+      const key = String(
+        (item && (item.gid || item.gameCode || item.gameName)) || "",
+      );
+      let hash = 0;
+      for (let i = 0; i < key.length; i++) {
+        hash = (hash * 31 + key.charCodeAt(i)) >>> 0;
+      }
+      const n = 12000 + (hash % 23001);
+      return n.toLocaleString("en-US");
+    },
     goToGame(v, v2) {
       if (this.token) {
         const game = v2 || { gid: v };
@@ -213,6 +232,36 @@ export default {
 .swipe-item--placeholder {
   min-height: 120px;
 }
+.game-online {
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 14px;
+  padding: 7px 5px;
+  border-radius: 999px;
+  background: #5f3e6d;
+  border: 0.5px solid #d292ff;
+  box-sizing: border-box;
+  pointer-events: none;
+
+  &__icon {
+    height: 7px;
+    display: block;
+    object-fit: contain;
+  }
+
+  span {
+    font-size: 8px;
+    font-weight: 700;
+    color: #fff600;
+    line-height: 1;
+  }
+}
+
 .item {
   width: 31.5%;
   height: auto;

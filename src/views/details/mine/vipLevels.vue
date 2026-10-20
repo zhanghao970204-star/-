@@ -1455,7 +1455,7 @@ export default {
 .vip-page {
   min-height: 100vh;
   /* 避免 Hero 底部露缝时出现整块黑色 */
-  background: #481a8f;
+  background: #240338;
   color: #fff;
   box-sizing: border-box;
   overflow-x: hidden;
@@ -1479,9 +1479,7 @@ export default {
   padding-bottom: 28px;
   box-sizing: border-box;
   background-color: #240338;
-  background-image:
-    url(@/assets/img/common/page_bg.png),
-    linear-gradient(180deg, #481a8f 0%, #481a8f 10%, #240338 20%, #240338 100%);
+  background-image: url(@/assets/img/common/page_bg.png);
   background-repeat: repeat, no-repeat;
   background-size:
     auto,
@@ -1580,7 +1578,7 @@ export default {
 .vip-carousel__track {
   position: absolute;
   left: 50%;
-  top: 0;
+  top: 7px;
   height: 100%;
   display: flex;
   align-items: center;
@@ -2360,8 +2358,7 @@ export default {
 
 .lv-benefit-col {
   flex: 0 0 auto;
-  min-width: 72px;
-  padding: 0 8px;
+  padding: 0 7px;
   border-right: 1px solid #b492fd;
 
   &:first-child {
@@ -2374,7 +2371,7 @@ export default {
 }
 
 .lv-benefit-label {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 600;
   color: #ead2fe;
   white-space: nowrap;

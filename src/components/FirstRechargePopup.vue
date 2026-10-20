@@ -592,7 +592,7 @@ export default {
   }
 
   &__original-price {
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 800;
     color: #ffe0e0;
     text-decoration: line-through;
@@ -600,8 +600,8 @@ export default {
   }
 
   &__discount {
-    font-size: 10px;
-    font-weight: 900;
+    font-size: 13px;
+    font-weight: 800;
     color: #24ee89;
     background: #830000;
     border-radius: 999px;
@@ -668,8 +668,8 @@ export default {
 
   &__timer-cell {
     position: relative;
-    width: 56px;
-    height: 56px;
+    width: 76px;
+    height: 70px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -687,8 +687,8 @@ export default {
       position: relative;
       z-index: 1;
       font-style: normal;
-      font-size: 26px;
-      font-weight: 600;
+      font-size: 34px;
+      font-weight: 700;
       color: #fff;
       font-variant-numeric: tabular-nums;
       line-height: 1;
@@ -707,8 +707,8 @@ export default {
   }
 
   &__timer-colon {
-    font-size: 26px;
-    font-weight: 900;
+    font-size: 32px;
+    font-weight: 700;
     color: #fff;
     line-height: 1;
     margin-top: -2px;
@@ -760,13 +760,13 @@ export default {
     justify-content: center;
     gap: 1px;
     width: 58%;
-    margin-top: -2%;
+    margin-top: -1%;
     pointer-events: none;
   }
 
   &__btn-main {
-    font-size: 18px;
-    font-weight: 900;
+    font-size: 16px;
+    font-weight: 800;
     color: #fff;
     letter-spacing: 0.4px;
     line-height: 1.1;
@@ -775,7 +775,7 @@ export default {
   }
 
   &__btn-sub {
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 700;
     color: #fff;
     text-transform: none;
@@ -793,11 +793,10 @@ export default {
 
   &__disclaimer {
     margin-top: 10px;
-    font-size: 9px;
-    color: @muted;
+    font-size: 12px;
+    color: #b784d9;
     text-transform: uppercase;
-    font-weight: 700;
-    letter-spacing: 0.8px;
+    font-weight: 500;
     text-align: center;
   }
 

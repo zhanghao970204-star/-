@@ -1122,7 +1122,7 @@ export default {
   margin: 10px 0 5px;
 
   &__title {
-    margin: 10px 0 5px;
+    margin: 5px 0 10px;
     font-size: 18px;
     font-weight: 700;
     color: #fff;
@@ -1203,7 +1203,7 @@ export default {
       position: relative;
       z-index: 1;
       font-style: normal;
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 800;
       color: #fff;
       line-height: 1;
@@ -1254,7 +1254,7 @@ export default {
     span {
       position: relative;
       z-index: 1;
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 800;
       color: #fff;
       white-space: nowrap;
@@ -1265,7 +1265,7 @@ export default {
     left: 2%;
     right: 2%;
     width: auto;
-    bottom: 3px;
+    bottom: 2px;
     height: 22%;
     border-radius: 0 0 10px 10px;
   }
@@ -1416,7 +1416,7 @@ export default {
 }
 
 .rc-submit-wrap {
-  margin: 16px 0 12px;
+  margin: 30px 0 12px;
 }
 
 .rc-pay-btn {
@@ -1429,13 +1429,12 @@ export default {
   /* 与金额卡同款红色飘带角标 */
   &__badge {
     position: absolute;
-    top: -14px;
+    top: -13px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 2;
-    width: 96px;
-    height: 28px;
-    min-width: 0;
+    min-width: 112px;
+    height: 27px;
     padding: 0;
     border-radius: 0;
     background: transparent;
@@ -1533,7 +1532,7 @@ export default {
   width: 88% !important;
   max-width: 360px;
   background: linear-gradient(180deg, #7a2190 0%, #532276 100%) !important;
-  overflow: hidden;
+  overflow: scroll;
   border-radius: 18px !important;
 
   &__close {
@@ -1615,8 +1614,7 @@ export default {
     &-icon {
       position: relative;
       z-index: 1;
-      width: 28px;
-      height: 22px;
+      height: 30px;
       object-fit: contain;
     }
 
@@ -1642,7 +1640,7 @@ export default {
 
   &__order {
     margin-top: 4px;
-    padding: 10px 12px;
+    padding: 5px 12px;
     border-radius: 12px;
     background: #2c1137;
     border: 1px solid #9346a9;
@@ -1672,8 +1670,8 @@ export default {
 
   &__pay {
     .btn-3d-green();
-    margin-top: 16px;
-    font-size: 16px;
+    margin-top: 30px;
+    font-size: 18px;
   }
 }
 

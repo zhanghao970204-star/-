@@ -208,9 +208,8 @@
               <a
                 v-if="selectIndex === 0 && showPasswordField"
                 class="login-popup__forgot"
-                href="https://igagroup.com"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="#"
+                @click.prevent="onForgotPassword"
               >
                 Forgot Password?
               </a>
@@ -369,9 +368,9 @@
                   </template>
                   <span class="login-popup__agree-text">
                     Agree or disagree with the
-                    <em>Service Policy</em>
+                    <em @click.stop="gotoTermsOfUse">Service Policy</em>
                     and
-                    <em>Privacy Policy</em>
+                    <em @click.stop="gotoPrivacy">Privacy Policy</em>
                   </span>
                 </van-checkbox>
               </div>
@@ -461,6 +460,7 @@ import { isUsAreaCode, isValidUsPhone } from "@/utils/phoneValidate";
 import { getClientId } from "@/utils/nativeDevice";
 import { reloadAppEntry, saveLoginSession } from "@/utils/guestAuth";
 import { isNativeAppShell } from "@/utils/nativeApp";
+import { openCustomerService } from "@/utils/csLink";
 export default {
   components: { Vcode },
   name: "Login",
@@ -702,6 +702,9 @@ export default {
     this.fetchSysConfig();
   },
   methods: {
+    onForgotPassword() {
+      openCustomerService({ scene: "floating" });
+    },
     async fetchSysConfig() {
       try {
         const data = await GetSysConfig({});
@@ -1040,6 +1043,9 @@ export default {
     },
     gotoPrivacy() {
       this.$jumpTo("/privacy");
+    },
+    gotoTermsOfUse() {
+      this.$jumpTo("/termsOfUse");
     },
     isLoginRegister() {
       this.isLogin = !this.isLogin;
@@ -1983,6 +1989,7 @@ export default {
     em {
       font-style: normal;
       color: #57d67f;
+      cursor: pointer;
     }
   }
 

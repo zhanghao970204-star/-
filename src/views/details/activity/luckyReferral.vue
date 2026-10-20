@@ -2,11 +2,19 @@
   <div class="lucky-referral">
     <!-- Header -->
     <header class="lr-header">
-      <button class="lr-header__back" @click="$router.go(-1)">
-        <van-icon name="arrow-left" size="20" color="var(--wihte-color)" />
+      <button type="button" class="lr-header__back" @click="$router.go(-1)">
+        <img
+          class="lr-header__back-bg"
+          src="@/assets/img/vip/Ellipse 348.png"
+          alt=""
+        />
       </button>
-      <h1 class="lr-header__title">{{ $lang.lr_title || "LUCKY REFERRAL" }}</h1>
-      <div class="lr-header__spacer"></div>
+      <img
+        class="lr-header__title-img"
+        src="@/assets/img/activity/turntable/lr_title.png"
+        :alt="$lang.lr_title || 'LUCKY REFERRAL'"
+      />
+      <div class="lr-header__spacer" aria-hidden="true"></div>
     </header>
 
     <div class="lr-content">
@@ -451,7 +459,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px;
+  padding: 12px 8px 8px;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -459,21 +467,35 @@ export default {
   box-sizing: border-box;
 
   &__back {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    background: none;
+    position: relative;
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
     border: none;
+    padding: 0;
+    background: transparent;
     cursor: pointer;
   }
 
-  &__title {
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    color: @wihte-color;
+  &__back-bg {
+    position: absolute;
+    inset: 0;
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    pointer-events: none;
+  }
+
+  &__title-img {
+    flex: 1;
+    display: block;
+    max-width: 280px;
+    width: 72%;
+    height: auto;
+    max-height: 60px;
+    margin: 0 auto;
+    object-fit: contain;
+    pointer-events: none;
   }
 
   &__spacer {

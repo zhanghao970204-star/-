@@ -2102,7 +2102,7 @@ The best slot machines, endless fun and guaranteed excitement!
   footer_virtual_currency: `Supported Virtual Currency`,
   common_txt361: `This game is only for people over the age of 18 years.Gambling may have adverse  effects if not taken in moderation.`,
   common_txt362: `You can only use your registered phone number, email, or bank card to add credit to your wallet. If it is incorrect, please update it with the correct account details.`,
-  common_txt363: `Payment Confirmation`,
+  common_txt363: `Deposit Confirmation`,
   common_txt364: `Please enter the 6-digit verification code.`,
   common_txt365: `1.To generate a temporary code, open the Orange Money Africa app and
             click "Generate OTP", or dial `,

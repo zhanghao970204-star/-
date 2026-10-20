@@ -678,9 +678,9 @@ export default {
   align-items: center;
   justify-content: center;
   margin: 8px 16px;
-  padding: 48px 24px 36px;
+  padding: 29px 24px 20px;
   text-align: center;
-  background: #3a1a5c;
+  background: #411c59;
   border-radius: 16px;
 
   &__icon {
@@ -707,9 +707,9 @@ export default {
   &__btn {
     width: auto;
     min-width: 220px;
-    height: 44px;
-    padding: 0 24px;
-    font-size: 13px;
+    height: 46px;
+    padding: 0 49px;
+    font-size: 16px;
   }
 }
 

@@ -559,7 +559,7 @@ export default {
 @panel: linear-gradient(180deg, #7a2190 0%, #532276 100%);
 
 .wd-manage {
-  padding: 12px 14px 28px;
+  padding: 20px 14px 28px;
   color: #fff;
 
   &__card {
@@ -647,12 +647,13 @@ export default {
     cursor: pointer;
     text-align: left;
     overflow: hidden;
+    min-height: 104px;
   }
 
   &__add-icon {
     position: relative;
-    width: 52px;
-    height: 52px;
+    width: 62px;
+    height: 62px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -670,8 +671,8 @@ export default {
   &__add-card {
     position: relative;
     z-index: 1;
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 33px;
     object-fit: contain;
   }
 
@@ -690,7 +691,7 @@ export default {
     }
 
     strong {
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 800;
       letter-spacing: 0.4px;
     }
@@ -716,10 +717,10 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 16px 44px;
+    padding: 25px 10px 24px;
     background: #532276;
     color: #fff;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 800;
     text-transform: uppercase;
   }
