@@ -119,6 +119,17 @@
             />
           </van-swipe-item>
         </van-swipe>
+        <div
+          v-if="bannerList.length > 1"
+          class="home-banner-swipe__indicators"
+        >
+          <span
+            v-for="(_, index) in bannerList.length"
+            :key="index"
+            class="home-banner-swipe__dot"
+            :class="{ active: currentBannerIndex === index }"
+          ></span>
+        </div>
       </div>
       <router-view v-slot="{ Component, route }">
         <transition
@@ -913,6 +924,29 @@ export default {
     width: calc(100% - 24px);
     margin: 0 12px;
     height: 171px;
+  }
+
+  &__indicators {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  &__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #654979;
+    transition: all 0.25s ease;
+  }
+
+  &__dot.active {
+    width: 18px;
+    height: 6px;
+    border-radius: 999px;
+    background: #fff;
   }
 }
 
