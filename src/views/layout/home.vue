@@ -83,11 +83,7 @@
                 <div v-if="index === 0 && hotGames.length" class="home-hot">
                   <div class="home-hot__title">
                     <span class="home-hot__name">
-                      <img
-                        class="home-hot__icon"
-                        :src="hotFireIcon"
-                        alt=""
-                      />
+                      <img class="home-hot__icon" :src="hotFireIcon" alt="" />
                       Hot
                     </span>
                   </div>
@@ -1038,7 +1034,7 @@ export default {
     width: 100%;
     height: 254px;
     object-fit: contain;
-    margin: 0px 0 -25px;
+    margin: 10px 0 -23px;
   }
 }
 

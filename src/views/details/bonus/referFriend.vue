@@ -1,9 +1,7 @@
 <template>
   <div class="content">
     <title-bar :title="$lang.bonus_title6"> </title-bar>
-    <div style="margin-left: 10px; margin-right: 10px; margin-top: 10px">
-      <!-- <img src="../../../assets/img/bonus/bonus4.png" width="100%" /> -->
-    </div>
+    <div style="margin-left: 10px; margin-right: 10px; margin-top: 10px"></div>
     <div class="content-a">
       <div class="content-c3">
         <div class="d-flex content-c3--top">

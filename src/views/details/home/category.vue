@@ -503,6 +503,7 @@ export default {
   position: relative;
   margin-left: 0;
   width: 100%;
+  container-type: inline-size;
 }
 .cot-cont-rt {
   position: relative;
@@ -526,8 +527,8 @@ export default {
   margin-top: 12px;
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2.4cqw;
   overflow-x: hidden;
   overflow-y: auto;
   max-height: calc(100vh - var(--van-nav-bar-height, 67px) - 140px);
@@ -543,7 +544,7 @@ export default {
 }
 .cot-cont-rbi__cover {
   width: 100%;
-  max-height: 160px;
+  aspect-ratio: 208 / 280;
   border-radius: 13px;
   overflow: hidden;
   background: #2d1545;
@@ -552,8 +553,7 @@ export default {
   img {
     display: block;
     width: 100%;
-    height: auto;
-    max-height: 160px;
+    height: 100%;
     object-fit: cover;
     border-radius: 13px;
     vertical-align: top;

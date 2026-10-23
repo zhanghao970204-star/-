@@ -210,6 +210,7 @@ export default {
 <style lang="less" scoped>
 .my-swipe {
   width: 100%;
+  container-type: inline-size;
   // height: 300px; /* 根据实际需求调整高度 */
   /* 隐藏指示器 */
   :deep(.van-swipe__indicators) {
@@ -218,16 +219,12 @@ export default {
 }
 
 .swipe-item {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  margin: 0 5px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2.4cqw;
+  margin: 0;
   min-height: 120px;
-}
-.swipe-item::after {
-  content: "";
-  width: 31.5%;
-  height: 0;
+  box-sizing: border-box;
 }
 .swipe-item--placeholder {
   min-height: 120px;
@@ -263,24 +260,22 @@ export default {
 }
 
 .item {
-  width: 31.5%;
-  height: auto;
-  max-height: 160px;
-  margin-bottom: 10px;
+  display: block;
+  width: 100%;
+  aspect-ratio: 208 / 280;
+  margin: 0;
   text-align: center;
   overflow: hidden;
   :deep(.van-image__img) {
     display: block;
     width: 100%;
-    height: auto;
-    max-height: 160px;
-    object-fit: contain;
+    height: 100%;
+    object-fit: cover;
     border-radius: 10px;
   }
   :deep(.van-image__loading),
   :deep(.van-image__error) {
     height: 100%;
-    max-height: 160px;
   }
   :deep(.van-loading__spinner) {
     display: none;
@@ -344,6 +339,7 @@ export default {
   position: relative;
   height: auto;
   margin-bottom: 8px;
+  margin-top: 10px;
   background: none;
   border: none;
   box-shadow: none;

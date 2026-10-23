@@ -1,27 +1,6 @@
 <template>
   <div class="content">
     <title-bar :title="$lang.bonus_title9"> </title-bar>
-    <!-- <div style="margin-left: 10px; margin-right: 10px; margin-top: 10px">
-      <img
-        src="../../../assets/img/bonus/bonus9.png"
-        width="100%"
-        style="border-radius: 12px"
-      />
-    </div> -->
-    <!-- <div style="position: relative; margin: 10px 10px 0 10px">
-      <img
-        src="../../../assets/img/bonus/bonus9.png"
-        width="100%"
-        style="border-radius: 13px"
-      />
-      <div style="position: absolute; top: 20px; left: 20px">
-        <p
-          style="font-weight: 800; font-size: 15px; margin-bottom: 10px"
-          v-html="$lang.common_txt244"
-        ></p>
-        <p v-html="$lang.common_txt245"></p>
-      </div>
-    </div> -->
     <div class="content-c">
       <div class="content-c--c t-c">
         <div
@@ -38,7 +17,7 @@
           <div
             class="content-c--b"
             :class="{
-              'active-b': index + 1 === new Date().getDay()
+              'active-b': index + 1 === new Date().getDay(),
             }"
           >
             <p style="font-size: 14px" class="font-color">
@@ -95,9 +74,9 @@
   </div>
 </template>
 <script>
-import { GetSignIn, SignIn } from '@/api/common'
+import { GetSignIn, SignIn } from "@/api/common";
 export default {
-  name: 'cashBack',
+  name: "cashBack",
   components: {},
   data() {
     return {
@@ -105,45 +84,45 @@ export default {
       InitDate: [],
       info: {},
       loading: false,
-      singSum: 0
-    }
+      singSum: 0,
+    };
   },
   mounted() {
     if (this.token) {
-      this.GetSignIn()
+      this.GetSignIn();
     }
   },
   methods: {
     async getJl() {
-      const data = await SignIn()
-      if (data.status === 'ok') {
+      const data = await SignIn();
+      if (data.status === "ok") {
         this.$toast({
           message: this.$lang.bonus_txt16,
-          icon: 'success'
-        })
-        this.GetSignIn()
+          icon: "success",
+        });
+        this.GetSignIn();
       } else {
         this.$toast({
           message: data.msg,
-          icon: 'cross'
-        })
+          icon: "cross",
+        });
       }
     },
     async GetSignIn() {
-      this.loading = true
-      const data = await GetSignIn()
-      if (data.status === 'ok') {
-        this.InitDate = JSON.parse(data.content.ruleList)
-        this.info = data.content
+      this.loading = true;
+      const data = await GetSignIn();
+      if (data.status === "ok") {
+        this.InitDate = JSON.parse(data.content.ruleList);
+        this.info = data.content;
         let newArr = this.InitDate.filter(
-          (i) => i.vipLevel === data.content.vipLevel
-        )
-        this.singSum = newArr[0].reward || 0
-        this.loading = false
+          (i) => i.vipLevel === data.content.vipLevel,
+        );
+        this.singSum = newArr[0].reward || 0;
+        this.loading = false;
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 <style lang="less" scoped>
 .content-c {
@@ -160,7 +139,7 @@ export default {
 }
 .content-c--b {
   padding-top: 5px;
-  background: url('../../../assets/img/sign_in/sign_in_item_bg.png'); /* 指定背景图片的路径 */
+  background: url("../../../assets/img/sign_in/sign_in_item_bg.png"); /* 指定背景图片的路径 */
   background-size: 100% 100%; /* 宽度和高度都拉伸到 100% */
   background-repeat: no-repeat; /* 防止图片重复 */
   // width: 110px;
@@ -174,7 +153,7 @@ export default {
 }
 .content-c--b2 {
   padding-top: 3px;
-  background-image: url('../../../assets/img/sign_in/sign_in_item_bg1.png'); /* 指定背景图片的路径 */
+  background-image: url("../../../assets/img/sign_in/sign_in_item_bg1.png"); /* 指定背景图片的路径 */
   background-size: 100% 100%; /* 宽度和高度都拉伸到 100% */
   background-repeat: no-repeat; /* 防止图片重复 */
   // width: 346px;
@@ -187,7 +166,7 @@ export default {
   /* 金色阴影效果 */
   // box-shadow: 0 1px 11px rgba(255, 215, 0, 0.8); /* 金色阴影 */
   border: 2px solid @info-color; /* 白色边框 */
-  background-image: url('../../../assets/img/sign_in/sign_in_item_bg1.png'); /* 指定背景图片的路径 */
+  background-image: url("../../../assets/img/sign_in/sign_in_item_bg1.png"); /* 指定背景图片的路径 */
 }
 
 .active {

@@ -115,31 +115,6 @@ const router = createRouter({
       ],
     },
     {
-      path: "/:prefix?/activityFistRecharge",
-      name: "ActivityFistRecharge",
-      component: () => import("@/views/details/bonus/activityFistRecharge"),
-    },
-    {
-      path: "/:prefix?/activityRecharge",
-      name: "ActivityRecharge",
-      component: () => import("@/views/details/bonus/activityRecharge"),
-    },
-    {
-      path: "/:prefix?/activityCooperate",
-      name: "ActivityCooperate",
-      component: () => import("@/views/details/bonus/activityCooperate"),
-    },
-    {
-      path: "/:prefix?/cashBack",
-      name: "CashBack",
-      component: () => import("@/views/details/bonus/cashBack"),
-    },
-    {
-      path: "/:prefix?/teamRebates",
-      name: "TeamRebates",
-      component: () => import("@/views/details/bonus/teamRebates"),
-    },
-    {
       path: "/:prefix?/redPacket",
       name: "RedPacket",
       component: () => import("@/views/details/bonus/redPacket"),
@@ -269,16 +244,16 @@ const router = createRouter({
       name: "OrderDetail",
       component: () => import("@/views/details/recharge/orderDetail"),
     },
-    {
-      path: "/:prefix?/firstRegister",
-      name: "FirstRegister",
-      component: () => import("@/views/details/bonus/firstRegister"),
-    },
-    {
-      path: "/:prefix?/cp",
-      name: "Cp",
-      component: () => import("@/views/details/mine/cp"),
-    },
+    // {
+    //   path: "/:prefix?/firstRegister",
+    //   name: "FirstRegister",
+    //   component: () => import("@/views/details/bonus/firstRegister"),
+    // },
+    // {
+    //   path: "/:prefix?/cp",
+    //   name: "Cp",
+    //   component: () => import("@/views/details/mine/cp"),
+    // },
     {
       path: "/:prefix?/email",
       name: "Email",

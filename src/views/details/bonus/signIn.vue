@@ -1,27 +1,6 @@
 <template>
   <div class="content">
     <title-bar :title="$lang.bonus_title7"> </title-bar>
-    <!-- <div style="margin-left: 10px; margin-right: 10px; margin-top: 10px">
-      <img
-        src="../../../assets/img/bonus/bonus10.png"
-        width="100%"
-        style="border-radius: 13px"
-      />
-    </div> -->
-    <!-- <div style="position: relative; margin: 10px 10px 0 10px">
-      <img
-        src="../../../assets/img/bonus/bonus10.png"
-        width="100%"
-        style="border-radius: 13px"
-      />
-      <div style="position: absolute; top: 20px; left: 20px">
-        <p
-          style="font-weight: 800; font-size: 15px; margin-bottom: 10px"
-          v-html="$lang.common_txt234"
-        ></p>
-        <p v-html="$lang.common_txt235"></p>
-      </div>
-    </div> -->
     <div class="content-c">
       <div class="content-c--c">
         <p class="content-c--c1">{{ $lang.VIP }} {{ vipLevel }}</p>

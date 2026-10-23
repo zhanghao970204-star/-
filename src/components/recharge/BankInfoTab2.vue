@@ -218,14 +218,14 @@
         <div class="wd-popup__actions">
           <button
             type="button"
-            class="wd-popup__cancel"
+            class="wd-popup__cancel btn-3d-yellow"
             @click="showDelete = false"
           >
             {{ $lang.Cancelar || "Cancel" }}
           </button>
           <button
             type="button"
-            class="wd-popup__submit btn-3d-yellow"
+            class="wd-popup__submit btn-3d-green"
             :disabled="deleting"
             @click="confirmDelete"
           >
@@ -871,13 +871,8 @@ export default {
 
   &__cancel {
     flex: 1;
-    height: 48px;
-    border: none;
+    font-size: 16px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    font-size: 14px;
-    font-weight: 700;
     cursor: pointer;
   }
 
