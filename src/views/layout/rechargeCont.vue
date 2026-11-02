@@ -133,7 +133,7 @@
         :placeholder="$lang.common_txt143"
         class="custom-field m-t-5 rc-amount-field"
         type="number"
-        @input="handleInput"
+        @update:model-value="handleInput"
         @focus="focus = true"
         @blur="focus = false"
       >
@@ -266,7 +266,7 @@
             :key="'pm-' + index"
             class="rc-confirm__chip"
             :class="{ 'is-active': selectIndex === index }"
-            @click="tabIndex(index)"
+            @click="tabIndex(index, { resetAmount: false })"
           >
             <img
               class="rc-confirm__chip-bg"
@@ -541,23 +541,6 @@ export default {
     };
   },
   watch: {
-    // 仅在支付列表整体替换时重置（勿 deep，否则改 quickSelect 会把选中打回第 0 项）
-    paymentList() {
-      if (this.paymentList.length > 0) {
-        this.tabIndex(0);
-        const first = this.paymentList[0].quickSelect?.[0];
-        if (first) {
-          this.selectAmount(0, first);
-          this.amount = first.amount;
-        }
-        if (this.paymentList[0].paymentId === "USDT") {
-          this.RefreshExchangeRate();
-        }
-        if (this.showRechargeActivity) {
-          this.agree = true;
-        }
-      }
-    },
     showPayIframe(v) {
       if (!v) this.payIframeUrl = "";
     },
@@ -641,14 +624,8 @@ export default {
     },
     currentBonus() {
       if (!this.showActivityBonus) return 0;
-      const row =
-        this.selectAmountIndex != null
-          ? this.dataList[this.selectAmountIndex]
-          : null;
-      if (row && row.bonus) return this.truncateTo2(row.bonus);
-      const amt = this.truncateTo2(this.amount);
-      const total = this.truncateTo2(this.totalMount);
-      return total > amt ? this.truncateTo2(total - amt) : 0;
+      const list = this.getQuickSelectForPay(this.selectIndex);
+      return this.resolveAmountTier(this.amount, list).bonus;
     },
   },
   mounted() {
@@ -677,20 +654,14 @@ export default {
       if (this.payTypeList.length && this.selectPayTypeIndex !== 0) {
         this.selectPayTypeIndex = 0;
         this.applyPayTypeFilter();
+        this.tabIndex(0, { resetAmount: false });
       } else if (this.paymentList.length && this.selectIndex !== 0) {
-        this.tabIndex(0);
+        this.tabIndex(0, { resetAmount: false });
       } else if (!this.paymentList.length) {
         this.selectPayTypeIndex = 0;
         this.applyPayTypeFilter();
       }
-      this.$nextTick(() => {
-        if (keepIdx != null && this.dataList[keepIdx]) {
-          this.selectAmount(keepIdx, this.dataList[keepIdx]);
-        } else if (keepAmount) {
-          this.amount = keepAmount;
-          this.handleInput(keepAmount);
-        }
-      });
+      this.syncTotalsForAmount(keepAmount);
       this.confirmShow = true;
     },
     goToRecord() {
@@ -747,17 +718,28 @@ export default {
       if (data.status === "ok") {
         this.allPaymentList = data.content.paymentList || [];
         this.payTypeList = data.content.payTypeList || [];
-        this.selectPayTypeIndex = 0;
-        this.applyPayTypeFilter();
         this.activities = data.content.activities || [];
         this.firstRecharge = data.content.firstRecharge === true;
         this.blance = data.content._balUsable;
         this.account = data.content._account;
-        this.$nextTick(() => {
-          if (this.showRechargeActivity) {
-            this.agree = true;
-          }
-        });
+        if (
+          this.activities.length > 0 ||
+          this.firstRecharge ||
+          this.allPaymentList.some((p) =>
+            (p.quickSelect || []).some((q) => parseFloat(q.bonus) > 0),
+          )
+        ) {
+          this.agree = true;
+        }
+        this.selectPayTypeIndex = 0;
+        this.applyPayTypeFilter();
+        this.tabIndex(0, { resetAmount: true });
+        if (
+          this.paymentList.length > 0 &&
+          this.paymentList[0].paymentId === "USDT"
+        ) {
+          this.RefreshExchangeRate();
+        }
       }
     },
     async GetIsFbReport(v) {
@@ -893,6 +875,7 @@ export default {
       if (this.selectPayTypeIndex === i) return;
       this.selectPayTypeIndex = i;
       this.applyPayTypeFilter();
+      this.tabIndex(0, { resetAmount: false });
     },
     applyPayTypeFilter() {
       const type = this.payTypeList[this.selectPayTypeIndex];
@@ -904,7 +887,87 @@ export default {
         (p) => String(p.paymentId) === String(type.paymentId),
       );
     },
-    tabIndex(i) {
+    getQuickSelectForPay(index) {
+      const pay = this.paymentList[index];
+      if (pay && Array.isArray(pay.quickSelect) && pay.quickSelect.length) {
+        return pay.quickSelect;
+      }
+      return this.dataList;
+    },
+    readTierBonus(bonus) {
+      if (!this.showActivityBonus || bonus == null || bonus === "") return 0;
+      return this.truncateTo2(bonus);
+    },
+    /** 按 quickSelect 档位：精确匹配；区间内取不高于输入的最大档位；超过最大档取最大档 */
+    resolveAmountTier(raw, list) {
+      const inputAmount = this.truncateTo2(raw);
+      if (!inputAmount || !list || !list.length) {
+        return { bonus: 0, highlightIndex: null };
+      }
+      const tiers = list
+        .map((item, index) => ({
+          index,
+          amount: this.truncateTo2(item.amount),
+          bonus: item.bonus,
+        }))
+        .filter((t) => t.amount > 0)
+        .sort((a, b) => a.amount - b.amount);
+
+      if (!tiers.length) {
+        return { bonus: 0, highlightIndex: null };
+      }
+
+      const exact = tiers.find((t) => t.amount === inputAmount);
+      if (exact) {
+        return {
+          bonus: this.readTierBonus(exact.bonus),
+          highlightIndex: exact.index,
+        };
+      }
+
+      let chosen = null;
+      for (const t of tiers) {
+        if (t.amount <= inputAmount) {
+          chosen = t;
+        }
+      }
+
+      if (!chosen) {
+        return { bonus: 0, highlightIndex: null };
+      }
+
+      return {
+        bonus: this.readTierBonus(chosen.bonus),
+        highlightIndex: chosen.index,
+      };
+    },
+    syncTotalsForAmount(amountVal) {
+      const raw = this.parseAmountInput(amountVal);
+      if (raw === "" || raw == null) {
+        this.dataList.forEach((item) => {
+          item.isActive = false;
+        });
+        this.selectAmountIndex = null;
+        this.totalMount = 0;
+        return;
+      }
+      const inputAmount = this.truncateTo2(raw);
+      const payList = this.getQuickSelectForPay(this.selectIndex);
+      const { bonus: matchedBonus, highlightIndex } = this.resolveAmountTier(
+        raw,
+        payList,
+      );
+      this.dataList.forEach((item, index) => {
+        item.isActive = highlightIndex === index;
+      });
+      this.selectAmountIndex = highlightIndex;
+      this.amount = raw;
+      this.totalMount = this.showActivityBonus
+        ? this.truncateTo2(inputAmount + matchedBonus)
+        : inputAmount || 0;
+    },
+    tabIndex(i, options = {}) {
+      const resetAmount = options.resetAmount !== false;
       if (!this.paymentList[i]) return;
       const pay = this.paymentList[i] || {};
       const rawMin =
@@ -915,10 +978,6 @@ export default {
         pay.minimum;
       this.minAmount = rawMin != null && rawMin !== "" ? rawMin : 0;
       this.selectIndex = i;
-      this.dataList = this.paymentList[i].quickSelect || [];
-      this.dataList.forEach((item) => {
-        item.isActive = false;
-      });
       this.paymentId = this.paymentList[i].paymentId;
       this.paymentKey = this.paymentList[i].paymentKey;
       this.paymentType = this.paymentList[i].paymentType;
@@ -926,15 +985,22 @@ export default {
       this.awardRules = this.paymentList[i].awardRules;
       this.paymentIconUrl = this.paymentList[i].paymentIconUrl;
       this.paymentName = this.paymentList[i].paymentName;
-      const firstAmount = this.dataList[0];
-      if (firstAmount) {
-        this.selectAmount(0, firstAmount);
+      if (resetAmount) {
+        this.dataList = this.paymentList[i].quickSelect || [];
+        this.dataList.forEach((item) => {
+          item.isActive = false;
+        });
+        const firstAmount = this.dataList[0];
+        if (firstAmount) {
+          this.selectAmount(0, firstAmount);
+        } else {
+          this.selectAmountIndex = null;
+          this.amount = "";
+          this.totalMount = 0;
+        }
       } else {
-        this.selectAmountIndex = null;
-        this.amount = "";
-        this.totalMount = 0;
+        this.syncTotalsForAmount(this.amount);
       }
-      // 如果切换到USDT支付方式，刷新汇率
       if (this.paymentList[i].paymentId === "USDT") {
         this.RefreshExchangeRate();
       }
@@ -952,6 +1018,21 @@ export default {
         }
       });
     },
+    parseAmountInput(val) {
+      if (val == null || val === "") return "";
+      if (typeof val === "object" && val.target) {
+        return val.target.value;
+      }
+      return val;
+    },
+    amountEquals(a, b) {
+      const na = this.truncateTo2(a);
+      const nb = this.truncateTo2(b);
+      if (na === 0 && nb === 0) {
+        return String(a).trim() === "" && String(b).trim() === "";
+      }
+      return na === nb && na !== 0;
+    },
     // 截取到小数点后两位（不四舍五入）
     truncateTo2(val) {
       const n = Number(val);
@@ -968,30 +1049,14 @@ export default {
       this.selectAmountIndex = i;
       this.amount = v.amount;
       const amount = this.truncateTo2(v.amount);
-      this.totalMount =
-        this.showActivityBonus && v.bonus
-          ? this.truncateTo2(amount + this.truncateTo2(v.bonus))
-          : amount;
+      const bonus =
+        v.bonus != null && v.bonus !== "" ? this.truncateTo2(v.bonus) : 0;
+      this.totalMount = this.showActivityBonus
+        ? this.truncateTo2(amount + bonus)
+        : amount;
     },
-    handleInput(i) {
-      let matchedBonus = 0;
-      let matchedIndex = null;
-      const inputAmount = this.truncateTo2(i);
-      this.dataList.forEach((item, index) => {
-        const matched = this.truncateTo2(item.amount) === inputAmount;
-        item.isActive = matched;
-        if (matched) {
-          matchedIndex = index;
-          if (this.showActivityBonus && item.bonus) {
-            matchedBonus = this.truncateTo2(item.bonus);
-          }
-        }
-      });
-      this.selectAmountIndex = matchedIndex;
-      this.totalMount =
-        this.showActivityBonus && matchedBonus
-          ? this.truncateTo2(inputAmount + matchedBonus)
-          : inputAmount || 0;
+    handleInput(val) {
+      this.syncTotalsForAmount(val);
     },
   },
 };

@@ -101,6 +101,7 @@ const router = createRouter({
           path: "rechargeCont",
           name: "RechargeCont",
           component: () => import("@/views/layout/rechargeCont"),
+          meta: { keepAlive: true },
         },
         {
           path: "firstDepositGift",

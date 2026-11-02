@@ -60,7 +60,7 @@
 
       <!-- 首页中奖滚动条：banner 上方 -->
       <div
-        v-if="$route.path.includes('/home') && winTickerList.length"
+        v-show="$route.path.includes('/home') && winTickerList.length"
         class="home-win-ticker"
         ref="winTickerWrap"
       >
@@ -92,7 +92,7 @@
       </div>
 
       <div
-        v-if="$route.path.includes('/home') && bannerList.length"
+        v-show="$route.path.includes('/home') && bannerList.length"
         class="content-swiper-bg home-banner-swipe"
         style="margin-top: 6px"
       >
@@ -136,14 +136,13 @@
           :name="route.meta.routeTransition || 'route-motion-forward'"
           mode="out-in"
         >
-          <keep-alive v-if="Component && route.meta.keepAlive">
-            <component :is="Component" :key="route.name" />
+          <keep-alive :include="keepAliveViews">
+            <component
+              :is="Component"
+              v-if="Component"
+              :key="route.meta.keepAlive ? route.name : route.fullPath"
+            />
           </keep-alive>
-          <component
-            :is="Component"
-            v-else-if="Component"
-            :key="route.fullPath"
-          />
         </transition>
       </router-view>
     </div>
@@ -309,6 +308,17 @@ export default {
       currentBannerIndex: 0,
       bannerList: [],
       showNoticePopup: false,
+      keepAliveViews: [
+        "Home",
+        "RechargeCont",
+        "Mine",
+        "Activity",
+        "Share",
+        "Lottery",
+        "Support",
+        "Crowdfunding",
+        "Country",
+      ],
     };
   },
   watch: {

@@ -426,6 +426,11 @@ export default {
       this.initCountdown();
     }
     this.$nextTick(() => this.startHotAutoScroll());
+    if (this._homeAlive) {
+      this.GetHomeGameList();
+      this.fetchCsHomeLinks();
+    }
+    this._homeAlive = true;
   },
   deactivated() {
     this.stopTypeReveal();
