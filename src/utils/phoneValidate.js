@@ -1,7 +1,9 @@
 /**
- * 美国手机号校验（注册）
- * 合法：10 位纯数字，或 11 位且以 0 开头；否则无效。
+ * 美国手机号（北美编号计划 NANP）
+ * 10 位：区号 NXX + 局号 NXX + 4 位，N 为 2-9，区号/局号不能是 N11（如 911）。
  */
+
+export const US_PHONE_LENGTH = 10;
 
 export function normalizeAreaCodeDigits(areaCode) {
   return String(areaCode == null ? "" : areaCode).replace(/\D/g, "");
@@ -20,10 +22,18 @@ export function normalizePhoneDigits(phone) {
   return String(phone == null ? "" : phone).replace(/\D/g, "");
 }
 
-/** 美国手机号：10 位，或 11 位且以 0 开头 */
+/** 输入/粘贴归一：只留数字，带国家码 1 的 11 位去掉 1，最多 10 位 */
+export function normalizeUsPhoneInput(raw) {
+  let digits = normalizePhoneDigits(raw);
+  if (digits.length === 11 && digits.startsWith("1")) {
+    digits = digits.slice(1);
+  }
+  return digits.slice(0, US_PHONE_LENGTH);
+}
+
 export function isValidUsPhone(phone) {
   const p = normalizePhoneDigits(phone);
-  if (/^\d{10}$/.test(p)) return true;
-  if (/^0\d{10}$/.test(p)) return true;
-  return false;
+  if (!/^[2-9]\d{2}[2-9]\d{6}$/.test(p)) return false;
+  const isN11 = (part) => part[1] === "1" && part[2] === "1";
+  return !isN11(p.slice(0, 3)) && !isN11(p.slice(3, 6));
 }

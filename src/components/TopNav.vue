@@ -315,7 +315,7 @@ import {
   GetCsLink,
   GetHomeGameList,
   // GetIsFbReport,
-  fbReportSuccess,
+  // fbReportSuccess,
   GetLotteryList,
   GetPlatformList,
   NoticeList,
@@ -870,9 +870,10 @@ export default {
         this.InitDate2 = data.content;
       }
     },
-    async fbReportSuccess() {
-      await fbReportSuccess();
-    },
+    // 像素上报已停用，归因统一走 Adjust
+    // async fbReportSuccess() {
+    //   await fbReportSuccess();
+    // },
     // async GetIsFbReport(v) {
     //   const data = await GetIsFbReport({
     //     inviteCode: localStorage.getItem('id')
@@ -910,67 +911,52 @@ export default {
         this.InitDate = data.content;
         localStorage.setItem("shareCode", data.content.inviteCode);
 
-        if (data.content.fbPixJson) {
-          let newObj = JSON.parse(data.content.fbPixJson);
-          // let newObj = JSON.parse(
-          //   '{"pixIsSend":1,"fbUrlPara":"fbid=3633995890229347&target=fb&fbclid=IwZXh0bgNhZW0BMABhZGlkAasin9CXST4BHhLUU0KaZSVVWlrgJh38zhz_ByG2X0Y3rnwlqwphWJbU7cxAag-Mqbz43Qds_aem_1_7l4hrqOCSn-51gneQ5wg&utm_medium=paid&utm_source=fb&utm_id=120227708038730174&utm_content=120227884522230174&utm_term=120227708038740174&utm_campaign=120227708038730174#/?id=dp0vg2dx"}'
-          // )
-
-          if (newObj.pixIsSend && newObj.pixIsSend === 1) {
-            this.$jumpTo("?" + newObj.fbUrlPara, {}, { replace: true });
-            const paramsArray = newObj.fbUrlPara.split("&");
-            const params = {};
-            paramsArray.forEach((param) => {
-              const [key, value] = param.split("=");
-              params[key] = value;
-            });
-            if (params["target"] === "ks") {
-              window.kwaiq.load(params["fbid"]);
-              window.kwaiq.instance(params["fbid"]).track("purchase", {
-                amount: newObj.firstDepositAmount * 0.1,
-                currency: "NGN",
-              });
-              this.fbReportSuccess();
-              console.log("Purchase");
-            } else if (params["target"] === "fb") {
-              this.$pixel.setFbId(params["fbid"]);
-              window.fbq("track", "Purchase", {
-                value: parseInt(newObj.firstDepositAmount * 0.1), // 自定义金额
-                currency: "NGN",
-                // content_ids: ['12345'], // 可选，产品 ID
-                // content_name: 'Product Name', // 可选，产品名称
-                // content_category: 'Category', // 可选，产品分类
-                // content_price: amount, // 可选，产品价格
-                // num_items: 1, // 可选，购买数量
-                event_time: Date.now(),
-                // action_source: window.location.href + '?' + newObj.fbUrlPara,
-                event_id: `ORDER${data.content._uid}`, // 可选，订单 ID
-                user_data: {
-                  fbc: params["fbclid"],
-                  // client_ip_address: clientIp
-                },
-                custom_data: {
-                  value: parseInt(newObj.firstDepositAmount * 0.1), // 自定义金额
-                  currency: "NGN",
-                },
-              });
-
-              // this.$pixel.callTrackHasPara(
-              //   'track',
-              //   'Purchase',
-              //   newObj.firstDepositAmount * 0.1,
-              //   'BRL'
-              // ) // 上报
-              const jsonData = `"""{"data":[{"event_name": "Purchase", "value": ${parseInt(
-                newObj.firstDepositAmount * 0.1,
-              )}, "currency": "NGN","content_type": "product"}]}"""`;
-              this.$pixel.sendEventToAndroid(jsonData);
-              this.fbReportSuccess();
-            }
-
-            // this.GetIsFbReport(newObj.firstDepositAmount)
-          }
-        }
+        // 像素上报已停用，归因统一走 Adjust（事件由后端上报）
+        // if (data.content.fbPixJson) {
+        //   let newObj = JSON.parse(data.content.fbPixJson);
+        //   // let newObj = JSON.parse(
+        //   //   '{"pixIsSend":1,"fbUrlPara":"fbid=3633995890229347&target=fb&fbclid=IwZXh0bgNhZW0BMABhZGlkAasin9CXST4BHhLUU0KaZSVVWlrgJh38zhz_ByG2X0Y3rnwlqwphWJbU7cxAag-Mqbz43Qds_aem_1_7l4hrqOCSn-51gneQ5wg&utm_medium=paid&utm_source=fb&utm_id=120227708038730174&utm_content=120227884522230174&utm_term=120227708038740174&utm_campaign=120227708038730174#/?id=dp0vg2dx"}'
+        //   // )
+        //
+        //   if (newObj.pixIsSend && newObj.pixIsSend === 1) {
+        //     this.$jumpTo("?" + newObj.fbUrlPara, {}, { replace: true });
+        //     const paramsArray = newObj.fbUrlPara.split("&");
+        //     const params = {};
+        //     paramsArray.forEach((param) => {
+        //       const [key, value] = param.split("=");
+        //       params[key] = value;
+        //     });
+        //     if (params["target"] === "ks") {
+        //       window.kwaiq.load(params["fbid"]);
+        //       window.kwaiq.instance(params["fbid"]).track("purchase", {
+        //         amount: newObj.firstDepositAmount * 0.1,
+        //         currency: "NGN",
+        //       });
+        //       this.fbReportSuccess();
+        //       console.log("Purchase");
+        //     } else if (params["target"] === "fb") {
+        //       this.$pixel.setFbId(params["fbid"]);
+        //       window.fbq("track", "Purchase", {
+        //         value: parseInt(newObj.firstDepositAmount * 0.1), // 自定义金额
+        //         currency: "NGN",
+        //         event_time: Date.now(),
+        //         event_id: `ORDER${data.content._uid}`, // 可选，订单 ID
+        //         user_data: {
+        //           fbc: params["fbclid"],
+        //         },
+        //         custom_data: {
+        //           value: parseInt(newObj.firstDepositAmount * 0.1), // 自定义金额
+        //           currency: "NGN",
+        //         },
+        //       });
+        //       const jsonData = `"""{"data":[{"event_name": "Purchase", "value": ${parseInt(
+        //         newObj.firstDepositAmount * 0.1,
+        //       )}, "currency": "NGN","content_type": "product"}]}"""`;
+        //       this.$pixel.sendEventToAndroid(jsonData);
+        //       this.fbReportSuccess();
+        //     }
+        //   }
+        // }
       }
     },
     gotoShare() {

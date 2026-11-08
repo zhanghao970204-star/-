@@ -1,9 +1,8 @@
 import axios from "axios";
-import { getFingerprint } from "@/utils/common";
 import bus from "@/utils/eventBus";
 import router from "../router";
 import { emitHeaderRefresh, shouldRefreshHeader } from "@/utils/headerRefresh";
-import { resolveClientIdSync } from "@/utils/nativeDevice";
+import { ensureClientId, resolveClientIdSync } from "@/utils/nativeDevice";
 import { clearGuestFlags } from "@/utils/guestAuth";
 import {
   API_ORIGIN, API_PATH, API_TIMEOUT_MS, DEFAULT_LOCALE,
@@ -58,7 +57,7 @@ const instance = axios.create({
     (data, headers) => {
       // 检测是否为 POST 请求
       if (headers["Content-Type"] === "application/json") {
-        // 优先级：Flutter uuid → Vue 本地 uuid
+        // 优先级：Flutter uuid → 浏览器指纹 → 本地 uuid
         const clientId = resolveClientIdSync() || window.fingerprint || "";
         data = {
           mode: 2, // 固定模式
@@ -83,24 +82,8 @@ const instance = axios.create({
 // 请求拦截器
 instance.interceptors.request.use(
   async (config) => {
-    // 设备标识：Flutter uuid → Vue 本地指纹
-    const clientId = resolveClientIdSync();
-    if (clientId) {
-      window.fingerprint = clientId;
-    } else if (!window.fingerprint) {
-      const cached =
-        typeof localStorage !== "undefined"
-          ? localStorage.getItem(STORAGE_KEYS.fingerprint)
-          : null;
-      if (cached) {
-        window.fingerprint = cached;
-      } else if (!window.__fpPromise) {
-        window.__fpPromise = getFingerprint().then((id) => {
-          if (id && !resolveClientIdSync()) window.fingerprint = id;
-          return id;
-        });
-      }
-    }
+    // 设备标识：App 用 Flutter uuid；H5 首次访问等指纹算好再发，保证 uuid 一致
+    await ensureClientId();
     const token = localStorage.getItem("token");
     if (token) {
       config.headers["X-Access-Token"] = token;

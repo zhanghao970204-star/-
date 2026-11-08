@@ -2,8 +2,10 @@
  * 客户端唯一标识（传后端 uuid）
  *
  * 优先级：
- * 1. Flutter 注入的 uuid
- * 2. Vue 本地 uuid（指纹）
+ * 1. Flutter 注入的 uuid（App 内）
+ * 2. Adjust web_uuid（H5，分享链接 getIsFbReport 返回 target 为 "ad" 时）
+ * 3. 浏览器指纹 FingerprintJS visitorId（H5）
+ * 4. 本地随机 uuid（指纹失败兜底；App 内 Flutter 未注入前临时使用）
  *
  * Flutter onPageFinished：
  *   window.setNativeUuid('flutter-uuid');
@@ -12,6 +14,8 @@
  */
 
 import { STORAGE_KEYS } from './appConstants';
+import { getFingerprint } from './common';
+import { isNativeAppShell } from './nativeApp';
 
 const UUID_KEY = "__NATIVE_UUID__";
 
@@ -89,16 +93,33 @@ export function peekFlutterUuid() {
   }
 }
 
+/** ad 类型分享链接且 Adjust SDK 已生成 web_uuid 时返回，否则空串 */
+export function peekAdjustUuid() {
+  try {
+    if (isNativeAppShell()) return "";
+    if (localStorage.getItem(STORAGE_KEYS.adjustUuidMode) !== "1") return "";
+    return norm(localStorage.getItem(STORAGE_KEYS.adjustWebUuid));
+  } catch (_) {
+    return "";
+  }
+}
+
+function peekCachedFingerprint() {
+  try {
+    return norm(localStorage.getItem(STORAGE_KEYS.fingerprint));
+  } catch (_) {
+    return "";
+  }
+}
+
 export function peekVueLocalUuid() {
   try {
-    if (window.fingerprint) return norm(window.fingerprint);
-    if (typeof localStorage !== "undefined") {
-      return (
-        norm(localStorage.getItem(STORAGE_KEYS.fingerprint)) ||
-        norm(localStorage.getItem("vue_guest_uuid")) ||
-        ""
-      );
-    }
+    return (
+      peekCachedFingerprint() ||
+      norm(window.fingerprint) ||
+      norm(localStorage.getItem("vue_guest_uuid")) ||
+      ""
+    );
   } catch (_) {
     /* ignore */
   }
@@ -139,12 +160,44 @@ function readQueryUuid() {
   }
 }
 
-/** 同步：Flutter uuid → Vue 本地 uuid */
+/** 同步：Flutter uuid → Adjust web_uuid（ad 类型）→ 指纹 → 本地 uuid；H5 不在这里生成随机值，由 ensureClientId 先算指纹 */
 export function resolveClientIdSync() {
   const fromQuery = readQueryUuid();
   if (fromQuery) setNativeUuid(fromQuery);
 
-  return peekFlutterUuid() || peekVueLocalUuid() || ensureLocalUuid() || "";
+  const id = peekFlutterUuid() || peekAdjustUuid() || peekVueLocalUuid();
+  if (id) return id;
+  return isNativeAppShell() ? ensureLocalUuid() : "";
+}
+
+let fingerprintPromise = null;
+
+/**
+ * H5 用浏览器指纹作为 uuid：首次访问需异步计算（之后读缓存），超时或失败才退回随机 uuid。
+ * App 内保持 Flutter uuid，不等指纹。
+ */
+export function ensureClientId(timeoutMs = 3000) {
+  if (isNativeAppShell() || peekFlutterUuid()) {
+    return Promise.resolve(resolveClientIdSync());
+  }
+  const cached = peekCachedFingerprint();
+  if (cached) {
+    applyFingerprint(cached);
+    return Promise.resolve(cached);
+  }
+  if (!fingerprintPromise) {
+    const timeout = new Promise((resolve) =>
+      setTimeout(() => resolve(""), timeoutMs),
+    );
+    fingerprintPromise = Promise.race([getFingerprint(), timeout]).then(
+      (fp) => {
+        const id = fp || peekVueLocalUuid() || ensureLocalUuid();
+        applyFingerprint(id);
+        return id;
+      },
+    );
+  }
+  return fingerprintPromise;
 }
 
 /**

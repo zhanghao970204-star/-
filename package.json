@@ -11,6 +11,7 @@
     "lint": "eslint . --ext .vue,.js --fix"
   },
   "dependencies": {
+    "@adjustcom/adjust-web-sdk": "^5.8.3",
     "@fingerprintjs/fingerprintjs": "^4.6.2",
     "axios": "^1.11.0",
     "dayjs": "^1.11.13",

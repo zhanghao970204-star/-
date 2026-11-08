@@ -15,17 +15,13 @@ import { createI18n } from "vue-i18n";
 import dragScroll from "./utils/dragScroll";
 import bus from "./utils/eventBus";
 import toast from "./utils/toast";
-import { getFingerprint } from "./utils/common.js";
 import { readCountryCode } from "./utils/country.js";
 import { DEFAULT_LOCALE, STORAGE_KEYS } from "./utils/appConstants.js";
 import { LOCALE_LOADERS, LOCAL_LOCALES } from "./utils/locale.js";
 import { resetPageScrollAfterRoute } from "./utils/scrollReset.js";
-import {
-  resolveClientIdSync,
-  getClientId,
-  peekFlutterUuid,
-} from "./utils/nativeDevice.js";
+import { ensureClientId } from "./utils/nativeDevice.js";
 import { installGlobalClickSound } from "./utils/sound.js";
+import { initAdjust } from "./utils/adjust.js";
 // import VConsole from 'vconsole'
 
 // App / 调试：打开 vConsole（?vconsole=0 可关）
@@ -40,33 +36,8 @@ import { installGlobalClickSound } from "./utils/sound.js";
 //   }
 // })()
 
-// 传后端 uuid：Flutter uuid → Vue 本地指纹
-(function warmFingerprint() {
-  try {
-    const id = resolveClientIdSync();
-    if (id) {
-      window.fingerprint = id;
-      if (peekFlutterUuid()) return;
-    }
-    const cached = localStorage.getItem(STORAGE_KEYS.fingerprint);
-    if (cached && !window.fingerprint) {
-      window.fingerprint = cached;
-    }
-  } catch (e) {
-    /* ignore */
-  }
-  getClientId(1500).then((id) => {
-    if (id) {
-      window.fingerprint = id;
-      return;
-    }
-    getFingerprint().then((fp) => {
-      if (fp && !peekFlutterUuid()) {
-        window.fingerprint = fp;
-      }
-    });
-  });
-})();
+// 传后端 uuid：App 用 Flutter uuid；H5 尽早开始计算浏览器指纹
+ensureClientId();
 
 async function loadLocaleMessages(locale) {
   const key = LOCAL_LOCALES.includes(locale) ? locale : DEFAULT_LOCALE;
@@ -213,6 +184,7 @@ async function bootstrap() {
 
   installGlobalClickSound();
   app.mount("#app");
+  initAdjust();
 }
 
 bootstrap();

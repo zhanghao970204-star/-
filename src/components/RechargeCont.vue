@@ -219,7 +219,7 @@
 </template>
 
 <script>
-import { Pay, GetIsFbReport, VnRechargeInitS } from "@/api/common";
+import { Pay, /* GetIsFbReport, */ VnRechargeInitS } from "@/api/common";
 export default {
   name: "RechargeCont",
   props: {
@@ -310,31 +310,32 @@ export default {
         this.firstRecharge = data.content.firstRecharge === true;
       }
     },
-    async GetIsFbReport(v) {
-      const data = await GetIsFbReport({
-        inviteCode: localStorage.getItem("id"),
-      });
-      if (data.status === "ok") {
-        if (data.content.isReport) {
-          if (data.content.target === "ks") {
-            window.kwaiq.load(data.content.fbPixId);
-            window.kwaiq.instance(data.content.fbPixId).track("addToCart", {
-              value: parseInt(v * 0.1),
-              currency: "NGN",
-            });
-
-            console.log("add_to_cart");
-          } else {
-            this.$pixel.setFbId(data.content.fbPixId);
-            this.$pixel.callTrackHasPara("track", "AddToCart", v * 0.1, "NGN"); // 上报
-            const jsonData = `"""{"data":[{"event_name": "Lead","content_name": "Recharge Form","value": ${parseInt(
-              v * 0.1,
-            )},"currency": "BRLS"}]}"""`;
-            this.$pixel.sendEventToAndroid(jsonData);
-          }
-        }
-      }
-    },
+    // 像素上报已停用，归因统一走 Adjust
+    // async GetIsFbReport(v) {
+    //   const data = await GetIsFbReport({
+    //     inviteCode: localStorage.getItem("id"),
+    //   });
+    //   if (data.status === "ok") {
+    //     if (data.content.isReport) {
+    //       if (data.content.target === "ks") {
+    //         window.kwaiq.load(data.content.fbPixId);
+    //         window.kwaiq.instance(data.content.fbPixId).track("addToCart", {
+    //           value: parseInt(v * 0.1),
+    //           currency: "NGN",
+    //         });
+    //
+    //         console.log("add_to_cart");
+    //       } else {
+    //         this.$pixel.setFbId(data.content.fbPixId);
+    //         this.$pixel.callTrackHasPara("track", "AddToCart", v * 0.1, "NGN"); // 上报
+    //         const jsonData = `"""{"data":[{"event_name": "Lead","content_name": "Recharge Form","value": ${parseInt(
+    //           v * 0.1,
+    //         )},"currency": "BRLS"}]}"""`;
+    //         this.$pixel.sendEventToAndroid(jsonData);
+    //       }
+    //     }
+    //   }
+    // },
     async submit() {
       if (this.amount < 10) {
         this.$toast({
@@ -357,7 +358,7 @@ export default {
           : null,
       });
       if (data.status === "ok") {
-        this.GetIsFbReport(this.amount);
+        // this.GetIsFbReport(this.amount);
         sessionStorage.setItem(
           "gameHallEmbed",
           JSON.stringify({ from: "recharge", url: data.content.url }),

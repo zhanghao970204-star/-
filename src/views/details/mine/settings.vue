@@ -4,7 +4,7 @@
 
     <div class="settings-panel">
       <!-- Account Security -->
-      <section class="settings-section">
+      <!-- <section class="settings-section">
         <div class="settings-section__header">
           <img
             class="section-icon"
@@ -34,7 +34,7 @@
             }}
           </button>
         </div>
-      </section>
+      </section> -->
 
       <!-- Social Binding -->
       <!-- <section class="settings-section">
@@ -281,6 +281,7 @@
 <script>
 import { Logout, Init, ChangeMail } from "@/api/common";
 import md5 from "@/utils/md5";
+import { getEmailErrorType, isValidEmailFormat } from "@/utils/emailValidate";
 import {
   playSwitchSound,
   playClickSound,
@@ -399,12 +400,9 @@ export default {
           : "";
       this.showEmailPopup = true;
     },
-    isValidEmail(v) {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v || "").trim());
-    },
     async submitEmail() {
       const newMail = String(this.newMailInput || "").trim();
-      if (!this.isValidEmail(newMail)) {
+      if (getEmailErrorType(newMail)) {
         this.emailError =
           this.$lang.settings_email_invalid || "Please enter a valid email";
         return;
@@ -412,7 +410,7 @@ export default {
       const payload = { newMail };
       if (this.hasBoundMail) {
         const oldMail = String(this.oldMailInput || "").trim();
-        if (!this.isValidEmail(oldMail)) {
+        if (!isValidEmailFormat(oldMail)) {
           this.emailError =
             this.$lang.settings_old_email_invalid ||
             "Please enter your current email";

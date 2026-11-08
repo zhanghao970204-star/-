@@ -367,7 +367,8 @@ export default {
       await localStorage.setItem("id", this.$route.query.id);
       await GetInvitationID();
     }
-    if (!localStorage.getItem("fbExpand")) {
+    // 带邀请 id 进入时以当前链接为准，避免沿用上一个邀请链接的参数
+    if (this.$route.query.id || !localStorage.getItem("fbExpand")) {
       localStorage.setItem(
         "fbExpand",
         this.$pixel.getUrlFBParams().replace("#/home?", "&"),

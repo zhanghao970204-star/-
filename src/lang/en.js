@@ -2113,8 +2113,7 @@ The best slot machines, endless fun and guaranteed excitement!
             2.Enter your generated verification code here.<br />
             3.Please enter the verification code received via SMS.<br />`,
   common_txt369: `The account number must consist of 8 to 13 digits only.`,
-  phone_us_invalid: `Incorrect phone number`,
-  common_txt370: `To complete the payment with `,
+  phone_us_invalid: `Please enter a valid 10-digit US phone number`,  common_txt370: `To complete the payment with `,
   common_txt371: `<span class="info-color">Step 1: </span> Confirm that you want to proceed, then enter your payment PIN to authorize the transaction.`,
   common_txt372: `<span class="info-color">Step 2: </span> Wait for the payment to be completed.`,
   common_txt373: `Close this window and try again if the system rejects it due to a network error.`,

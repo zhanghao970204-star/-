@@ -34,19 +34,46 @@
       </p>
 
       <div class="guest-upgrade__input">
-        <van-icon name="user-o" size="18" color="#fff" />
+        <van-icon name="phone-o" size="18" color="#fff" />
+        <span class="guest-upgrade__area">{{ areaCode }}</span>
         <input
-          v-model.trim="account"
-          type="text"
-          maxlength="16"
-          autocomplete="username"
-          :placeholder="
-            $lang.guest_upgrade_account_placeholder ||
-            '6-16 letters and numbers'
-          "
-          @input="clearError"
+          :value="phoneNo"
+          type="tel"
+          inputmode="numeric"
+          autocomplete="tel"
+          :placeholder="$lang.login_txt || 'Enter mobile number'"
+          @input="onPhoneInput"
         />
       </div>
+
+      <div v-if="isCaptchaRequired" class="guest-upgrade__input">
+        <van-icon name="comment-o" size="18" color="#fff" />
+        <input
+          :value="captcha"
+          type="tel"
+          inputmode="numeric"
+          autocomplete="one-time-code"
+          :placeholder="
+            $lang.login_captcha_placeholder || 'Enter verification code'
+          "
+          @input="onCaptchaInput"
+        />
+        <button
+          type="button"
+          class="guest-upgrade__send"
+          :disabled="!canSendCaptcha"
+          @click="sendCaptcha"
+        >
+          {{
+            captchaCountdown > 0
+              ? `${captchaCountdown}s`
+              : $lang.login_captcha_send || "Send"
+          }}
+        </button>
+      </div>
+      <p v-if="isCaptchaRequired && captchaError" class="guest-upgrade__field-error">
+        {{ captchaError }}
+      </p>
 
       <div class="guest-upgrade__input">
         <van-icon name="lock" size="18" color="#fff" />
@@ -119,12 +146,17 @@
 </template>
 
 <script>
-import { BindGuest } from "@/api/common";
+import { BindGuest, GetCaptcha, GetSysConfig } from "@/api/common";
 import {
   getGuestUuid,
   isGuestUser,
   saveLoginSession,
 } from "@/utils/guestAuth";
+import {
+  isUsAreaCode,
+  isValidUsPhone,
+  normalizeUsPhoneInput,
+} from "@/utils/phoneValidate";
 import md5 from "@/utils/md5";
 
 export default {
@@ -139,14 +171,48 @@ export default {
   data() {
     return {
       visible: this.modelValue,
-      account: "",
+      phoneNo: "",
+      captcha: "",
       password: "",
       confirmPassword: "",
       showPassword: false,
       showConfirmPassword: false,
       submitting: false,
       errorText: "",
+      captchaLoginSwitch: false,
+      captchaCountdown: 0,
+      captchaTimer: null,
+      captchaSending: false,
+      captchaError: "",
     };
+  },
+  computed: {
+    areaCode() {
+      return this.GET_AREACODE || "+1";
+    },
+    isUsPhoneArea() {
+      const currency = localStorage.getItem("currency");
+      const platform = localStorage.getItem("platform");
+      return (
+        isUsAreaCode(this.areaCode, localStorage.getItem("country")) ||
+        currency === "USD" ||
+        currency === "usd" ||
+        platform === "usbet"
+      );
+    },
+    // 与注册一致：后端 captchaLoginSwitch 打开，或墨西哥站 / GHS 币种时必填短信验证码
+    isCaptchaRequired() {
+      const currency = localStorage.getItem("currency");
+      const platform = localStorage.getItem("platform");
+      const isMxSite = currency === "MXN" || platform === "mxbet";
+      return currency === "GHS" || this.captchaLoginSwitch || isMxSite;
+    },
+    // 手机号格式正确才能发送验证码
+    canSendCaptcha() {
+      return (
+        !this.phoneError() && !this.captchaSending && this.captchaCountdown === 0
+      );
+    },
   },
   watch: {
     modelValue(value) {
@@ -154,15 +220,96 @@ export default {
     },
     visible(value) {
       this.$emit("update:modelValue", value);
+      if (value) this.fetchSysConfig();
       if (!value && !this.submitting) this.resetForm();
     },
   },
+  beforeUnmount() {
+    this.clearCaptchaTimer();
+  },
   methods: {
-    clearError() {
+    async fetchSysConfig() {
+      try {
+        const data = await GetSysConfig({});
+        if (data.status === "ok" && data.content) {
+          this.captchaLoginSwitch = !!data.content.captchaLoginSwitch;
+        }
+      } catch (e) {
+        /* ignore */
+      }
+    },
+    normalizePhone(value) {
+      if (this.isUsPhoneArea) return normalizeUsPhoneInput(value);
+      return String(value ?? "")
+        .replace(/\D/g, "")
+        .slice(0, 13);
+    },
+    // 直接改写 input 值，超出位数的字符不会残留在输入框
+    onPhoneInput(e) {
       this.errorText = "";
-      this.account = String(this.account || "")
-        .replace(/[^A-Za-z0-9]/g, "")
-        .slice(0, 16);
+      this.captchaError = "";
+      this.phoneNo = this.normalizePhone(e.target.value);
+      e.target.value = this.phoneNo;
+    },
+    onCaptchaInput(e) {
+      this.errorText = "";
+      this.captchaError = "";
+      this.captcha = String(e.target.value || "")
+        .replace(/\D/g, "")
+        .slice(0, 6);
+      e.target.value = this.captcha;
+    },
+    phoneError() {
+      if (!this.phoneNo) return this.$lang.login_txt19 || "Please enter the content";
+      if (this.isUsPhoneArea) {
+        return isValidUsPhone(this.phoneNo)
+          ? ""
+          : this.$lang.phone_us_invalid || "Incorrect phone number";
+      }
+      return /^\d{8,13}$/.test(this.phoneNo)
+        ? ""
+        : this.$lang.common_txt369 ||
+            "The account number must consist of 8 to 13 digits only.";
+    },
+    clearCaptchaTimer() {
+      if (this.captchaTimer) {
+        clearInterval(this.captchaTimer);
+        this.captchaTimer = null;
+      }
+    },
+    startCaptchaCountdown() {
+      this.captchaCountdown = 60;
+      this.clearCaptchaTimer();
+      this.captchaTimer = setInterval(() => {
+        if (this.captchaCountdown > 0) {
+          this.captchaCountdown -= 1;
+        } else {
+          this.clearCaptchaTimer();
+        }
+      }, 1000);
+    },
+    async sendCaptcha() {
+      if (!this.canSendCaptcha) return;
+      this.errorText = "";
+      this.captchaError = "";
+      this.captchaSending = true;
+      try {
+        const data = await GetCaptcha({
+          areaCode: this.areaCode,
+          phoneNo: this.phoneNo,
+          captchaType: "register",
+        });
+        if (data.status === "ok") {
+          this.startCaptchaCountdown();
+        } else {
+          this.captchaError =
+            data.msg || this.$lang.network_error || "Network error";
+        }
+      } catch (e) {
+        this.captchaError = this.$lang.network_error || "Network error";
+      } finally {
+        this.captchaSending = false;
+      }
     },
     normalizePassword(field) {
       this.errorText = "";
@@ -175,31 +322,34 @@ export default {
       this.visible = false;
     },
     resetForm() {
-      this.account = "";
+      this.phoneNo = "";
+      this.captcha = "";
       this.password = "";
       this.confirmPassword = "";
       this.showPassword = false;
       this.showConfirmPassword = false;
       this.errorText = "";
+      this.captchaError = "";
+      this.captchaCountdown = 0;
+      this.clearCaptchaTimer();
     },
+    // 与注册规则一致：手机号 / 6-16 位密码 / 两次密码一致 / 6 位验证码
     validate() {
-      if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,16}$/.test(this.account)) {
-        return (
-          this.$lang.guest_upgrade_account_invalid ||
-          "Account must be 6-16 characters and contain both letters and numbers."
-        );
-      }
+      const phoneError = this.phoneError();
+      if (phoneError) return phoneError;
       if (this.password.length < 6 || this.password.length > 16) {
         return (
-          this.$lang.guest_upgrade_password_invalid ||
-          "Password must be 6-16 characters."
+          this.$lang.login_txt17 || "The password must be between 6-16 characters"
         );
       }
       if (this.password !== this.confirmPassword) {
-        return (
-          this.$lang.guest_upgrade_password_mismatch ||
-          "The passwords do not match."
-        );
+        return this.$lang.login_txt18 || "The repeated password does not match";
+      }
+      if (this.isCaptchaRequired) {
+        if (!this.captcha) return this.$lang.login_txt19 || "Please enter the content";
+        if (!/^\d{6}$/.test(this.captcha)) {
+          return this.$lang.login_captcha_invalid || "Enter a 6-digit code";
+        }
       }
       return "";
     },
@@ -220,11 +370,16 @@ export default {
       this.submitting = true;
       this.errorText = "";
       try {
-        const response = await BindGuest({
-          account: this.account,
+        const params = {
+          account: this.phoneNo,
           passwd: md5(this.password),
-          uuid: getGuestUuid(),
-        });
+          areaCode: this.areaCode,
+          phoneNo: this.phoneNo,
+        };
+        if (this.isCaptchaRequired) params.captcha = this.captcha;
+        const guestUuid = getGuestUuid();
+        if (guestUuid) params.uuid = guestUuid;
+        const response = await BindGuest(params);
         if (
           response &&
           response.status === "ok" &&
@@ -233,7 +388,7 @@ export default {
         ) {
           // 文档要求：绑定成功后必须立即用新 Token 替换旧 Token。
           saveLoginSession(response.content);
-          const boundAccount = response.content.account || this.account;
+          const boundAccount = response.content.account || this.phoneNo;
           this.visible = false;
           this.$toast({
             message:
@@ -352,6 +507,32 @@ export default {
   }
 }
 
+.guest-upgrade__area {
+  flex-shrink: 0;
+  padding-right: 10px;
+  border-right: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.guest-upgrade__send {
+  flex-shrink: 0;
+  min-width: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #ffd400;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+
+  &:disabled {
+    color: #9b86c9;
+    cursor: default;
+  }
+}
+
 .guest-upgrade__eye {
   width: 28px;
   height: 28px;
@@ -370,6 +551,13 @@ export default {
   font-size: 12px;
   line-height: 1.35;
   text-align: center;
+}
+
+.guest-upgrade__field-error {
+  margin: -8px 16px 0;
+  color: #ffd467;
+  font-size: 12px;
+  line-height: 1.35;
 }
 
 .guest-upgrade__submit {

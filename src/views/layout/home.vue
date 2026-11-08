@@ -260,7 +260,7 @@
 <script>
 import {
   GetHomeGameList,
-  GetIsFbReport,
+  // GetIsFbReport,
   GetPlatformList,
   GetInvitationID,
   GetCsLink,
@@ -621,9 +621,10 @@ export default {
       if (data.status === "ok") {
         if (data.content.invitCode) {
           localStorage.setItem("id", data.content.invitCode);
-          setTimeout(() => {
-            this.GetIsFbReport();
-          }, 200);
+          // 像素上报已停用，归因统一走 Adjust
+          // setTimeout(() => {
+          //   this.GetIsFbReport();
+          // }, 200);
         }
       }
     },
@@ -731,40 +732,41 @@ export default {
         this.startCountdown();
       }
     },
-    async GetIsFbReport() {
-      const data = await GetIsFbReport({
-        inviteCode: localStorage.getItem("id"),
-      });
-      if (data.status === "ok") {
-        // 设置 Facebook Pixel ID
-        if (data.content.isReport) {
-          if (data.content.target === "ks") {
-            const pixId = data.content.fbPixId;
-            const run = () => {
-              if (!window.kwaiq || !pixId) return;
-              try {
-                window.kwaiq.load(pixId);
-                window.kwaiq.instance(pixId).track("contentView");
-              } catch (e) {
-                /* CDN 不可达时忽略 */
-              }
-            };
-            if (typeof window.requestIdleCallback === "function") {
-              window.requestIdleCallback(run, { timeout: 2500 });
-            } else {
-              setTimeout(run, 1200);
-            }
-          } else {
-            console.log(123);
-
-            this.$pixel.setFbId(data.content.fbPixId);
-            this.$pixel.callTrack("track", "ViewContent");
-            const jsonData = `"""{"data":[{"event_name": "ViewContent", "content_name": "Open Home Page", "content_category": "Electronics", "content_ids": [], "content_type": "product", "value": 0.00, "currency": "NGN"}]}"""`;
-            this.$pixel.sendEventToAndroid(jsonData);
-          }
-        }
-      }
-    },
+    // 像素上报已停用，归因统一走 Adjust
+    // async GetIsFbReport() {
+    //   const data = await GetIsFbReport({
+    //     inviteCode: localStorage.getItem("id"),
+    //   });
+    //   if (data.status === "ok") {
+    //     // 设置 Facebook Pixel ID
+    //     if (data.content.isReport) {
+    //       if (data.content.target === "ks") {
+    //         const pixId = data.content.fbPixId;
+    //         const run = () => {
+    //           if (!window.kwaiq || !pixId) return;
+    //           try {
+    //             window.kwaiq.load(pixId);
+    //             window.kwaiq.instance(pixId).track("contentView");
+    //           } catch (e) {
+    //             /* CDN 不可达时忽略 */
+    //           }
+    //         };
+    //         if (typeof window.requestIdleCallback === "function") {
+    //           window.requestIdleCallback(run, { timeout: 2500 });
+    //         } else {
+    //           setTimeout(run, 1200);
+    //         }
+    //       } else {
+    //         console.log(123);
+    //
+    //         this.$pixel.setFbId(data.content.fbPixId);
+    //         this.$pixel.callTrack("track", "ViewContent");
+    //         const jsonData = `"""{"data":[{"event_name": "ViewContent", "content_name": "Open Home Page", "content_category": "Electronics", "content_ids": [], "content_type": "product", "value": 0.00, "currency": "NGN"}]}"""`;
+    //         this.$pixel.sendEventToAndroid(jsonData);
+    //       }
+    //     }
+    //   }
+    // },
 
     async scrollToTarget() {
       if (!this.$refs.targetElement) return;

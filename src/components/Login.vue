@@ -112,6 +112,7 @@
                   @focus="isFocused = true"
                   @blur="isFocused = false"
                   @update:model-value="getError3"
+                  :formatter="formatPhoneInput"
                   type="digit"
                 />
               </div>
@@ -257,6 +258,7 @@
                 {{ vError3 }}
               </p>
 
+              <!-- 注册暂不需要邮箱，入参 email 传空字符串
               <div v-if="showEmailField" class="login-popup__field">
                 <p class="login-popup__label">
                   {{ $lang.login_email_label || "Email" }}
@@ -285,6 +287,7 @@
                 <van-icon name="warning" color="#ef4444" size="12" />
                 {{ vErrorEmail }}
               </p>
+              -->
 
               <div v-if="showAuthModeSwitch" class="login-popup__mode-switch">
                 <van-radio-group
@@ -406,6 +409,7 @@
             :placeholder="$lang.google_register_phone || 'Enter phone number'"
             class="login-popup__input"
             type="digit"
+            :formatter="formatPhoneInput"
             @update:model-value="onGooglePhoneInput"
           />
         </div>
@@ -444,7 +448,7 @@ import {
   Login,
   GuestLogin,
   Register,
-  GetIsFbReport,
+  // GetIsFbReport,
   GetInvitationID,
   GetPlatformList,
   GetGoogleAuthorizingUrl,
@@ -456,11 +460,21 @@ import {
 import { logoutIfReloginRequiredWithToken } from "@/utils/platformAuth";
 import md5 from "@/utils/md5";
 import { applyCountryLanguage } from "@/utils/locale";
-import { isUsAreaCode, isValidUsPhone } from "@/utils/phoneValidate";
+import {
+  isUsAreaCode,
+  isValidUsPhone,
+  normalizeUsPhoneInput,
+} from "@/utils/phoneValidate";
+import {
+  getEmailErrorType,
+  isValidEmail,
+  normalizeEmail,
+} from "@/utils/emailValidate";
 import { getClientId } from "@/utils/nativeDevice";
 import { reloadAppEntry, saveLoginSession } from "@/utils/guestAuth";
 import { isNativeAppShell } from "@/utils/nativeApp";
 import { openCustomerService } from "@/utils/csLink";
+import { appendAdidToFbExpand, waitForAdjustAdid } from "@/utils/adjust";
 export default {
   components: { Vcode },
   name: "Login",
@@ -578,25 +592,29 @@ export default {
       );
     },
     usPhoneErrorText() {
-      return this.$lang.phone_us_invalid || "错误的手机号码";
+      return this.$lang.phone_us_invalid || "Invalid US phone number";
     },
     isPhoneAccountValid() {
       if (!this.account) return false;
-      if (this.selectIndex === 1 && this.isUsPhoneArea) {
+      if (this.isUsPhoneArea) {
         return isValidUsPhone(this.account);
       }
       return /^\d{8,13}$/.test(this.account);
     },
+    // 登录、注册的短信验证码统一由后端 sysConfig.captchaLoginSwitch 控制
     showCaptchaLogin() {
-      return this.isMxSite && this.captchaLoginSwitch;
+      return this.captchaLoginSwitch;
     },
     // 仅登录展示密码 / 验证码单选；注册不展示
     showAuthModeSwitch() {
       return this.selectIndex === 0 && this.showCaptchaLogin;
     },
+    // 注册必填验证码：开关打开，或墨西哥站 / GHS 币种
     isRegisterCaptchaRequired() {
       if (this.isGhsCurrency) return true;
-      return this.selectIndex === 1 && this.isMxSite;
+      return (
+        this.selectIndex === 1 && (this.captchaLoginSwitch || this.isMxSite)
+      );
     },
     showCaptchaField() {
       if (this.selectIndex === 0) {
@@ -617,14 +635,21 @@ export default {
     showConfirmPasswordField() {
       return this.selectIndex === 1 && this.showPasswordField;
     },
+    // 注册暂不需要邮箱：不显示、不校验，入参 email 传空字符串
     showEmailField() {
-      return this.selectIndex === 1 && (this.isUsSite || this.isMxSite);
+      return false;
+      // return this.selectIndex === 1 && (this.isUsSite || this.isMxSite);
     },
     isEmailValid() {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(this.email || "").trim());
+      return isValidEmail(this.email);
     },
+    // 手机号格式正确才能发送验证码
     canSendCaptcha() {
-      return !this.isCaptchaSending && this.captchaCountdown === 0;
+      return (
+        this.isPhoneAccountValid &&
+        !this.isCaptchaSending &&
+        this.captchaCountdown === 0
+      );
     },
     displayIcon() {
       return this.validLsValue(this.selectedIcon || this.GET_ICONURL);
@@ -738,21 +763,23 @@ export default {
         this.vError3 = "";
       }
     },
+    emailErrorText(type) {
+      if (type === "empty") return this.$lang.login_txt19;
+      if (type) {
+        return (
+          this.$lang.settings_email_invalid || "Please enter a valid email"
+        );
+      }
+      return "";
+    },
     getEmailError(v) {
-      this.email = String(v ?? "").replace(/\s+/g, "");
+      this.email = normalizeEmail(v);
       this.apiError = "";
-      if (!this.showEmailField) {
+      if (!this.showEmailField || !this.email) {
         this.vErrorEmail = "";
         return;
       }
-      if (!this.email) {
-        this.vErrorEmail = "";
-      } else if (!this.isEmailValid) {
-        this.vErrorEmail =
-          this.$lang.settings_email_invalid || "Please enter a valid email";
-      } else {
-        this.vErrorEmail = "";
-      }
+      this.vErrorEmail = this.emailErrorText(getEmailErrorType(this.email));
     },
     validLsValue(v) {
       if (v == null) return "";
@@ -871,24 +898,34 @@ export default {
       this.$jumpTo("/activityCooperate");
     },
     onGooglePhoneInput(v) {
-      this.googlePhoneNo = String(v ?? "")
+      this.googlePhoneNo = this.formatPhoneInput(v);
+    },
+    /** 交给 van-field formatter，由 Vant 回写输入框，超出位数的字符不会残留 */
+    formatPhoneInput(v) {
+      if (this.isUsPhoneArea) return normalizeUsPhoneInput(v);
+      return String(v ?? "")
         .replace(/\D/g, "")
         .slice(0, 13);
     },
     getError3(v) {
       // Vant4 / type=digit 可能传入 number，需先转字符串
-      this.account = String(v ?? "")
-        .replace(/\D/g, "")
-        .slice(0, 13);
+      this.account = this.formatPhoneInput(v);
       this.apiError = "";
+      // 换号码后，上一个号码的发送失败提示不再适用
+      this.vErrorCaptcha = "";
+
+      if (this.isUsPhoneArea) {
+        // 输满 10 位才提示，避免输入过程中一直报错
+        this.vError1 =
+          this.account.length === 10 && !isValidUsPhone(this.account)
+            ? this.usPhoneErrorText
+            : "";
+        return;
+      }
 
       if (this.selectIndex === 1) {
         if (this.account.length === 0) {
           this.vError1 = "";
-        } else if (this.isUsPhoneArea) {
-          this.vError1 = isValidUsPhone(this.account)
-            ? ""
-            : this.usPhoneErrorText;
         } else if (this.account.length < 8 || this.account.length > 13) {
           this.vError1 = this.$lang.common_txt369;
         } else {
@@ -962,7 +999,7 @@ export default {
         this.vError1 = this.$lang.login_txt19;
         return;
       }
-      if (this.isUsPhoneArea && this.selectIndex === 1) {
+      if (this.isUsPhoneArea) {
         if (!isValidUsPhone(this.account)) {
           this.vError1 = this.usPhoneErrorText;
           return;
@@ -984,18 +1021,14 @@ export default {
           captchaType,
         });
         if (data.status === "ok") {
+          this.vErrorCaptcha = "";
           this.startCaptchaCountdown();
         } else {
-          this.$toast({
-            message: data.msg,
-            icon: "cross",
-          });
+          this.vErrorCaptcha =
+            data.msg || this.$lang.network_error || "Network error";
         }
       } catch (e) {
-        this.$toast({
-          message: this.$lang.network_error || "Network error",
-          icon: "cross",
-        });
+        this.vErrorCaptcha = this.$lang.network_error || "Network error";
       } finally {
         this.isCaptchaSending = false;
       }
@@ -1059,27 +1092,28 @@ export default {
     handleClose() {
       this.$emit("close");
     },
-    async GetIsFbReport() {
-      const data = await GetIsFbReport({
-        inviteCode: localStorage.getItem("id"),
-      });
-      if (data.status === "ok") {
-        if (data.content.isReport) {
-          if (data.content.target === "ks") {
-            window.kwaiq.load(data.content.fbPixId);
-            window.kwaiq
-              .instance(data.content.fbPixId)
-              .track("completeRegistration");
-            console.log("completeRegistration");
-          } else {
-            this.$pixel.setFbId(data.content.fbPixId);
-            this.$pixel.callTrack("track", "CompleteRegistration"); // 上报
-            const jsonData = ` ""{"data":[{"event_name": "CompleteRegistration","status": "success","value": 0.00,"currency": "NGN"}]}""`;
-            this.$pixel.sendEventToAndroid(jsonData);
-          }
-        }
-      }
-    },
+    // 像素上报已停用，归因统一走 Adjust
+    // async GetIsFbReport() {
+    //   const data = await GetIsFbReport({
+    //     inviteCode: localStorage.getItem("id"),
+    //   });
+    //   if (data.status === "ok") {
+    //     if (data.content.isReport) {
+    //       if (data.content.target === "ks") {
+    //         window.kwaiq.load(data.content.fbPixId);
+    //         window.kwaiq
+    //           .instance(data.content.fbPixId)
+    //           .track("completeRegistration");
+    //         console.log("completeRegistration");
+    //       } else {
+    //         this.$pixel.setFbId(data.content.fbPixId);
+    //         this.$pixel.callTrack("track", "CompleteRegistration"); // 上报
+    //         const jsonData = ` ""{"data":[{"event_name": "CompleteRegistration","status": "success","value": 0.00,"currency": "NGN"}]}""`;
+    //         this.$pixel.sendEventToAndroid(jsonData);
+    //       }
+    //     }
+    //   }
+    // },
     showFormToast(message, icon = "cross") {
       if (!message) return;
       this.$toast({
@@ -1094,7 +1128,7 @@ export default {
       this.registerParames.areaCode = this.GET_AREACODE;
       this.registerParames.phoneNo = this.account;
       if (this.showEmailField) {
-        this.registerParames.email = String(this.email || "").trim();
+        this.registerParames.email = normalizeEmail(this.email);
       } else {
         this.registerParames.email = "";
       }
@@ -1107,14 +1141,22 @@ export default {
       this.registerParames.account = this.account;
       this.registerParames.loginType = "account";
       this.registerParames.passwd = md5(this.passwd);
+      const adid = await waitForAdjustAdid();
       if (localStorage.getItem("id")) {
         this.registerParames.id = localStorage.getItem("id");
-        this.registerParames.fbExpand = localStorage.getItem("fbExpand");
+        this.registerParames.fbExpand = appendAdidToFbExpand(
+          localStorage.getItem("fbExpand"),
+          adid,
+        );
       } else {
         delete this.registerParames.id;
-        delete this.registerParames.fbExpand;
+        if (adid) {
+          this.registerParames.fbExpand = appendAdidToFbExpand("", adid);
+        } else {
+          delete this.registerParames.fbExpand;
+        }
       }
-      this.GetIsFbReport();
+      // this.GetIsFbReport();
       const data = await Register(this.registerParames);
       if (data.status === "ok") {
         this.visible = false;
@@ -1244,12 +1286,10 @@ export default {
       this.apiError = "";
       if (!this.account) {
         this.vError1 = this.$lang.login_txt19;
-      } else if (
-        this.selectIndex === 1 &&
-        this.isUsPhoneArea &&
-        !isValidUsPhone(this.account)
-      ) {
-        this.vError1 = this.usPhoneErrorText;
+      } else if (this.isUsPhoneArea) {
+        this.vError1 = isValidUsPhone(this.account)
+          ? ""
+          : this.usPhoneErrorText;
       } else if (!/^\d{8,13}$/.test(this.account)) {
         this.vError1 = this.$lang.common_txt369;
       } else {
@@ -1302,14 +1342,7 @@ export default {
       }
 
       if (this.showEmailField) {
-        if (!this.email) {
-          this.vErrorEmail = this.$lang.login_txt19;
-        } else if (!this.isEmailValid) {
-          this.vErrorEmail =
-            this.$lang.settings_email_invalid || "Please enter a valid email";
-        } else {
-          this.vErrorEmail = "";
-        }
+        this.vErrorEmail = this.emailErrorText(getEmailErrorType(this.email));
       } else {
         this.vErrorEmail = "";
       }
@@ -1410,8 +1443,12 @@ export default {
         if (localStorage.getItem("id")) {
           params.id = localStorage.getItem("id");
         }
-        if (localStorage.getItem("fbExpand")) {
-          params.fbExpand = localStorage.getItem("fbExpand");
+        const fbExpand = appendAdidToFbExpand(
+          localStorage.getItem("fbExpand"),
+          await waitForAdjustAdid(),
+        );
+        if (fbExpand) {
+          params.fbExpand = fbExpand;
         }
         const data = await GoogleRegister(params);
         if (data.status === "ok" && data.content) {

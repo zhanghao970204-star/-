@@ -424,7 +424,7 @@
 import {
   Init,
   Pay,
-  GetIsFbReport,
+  // GetIsFbReport,
   VnRechargeInitS,
   RefreshExchangeRate,
 } from "@/api/common";
@@ -435,7 +435,6 @@ import {
   closePayWindow,
 } from "@/utils/payRedirect";
 import { fetchCsUrl, openCustomerService } from "@/utils/csLink";
-
 const vipPairModules = import.meta.glob("@/assets/img/vip/*_*.png", {
   eager: true,
   import: "default",
@@ -742,31 +741,32 @@ export default {
         }
       }
     },
-    async GetIsFbReport(v) {
-      const data = await GetIsFbReport({
-        inviteCode: localStorage.getItem("id"),
-      });
-      if (data.status === "ok") {
-        if (data.content.isReport) {
-          if (data.content.target === "ks") {
-            window.kwaiq.load(data.content.fbPixId);
-            window.kwaiq.instance(data.content.fbPixId).track("addToCart", {
-              value: parseInt(v * 0.1),
-              currency: "NGN",
-            });
-
-            console.log("add_to_cart");
-          } else {
-            this.$pixel.setFbId(data.content.fbPixId);
-            this.$pixel.callTrackHasPara("track", "AddToCart", v * 0.1, "NGN"); // 上报
-            const jsonData = `"""{"data":[{"event_name": "Lead","content_name": "Recharge Form","value": ${parseInt(
-              v * 0.1,
-            )},"currency": "NGN"}]}"""`;
-            this.$pixel.sendEventToAndroid(jsonData);
-          }
-        }
-      }
-    },
+    // 像素上报已停用，归因统一走 Adjust
+    // async GetIsFbReport(v) {
+    //   const data = await GetIsFbReport({
+    //     inviteCode: localStorage.getItem("id"),
+    //   });
+    //   if (data.status === "ok") {
+    //     if (data.content.isReport) {
+    //       if (data.content.target === "ks") {
+    //         window.kwaiq.load(data.content.fbPixId);
+    //         window.kwaiq.instance(data.content.fbPixId).track("addToCart", {
+    //           value: parseInt(v * 0.1),
+    //           currency: "NGN",
+    //         });
+    //
+    //         console.log("add_to_cart");
+    //       } else {
+    //         this.$pixel.setFbId(data.content.fbPixId);
+    //         this.$pixel.callTrackHasPara("track", "AddToCart", v * 0.1, "NGN"); // 上报
+    //         const jsonData = `"""{"data":[{"event_name": "Lead","content_name": "Recharge Form","value": ${parseInt(
+    //           v * 0.1,
+    //         )},"currency": "NGN"}]}"""`;
+    //         this.$pixel.sendEventToAndroid(jsonData);
+    //       }
+    //     }
+    //   }
+    // },
     async submit() {
       if (
         this.paymentList.length > 0 &&
@@ -824,7 +824,7 @@ export default {
       if (data.status === "ok") {
         this.orangShow = false;
         this.confirmShow = false;
-        this.GetIsFbReport(this.amount);
+        // this.GetIsFbReport(this.amount);
         const payUrl = data.content && data.content.url;
         if (this.paymentList.length > 0 && this.paymentKey === "usdt") {
           closePayWindow(payWin);
@@ -1596,8 +1596,13 @@ export default {
 .rc-confirm {
   width: 88% !important;
   max-width: 360px;
+  max-height: calc(100vh - 32px) !important;
+  max-height: calc(100dvh - 32px - env(safe-area-inset-bottom, 0px)) !important;
   background: linear-gradient(180deg, #7a2190 0%, #532276 100%) !important;
-  overflow: scroll;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
   border-radius: 18px !important;
 
   &__close {
@@ -1617,7 +1622,9 @@ export default {
   }
 
   &__head {
-    position: relative;
+    position: sticky;
+    top: 0;
+    z-index: 2;
     background: @panel-soft;
     color: #fff;
     text-align: center;
@@ -1737,6 +1744,14 @@ export default {
     .btn-3d-green();
     margin-top: 30px;
     font-size: 18px;
+  }
+}
+
+/* 矮屏：弹窗放不下时底部多留空，按钮能上滑到弹窗中间 */
+@media (max-height: 760px) {
+  .rc-confirm__body {
+    padding-bottom: calc(18px + 40vh);
+    padding-bottom: calc(18px + 40dvh);
   }
 }
 
