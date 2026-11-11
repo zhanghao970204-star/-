@@ -14,7 +14,7 @@
       <div class="top-download__sub">{{ subText }}</div>
     </div>
     <button type="button" class="top-download__cta" @click="installApp">
-      {{ $lang.common_txt64 || 'Download' }}
+      {{ $lang.common_txt64 || "Download" }}
     </button>
 
     <van-popup
@@ -42,36 +42,36 @@
   </div>
 </template>
 <script>
-import iosInstallGuideImg from '@/assets/img/pwa/ios-safari-install-guide.png'
+import iosInstallGuideImg from "@/assets/img/pwa/ios-safari-install-guide.png";
 
 function isRunningAsInstalledPwa() {
-  if (typeof window === 'undefined') return false
+  if (typeof window === "undefined") return false;
   try {
-    if (window.matchMedia('(display-mode: standalone)').matches) return true
-    if (window.matchMedia('(display-mode: minimal-ui)').matches) return true
-    if (window.matchMedia('(display-mode: fullscreen)').matches) return true
+    if (window.matchMedia("(display-mode: standalone)").matches) return true;
+    if (window.matchMedia("(display-mode: minimal-ui)").matches) return true;
+    if (window.matchMedia("(display-mode: fullscreen)").matches) return true;
   } catch (e) {
     /* ignore */
   }
-  if (window.navigator && window.navigator.standalone === true) return true
-  return false
+  if (window.navigator && window.navigator.standalone === true) return true;
+  return false;
 }
 
 function isIosSafari() {
-  if (typeof navigator === 'undefined') return false
-  const ua = navigator.userAgent || ''
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent || "";
   const isIOS =
     /iPad|iPhone|iPod/.test(ua) ||
-    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
-  if (!isIOS) return false
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  if (!isIOS) return false;
   return (
     /Safari/i.test(ua) &&
     !/CriOS|FxiOS|EdgiOS|OPiOS|mercury|UCBrowser/i.test(ua)
-  )
+  );
 }
 
 export default {
-  name: 'TopDownload',
+  name: "TopDownload",
   components: {},
   data() {
     return {
@@ -80,196 +80,199 @@ export default {
       lottieAnim: null,
       inStandaloneMode: isRunningAsInstalledPwa(),
       showSafariInstallGuide: false,
-      iosInstallGuideImg
-    }
+      iosInstallGuideImg,
+    };
   },
   computed: {
     isVisible() {
-      const path = (this.$route && this.$route.path) || ''
-      const isHome = /\/home\/?$/.test(path) || path.endsWith('/home')
+      const path = (this.$route && this.$route.path) || "";
+      const isHome = /\/home\/?$/.test(path) || path.endsWith("/home");
       return (
         this.isShow &&
         isHome &&
         !this.$route.query.app &&
         !this.inStandaloneMode
-      )
+      );
     },
     titleText() {
-      return this.$lang.top_download_title || 'APPLICATION'
+      return this.$lang.top_download_title || "APPLICATION";
     },
     subText() {
       return (
-        this.$lang.top_download_sub ||
-        'Unlock Fun with Exclusive Features'
-      )
-    }
+        this.$lang.top_download_sub || "Unlock Fun with Exclusive Features"
+      );
+    },
   },
   watch: {
     isVisible(visible) {
       this.$nextTick(() => {
-        if (visible) this.scheduleLottie()
-        else this.destroyLottie()
-        this.emitLayoutChange()
-      })
-    }
+        if (visible) this.scheduleLottie();
+        else this.destroyLottie();
+        this.emitLayoutChange();
+      });
+    },
   },
   mounted() {
-    this.syncStandaloneFromDisplayMode()
-    if (typeof window !== 'undefined' && window.matchMedia) {
-      this._dmListener = () => this.syncStandaloneFromDisplayMode()
-      this._dmMql = window.matchMedia('(display-mode: standalone)')
+    this.syncStandaloneFromDisplayMode();
+    if (typeof window !== "undefined" && window.matchMedia) {
+      this._dmListener = () => this.syncStandaloneFromDisplayMode();
+      this._dmMql = window.matchMedia("(display-mode: standalone)");
       if (this._dmMql.addEventListener) {
-        this._dmMql.addEventListener('change', this._dmListener)
+        this._dmMql.addEventListener("change", this._dmListener);
       } else if (this._dmMql.addListener) {
-        this._dmMql.addListener(this._dmListener)
+        this._dmMql.addListener(this._dmListener);
       }
     }
-    this.onBeforeInstallPromptBound = this.onBeforeInstallPrompt.bind(this)
-    this.onAppInstalledBound = this.onAppInstalled.bind(this)
+    this.onBeforeInstallPromptBound = this.onBeforeInstallPrompt.bind(this);
+    this.onAppInstalledBound = this.onAppInstalled.bind(this);
     window.addEventListener(
-      'beforeinstallprompt',
-      this.onBeforeInstallPromptBound
-    )
-    window.addEventListener('appinstalled', this.onAppInstalledBound)
+      "beforeinstallprompt",
+      this.onBeforeInstallPromptBound,
+    );
+    window.addEventListener("appinstalled", this.onAppInstalledBound);
 
     this.$nextTick(() => {
-      this.emitLayoutChange()
-      this.scheduleLottie()
-      this.checkInstalledRelatedApps()
-    })
-    window.addEventListener('resize', this.emitLayoutChange)
+      this.emitLayoutChange();
+      this.scheduleLottie();
+      this.checkInstalledRelatedApps();
+    });
+    window.addEventListener("resize", this.emitLayoutChange);
   },
   beforeUnmount() {
-    window.removeEventListener('resize', this.emitLayoutChange)
+    window.removeEventListener("resize", this.emitLayoutChange);
     window.removeEventListener(
-      'beforeinstallprompt',
-      this.onBeforeInstallPromptBound
-    )
-    window.removeEventListener('appinstalled', this.onAppInstalledBound)
+      "beforeinstallprompt",
+      this.onBeforeInstallPromptBound,
+    );
+    window.removeEventListener("appinstalled", this.onAppInstalledBound);
     if (this._dmMql && this._dmListener) {
       if (this._dmMql.removeEventListener) {
-        this._dmMql.removeEventListener('change', this._dmListener)
+        this._dmMql.removeEventListener("change", this._dmListener);
       } else if (this._dmMql.removeListener) {
-        this._dmMql.removeListener(this._dmListener)
+        this._dmMql.removeListener(this._dmListener);
       }
     }
-    if (this._lottieIdleId != null && typeof window.cancelIdleCallback === 'function') {
+    if (
+      this._lottieIdleId != null &&
+      typeof window.cancelIdleCallback === "function"
+    ) {
       try {
-        window.cancelIdleCallback(this._lottieIdleId)
+        window.cancelIdleCallback(this._lottieIdleId);
       } catch (e) {
         /* ignore */
       }
     }
     if (this._lottieTimer) {
-      clearTimeout(this._lottieTimer)
-      this._lottieTimer = null
+      clearTimeout(this._lottieTimer);
+      this._lottieTimer = null;
     }
-    this.destroyLottie()
+    this.destroyLottie();
   },
   methods: {
     syncStandaloneFromDisplayMode() {
-      const next = isRunningAsInstalledPwa()
+      const next = isRunningAsInstalledPwa();
       if (next !== this.inStandaloneMode) {
-        this.inStandaloneMode = next
+        this.inStandaloneMode = next;
       }
     },
     async checkInstalledRelatedApps() {
-      if (!navigator.getInstalledRelatedApps) return
+      if (!navigator.getInstalledRelatedApps) return;
       try {
-        const list = await navigator.getInstalledRelatedApps()
+        const list = await navigator.getInstalledRelatedApps();
         if (list && list.length > 0) {
-          this.inStandaloneMode = true
+          this.inStandaloneMode = true;
         }
       } catch (e) {
         /* ignore */
       }
     },
     onBeforeInstallPrompt(e) {
-      e.preventDefault()
-      this.deferredPrompt = e
-      this.emitLayoutChange()
+      e.preventDefault();
+      this.deferredPrompt = e;
+      this.emitLayoutChange();
     },
     onAppInstalled() {
-      this.deferredPrompt = null
-      this.inStandaloneMode = true
-      this.isShow = false
-      this.$nextTick(this.emitLayoutChange)
+      this.deferredPrompt = null;
+      this.inStandaloneMode = true;
+      this.isShow = false;
+      this.$nextTick(this.emitLayoutChange);
     },
     scheduleLottie() {
-      if (!this.isVisible || this.lottieAnim) return
+      if (!this.isVisible || this.lottieAnim) return;
       // 首屏先出布局，空闲后再加载 Lottie，降低白屏/卡顿
-      const run = () => this.initLottie()
-      if (typeof window.requestIdleCallback === 'function') {
-        this._lottieIdleId = window.requestIdleCallback(run, { timeout: 800 })
+      const run = () => this.initLottie();
+      if (typeof window.requestIdleCallback === "function") {
+        this._lottieIdleId = window.requestIdleCallback(run, { timeout: 800 });
       } else {
-        this._lottieTimer = setTimeout(run, 300)
+        this._lottieTimer = setTimeout(run, 300);
       }
     },
     async initLottie() {
-      if (!this.isVisible || !this.$refs.lottieHost || this.lottieAnim) return
+      if (!this.isVisible || !this.$refs.lottieHost || this.lottieAnim) return;
       const [{ default: lottie }, animMod] = await Promise.all([
-        import('lottie-web'),
-        import('@/assets/lottie/top-download-gift.json')
-      ])
-      if (!this.isVisible || !this.$refs.lottieHost || this.lottieAnim) return
-      const giftAnimation = animMod.default || animMod
+        import("lottie-web"),
+        import("@/assets/lottie/top-download-gift.json"),
+      ]);
+      if (!this.isVisible || !this.$refs.lottieHost || this.lottieAnim) return;
+      const giftAnimation = animMod.default || animMod;
       this.lottieAnim = lottie.loadAnimation({
         container: this.$refs.lottieHost,
-        renderer: 'svg',
+        renderer: "svg",
         loop: true,
         autoplay: true,
-        animationData: giftAnimation
-      })
-      this.$nextTick(this.emitLayoutChange)
+        animationData: giftAnimation,
+      });
+      this.$nextTick(this.emitLayoutChange);
     },
     destroyLottie() {
       if (this.lottieAnim) {
-        this.lottieAnim.destroy()
-        this.lottieAnim = null
+        this.lottieAnim.destroy();
+        this.lottieAnim = null;
       }
     },
     closeDownload() {
-      this.isShow = false
-      this.$nextTick(this.emitLayoutChange)
+      this.isShow = false;
+      this.$nextTick(this.emitLayoutChange);
     },
     emitLayoutChange() {
       const height =
         this.isVisible && this.$refs.topDownload
           ? this.$refs.topDownload.offsetHeight
-          : 0
-      this.$emit('layout-change', {
+          : 0;
+      this.$emit("layout-change", {
         visible: this.isVisible,
-        height
-      })
+        height,
+      });
     },
     async installApp() {
       if (!this.deferredPrompt) {
         if (isIosSafari()) {
-          this.showSafariInstallGuide = true
-          return
+          this.showSafariInstallGuide = true;
+          return;
         }
         this.$toast({
           message:
             this.$lang.top_download_no_pwa ||
-            'Add to Home Screen is not available here. Open in Chrome and ensure the app is served over HTTPS with a registered service worker.',
-          duration: 3500
-        })
-        return
+            "Add to Home Screen is not available here. Open in Chrome and ensure the app is served over HTTPS with a registered service worker.",
+          duration: 3500,
+        });
+        return;
       }
       try {
-        await this.deferredPrompt.prompt()
-        await this.deferredPrompt.userChoice
+        await this.deferredPrompt.prompt();
+        await this.deferredPrompt.userChoice;
       } catch (e) {
         this.$toast({
-          message: this.$lang.top_download_install_fail || 'Install prompt failed',
-          icon: 'cross'
-        })
+          message:
+            this.$lang.top_download_install_fail || "Install prompt failed",
+          icon: "cross",
+        });
       } finally {
-        this.deferredPrompt = null
+        this.deferredPrompt = null;
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 <style lang="less" scoped>
 /* y7 黑金 */
@@ -295,21 +298,24 @@ export default {
   gap: 8px;
   padding: 8px 10px 8px 8px;
   background: linear-gradient(90deg, #2d1545 0%, #1a0a28 55%, #12021a 100%);
-  border-bottom: 1px solid fade(@gold-deep, 40%);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+  border-bottom: 1px solid rgba(233, 182, 90, 0.22);
+  box-shadow:
+    0 1px 0 rgba(255, 163, 0, 0.08),
+    0 2px 12px rgba(0, 0, 0, 0.35);
 }
 
 .top-download__close {
   flex-shrink: 0;
   width: 28px;
   height: 28px;
-  border: 1px solid fade(@gold-deep, 35%);
+  border: 1px solid rgba(233, 182, 90, 0.35);
   border-radius: 50%;
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(29, 20, 0, 0.55);
+  background: rgba(39, 3, 60, 0.85);
+  box-shadow: inset 0 0 0 1px rgba(107, 68, 152, 0.25);
   cursor: pointer;
 }
 
@@ -357,17 +363,34 @@ export default {
   flex-shrink: 0;
   border: none;
   border-radius: 999px;
-  padding: 10px 18px;
-  font-size: 13px;
+  padding: 7px 12px;
+  font-size: 12px;
   font-weight: 800;
   color: #573900;
   background: @btn-grad;
   box-shadow: 0 2px 10px rgba(255, 163, 0, 0.35);
   cursor: pointer;
+  transform-origin: center center;
+  animation: top-download-cta-breathe 1.6s ease-in-out infinite;
+  will-change: transform;
 }
 
 .top-download__cta:active {
   opacity: 0.9;
+  animation: none;
+  transform: scale(0.96);
+}
+
+@keyframes top-download-cta-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 2px 10px rgba(255, 163, 0, 0.35);
+  }
+  50% {
+    transform: scale(1.08);
+    box-shadow: 0 2px 14px rgba(255, 163, 0, 0.55);
+  }
 }
 
 .pwa-safari-popup {

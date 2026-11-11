@@ -2,7 +2,7 @@
   <div class="content" :class="{ 'has-tabbar': showTabbarSafeGap }">
     <div class="content-main">
       <div id="md-hddb"></div>
-      <!-- <top-download @layout-change="handleTopDownloadLayout"></top-download> -->
+      <top-download @layout-change="handleTopDownloadLayout"></top-download>
       <top-nav
         ref="topNav"
         v-if="isTopNavVisible"
@@ -179,7 +179,7 @@
 </template>
 
 <script>
-// import TopDownload from "../../components/TopDownload.vue"; //顶部下载
+import TopDownload from "../../components/TopDownload.vue"; //顶部下载
 import TopNav from "../../components/TopNav.vue"; //顶部导航栏
 import Tabbar from "../../components/Tabbar.vue";
 import GuestUpgradePopup from "../../components/GuestUpgradePopup.vue";
@@ -197,7 +197,7 @@ import { consumeOpenLoginAfterPlatformSwitch } from "@/utils/platformAuth";
 
 export default {
   components: {
-    // TopDownload,
+    TopDownload,
     TopNav,
     Tabbar,
     GuestUpgradePopup,

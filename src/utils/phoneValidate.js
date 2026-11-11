@@ -1,7 +1,9 @@
 /**
- * 美国手机号（北美编号计划 NANP）
- * 10 位：区号 NXX + 局号 NXX + 4 位，N 为 2-9，区号/局号不能是 N11（如 911）。
+ * 美国手机号：10 位，区号必须是已分配给美国的号段。
+ * +1 由美国、加拿大、加勒比共用，格式规则区分不了，用 libphonenumber 号段数据判断归属。
  */
+
+import { parsePhoneNumberFromString } from "libphonenumber-js/min";
 
 export const US_PHONE_LENGTH = 10;
 
@@ -34,6 +36,6 @@ export function normalizeUsPhoneInput(raw) {
 export function isValidUsPhone(phone) {
   const p = normalizePhoneDigits(phone);
   if (!/^[2-9]\d{2}[2-9]\d{6}$/.test(p)) return false;
-  const isN11 = (part) => part[1] === "1" && part[2] === "1";
-  return !isN11(p.slice(0, 3)) && !isN11(p.slice(3, 6));
+  const parsed = parsePhoneNumberFromString(p, "US");
+  return !!parsed && parsed.isValid() && parsed.country === "US";
 }

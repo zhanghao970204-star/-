@@ -1,5 +1,6 @@
 import request from "@/utils/index";
 import { normalizeCountryCode } from "@/utils/country";
+import { cachedRequest } from "@/utils/requestCache";
 
 // 1.登录接口
 export function Login(data) {
@@ -29,8 +30,9 @@ export function Init(data) {
 export function GetBannerList(data) {
   return request.post("/home/page/banner/list", data);
 }
+// 客服链接：多个组件同时取，合并请求并短时复用
 export function GetCsLink(data) {
-  return request.post("/getCsLink", data);
+  return cachedRequest("getCsLink", () => request.post("/getCsLink", data));
 }
 export function GetHomeGameList(data) {
   return request.post("/game/getHomeGameList", data);
@@ -126,8 +128,11 @@ export function GetCaptcha(data) {
 export function LoginCaptcha(data) {
   return request.post("/login/loginCaptcha", data);
 }
+// 系统开关：每个登录弹窗都会取，合并请求并短时复用
 export function GetSysConfig(data) {
-  return request.post("/system/sysConfig", data);
+  return cachedRequest("sysConfig", () =>
+    request.post("/system/sysConfig", data),
+  );
 }
 export function BankCardInfo(data) {
   return request.post("/profile/bankCardInfo", data);
