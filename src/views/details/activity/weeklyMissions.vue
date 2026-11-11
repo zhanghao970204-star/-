@@ -77,7 +77,7 @@
             src="../../../assets/img/activity/mission/points_title.png"
             alt=""
           />
-          <div class="mc-cumulative__clock">
+          <div v-if="resetTs" class="mc-cumulative__clock">
             <template v-for="(part, i) in countdownParts" :key="i">
               <span class="mc-cumulative__digit">
                 <img
@@ -128,6 +128,10 @@
                     src="../../../assets/img/activity/mission/chest_open.png"
                     class="mc-milestone__img"
                   />
+                  <span v-if="m.rewardAmount" class="mc-milestone__reward"
+                    >{{ getCurrency }}
+                    {{ $formatNumberWithCommas(m.rewardAmount) }}</span
+                  >
                   <span
                     v-if="m.claimed"
                     class="mc-milestone__check"
@@ -232,6 +236,10 @@
             <li>{{ $lang.mc_rule_3 }}</li>
             <li>{{ $lang.mc_rule_4 }}</li>
           </ol>
+          <p v-if="timeZone" class="mc-rules__reset">
+            {{ $lang.checkin_resets_at || "Resets daily at" }}
+            {{ dayResetTime }} ({{ timeZone }})
+          </p>
         </div>
       </section>
     </template>
@@ -263,6 +271,8 @@ export default {
       resetCountdown: "00:00:00",
       countdownTimer: null,
       resetTs: 0,
+      timeZone: "",
+      dayResetTime: "00:00",
       newbieCompleted: false,
       dailyLoaded: false,
       weeklyLoaded: false,
@@ -332,6 +342,7 @@ export default {
         const res = await TaskCenterNewbieInit({});
         if (res && res.status === "ok" && res.content) {
           const c = res.content;
+          this.applyResetTime(c);
           this.newbieCompleted = !!c.newbieCompleted;
           this.parseSection("newbie", c.newbie, "newbie");
 
@@ -353,6 +364,7 @@ export default {
           TaskCenterWeeklyInit({}),
         ]);
         if (dailyRes && dailyRes.status === "ok" && dailyRes.content) {
+          if (!this.resetTs) this.applyResetTime(dailyRes.content);
           this.parseSection("daily", dailyRes.content.daily, "daily");
           this.dailyLoaded = true;
         }
@@ -374,6 +386,18 @@ export default {
       }
       this.activeTab = tab;
     },
+    // 每日重置倒计时用接口 nextResetTime；没有就隐藏倒计时
+    applyResetTime(c) {
+      if (!c) return;
+      if (c.timeZone) this.timeZone = c.timeZone;
+      if (c.dayResetTime)
+        this.dayResetTime = String(c.dayResetTime).slice(0, 5);
+      const ts = c.nextResetTime ? Date.parse(c.nextResetTime) : NaN;
+      if (Number.isFinite(ts) && ts > Date.now()) {
+        this.resetTs = ts;
+        this.startCountdown();
+      }
+    },
     parseSection(type, data, category) {
       if (!data) return;
       this[type].category = category;
@@ -381,7 +405,8 @@ export default {
       this[type].totalPoints = data.totalPoints || 0;
       this[type].milestones = (data.milestones || []).map((m) => ({
         threshold: m.threshold,
-        rewardAmount: m.rewardAmount || m.reward || m.amount || 0,
+        rewardAmount:
+          m.rewardGold ?? m.rewardAmount ?? m.reward ?? m.amount ?? 0,
         canClaim: !!m.canClaim,
         claimed: !!m.claimed,
       }));
@@ -411,7 +436,9 @@ export default {
         const diff = Math.max(0, this.resetTs - now);
         if (diff === 0) {
           clearInterval(this.countdownTimer);
-          this.resetCountdown = "00:00:00";
+          this.resetTs = 0;
+          // 到点后重新拉取，拿到下一个重置时间
+          this.fetchData();
           return;
         }
         const h = Math.floor(diff / 3600000);
@@ -883,6 +910,24 @@ export default {
 }
 
 // ====== MILESTONES ======
+.mc-milestone__reward {
+  position: absolute;
+  left: 50%;
+  bottom: -25px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 9px;
+  font-weight: 800;
+  color: #ffd400;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6);
+}
+
+.mc-rules__reset {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: #e6d4f8;
+}
+
 .mc-milestones {
   position: relative;
   height: 64px;
@@ -1187,7 +1232,6 @@ export default {
   }
 
   &__list {
-    padding-left: 16px;
     margin: 0;
 
     li {

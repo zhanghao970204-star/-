@@ -78,13 +78,13 @@
             <img class="home-win-ticker__icon" :src="item.gameIcon" alt="" />
             <div class="home-win-ticker__meta">
               <p class="home-win-ticker__user">{{ item.userName }}</p>
-              <div class="home-win-ticker__amount">
+              <div v-if="item.amount != null && item.amount !== ''" class="home-win-ticker__amount">
                 <img
                   class="home-win-ticker__coin"
                   src="@/assets/img/home/top_coin.png"
                   alt=""
                 />
-                <span>{{ $formatNumberWithCommas(item.amount) || 0 }}</span>
+                <span>{{ $formatMoney(item.amount, getCurrency) }}</span>
               </div>
             </div>
           </div>

@@ -145,9 +145,9 @@
     <div class="wd-tips">
       <p class="wd-tips__title">{{ $lang.common_txt318 }}</p>
       <p>{{ $lang.common_txt221 }}</p>
-      <p>
+      <p v-if="withdrawAmountMin != null">
         {{ $lang.common_txt222 }}
-        {{ withdrawAmountMin }} {{ getCurrency }} {{ $lang.common_txt223 }}
+        {{ $formatMoney(withdrawAmountMin, getCurrency) }}{{ $lang.common_txt223 }}
       </p>
       <p>{{ $lang.common_txt224 }}</p>
       <p>{{ $lang.common_txt225 }}</p>
@@ -177,8 +177,11 @@ export default {
       showSelect: false,
       bankCard: "",
       withdrawAmountSingleMax: 0,
-      withdrawAmountMin: 0,
+      // 接口返回前不显示最低额，避免出现 Minimum 0
+      withdrawAmountMin: null,
       balLimit: 0,
+      isClose: 0,
+      closeReason: "",
       selectIndex: 0,
       submitting: false,
     };
@@ -235,9 +238,19 @@ export default {
         });
         return;
       }
+      if (this.isClose === 1) {
+        this.$toast({
+          message:
+            this.closeReason ||
+            this.$lang.withdraw_closed ||
+            "Withdrawals are temporarily unavailable.",
+          icon: "cross",
+        });
+        return;
+      }
       if (this.balLimit > 0) {
         this.$toast({
-          message: `${this.$lang.BankInfo_txt3} ${this.$formatNumberWithCommas(this.balLimit)} ${this.getCurrency} ${this.$lang.BankInfo_txt4}`,
+          message: `${this.$lang.BankInfo_txt3} ${this.$formatMoney(this.balLimit, this.getCurrency)} ${this.$lang.BankInfo_txt4}`,
           icon: "cross",
         });
         return;
@@ -252,14 +265,14 @@ export default {
       }
 
       if (
-        this.amount < this.withdrawAmountMin ||
-        this.amount > this.withdrawAmountSingleMax
+        (this.withdrawAmountMin != null && this.amount < this.withdrawAmountMin) ||
+        (this.withdrawAmountSingleMax > 0 && this.amount > this.withdrawAmountSingleMax)
       ) {
         this.$toast({
-          message: `  ${
-            this.$lang.BankInfo_txt11 +
-            this.$formatNumberWithCommas(this.withdrawAmountMin)
-          } - ${this.$formatNumberWithCommas(this.withdrawAmountSingleMax)}`,
+          message: `${this.$lang.BankInfo_txt11}: ${this.$formatMoney(
+            this.withdrawAmountMin,
+            this.getCurrency,
+          )} - ${this.$formatMoney(this.withdrawAmountSingleMax, this.getCurrency)}`,
           icon: "cross",
         });
         return;
@@ -303,7 +316,11 @@ export default {
       if (data.status === "ok") {
         this.withdrawAmountMin = data.content.withdrawAmountMin;
         this.withdrawAmountSingleMax = data.content.withdrawAmountSingleMax;
-        this.balLimit = data.content._balLimit || 0;
+        // 还差的流水：优先接口 differenceAmount
+        this.balLimit =
+          Number(data.content.differenceAmount ?? data.content._balLimit) || 0;
+        this.isClose = Number(data.content.isClose) || 0;
+        this.closeReason = data.content.closeReason || "";
         this.balance = data.content._balUsable || 0;
         this.balWdl = data.content._balWdl || 0;
         this.bankCardList = data.content.bankCardList || [];

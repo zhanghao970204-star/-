@@ -52,3 +52,35 @@ export function reloadAppEntry() {
   }
   window.location.reload();
 }
+
+// 登录成功后要回到的页面（登录成功会整页刷新，刷新后由路由守卫跳回）
+const AFTER_LOGIN_KEY = "afterLoginPath";
+
+export function setAfterLoginPath(path) {
+  if (!path) return;
+  try {
+    sessionStorage.setItem(
+      AFTER_LOGIN_KEY,
+      JSON.stringify({ path: String(path), at: Date.now() }),
+    );
+  } catch (_) {
+    /* ignore */
+  }
+}
+
+export function readAfterLoginPath() {
+  try {
+    const raw = JSON.parse(sessionStorage.getItem(AFTER_LOGIN_KEY) || "null");
+    return raw && raw.path ? raw : null;
+  } catch (_) {
+    return null;
+  }
+}
+
+export function clearAfterLoginPath() {
+  try {
+    sessionStorage.removeItem(AFTER_LOGIN_KEY);
+  } catch (_) {
+    /* ignore */
+  }
+}

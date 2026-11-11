@@ -217,6 +217,7 @@ import {
   TreasureBoxInit,
   NewPlayerGiftPackInit,
   GetCsLink,
+  GetLuckyRoulette,
 } from "@/api/common";
 import {
   openCustomerService,
@@ -268,7 +269,7 @@ export default {
       tbPrice: 0,
       tbTotalValue: 0,
       tbRewards: [],
-      tbCountdownSeconds: 86399,
+      tbCountdownSeconds: null,
       tbTickTimer: null,
       showTreasureBoxPopup: false,
       // First recharge activity state (新手大礼包)
@@ -373,12 +374,14 @@ export default {
     },
   },
   mounted() {
+    this.$store.dispatch("loadCollect");
     this.checkRedPacket();
     this.checkTreasureBox();
     this.checkCsFloatLink();
     this.checkGoogleCallback();
     this.$nextTick(() => this.onEnterHome());
     window.addEventListener("resize", this.onFloaterResize);
+    window.addEventListener("orientationchange", this.onFloaterResize);
     this.$bus.on("openTreasureBox", this.openTreasureBox);
   },
   beforeUnmount() {
@@ -386,6 +389,7 @@ export default {
     this.stopFrTick();
     this.unbindFloaterDrag();
     window.removeEventListener("resize", this.onFloaterResize);
+    window.removeEventListener("orientationchange", this.onFloaterResize);
     this.$bus.off("openTreasureBox", this.openTreasureBox);
   },
   watch: {
@@ -492,14 +496,21 @@ export default {
       }, 500);
     },
     async checkRedPacket() {
-      if (!localStorage.getItem("token")) return;
+      if (!localStorage.getItem("token")) {
+        this.redPacketVisible = false;
+        return;
+      }
       try {
         const res = await RedPacket({});
-        if (res && res.status === "ok" && res.content) {
-          this.redPacketVisible = true;
-        }
+        const c = res && res.status === "ok" ? res.content : null;
+        // 有有效活动数据才显示浮标；资格不足进落地页再提示
+        this.redPacketVisible = !!(
+          c &&
+          typeof c === "object" &&
+          (c.roundKey != null || c.nextTimeLeft != null || c.timeLeft != null)
+        );
       } catch (e) {
-        // silent
+        this.redPacketVisible = false;
       }
     },
     async checkTreasureBox() {
@@ -517,9 +528,10 @@ export default {
           if (c.totalValue !== undefined) this.tbTotalValue = c.totalValue;
           else if (c.price !== undefined) this.tbTotalValue = c.price;
           this.tbRewards = Array.isArray(c.rewards) ? c.rewards : [];
-          if (c.countdownSeconds !== undefined)
-            this.tbCountdownSeconds = c.countdownSeconds;
-          if (this.tbVisible) this.startTbTick();
+          // 接口下发倒计时才计时，不再用写死的 86399 秒
+          const cd = Number(c.countdownSeconds);
+          this.tbCountdownSeconds = Number.isFinite(cd) && cd > 0 ? cd : null;
+          if (this.tbVisible && this.tbCountdownSeconds) this.startTbTick();
         }
       } catch (e) {
         // silent
@@ -670,8 +682,18 @@ export default {
         this.lrPopupVisible = false;
         return;
       }
-      this.lrPopupVisible = true;
-      markShownToday("lrPopupShownDate");
+      // 活动未开启（isOpen!==1）不弹
+      GetLuckyRoulette({})
+        .then((res) => {
+          const open =
+            res && res.status === "ok" && res.content
+              ? Number(res.content.isOpen) === 1
+              : false;
+          if (!open || this.homePopupPhase !== "rest" || !this.isHomePage) return;
+          this.lrPopupVisible = true;
+          markShownToday("lrPopupShownDate");
+        })
+        .catch(() => {});
     },
     closeLuckySpinPopup() {
       this.lrPopupVisible = false;
@@ -729,11 +751,15 @@ export default {
       }
       return extra || {};
     },
+    // 拖拽位置限定在 450 主列内，并避开底部 Tabbar
     clampFloater(left, top, w, h) {
-      const maxL = Math.max(0, window.innerWidth - w);
-      const maxT = Math.max(0, window.innerHeight - h);
+      const colW = Math.min(window.innerWidth, 450);
+      const colLeft = Math.max(0, (window.innerWidth - colW) / 2);
+      const minL = colLeft;
+      const maxL = Math.max(minL, colLeft + colW - w);
+      const maxT = Math.max(0, window.innerHeight - h - 70);
       return {
-        left: Math.min(Math.max(0, left), maxL),
+        left: Math.min(Math.max(minL, left), maxL),
         top: Math.min(Math.max(0, top), maxT),
       };
     },
@@ -1174,8 +1200,8 @@ h3 {
 .global-red-envelope {
   position: fixed;
   right: 16px;
-  bottom: 100px;
-  z-index: 999;
+  bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+  z-index: 80;
   cursor: grab;
   touch-action: none;
   user-select: none;
@@ -1226,7 +1252,7 @@ h3 {
 .global-treasure-box {
   position: fixed;
   right: 16px;
-  z-index: 999;
+  z-index: 80;
   width: 56px;
   height: 56px;
   cursor: grab;
@@ -1349,7 +1375,7 @@ h3 {
 .global-first-recharge {
   position: fixed;
   right: 16px;
-  z-index: 999;
+  z-index: 80;
   width: 56px;
   height: 56px;
   cursor: grab;
@@ -1564,7 +1590,7 @@ h3 {
   left: 16px;
   right: auto;
   bottom: 100px;
-  z-index: 999;
+  z-index: 80;
   width: 56px;
   height: 56px;
   cursor: grab;

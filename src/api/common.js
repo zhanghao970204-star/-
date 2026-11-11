@@ -135,6 +135,19 @@ export function VipInit(data) {
 export function ChangeLoginPwd(data) {
   return request.post("/security/changeLoginPwd", data);
 }
+// 收藏（后端路径历史拼写为 collet）
+export function GetCollectList(data) {
+  return request.post("/game/getCollectList", data);
+}
+export function ColletGame(data) {
+  return request.post("/game/collet", data);
+}
+export function ColletCancel(data) {
+  return request.post("/game/colletCancel", data);
+}
+export function GetSysNoticeCount(data) {
+  return request.post("/getSysNoticeCount", data);
+}
 /** 找回密码（免登录）：按账号查脱敏手机号 */
 export function ForgotPasswordQuery(data) {
   return request.post("/profile/forgotPasswordQuery", data);

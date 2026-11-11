@@ -192,29 +192,12 @@
         <p class="lr-confirm__desc">{{ $lang.lr_invite_more }}</p>
 
         <div class="lr-confirm__socials">
-          <a class="lr-confirm__social" @click="shareToSocial('x')">
+          <a class="lr-confirm__social" @click="shareToTelegram">
             <img
-              src="../../../assets/img/otgame/pinduoduo_24.png"
+              src="../../../assets/img/common/img_tg.png"
               width="48"
-              alt=""
+              alt="Telegram"
             />
-          </a>
-          <a class="lr-confirm__social" @click="shareToSocial('facebook')">
-            <img
-              src="../../../assets/img/otgame/zjm_39.png"
-              width="48"
-              alt=""
-            />
-          </a>
-          <a class="lr-confirm__social" @click="shareToSocial('youtube')">
-            <img
-              src="../../../assets/img/otgame/zjm_42.png"
-              width="48"
-              alt=""
-            />
-          </a>
-          <a class="lr-confirm__social" @click="shareToSocial('ins')">
-            <img src="../../../assets/img/otgame/ins.png" width="48" alt="" />
           </a>
         </div>
 
@@ -246,6 +229,7 @@ import {
   GetLuckyRouletteLatestAwards,
 } from "@/api/common";
 import { reportPromoPanel } from "@/utils/common";
+import { shareToChannel } from "@/utils/share";
 import {
   playWheelSound,
   playWheelResultSound,
@@ -355,8 +339,24 @@ export default {
       this._pendingSpinResult = null;
       try {
         const res = await LuckyRoulette({});
+        if (!res || res.status !== "ok" || !res.content) {
+          this.isSpinning = false;
+          if (res && res.status !== "need_login") {
+            this.$toast({ message: res.msg || "Error", icon: "cross" });
+          }
+          return;
+        }
         this._pendingSpinResult = res;
-        const index = Math.floor(Math.random() * this.prizeList.length);
+        // 接口不返回中奖格（prizeIndex），只停在某个问号金币上；到账金额以 bonusSum 增量为准
+        const coinSlots = this.prizeList
+          .map((p, i) => (p.icon === mysteryCoin ? i : -1))
+          .filter((i) => i >= 0);
+        const delta = Math.round(
+          ((Number(res.content.bonusSum) || 0) - (Number(this.currentEarnings) || 0)) * 100,
+        );
+        const index = coinSlots.length
+          ? coinSlots[Math.abs(delta) % coinSlots.length]
+          : 0;
         if (this.$refs.turntable && this.$refs.turntable.rotate) {
           playWheelSound();
           this.$refs.turntable.rotate(index);
@@ -420,16 +420,12 @@ export default {
         icon: "success",
       });
     },
-    shareToSocial(platform) {
-      const links = {
-        facebook: "https://www.facebook.com",
-        ins: "https://instagram.com",
-        x: "https://x.com",
-        youtube: "https://youtube.com",
-      };
-      if (links[platform]) {
-        window.open(links[platform], "_blank");
-      }
+    // 只保留 Telegram：分享带邀请链接（其它平台没有官方账号，已隐藏）
+    shareToTelegram() {
+      shareToChannel("telegram", this.referralLink, {
+        text: this.$lang.share_invite_text || "Join me on LuckyPlay!",
+        copiedText: this.$lang.share_link_copied || "Invite link copied",
+      });
     },
   },
 };

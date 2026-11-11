@@ -321,6 +321,13 @@ export default {
     0 2px 12px rgba(0, 0, 0, 0.35);
 }
 
+/* 横屏矮屏时收起下载条，避免固定区占掉半屏（N12） */
+@media (orientation: landscape) and (max-height: 500px) {
+  .top-download {
+    display: none;
+  }
+}
+
 .top-download__close {
   flex-shrink: 0;
   width: 28px;

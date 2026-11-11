@@ -9,6 +9,11 @@ import { isNativeAppShell } from "@/utils/nativeApp";
 import { normalizeCountryCode, readCountryCode } from "@/utils/country";
 import { consumeRouteMotion } from "@/utils/routeMotion";
 import { setOpenLoginAfterReloadFlag } from "@/utils/platformAuth";
+import {
+  setAfterLoginPath,
+  readAfterLoginPath,
+  clearAfterLoginPath,
+} from "@/utils/guestAuth";
 
 // 禁止浏览器自动恢复滚动位置（从长页进二级页停在半截的根因之一）
 try {
@@ -56,12 +61,12 @@ const router = createRouter({
             params: { prefix: to.params.prefix },
           }),
         },
-        {
-          path: "appDetail",
-          name: "AppDetail",
-          component: () => import("@/views/layout/appDetail"),
-          meta: { keepAlive: false },
-        },
+        // {
+        //   path: "appDetail",
+        //   name: "AppDetail",
+        //   component: () => import("@/views/layout/appDetail"),
+        //   meta: { keepAlive: false },
+        // },
         {
           path: "Support",
           name: "Support",
@@ -278,6 +283,15 @@ router.beforeEach((to, from, next) => {
     return next();
   }
 
+  // 登录成功整页刷新后（首次导航），跳回登录前所在 / 想去的页面
+  if (!from.name && localStorage.getItem("token")) {
+    const after = readAfterLoginPath();
+    clearAfterLoginPath();
+    if (after && after.path !== to.fullPath && !/\/index\.html/.test(after.path)) {
+      return next({ path: after.path, replace: true });
+    }
+  }
+
   // 写死美国；中间页选国家逻辑先关掉
   const defaultCountry = "US";
   // 强制美国，忽略本地已存国家（中间页逻辑关闭期间）
@@ -413,6 +427,8 @@ router.beforeEach((to, from, next) => {
     const token = localStorage.getItem("token");
     if (!token) {
       const redirectPath = finalPrefix ? `/${finalPrefix}/home` : "/home";
+      // 登录成功后回到原本要去的页面
+      setAfterLoginPath(to.fullPath);
       // 深链首屏时布局还没挂载、收不到事件；打标后由布局 mounted 补弹
       setOpenLoginAfterReloadFlag();
       const openLogin = () => {

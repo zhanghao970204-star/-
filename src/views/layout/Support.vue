@@ -23,6 +23,12 @@
         <p class="f-t-15 support-link" role="button" @click.stop="goToDDD">
           {{ $lang.common_txt276 }}
         </p>
+        <p class="support-channels">
+          {{
+            $lang.support_channels ||
+            "Live chat: account, deposit and withdrawal help. Telegram group & channel (on the home page): news and events."
+          }}
+        </p>
       </div>
     </div>
 
@@ -124,6 +130,12 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.support-channels {
+  margin: 8px 16px 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #c9b4e4;
+}
 @cell: #2d1545;
 @muted: #d7a2fa;
 @gold-soft: #ffe4b5;

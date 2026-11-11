@@ -52,7 +52,7 @@
               <p>
                 {{
                   $lang.ra_vip_unlock ||
-                  "Deposit to upgrade your VIP level and unlock withdrawals."
+                  "Make Any Deposit To Upgrade To VIP And Unlock Withdrawals."
                 }}
               </p>
             </div>
@@ -325,5 +325,25 @@ export default {
   width: auto;
   height: 42px;
   font-size: 16px;
+}
+
+/* 320 宽：文案区缩小字号，按钮不压住「解锁提现」条件（N06） */
+@media (max-width: 340px) {
+  .ra-popup__body {
+    bottom: 18%;
+  }
+  .ra-popup__host {
+    font-size: 16px;
+  }
+  .ra-popup__copy {
+    gap: 3px;
+  }
+  .ra-popup__row p {
+    font-size: 10px;
+  }
+  .ra-popup__claim {
+    height: 38px;
+    font-size: 14px;
+  }
 }
 </style>

@@ -50,7 +50,15 @@
       v-if="noticeList.length === 0 && !loading"
       :image="require('../../../assets/img/common/img_no_data.png')"
       :description="$lang.noempt"
-    />
+    >
+      <button
+        type="button"
+        class="empty-action"
+        @click="$jumpTo('/home')"
+      >
+        {{ $lang.empty_go_home || "Back to Home" }}
+      </button>
+    </van-empty>
 
     <van-popup
       v-model:show="showDetail"
@@ -129,6 +137,8 @@ export default {
       }
       item["read"] = true;
       this.showDetail = true;
+      // 详情接口服务端会记已读，刷新顶栏角标
+      this.$bus.emit("mailBadgeRefresh");
     },
     async readAll() {
       try {
@@ -137,6 +147,7 @@ export default {
           this.noticeList.forEach((item) => {
             item["read"] = true;
           });
+          this.$bus.emit("mailBadgeRefresh");
           this.$toast({
             message: this.$lang.Sucesso || "Success",
             icon: "success",

@@ -84,7 +84,12 @@ export function normalizeHomeDataList(dataList) {
     .filter((item) => item && !isLotteryType(item.code))
     .map(normalizeHomeCategory)
     .filter(Boolean)
-    .map(stripLottery);
+    .map((item) => {
+      const stripped = stripLottery(item);
+      // 过滤彩票后变空的分类整块丢掉（本来就没有 types 的分类保持原样）
+      return item.types.length && !stripped.types.length ? null : stripped;
+    })
+    .filter(Boolean);
 }
 
 /** Hot：兼容第一项直接 games，或树形 types[].games */

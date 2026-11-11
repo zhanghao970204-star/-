@@ -187,41 +187,7 @@
                   src="@/assets/img/tabbar/tabqb.png"
                   alt=""
                 />
-                <p class="t-c" style="font-size: 18px; font-weight: 700">
-                  {{ $lang.common_txt358 }}
-                </p>
-
-                <div class="t-c m-t-20 home-community-icons">
-                  <img
-                    v-for="(item, index) in [
-                      {
-                        src: require('@/assets/img/otgame/pinduoduo_21.png'),
-                        url: 'https://facebook.com',
-                      },
-                      {
-                        src: require('@/assets/img/otgame/pinduoduo_24.png'),
-                        url: 'https://twitter.com',
-                      },
-                      {
-                        src: require('@/assets/img/otgame/ins.png'),
-                        url: 'https://instagram.com',
-                      },
-                      {
-                        src: require('@/assets/img/otgame/zjm_42.png'),
-                        url: 'https://tiktok.com',
-                      },
-                    ]"
-                    :key="index"
-                    :src="item.src"
-                    class="home-community-icon"
-                    loading="lazy"
-                    decoding="async"
-                    @click="openLink(item.url)"
-                  />
-                </div>
-
-                <p class="content-line m-t-10"></p>
-
+                <!-- 非官方社媒（FB/X/IG/TikTok）无官方账号，已隐藏；Telegram 列表保留 -->
                 <template v-if="tgChannelList.length">
                   <p class="t-c" style="font-size: 14px; font-weight: 700">
                     {{ $lang.common_txt359 }}
@@ -264,6 +230,8 @@ import {
   GetPlatformList,
   GetInvitationID,
   GetCsLink,
+  GetLuckyRoulette,
+  RedPacket,
 } from "@/api/common";
 import { getCsLinksByScene, getCsItemUrl } from "@/utils/csLink";
 import { logoutIfReloginRequiredWithToken } from "@/utils/platformAuth";
@@ -310,9 +278,12 @@ export default {
       stakeRewardChestImg,
       hotFrame,
       hotFireIcon,
-      totalSeconds: 1800,
+      totalSeconds: 0,
       timer5: null,
-      isCountdownActive: true,
+      // 只有接口下发 nextTimeLeft 时才显示倒计时
+      isCountdownActive: false,
+      // 未登录时未知先展示；登录后按 GetLuckyRoulette.isOpen
+      luckySpinOpen: true,
       isShowPopup: false,
       showPopup: false,
       activeTab: 0,
@@ -354,7 +325,7 @@ export default {
     },
     homeActList() {
       const L = this.$lang || {};
-      return [
+      const list = [
         {
           key: "spin",
           path: "/luckyReferral",
@@ -386,6 +357,7 @@ export default {
           btn: L.activity_btn_go || "GO",
         },
       ];
+      return list.filter((it) => it.key !== "spin" || this.luckySpinOpen);
     },
     hotTrackStyle() {
       return {
@@ -409,6 +381,7 @@ export default {
     },
   },
   created() {
+    this.fetchLuckySpinOpen();
     this.GetInvitationID();
     this.GetHomeGameList();
     this.fetchCsHomeLinks();
@@ -422,9 +395,7 @@ export default {
     });
   },
   activated() {
-    if (this.isCountdownActive && !this.timer5) {
-      this.initCountdown();
-    }
+    if (this._homeAlive) this.initCountdown();
     this.$nextTick(() => this.startHotAutoScroll());
     if (this._homeAlive) {
       this.GetHomeGameList();
@@ -684,26 +655,19 @@ export default {
       }
       this.$jumpTo("/weeklyMissions");
     },
-    resetCountdown() {
-      // 重置倒计时
-      this.stopCountdown();
-      this.isCountdownActive = true;
-      this.totalSeconds = 1800; // 重置为30分钟
-      const endTime = Math.floor(Date.now() / 1000) + this.totalSeconds;
-      localStorage.setItem("countdownEndTime", endTime);
-      this.startCountdown();
-    },
     formatNumber(num) {
       return num.toString().padStart(2, "0");
     },
     startCountdown() {
+      this.stopCountdown();
       this.timer5 = setInterval(() => {
-        this.totalSeconds--;
-
+        this.totalSeconds = Math.max(
+          0,
+          Math.round((this._countdownEnd - Date.now()) / 1000),
+        );
         if (this.totalSeconds <= 0) {
           this.stopCountdown();
           this.isCountdownActive = false;
-          localStorage.removeItem("countdownEndTime");
         }
       }, 1000);
     },
@@ -713,23 +677,36 @@ export default {
         this.timer5 = null;
       }
     },
-    initCountdown() {
-      const storedEndTime = localStorage.getItem("countdownEndTime");
-
-      if (storedEndTime) {
-        const endTime = parseInt(storedEndTime);
-        const currentTime = Math.floor(Date.now() / 1000);
-
-        if (currentTime < endTime) {
-          this.totalSeconds = endTime - currentTime;
+    fetchLuckySpinOpen() {
+      if (!localStorage.getItem("token")) return;
+      GetLuckyRoulette({})
+        .then((res) => {
+          if (res && res.status === "ok" && res.content) {
+            this.luckySpinOpen = Number(res.content.isOpen) === 1;
+          }
+        })
+        .catch(() => {});
+    },
+    // 红包雨下一场倒计时：以 RedPacket().content.nextTimeLeft（秒）为准，不再写死 30 分钟
+    async initCountdown() {
+      this.stopCountdown();
+      this.isCountdownActive = false;
+      localStorage.removeItem("countdownEndTime");
+      if (!localStorage.getItem("token")) return;
+      try {
+        const res = await RedPacket({});
+        const c = res && res.status === "ok" ? res.content : null;
+        if (!c) return;
+        const timeLeft = Number(c.timeLeft) || 0;
+        const next = Number(c.nextTimeLeft) || 0;
+        if (timeLeft <= 0 && next > 0) {
+          this._countdownEnd = Date.now() + next * 1000;
+          this.totalSeconds = next;
+          this.isCountdownActive = true;
           this.startCountdown();
-        } else {
-          this.isCountdownActive = false;
         }
-      } else {
-        const endTime = Math.floor(Date.now() / 1000) + this.totalSeconds;
-        localStorage.setItem("countdownEndTime", endTime);
-        this.startCountdown();
+      } catch (e) {
+        /* 失败时不显示倒计时 */
       }
     },
     // 像素上报已停用，归因统一走 Adjust

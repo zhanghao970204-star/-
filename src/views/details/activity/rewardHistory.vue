@@ -51,11 +51,11 @@
                     $lang.reward_premium || "PREMIUM"
                   }}</span>
                 </div>
-                <p class="reward-item__date">{{ formatDate(item.date) }}</p>
+                <p class="reward-item__date">{{ item.time || item.date }}</p>
               </div>
               <!-- Amount -->
               <div class="reward-item__amount">
-                <p>+{{ Number(item.amount).toFixed(2) }}</p>
+                <p>+{{ $formatMoney(item.amount, getCurrency) }}</p>
               </div>
             </div>
           </div>
@@ -105,18 +105,15 @@ export default {
       const y = this.filterDate.getFullYear();
       const m = this.filterDate.getMonth();
       const d = this.filterDate.getDate();
-      return this.rewardList.filter((item) => {
-        const dt = new Date(item.date);
-        return (
-          dt.getFullYear() === y && dt.getMonth() === m && dt.getDate() === d
-        );
-      });
+      const target = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+      // 直接比平台日期字符串，避免 new Date("yyyy-MM-dd") 按 UTC 解析后差一天
+      return this.rewardList.filter((item) => item.date === target);
     },
     groupedRewards() {
       const groups = {};
       this.filteredRewards.forEach((item) => {
-        const dt = new Date(item.date);
-        const monthKey = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}`;
+        const monthKey = String(item.date).slice(0, 7);
+        const monthIndex = parseInt(monthKey.slice(5, 7), 10) - 1;
         const monthNames = [
           "January",
           "February",
@@ -131,7 +128,7 @@ export default {
           "November",
           "December",
         ];
-        const label = `${monthNames[dt.getMonth()]} ${dt.getFullYear()}`;
+        const label = `${monthNames[monthIndex] || ""} ${monthKey.slice(0, 4)}`;
         if (!groups[monthKey]) {
           groups[monthKey] = { month: label, items: [] };
         }
@@ -150,48 +147,48 @@ export default {
       try {
         const res = await GetSignDaily();
         if (res.status === "ok" && res.content) {
-          const signList = res.content.signList || [];
-          const now = new Date();
-          now.setHours(23, 59, 59, 999);
-
-          // 计算最近7天的范围
-          const sevenDaysAgo = new Date(now);
-          sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
-          sevenDaysAgo.setHours(0, 0, 0, 0);
+          const c = res.content;
+          const signList = c.signList || [];
+          const day = (v) => String(v || "").slice(0, 10);
+          // 最近 7 天以平台业务日 bizDate 为准
+          const bizDate =
+            day(c.bizDate) || day(signList[signList.length - 1]?.date);
+          const base = new Date(bizDate + "T00:00:00Z");
+          base.setUTCDate(base.getUTCDate() - 6);
+          const fromDate = isNaN(base.getTime())
+            ? ""
+            : base.toISOString().slice(0, 10);
 
           const rewards = [];
           signList.forEach((item) => {
-            // 只展示已签到的数据(免费签到或充值签到)
             if (item.isFreeSign !== 1 && item.isPaySign !== 1) return;
+            const d = day(item.date);
+            if ((fromDate && d < fromDate) || (bizDate && d > bizDate)) return;
 
-            const signDate = new Date(item.date);
-
-            // 只展示最近7天已签到的数据
-            if (signDate < sevenDaysAgo || signDate > now) return;
-
-            // 免费签到记录
             if (item.isFreeSign === 1) {
               rewards.push({
                 type: "regular",
                 amount: item.freeSignReward || 0,
-                date: item.date,
+                date: d,
+                time: item.freeSignTime || "",
                 isPremium: false,
               });
             }
-
-            // 充值签到记录
             if (item.isPaySign === 1) {
               rewards.push({
                 type: "deposit",
                 amount: item.paySignReward || 0,
-                date: item.date,
+                date: d,
+                time: item.paySignTime || "",
                 isPremium: true,
               });
             }
           });
 
           // 按日期降序排列
-          rewards.sort((a, b) => new Date(b.date) - new Date(a.date));
+          rewards.sort((a, b) =>
+            String(b.time || b.date).localeCompare(String(a.time || a.date)),
+          );
           this.rewardList = rewards;
         } else if (res.status === "need_login") {
           this.$bus.emit("openLogin");

@@ -3,7 +3,8 @@ import bus from "@/utils/eventBus";
 import router from "../router";
 import { emitHeaderRefresh, shouldRefreshHeader } from "@/utils/headerRefresh";
 import { ensureClientId, resolveClientIdSync } from "@/utils/nativeDevice";
-import { clearGuestFlags } from "@/utils/guestAuth";
+import { clearGuestFlags, setAfterLoginPath } from "@/utils/guestAuth";
+import toast from "@/utils/toast";
 import {
   API_ORIGIN, API_PATH, API_TIMEOUT_MS, DEFAULT_LOCALE,
   DEFAULT_PLATFORM, DEFAULT_CURRENCY, STORAGE_KEYS,
@@ -123,6 +124,13 @@ instance.interceptors.response.use(
       const stayInPlace = stayPaths.some(
         (p) => pathOnly === p || pathOnly.startsWith(p + "/"),
       );
+      // 登录成功后回到当前页
+      const fullPath =
+        router.currentRoute &&
+        (router.currentRoute.value
+          ? router.currentRoute.value.fullPath
+          : router.currentRoute.fullPath);
+      if (fullPath) setAfterLoginPath(fullPath);
       bus.emit("openLogin");
       if (!stayInPlace) {
         router
@@ -133,6 +141,18 @@ instance.interceptors.response.use(
             }
           });
       }
+    } else if (
+      response.data &&
+      response.data.status === "failed" &&
+      /access\.frequency\.limit|too many|frequen/i.test(
+        String(response.data.msg || response.data.code || ""),
+      )
+    ) {
+      // 限流：统一提示，页面保留已有数据（不当成空列表）
+      toast({
+        message: "Too many requests, please try again later.",
+        icon: "cross",
+      });
     } else if (
       response.data &&
       response.data.status === "ok" &&

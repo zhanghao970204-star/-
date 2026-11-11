@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { NewPlayerGiftPackInit } from "@/api/common";
+import { NewPlayerGiftPackInit, GetLuckyRoulette } from "@/api/common";
 import iconSpin from "@/assets/img/activity/promo/spin.png";
 import iconEnvelopes from "@/assets/img/activity/promo/envelopes.png";
 import iconGifts from "@/assets/img/activity/promo/gifts.png";
@@ -64,6 +64,8 @@ export default {
     return {
       showLogin: false,
       newbieVisible: false,
+      // 未登录时未知，先展示；登录后按接口 isOpen
+      luckySpinOpen: true,
       bannerList: [bannerLoss, bannerWelcome, bannerDeposit],
       bannerIndex: 0,
     };
@@ -133,7 +135,7 @@ export default {
           btn: L.activity_view || "View",
         },
       ];
-      return cards;
+      return cards.filter((c) => c.key !== "spin" || this.luckySpinOpen);
     },
   },
   mounted() {
@@ -141,6 +143,15 @@ export default {
   },
   methods: {
     async initActivityStatus() {
+      if (this.token) {
+        GetLuckyRoulette({})
+          .then((res) => {
+            if (res && res.status === "ok" && res.content) {
+              this.luckySpinOpen = Number(res.content.isOpen) === 1;
+            }
+          })
+          .catch(() => {});
+      }
       try {
         const ngRes = await NewPlayerGiftPackInit({});
         if (ngRes && ngRes.status === "ok" && ngRes.content) {

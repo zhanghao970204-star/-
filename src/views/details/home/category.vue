@@ -2,7 +2,7 @@
   <div class="content category-page">
     <!-- <title-bar :title="$lang.common_txt63"></title-bar> -->
     <van-nav-bar
-      :title="$lang.common_txt63"
+      :title="vendorName || $lang.common_txt63"
       :border="false"
       fixed
       z-index="1000"
@@ -16,7 +16,11 @@
       <div class="cot-Search">
         <van-field
           v-model="gameValue"
-          :placeholder="$lang.common_txt144"
+          :placeholder="
+            vendorName
+              ? ($lang.search_in || 'Search in') + ' ' + vendorName
+              : $lang.common_txt144
+          "
           class="custom-field"
         >
           <template #right-icon>
@@ -45,9 +49,10 @@
             v-if="selectIndex2 === 0"
             class="cot-cont-rb"
             ref="targetElement"
+            @scroll.passive="onListScroll"
           >
             <div
-              v-for="(item3, index) in allGames"
+              v-for="(item3, index) in displayGames"
               :key="'all-' + (item3.gid || index)"
               class="cot-cont-rbi"
               @click="goToGame(item3.gid, item3)"
@@ -143,6 +148,9 @@ import { GetHomeGameList } from "@/api/common";
 import { normalizeHomeDataList } from "@/utils/homeGameList";
 import { mapState, mapActions } from "vuex";
 
+const PAGE_SIZE = 30;
+const STATE_KEY = "categoryState:";
+
 export default {
   name: "Category",
   components: {},
@@ -157,6 +165,9 @@ export default {
       favariteGames: [],
       seachArr: [],
       allGames: [],
+      vendorName: "",
+      // 分批渲染，避免一次挂 700+ 张卡
+      visibleCount: PAGE_SIZE,
     };
   },
   watch: {
@@ -174,9 +185,16 @@ export default {
       }, []);
       this.allGames = this.filterGames(newArr);
     },
+    allGames() {
+      if (this._restoring) return;
+      this.visibleCount = PAGE_SIZE;
+    },
   },
   computed: {
     ...mapState(["favorites"]),
+    displayGames() {
+      return this.allGames.slice(0, this.visibleCount);
+    },
     // 新增：获取当前币种
     // currentCurrency() {
     //   return this.getCurrency // 确保getCurrency方法/属性已定义
@@ -186,8 +204,57 @@ export default {
   mounted() {
     this.GetHomeGameList();
   },
+  beforeRouteLeave(to, from, next) {
+    // 记住分类页状态，从游戏返回时恢复
+    try {
+      const el = this.$refs.targetElement;
+      sessionStorage.setItem(
+        STATE_KEY + from.fullPath,
+        JSON.stringify({
+          selectIndex2: this.selectIndex2,
+          gameValue: this.gameValue,
+          visibleCount: this.visibleCount,
+          scrollTop: el ? el.scrollTop : 0,
+        }),
+      );
+    } catch (e) {
+      /* ignore */
+    }
+    next();
+  },
   methods: {
     ...mapActions(["addFavorite", "removeFavorite"]),
+    onListScroll(e) {
+      const el = e.target;
+      if (
+        this.visibleCount < this.allGames.length &&
+        el.scrollTop + el.clientHeight >= el.scrollHeight - 200
+      ) {
+        this.visibleCount += PAGE_SIZE;
+      }
+    },
+    restoreState() {
+      let saved = null;
+      try {
+        saved = JSON.parse(
+          sessionStorage.getItem(STATE_KEY + this.$route.fullPath) || "null",
+        );
+      } catch (e) {
+        saved = null;
+      }
+      if (!saved) return;
+      this._restoring = true;
+      this.gameValue = saved.gameValue || "";
+      this.$nextTick(() => {
+        if (saved.selectIndex2 === 1) this.getSelect2(1);
+        this.visibleCount = Math.max(PAGE_SIZE, saved.visibleCount || 0);
+        this.$nextTick(() => {
+          const el = this.$refs.targetElement;
+          if (el && saved.scrollTop) el.scrollTop = saved.scrollTop;
+          this._restoring = false;
+        });
+      });
+    },
     // 按 gid 去重（Hot 与厂商分组会重复返回同一游戏），并按去首尾空格的关键词过滤
     filterGames(list) {
       const kw = (this.gameValue || "").trim().toLowerCase();
@@ -209,21 +276,30 @@ export default {
       );
       if (!currencyGroup) return false;
       // 检查该分组下是否包含当前游戏
-      return currencyGroup.list.some((fav) => fav.gid === item.gid);
+      return currencyGroup.list.some((fav) => Number(fav.gid) === Number(item.gid));
     },
-    // 修改：适配分组结构的收藏切换逻辑
-    toggleFavorite(item) {
-      // 构造payload，包含当前currency和游戏项
+    // 收藏走服务端：未登录弹登录，接口成功后再提示
+    async toggleFavorite(item) {
+      if (!this.token) {
+        this.showPopup = true;
+        return;
+      }
+      if (this._favBusy) return;
+      this._favBusy = true;
       const payload = {
         currency: this.getCurrency,
         item: item,
       };
-      if (this.isFavorite(item)) {
-        this.removeFavorite(payload);
-        this.$toast(this.$lang.favorite_removed || "Removed from favorites");
-      } else {
-        this.addFavorite(payload);
-        this.$toast(this.$lang.favorite_added || "Added to favorites");
+      try {
+        if (this.isFavorite(item)) {
+          if (await this.removeFavorite(payload)) {
+            this.$toast(this.$lang.favorite_removed || "Removed from favorites");
+          }
+        } else if (await this.addFavorite(payload)) {
+          this.$toast(this.$lang.favorite_added || "Added to favorites");
+        }
+      } finally {
+        this._favBusy = false;
       }
       // 切换收藏后更新收藏列表展示
       if (this.selectIndex2 === 1) {
@@ -244,6 +320,7 @@ export default {
           gameTab: this.$route.query.gameTab,
         });
       } else {
+        sessionStorage.setItem("loginScene", "game");
         this.showPopup = true;
       }
     },
@@ -307,6 +384,15 @@ export default {
           : normalized;
 
         const typesArr = filteredList.flatMap((item) => item.types || []);
+        // View All 进来时标题显示厂商 / 分类名
+        if (typeCode) {
+          const hitCat = normalized.find((it) => String(it.code) === String(typeCode));
+          const hitType = typesArr.find((t) => String(t.code) === String(typeCode));
+          this.vendorName =
+            (hitType && (hitType.name || hitType.showName)) ||
+            (hitCat && hitCat.name) ||
+            "";
+        }
 
         const newList = [
           {
@@ -336,6 +422,7 @@ export default {
           !isNaN(tab) && tab >= 0 && tab < this.dataList.length ? tab : 0;
         this.selectIndex = safeTab;
         this.getSelect(safeTab);
+        this.restoreState();
       }
     },
   },

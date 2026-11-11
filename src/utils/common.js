@@ -50,6 +50,27 @@ export function formatNumberWithCommas(value) {
     return result
   }
 }
+/** 全站金额统一格式：USD 1,234.50（币种大写、两位小数）；可作 $formatMoney 在模板中使用 */
+export function formatMoney(value, currency) {
+  const code = String(
+    currency || localStorage.getItem('currency') || 'USD'
+  ).toUpperCase()
+  const n = Number(value)
+  if (!Number.isFinite(n)) return `${code} 0.00`
+  const sign = n < 0 ? '-' : ''
+  const body = Math.abs(n)
+    .toFixed(2)
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  return `${sign}${code} ${body}`
+}
+
+/** 手机号打码：918****3412 */
+export function maskPhone(phone) {
+  const s = String(phone || '')
+  if (s.length < 7) return s
+  return s.slice(0, 3) + '****' + s.slice(-4)
+}
+
 //uuid
 export function generateUUID() {
   // 创建一个 16 字节的数组

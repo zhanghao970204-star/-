@@ -67,7 +67,15 @@
         v-if="!orderList.length && !loading && !loadError"
         :image="require('../../../assets/img/common/img_no_data.png')"
         :description="$lang.noempt"
-      />
+      >
+        <button
+          type="button"
+          class="empty-action"
+          @click="$jumpTo('/rechargeCont')"
+        >
+          {{ $lang.empty_go_deposit || "Deposit Now" }}
+        </button>
+      </van-empty>
     </van-list>
   </div>
 </template>

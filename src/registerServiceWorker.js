@@ -30,9 +30,10 @@ if (shouldRegister) {
       console.log('New content is available; please refresh.')
     },
     offline() {
-      console.log(
-        'No internet connection found. App is running in offline mode.'
-      )
+      // 断网：展示离线品牌页（由 service-worker 缓存），页面上有 Retry
+      if (typeof location !== 'undefined' && !/offline\.html$/.test(location.pathname)) {
+        location.assign(`${import.meta.env.BASE_URL}offline.html`)
+      }
     },
     error(error) {
       console.error('Error during service worker registration:', error)

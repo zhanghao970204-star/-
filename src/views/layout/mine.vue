@@ -19,8 +19,8 @@
       </div>
 
       <div class="mine-user__main">
-        <div class="mine-user__name" @click="copyText(InitDate.account)">
-          <span>{{ InitDate.account || "--" }}</span>
+        <div class="mine-user__name" @click="copyText(InitDate._uid)">
+          <span>UID: {{ InitDate._uid != null ? InitDate._uid : "--" }}</span>
           <img
             class="mine-user__copy"
             src="@/assets/img/mine/copy.png"
@@ -44,33 +44,32 @@
 
     <div class="mine-balance">
       <div class="mine-balance__amount">
-        {{ getCurrency }}
-        <span style="margin-left: 5px">
-          {{
-            $formatNumberWithCommas(
-              InitDate2.totalBalance || InitDate2.balance || 0,
-            )
-          }}
-        </span>
+        <template v-if="balanceReady">{{
+          $formatMoney(
+            InitDate2.totalBalance || InitDate2.balance || 0,
+            getCurrency,
+          )
+        }}</template>
+        <span v-else class="balance-skeleton balance-skeleton--lg"></span>
       </div>
 
       <div class="mine-balance__stats">
         <div class="mine-balance__stat">
           <div class="lab">{{ $lang.mine_main || "Main" }}</div>
           <div class="val">
-            {{ getCurrency }}
-            <span class="m-l-2">
-              {{ $formatNumberWithCommas(InitDate2.balance || 0) }}
-            </span>
+            <template v-if="balanceReady">{{
+              $formatMoney(InitDate2.balance || 0, getCurrency)
+            }}</template>
+            <span v-else class="balance-skeleton"></span>
           </div>
         </div>
         <div class="mine-balance__stat is-green">
           <div class="lab">{{ $lang.mine_cashback || "Cashback" }}</div>
           <div class="val">
-            {{ getCurrency }}
-            <span class="m-l-2">
-              {{ $formatNumberWithCommas(InitDate2.cashback || 0) }}
-            </span>
+            <template v-if="balanceReady">{{
+              $formatMoney(InitDate2.cashback || 0, getCurrency)
+            }}</template>
+            <span v-else class="balance-skeleton"></span>
           </div>
         </div>
       </div>
@@ -231,7 +230,13 @@
 </template>
 
 <script>
-import { Init, GameBalanceList, Logout, VipInit } from "@/api/common";
+import {
+  Init,
+  GameBalanceList,
+  Logout,
+  VipInit,
+  WithdrawInit,
+} from "@/api/common";
 import {
   clearGuestFlags,
   isGuestUser,
@@ -281,6 +286,7 @@ export default {
   data() {
     return {
       showLogoutPopup: false,
+      balanceReady: false,
       loggingOut: false,
       InitDate: {
         inviteCode: "",
@@ -377,6 +383,7 @@ export default {
         const data = await GameBalanceList();
         if (data.status === "ok") {
           this.InitDate2 = data.content;
+          this.balanceReady = true;
         }
       } catch (e) {
         console.error("GetGameBalanceList error", e);
@@ -410,6 +417,8 @@ export default {
         }
         return;
       }
+      // 先校验提现条件，不满足直接告诉用户还差什么，不进入空表单
+      if (!(await this.checkWithdrawable())) return;
       await this.Init();
       if (this.InitDate.privacyPasswdSetted === "no") {
         this.$jumpTo("/setPassWord", { from: "withdraw" });
@@ -417,12 +426,54 @@ export default {
         this.$jumpTo("/bankAdd");
       }
     },
+    async checkWithdrawable() {
+      try {
+        const res = await WithdrawInit({});
+        if (!res || res.status !== "ok" || !res.content) return true;
+        const c = res.content;
+        if (Number(c.isClose) === 1) {
+          this.$toast({
+            message:
+              c.closeReason ||
+              this.$lang.withdraw_closed ||
+              "Withdrawals are temporarily unavailable.",
+            icon: "cross",
+          });
+          return false;
+        }
+        const diff = Number(c.differenceAmount) || 0;
+        if (diff > 0) {
+          this.$toast({
+            message: `${this.$lang.BankInfo_txt3 || "Wager"} ${this.$formatMoney(
+              diff,
+              this.getCurrency,
+            )} ${this.$lang.BankInfo_txt4 || "more to unlock withdrawals"}`,
+            duration: 3000,
+          });
+          return false;
+        }
+      } catch (e) {
+        /* 接口失败不拦截，进入提现页由页面再校验 */
+      }
+      return true;
+    },
     goToBank() {
       if (this.InitDate.realName) {
         this.$jumpTo("/bank");
-      } else {
-        this.$jumpTo("/authName");
+        return;
       }
+      // 跳实名前先说明用途
+      this.$dialog
+        .confirm({
+          title: this.$lang.authName_title || "Real Name Authentication",
+          message:
+            this.$lang.authName_txt2 ||
+            "Enter your full legal name exactly as it appears on your payout account. It is used only to verify withdrawals.",
+          confirmButtonText: this.$lang.Confirmar || "Confirm",
+          cancelButtonText: this.$lang.common_cancel || "Cancel",
+        })
+        .then(() => this.$jumpTo("/authName"))
+        .catch(() => {});
     },
     copyText(value) {
       const text = value == null ? "" : String(value);
@@ -909,6 +960,32 @@ export default {
   .mine-page {
     max-width: 450px;
     margin: 0 auto;
+  }
+}
+
+.balance-skeleton {
+  display: inline-block;
+  width: 64px;
+  height: 0.9em;
+  border-radius: 6px;
+  vertical-align: middle;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.25) 50%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  background-size: 200% 100%;
+  animation: balance-skeleton-shine 1.2s linear infinite;
+
+  &--lg {
+    width: 120px;
+  }
+}
+
+@keyframes balance-skeleton-shine {
+  to {
+    background-position: -200% 0;
   }
 }
 </style>

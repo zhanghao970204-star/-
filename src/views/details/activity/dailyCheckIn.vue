@@ -131,6 +131,10 @@
             </button>
           </template>
           <template v-else-if="item.status === 'claimed'">
+            <!-- 免费档已领：置灰，放在原领取按钮位置 -->
+            <span class="checkin-card__pill">{{
+              $lang.reward_claimed || "CLAIMED"
+            }}</span>
             <button
               v-if="!item.premiumClaimed"
               type="button"
@@ -144,9 +148,6 @@
               {{ $lang.checkin_deposit_for || "DEPOSIT FOR" }}
               {{ item.premiumAmount }} {{ $lang.checkin_coins || "Coins" }}
             </button>
-            <span v-else class="checkin-card__pill">{{
-              $lang.reward_claimed || "CLAIMED"
-            }}</span>
           </template>
           <span
             v-else-if="item.status === 'missed'"
@@ -158,6 +159,23 @@
           }}</span>
         </div>
       </div>
+    </div>
+
+    <div class="checkin-meta">
+      <p class="checkin-meta__tiers">
+        <span class="checkin-meta__dot checkin-meta__dot--gold"></span>
+        {{ $lang.checkin_tier_regular || "Regular" }}
+        <span class="checkin-meta__dot checkin-meta__dot--green"></span>
+        {{ $lang.checkin_tier_premium || "Premium (after deposit)" }}
+      </p>
+      <p v-if="megaSpinTimes != null" class="checkin-meta__line">
+        {{ $lang.checkin_mega_spin || "Mega Spin progress" }}:
+        {{ megaSpinTimes }}
+      </p>
+      <p v-if="timeZone" class="checkin-meta__line">
+        {{ $lang.checkin_resets_at || "Resets daily at" }}
+        {{ (dayResetTime || "00:00").slice(0, 5) }} ({{ timeZone }})
+      </p>
     </div>
 
     <div class="checkin-bottom">
@@ -178,6 +196,9 @@ export default {
     return {
       loading: false,
       claiming: false,
+      timeZone: "",
+      dayResetTime: "",
+      megaSpinTimes: null,
       dayList: [],
     };
   },
@@ -200,25 +221,30 @@ export default {
         this.loading = true;
         const res = await GetSignDaily();
         if (res.status === "ok" && res.content) {
-          const signList = res.content.signList || [];
-          const now = new Date();
-          const todayDay = now.getDate();
-          const year = now.getFullYear();
-          const month = now.getMonth();
-          // 本月总天数
-          const daysInMonth = new Date(year, month + 1, 0).getDate();
-          // 展示范围: 前3天 ~ 月底
-          const startDay = Math.max(1, todayDay - 3);
+          const c = res.content;
+          const signList = c.signList || [];
+          // 「今天」以平台业务日 bizDate 为准（美东），不用设备本地日期
+          const toDateStr = (v) => String(v || "").slice(0, 10);
+          const bizDate =
+            toDateStr(c.bizDate) ||
+            toDateStr(signList.find((i) => i && i.signDailyStatus === 1)?.date);
+          const bizDay = parseInt(bizDate.slice(8, 10), 10) || 1;
+          const bizMonth = bizDate.slice(0, 7);
+          this.timeZone = c.timeZone || "";
+          this.dayResetTime = c.dayResetTime || "";
+          this.megaSpinTimes = c.times != null ? Number(c.times) : null;
+          // 展示范围: 业务日前 3 天 ~ 月底（平台自然日日历）
+          const startDay = Math.max(1, bizDay - 3);
 
           this.dayList = signList
             .filter((item) => {
-              const d = new Date(item.date);
-              const day = d.getDate();
-              return day >= startDay && day <= daysInMonth;
+              const ds = toDateStr(item.date);
+              const day = parseInt(ds.slice(8, 10), 10);
+              return (!bizMonth || ds.slice(0, 7) === bizMonth) && day >= startDay;
             })
             .map((item, index, arr) => {
-              const d = new Date(item.date);
-              const day = d.getDate();
+              const ds = toDateStr(item.date);
+              const day = parseInt(ds.slice(8, 10), 10);
               const regularAmount = item.freeSignReward || 0;
               const premiumAmount = item.paySignReward || 0;
               const isSpecial = index === arr.length - 1; // 最后一天为特殊卡
@@ -230,14 +256,11 @@ export default {
                 // 已签到(免费)
                 status = "claimed";
                 premiumClaimed = item.isPaySign === 1;
-              } else if (day === todayDay) {
-                // 今天 - 可签到
+              } else if (ds === bizDate) {
                 status = "active";
-              } else if (day < todayDay) {
-                // 过去未签到 - 错过
+              } else if (ds < bizDate) {
                 status = "missed";
               } else {
-                // 未来 - 不可签到
                 status = "locked";
               }
 
@@ -248,7 +271,7 @@ export default {
                 status,
                 premiumClaimed,
                 isSpecial,
-                date: item.date,
+                date: ds,
                 paySignStatus: item.paySignStatus || 0,
               };
             });
@@ -546,6 +569,39 @@ export default {
       font-size: 7px;
       letter-spacing: 0;
       white-space: nowrap;
+    }
+  }
+}
+
+.checkin-meta {
+  margin: 12px 14px 0;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #e6d4f8;
+
+  &__tiers {
+    margin: 0;
+  }
+
+  &__line {
+    margin: 2px 0 0;
+  }
+
+  &__dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin: 0 4px 0 10px;
+    border-radius: 50%;
+    vertical-align: middle;
+
+    &--gold {
+      background: #ffd400;
+    }
+
+    &--green {
+      background: #31ff6f;
     }
   }
 }

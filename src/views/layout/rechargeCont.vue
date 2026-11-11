@@ -846,7 +846,7 @@ export default {
           ) {
             sessionStorage.setItem("payOrderData", JSON.stringify(obj));
           }
-          this.$jumpTo("/payOrder");
+          this.$jumpTo("/payOrder", { orderNo: data.content.orderNo });
         } else if (payUrl) {
           if (isUsRedirect) {
             goPayUrl(payWin, payUrl);

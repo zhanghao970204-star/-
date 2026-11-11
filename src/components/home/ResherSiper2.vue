@@ -59,7 +59,7 @@
                   <span>{{ onlineCount(item) }}</span>
                 </div>
                 <img
-                  v-if="!favoriteGidSet.has(item.gid)"
+                  v-if="!isFavorite(item)"
                   @click.stop="toggleFavorite(item)"
                   src="../../assets/img/common/scyx.png"
                   width="20"
@@ -132,14 +132,14 @@ export default {
       if (!currencyGroup || !Array.isArray(currencyGroup.list)) {
         return new Set();
       }
-      return new Set(currencyGroup.list.map((fav) => fav.gid));
+      return new Set(currencyGroup.list.map((fav) => Number(fav.gid)));
     },
   },
   mounted() {},
   methods: {
     ...mapActions(["addFavorite", "removeFavorite"]),
     isFavorite(item) {
-      return this.favoriteGidSet.has(item.gid);
+      return this.favoriteGidSet.has(Number(item.gid));
     },
     openAll() {
       const base = typeof this.siderIndex === "number" ? this.siderIndex : 0;
@@ -159,15 +159,22 @@ export default {
         this.$refs.swipe.swipeTo(this.currentPage2 + 1);
       }
     },
-    toggleFavorite(item) {
+    // 收藏走服务端：未登录由 store 弹登录
+    async toggleFavorite(item) {
+      if (this._favBusy) return;
+      this._favBusy = true;
       const payload = {
         currency: this.getCurrency,
         item: item,
       };
-      if (this.isFavorite(item)) {
-        this.removeFavorite(payload);
-      } else {
-        this.addFavorite(payload);
+      try {
+        if (this.isFavorite(item)) {
+          await this.removeFavorite(payload);
+        } else {
+          await this.addFavorite(payload);
+        }
+      } finally {
+        this._favBusy = false;
       }
     },
     // 仅展示接口返回的真实在线人数，没有就不显示
@@ -181,6 +188,7 @@ export default {
       if (this.token) {
         this.$launchGame({ type: "hall", gid: v, isDemo: 0, from: "game" });
       } else if (this.$bus) {
+        sessionStorage.setItem("loginScene", "game");
         this.$bus.emit("openLogin");
       }
     },

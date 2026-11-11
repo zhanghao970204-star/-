@@ -15,7 +15,7 @@
           class="invite-share__item"
           v-for="(item, index) in shareList"
           :key="index"
-          @click="shareContent(index)"
+          @click="shareContent(item.key)"
         >
           <div class="invite-share__icon">
             <img :src="item.img" alt="" />
@@ -166,35 +166,18 @@ export default {
   data() {
     return {
       inviteCode: "",
+      // 只保留系统分享和 Telegram；其它平台没有官方账号，已隐藏
       shareList: [
         {
+          key: "share",
           img: require("@/assets/img/common/fenxiang.png"),
           name: "Share",
         },
         {
-          img: require("@/assets/img/common/img_wa.png"),
-          name: "WhatsApp",
-        },
-        {
+          key: "telegram",
           img: require("@/assets/img/common/img_tg.png"),
           name: "Telegram",
         },
-        {
-          img: require("@/assets/img/common/huohua.png"),
-          name: "Instagram",
-        },
-        {
-          img: require("@/assets/img/common/youtub.png"),
-          name: "YouTube",
-        },
-        {
-          img: require("@/assets/img/common/img_facebook.png"),
-          name: "Facebook",
-        },
-        // {
-        //   img: require("@/assets/img/common/douyin.png"),
-        //   name: "TikTok",
-        // },
       ],
       firstDepositRows: [
         { amount: "9.99", l1: "3", l2: "2", l3: "1" },
@@ -235,25 +218,14 @@ export default {
     this.Init();
   },
   methods: {
-    shareContent(i) {
+    shareContent(key) {
       const url = this.inviteCode || buildInviteUrl();
       const copiedText = this.$lang.share_link_copied || "Invite link copied";
       const text = this.$lang.share_invite_text || "Join me on LuckyPlay!";
-      // 顺序对应 shareList：系统分享 / WhatsApp / Telegram / Instagram / YouTube / Facebook / TikTok / X
-      const channels = [
-        null,
-        "whatsapp",
-        "telegram",
-        "instagram",
-        "youtube",
-        "facebook",
-        "tiktok",
-        "twitter",
-      ];
-      if (i === 0) {
-        shareLink(url, { text, copiedText });
+      if (key === "telegram") {
+        shareToChannel("telegram", url, { text, copiedText });
       } else {
-        shareToChannel(channels[i], url, { text, copiedText });
+        shareLink(url, { text, copiedText });
       }
     },
     async Init() {

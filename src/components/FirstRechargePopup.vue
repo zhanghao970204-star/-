@@ -879,4 +879,15 @@ export default {
     }
   }
 }
+
+/* 320 宽：倒计时格子按弹窗宽度缩小，不超出边框（N22） */
+@media (max-width: 360px) {
+  .fr-popup__timer-row {
+    gap: 4px;
+  }
+  .fr-popup__timer-cell {
+    width: 58px;
+    height: 54px;
+  }
+}
 </style>

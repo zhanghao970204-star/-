@@ -89,6 +89,27 @@ button.is-loading:disabled {
   opacity: 1 !important;
   cursor: progress !important;
 }
+/* 空态引导按钮（N10） */
+.empty-action {
+  min-width: 150px;
+  height: 40px;
+  padding: 0 22px;
+  border: none;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(180deg, #38de98 0%, #02a460 100%);
+  cursor: pointer;
+}
+/* 横屏矮屏：居中弹窗不超出视口，内容可滚动（N29） */
+@media (orientation: landscape) and (max-height: 500px) {
+  .van-popup--center {
+    max-height: 100dvh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
 @keyframes btn-spinner-rotate {
   to {
     transform: rotate(360deg);

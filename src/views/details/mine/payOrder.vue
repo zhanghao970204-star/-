@@ -34,7 +34,11 @@
             <p class="status-pill__text">{{ $lang.common_txt252 }}</p>
           </div>
 
-          <div class="amount-block">
+          <p v-if="infoDetail && infoDetail.orderNo" class="order-no">
+            {{ $lang.orderDetail_txt4 || "Order No." }}: {{ infoDetail.orderNo }}
+          </p>
+
+          <div v-if="infoDetail && infoDetail.paymentAmount" class="amount-block">
             <div class="amount-block__label">
               <img
                 class="amount-block__icon"
@@ -51,7 +55,7 @@
             <p class="amount-block__type">({{ infoDetail.wlType }})</p>
           </div>
 
-          <div class="addr-card">
+          <div v-if="infoDetail && infoDetail.url" class="addr-card">
             <vue-qr
               :value="infoDetail.url"
               :size="108"
@@ -90,12 +94,27 @@
 <script>
 import VueQr from "qrcode.vue";
 import { UpayStatusorderNo } from "@/api/common";
+
+// 优先用下单时缓存的订单；刷新 / 新标签打开时缓存可能没有，退回到 URL 里的 orderNo，只展示单号和状态
+function readPayOrder(queryOrderNo) {
+  let cached = null;
+  try {
+    cached = JSON.parse(sessionStorage.getItem("payOrderData"));
+  } catch (e) {
+    cached = null;
+  }
+  const orderNo = queryOrderNo ? String(queryOrderNo) : "";
+  if (cached && cached.orderNo && (!orderNo || cached.orderNo === orderNo)) {
+    return cached;
+  }
+  return orderNo ? { orderNo } : null;
+}
 export default {
   name: "payOrder",
   components: { VueQr },
   data() {
     return {
-      infoDetail: JSON.parse(sessionStorage.getItem("payOrderData")),
+      infoDetail: readPayOrder(this.$route.query.orderNo),
       timeCounmp: "29:59", // 初始倒计时
       orderStatus: "0", // 默认未支付状态
       countdown: 30 * 60, // 30分钟倒计时（秒）
@@ -106,6 +125,13 @@ export default {
     };
   },
   mounted() {
+    if (!this.infoDetail || !this.infoDetail.orderNo) {
+      this.$toast(this.$lang.order_not_found || "Order not found.");
+      this.$jumpTo("/rechargeCont", {}, { replace: true });
+      return;
+    }
+    // 进入页面立即查一次订单状态
+    this.fetchOrderStatus();
     // 初始化页面启动时间（优先从缓存读取，支持刷新后恢复）
     this.initStartTime();
 
@@ -302,6 +328,13 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+.order-no {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: #e6d4f8;
+  text-align: center;
+  word-break: break-all;
+}
 .pay-order {
   min-height: 100%;
   background: @background-color;

@@ -60,7 +60,12 @@
               alt=""
               @click="toggleRotation"
             />
+            <span
+              v-if="token && !balanceReady"
+              class="nav-balance__num nav-balance__skeleton"
+            ></span>
             <balance-roll
+              v-else
               class="nav-balance__num"
               :value="token ? InitDate2.balance || 0 : 0"
               :decimals="2"
@@ -113,7 +118,7 @@ import {
   // GetIsFbReport,
   // fbReportSuccess,
   GetPlatformList,
-  NoticeList,
+  GetSysNoticeCount,
 } from "@/api/common";
 import {
   logoutIfReloginRequiredWithToken,
@@ -154,6 +159,8 @@ export default {
       InitDate2: {
         balance: 0,
       }, //数据2
+      // 余额首次返回前显示占位，不闪 0.00
+      balanceReady: false,
       // closeIcon: require('@/assets/img/common/menu.png'), // 引入本地图片作为关闭图标,
       isRotating: false, // 控制旋转状态
       isService: false,
@@ -185,6 +192,7 @@ export default {
       this.refreshHeaderInfo();
     };
     this.$bus.on("refsh-amount", this._onHeaderRefresh);
+    this.$bus.on("mailBadgeRefresh", this.fetchMailBadge);
 
     if (this.token) {
       this.refreshHeaderInfo();
@@ -202,6 +210,7 @@ export default {
 
     if (this._onHeaderRefresh) {
       this.$bus.off("refsh-amount", this._onHeaderRefresh);
+      this.$bus.off("mailBadgeRefresh", this.fetchMailBadge);
       this._onHeaderRefresh = null;
     }
     document.removeEventListener("visibilitychange", this._onVisibilityRefresh);
@@ -244,16 +253,13 @@ export default {
         }
       }
     },
+    // 未读数以服务端 getSysNoticeCount 为准
     async fetchMailBadge() {
+      if (!localStorage.getItem("token")) return;
       try {
-        const data = await NoticeList({
-          messageType: "systemNotice",
-          pageIndex: 0,
-          pageSize: 50,
-        });
+        const data = await GetSysNoticeCount({ messageType: "systemNotice" });
         if (data.status === "ok" && data.content) {
-          const list = data.content.noticeList || [];
-          this.mailBadgeCount = list.filter((n) => !n.read).length;
+          this.mailBadgeCount = Number(data.content.count) || 0;
         }
       } catch (e) {
         /* ignore */
@@ -492,6 +498,7 @@ export default {
       const data = await GameBalanceList();
       if (data.status === "ok") {
         this.InitDate2 = data.content;
+        this.balanceReady = true;
       }
     },
     // 像素上报已停用，归因统一走 Adjust
@@ -1245,6 +1252,39 @@ export default {
   }
   :deep(.van-overlay) {
     height: 100% !important;
+  }
+}
+
+.nav-balance__skeleton {
+  display: inline-block;
+  width: 56px;
+  height: 16px;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0.28) 50%,
+    rgba(255, 255, 255, 0.12) 100%
+  );
+  background-size: 200% 100%;
+  animation: nav-balance-shine 1.2s linear infinite;
+}
+
+@keyframes nav-balance-shine {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* 320 宽：余额胶囊可收缩，避免头像与金币重叠、大额压到 Deposit（N27） */
+@media (max-width: 360px) {
+  .nav-balance {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+  .nav-balance__num {
+    min-width: 0;
+    overflow: hidden;
   }
 }
 </style>

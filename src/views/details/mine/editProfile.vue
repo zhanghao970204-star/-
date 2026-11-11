@@ -42,10 +42,29 @@
         }}</label>
         <div class="ep-field__input ep-field__input--readonly">
           <p class="ep-field__text">
-            <em>ID:</em>
-            <span>{{ inviteCode || "--" }}</span>
+            <em>UID:</em>
+            <span>{{ uid || "--" }}</span>
           </p>
-          <button type="button" class="ep-field__action" @click="copyId">
+          <button type="button" class="ep-field__action" @click="copyText(uid)">
+            <img src="@/assets/img/mine/ep_copy.png" alt="" />
+          </button>
+        </div>
+      </div>
+
+      <!-- Invite code（与 UID 区分） -->
+      <div v-if="inviteCode" class="ep-field">
+        <label class="ep-field__label">{{
+          $lang.editProfile_invite_code || "INVITE CODE"
+        }}</label>
+        <div class="ep-field__input ep-field__input--readonly">
+          <p class="ep-field__text">
+            <span>{{ inviteCode }}</span>
+          </p>
+          <button
+            type="button"
+            class="ep-field__action"
+            @click="copyText(inviteCode)"
+          >
             <img src="@/assets/img/mine/ep_copy.png" alt="" />
           </button>
         </div>
@@ -58,7 +77,7 @@
         }}</label>
         <div class="ep-field__input ep-field__input--readonly">
           <p class="ep-field__text">
-            <span>{{ phone || "--" }}</span>
+            <span>{{ phone ? $maskPhone(phone) : "--" }}</span>
           </p>
         </div>
       </div>
@@ -89,6 +108,13 @@
           </button>
         </div>
       </div>
+
+      <p class="ep-note">
+        {{
+          $lang.editProfile_save_note ||
+          "Avatar changes are saved immediately. Your birthday is saved when you tap SAVE in the date picker."
+        }}
+      </p>
     </div>
 
     <DatePickerPopup
@@ -115,6 +141,7 @@ export default {
   data() {
     return {
       headUrl: null,
+      uid: "",
       inviteCode: "",
       phone: "",
       birthday: "",
@@ -148,6 +175,7 @@ export default {
         const data = await Init();
         if (data.status === "ok") {
           this.headUrl = data.content.headUrl;
+          this.uid = data.content._uid != null ? String(data.content._uid) : "";
           this.inviteCode = data.content.inviteCode || "";
           this.phone = data.content.phone || data.content.account || "";
           this.birthday = data.content.birthday || "";
@@ -168,8 +196,8 @@ export default {
       this.pickerDate = date;
       this.showBirthdayPicker = false;
     },
-    copyId() {
-      const text = this.inviteCode;
+    copyText(value) {
+      const text = value == null ? "" : String(value);
       if (!text) return;
       const textarea = document.createElement("textarea");
       textarea.value = text;
@@ -205,6 +233,12 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.ep-note {
+  margin: 6px 4px 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #c9b4e4;
+}
 @gold: #ffd467;
 @label: #d7a2fa;
 

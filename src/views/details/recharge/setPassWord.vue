@@ -84,6 +84,47 @@
         <p v-if="errorInfo2" class="pwd-block__error">{{ errorInfo2 }}</p>
       </div>
 
+      <!-- 首次设置：再输入一次确认 -->
+      <div v-if="privacyPasswdSetted === 'no'" class="pwd-block">
+        <p class="pwd-block__label">
+          {{ $lang.setPassWord_confirm || "Confirm withdrawal password:" }}
+        </p>
+        <div
+          class="pin-box"
+          :class="{ 'pin-box--focus': activePin === 'confirm', 'pin-box--error': !!errorInfo3 }"
+          @click="focusPin('confirm')"
+        >
+          <input
+            ref="confirmPin"
+            class="pin-box__native"
+            type="tel"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            maxlength="6"
+            autocomplete="one-time-code"
+            enterkeyhint="done"
+            :value="passWord3"
+            @focus="onFocus('confirm')"
+            @blur="onBlur"
+            @input="onPinInput('confirm', $event)"
+          />
+          <div class="pin-box__cells" aria-hidden="true">
+            <div
+              v-for="i in 6"
+              :key="'c' + i"
+              class="pin-box__cell"
+              :class="{
+                'is-on': passWord3.length >= i,
+                'is-caret': activePin === 'confirm' && passWord3.length === i - 1,
+              }"
+            >
+              <i v-if="passWord3.length >= i" class="pin-box__dot"></i>
+            </div>
+          </div>
+        </div>
+        <p v-if="errorInfo3" class="pwd-block__error">{{ errorInfo3 }}</p>
+      </div>
+
       <p class="pwd-panel__tip">{{ $lang.setPassWord_txt5 }}</p>
 
       <button type="button" class="pwd-panel__submit" @click="submit">
@@ -103,8 +144,10 @@ export default {
     return {
       passWord: "",
       passWord2: "",
+      passWord3: "",
       errorInfo: "",
       errorInfo2: "",
+      errorInfo3: "",
       activePin: "",
       privacyPasswdSetted: "",
     };
@@ -127,7 +170,12 @@ export default {
     focusPin(which) {
       this.activePin = which;
       this.$nextTick(() => {
-        const el = which === "old" ? this.$refs.oldPin : this.$refs.newPin;
+        const el =
+          which === "old"
+            ? this.$refs.oldPin
+            : which === "confirm"
+              ? this.$refs.confirmPin
+              : this.$refs.newPin;
         if (el && el.focus) el.focus();
       });
     },
@@ -138,7 +186,11 @@ export default {
       // delay so switching fields keeps focus style briefly
       setTimeout(() => {
         const a = document.activeElement;
-        if (a !== this.$refs.oldPin && a !== this.$refs.newPin) {
+        if (
+          a !== this.$refs.oldPin &&
+          a !== this.$refs.newPin &&
+          a !== this.$refs.confirmPin
+        ) {
           this.activePin = "";
         }
       }, 0);
@@ -148,6 +200,10 @@ export default {
       if (which === "old") {
         this.passWord = next;
         this.errorInfo = "";
+        if (e && e.target) e.target.value = next;
+      } else if (which === "confirm") {
+        this.passWord3 = next;
+        this.errorInfo3 = "";
         if (e && e.target) e.target.value = next;
       } else {
         this.passWord2 = next;
@@ -173,6 +229,7 @@ export default {
     submit() {
       this.errorInfo = "";
       this.errorInfo2 = "";
+      this.errorInfo3 = "";
 
       if (this.privacyPasswdSetted === "yes" && this.passWord.length < 6) {
         this.errorInfo = this.$lang.setPassWord_txt6 || "6 numbers";
@@ -193,7 +250,16 @@ export default {
           "The new password is the same as the old one";
       }
 
-      if (this.errorInfo || this.errorInfo2) return;
+      if (this.privacyPasswdSetted === "no") {
+        if (this.passWord3.length < 6) {
+          this.errorInfo3 = this.$lang.setPassWord_txt6 || "6 digits";
+        } else if (this.passWord3 !== this.passWord2) {
+          this.errorInfo3 =
+            this.$lang.setPassWord_txt7 || "The two passwords do not match";
+        }
+      }
+
+      if (this.errorInfo || this.errorInfo2 || this.errorInfo3) return;
 
       if (this.privacyPasswdSetted === "yes") {
         this.ChangePrivacyPwd({

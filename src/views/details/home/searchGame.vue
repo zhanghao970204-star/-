@@ -213,8 +213,18 @@ export default {
       localStorage.setItem(HISTORY_KEY, JSON.stringify(this.searchHistory));
     },
     clearAllHistory() {
-      this.searchHistory = [];
-      localStorage.removeItem(HISTORY_KEY);
+      this.$dialog
+        .confirm({
+          message:
+            this.$lang.search_clear_confirm || "Clear all search history?",
+          confirmButtonText: this.$lang.search_clear || "Clear",
+          cancelButtonText: this.$lang.common_cancel || "Cancel",
+        })
+        .then(() => {
+          this.searchHistory = [];
+          localStorage.removeItem(HISTORY_KEY);
+        })
+        .catch(() => {});
     },
     buildAllGames() {
       return collectHomeGames(
@@ -267,6 +277,7 @@ export default {
           typeCate: 1,
         });
       } else {
+        sessionStorage.setItem("loginScene", "game");
         this.showPopup = true;
       }
     },

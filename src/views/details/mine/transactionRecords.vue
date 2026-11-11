@@ -65,7 +65,15 @@
         v-if="!list.length && !loading"
         :image="require('../../../assets/img/common/img_no_data.png')"
         :description="$lang.noempt"
-      />
+      >
+        <button
+          type="button"
+          class="empty-action"
+          @click="$jumpTo('/home')"
+        >
+          {{ $lang.empty_go_home || "Back to Home" }}
+        </button>
+      </van-empty>
     </van-list>
   </div>
 </template>

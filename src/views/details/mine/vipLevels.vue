@@ -116,8 +116,8 @@
                 :style="{ left: progressKnobLeft }"
               ></i>
               <span class="vip-progress__num">
-                {{ $formatNumberWithCommas(rechargeAmount) }} /
-                {{ $formatNumberWithCommas(nextRechargeAmount) }}
+                {{ $formatMoney(rechargeAmount, getCurrency) }} /
+                {{ $formatMoney(nextRechargeAmount, getCurrency) }}
               </span>
             </div>
           </div>
@@ -195,6 +195,26 @@
       </section>
 
       <!-- 图二：Level 列表 -->
+      <section v-if="!token" class="vip-guest">
+        <p class="vip-guest__title">
+          {{ $lang.vip_guest_title || "Log in to see your VIP progress" }}
+        </p>
+        <div class="vip-guest__levels">
+          <span v-for="lv in 14" :key="lv" class="vip-guest__chip"
+            >VIP {{ lv - 1 }}</span
+          >
+        </div>
+        <p class="vip-guest__desc">
+          {{
+            $lang.vip_guest_desc ||
+            "VIP level is based on your cumulative deposits. Log in to see the requirements and rewards for each level."
+          }}
+        </p>
+        <button type="button" class="vip-guest__btn" @click="showLogin = true">
+          {{ $lang.Entrar || "Log In" }}
+        </button>
+      </section>
+
       <section v-if="vipList.length" class="vip-levels">
         <h2 class="vip-section-title">Level</h2>
 
@@ -229,6 +249,11 @@
               />
             </svg>
           </div>
+          <span class="lv-show-more__text">{{
+            showAllSteps
+              ? $lang.vip_hide_levels || "Hide levels"
+              : $lang.vip_view_all_levels || "View all levels"
+          }}</span>
         </div>
 
         <div class="lv-list">
@@ -367,9 +392,15 @@
               />
             </svg>
           </div>
+          <span class="lv-show-more__text">{{
+            showAllSteps
+              ? $lang.vip_hide_levels || "Hide levels"
+              : $lang.vip_view_all_levels || "View all levels"
+          }}</span>
         </div>
       </section>
     </div>
+    <login v-model="showLogin" overlay></login>
   </div>
 </template>
 
@@ -818,6 +849,7 @@ export default {
       cashBackAmount: 0,
       claimingCashBack: false,
       showAllSteps: false,
+      showLogin: false,
       swipeStartX: 0,
       swipeStartY: 0,
       swipeTracking: false,
@@ -1051,7 +1083,7 @@ export default {
         item.experience ??
         item.needAmount;
       if (n != null && n !== "") {
-        return `Unlock at ${this.$formatNumberWithCommas(n)}`;
+        return `Unlock at ${this.$formatMoney(n, this.getCurrency)}`;
       }
       return `VIP ${item.vipLevel}`;
     },
@@ -2068,6 +2100,57 @@ export default {
 }
 
 /* ===== 图二 Level 列表 ===== */
+.vip-guest {
+  margin: 14px 14px 0;
+  padding: 18px 16px;
+  border-radius: 20px;
+  text-align: center;
+  background: linear-gradient(180deg, #7a2190 0%, #532276 100%);
+
+  &__title {
+    margin: 0 0 12px;
+    font-size: 16px;
+    font-weight: 800;
+    color: #fff;
+  }
+
+  &__levels {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  &__chip {
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #ffd467;
+    background: rgba(0, 0, 0, 0.35);
+  }
+
+  &__desc {
+    margin: 12px 0 14px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #e6d4f8;
+  }
+
+  &__btn {
+    .btn-3d-green();
+    height: 44px;
+    font-size: 15px;
+  }
+}
+
+.lv-show-more__text {
+  margin-left: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffd467;
+}
+
 .lv-show-more {
   display: flex;
   justify-content: center;

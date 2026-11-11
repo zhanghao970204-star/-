@@ -65,6 +65,7 @@ import {
   resetPageScroll,
   resetPageScrollAfterRoute,
 } from "@/utils/scrollReset";
+import { setAfterLoginPath } from "@/utils/guestAuth";
 
 export default {
   name: "Y7Tabbar",
@@ -147,6 +148,9 @@ export default {
         this.needLoginIndexes.includes(index) &&
         !localStorage.getItem("token")
       ) {
+        // 登录成功后直接进入点的 Tab；充值入口登录弹窗显示对应文案
+        setAfterLoginPath(to);
+        if (index === 3) sessionStorage.setItem("loginScene", "deposit");
         this.$emit("need-login");
         return false;
       }

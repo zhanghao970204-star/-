@@ -298,6 +298,7 @@ export default {
       activeTab: 0,
       bonusSum: 0,
       drawCount: 0,
+      isOpen: true,
       visible: this.modelValue, // 内部状态
       currentAngle: 0, // 当前旋转角度
       isSpinning: false, // 是否正在旋转
@@ -426,23 +427,26 @@ export default {
       if (data.status === "ok") {
         this.bonusSum = data.content.bonusSum;
         this.drawCount = data.content.drawCount;
+        this.isOpen = Number(data.content.isOpen) === 1;
       }
     },
-    // 模拟接口请求
+    // 抽一次：接口不返回中奖格，停格只做动画，到账金额以 bonusSum 增量为准；失败不转
     async mockApiRequest() {
       const data = await LuckyRoulette();
-      // eslint-disable-next-line no-empty
-      if (data.status === "ok") {
-        let numbers = [1, 2, 3, 3];
-        const randomIndex = Math.floor(Math.random() * numbers.length);
-        this.getBonusSum = data.content.bonusSum || 0;
-        return numbers[randomIndex];
-      } else {
+      if (data && data.status === "ok" && data.content) {
+        const newSum = Number(data.content.bonusSum) || 0;
+        const delta = Math.round((newSum - (Number(this.bonusSum) || 0)) * 100);
+        this.getBonusSum = newSum;
+        const slots = [1, 2, 3];
+        return slots[Math.abs(delta) % slots.length];
+      }
+      if (data && data.status !== "need_login") {
         this.$toast({
           message: data.msg,
           icon: "cross",
         });
       }
+      return null;
     },
 
     // 开始旋转
@@ -458,8 +462,16 @@ export default {
 
       try {
         // 获取抽奖结果（替换实际接口调用）
+        if (!this.isOpen) {
+          this.isSpinning = false;
+          return;
+        }
         if (this.drawCount > 0) {
           const res = await this.mockApiRequest();
+          if (res == null) {
+            this.isSpinning = false;
+            return;
+          }
           this.rotateTurntable(res);
         } else if (!this.token) {
           this.$emit("login-key");

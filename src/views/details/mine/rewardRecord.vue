@@ -1,6 +1,6 @@
 <template>
   <div class="content-c">
-    <title-bar :title="$lang.rewardRecord_title || 'Reward Record'"></title-bar>
+    <title-bar :title="$lang.reward_history || 'Reward History'"></title-bar>
     <van-list
       v-model:loading="loading"
       :finished="finished"
@@ -24,11 +24,11 @@
             "
           >
             {{ Number(item.orderAmount) < 0 ? "" : "+"
-            }}{{ $formatNumberWithCommas(item.orderAmount) }}
+            }}{{ $formatMoney(item.orderAmount, getCurrency) }}
           </p>
           <p v-if="item.balCurr != null" class="font-color m-t-10 bal-curr">
             {{ $lang.rewardRecord_balance || "Balance" }}:
-            {{ $formatNumberWithCommas(item.balCurr) }}
+            {{ $formatMoney(item.balCurr, getCurrency) }}
           </p>
         </div>
       </div>
@@ -36,7 +36,15 @@
         v-if="!orderList.length && !loading"
         :image="require('../../../assets/img/common/img_no_data.png')"
         :description="$lang.noempt"
-      />
+      >
+        <button
+          type="button"
+          class="empty-action"
+          @click="$jumpTo('/activity')"
+        >
+          {{ $lang.empty_go_promotions || "View Promotions" }}
+        </button>
+      </van-empty>
     </van-list>
   </div>
 </template>

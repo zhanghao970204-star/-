@@ -68,7 +68,7 @@
             <span class="tb-popup__highlight">{{ $lang.tb_box || "Box" }}</span>
           </p>
 
-          <div class="tb-popup__timer">
+          <div v-if="tbCountdownSeconds > 0" class="tb-popup__timer">
             <p class="tb-popup__timer-label">
               {{ $lang.fd_critical_deadline || "Critical Deadline" }}
             </p>
@@ -99,18 +99,6 @@
             </div>
           </div>
 
-          <div class="tb-popup__energy">
-            <div class="tb-popup__energy-track">
-              <div
-                class="tb-popup__energy-fill"
-                :style="{ width: tbEnergy + '%' }"
-              ></div>
-            </div>
-            <p class="tb-popup__energy-text">
-              {{ $lang.fd_energy_critical || "Energy Level: Critical Status" }}
-            </p>
-          </div>
-
           <button
             type="button"
             class="tb-popup__btn"
@@ -131,9 +119,7 @@
           </button>
 
           <p class="tb-popup__disclaimer">
-            {{
-              $lang.fd_offer_ends_energy || "Offer ends when energy runs out"
-            }}
+            {{ $lang.fd_limited_one || "Limited to one purchase per user." }}
           </p>
         </div>
       </div>
@@ -171,13 +157,10 @@ export default {
       type: [Number, String],
       default: 0,
     },
+    // 接口目前不下发倒计时；为 null 时不显示
     countdownSeconds: {
       type: Number,
-      default: 86399,
-    },
-    energy: {
-      type: Number,
-      default: 65,
+      default: null,
     },
     rewards: {
       type: Array,
@@ -186,7 +169,6 @@ export default {
   },
   data() {
     return {
-      tbEnergy: this.energy,
       tbCountdownSeconds: this.countdownSeconds,
       tbCountdownTimer: null,
       tbPaying: false,
@@ -220,8 +202,7 @@ export default {
     modelValue(v, oldV) {
       if (v) {
         this.tbCountdownSeconds = this.countdownSeconds;
-        this.tbEnergy = this.energy;
-        this.startTbCountdown();
+        if (this.tbCountdownSeconds > 0) this.startTbCountdown();
         if (!oldV) reportPromoPanel("treasure_box", 1);
       } else {
         this.clearCountdown();

@@ -26,7 +26,15 @@
 
         <div class="title">
           <div class="left">
-            <div class="login-popup__hero-frame">
+            <div v-if="loginSceneText" class="login-popup__scene">
+              <img
+                class="login-popup__scene-logo"
+                src="@/assets/img/common/logo_h.png"
+                alt="LuckyPlay"
+              />
+              <p class="login-popup__scene-text">{{ loginSceneText }}</p>
+            </div>
+            <div v-else class="login-popup__hero-frame">
               <img
                 v-if="selectIndex === 0"
                 class="logo"
@@ -477,7 +485,13 @@ import {
   normalizeEmail,
 } from "@/utils/emailValidate";
 import { getClientId } from "@/utils/nativeDevice";
-import { reloadAppEntry, saveLoginSession } from "@/utils/guestAuth";
+import {
+  reloadAppEntry,
+  saveLoginSession,
+  setAfterLoginPath,
+  readAfterLoginPath,
+  clearAfterLoginPath,
+} from "@/utils/guestAuth";
 import { isNativeAppShell } from "@/utils/nativeApp";
 import { appendAdidToFbExpand, waitForAdjustAdid } from "@/utils/adjust";
 export default {
@@ -549,6 +563,7 @@ export default {
       googleLoading: false,
       guestLoading: false,
       submitting: false,
+      loginScene: "",
       _guestLoginAt: 0,
       showGoogleRegister: false,
       googlePhoneNo: "",
@@ -663,6 +678,14 @@ export default {
     displayAreaCode() {
       return this.validLsValue(this.selectedAreaCode || this.GET_AREACODE);
     },
+    loginSceneText() {
+      const map = {
+        deposit: this.$lang.login_scene_deposit || "Log in to deposit",
+        withdraw: this.$lang.login_scene_withdraw || "Log in to withdraw",
+        game: this.$lang.login_scene_game || "Log in to play",
+      };
+      return map[this.loginScene] || "";
+    },
     isBtnEnable() {
       if (this.selectIndex === 0) {
         if (this.showCaptchaLogin && this.loginMode === "captcha") {
@@ -721,9 +744,20 @@ export default {
       this.$emit("update:modelValue", newVal);
       this.selectTab(this.loginType);
       if (newVal) {
+        // 记录登录成功后要回到的页面；刚被守卫 / 拦截器记录过（3 秒内）就沿用
+        // 登录来源场景（充值 / 游戏），用于头图文案；读一次即清
+        this.loginScene = sessionStorage.getItem("loginScene") || "";
+        sessionStorage.removeItem("loginScene");
+        const pending = readAfterLoginPath();
+        if (!pending || Date.now() - pending.at > 3000) {
+          setAfterLoginPath(this.$route.fullPath);
+        }
         this.GetInvitationID();
         this.syncCountryDisplay();
         this.fetchSysConfig();
+      } else if (!this.submitting && !this.guestLoading) {
+        // 没登录就关闭：清掉，避免以后从首页登录时跳到旧页面
+        clearAfterLoginPath();
       }
     },
   },
@@ -1996,6 +2030,28 @@ export default {
     filter: none;
   }
 
+}
+
+.login-popup__scene {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 18px 0 8px;
+}
+
+.login-popup__scene-logo {
+  width: 150px;
+  height: auto;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
+}
+
+.login-popup__scene-text {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
 }
 
 .login-popup__forgot {
