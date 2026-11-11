@@ -10,7 +10,7 @@
       />
       <div class="need_help_second t-c" @click="goToDDD">
         <p class="need_help_second_t f-t-15 f-w">
-          {{ $lang.common_txt274 }}
+          {{ $lang.support_need_help || "Need Help?" }}
         </p>
         <p class="need_help_second__hint m-t-5">{{ $lang.common_txt275 }}</p>
         <div class="support-cs-btn" role="button" @click.stop="goToDDD">

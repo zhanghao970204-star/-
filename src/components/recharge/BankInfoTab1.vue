@@ -90,7 +90,9 @@
           v-model="amount"
           class="wd-amount__input"
           type="number"
+          min="0"
           inputmode="decimal"
+          @input="onAmountInput"
           :placeholder="
             $lang.BankInfo_txt9 || 'Please enter the withdrawal amount.'
           "
@@ -178,12 +180,23 @@ export default {
       withdrawAmountMin: 0,
       balLimit: 0,
       selectIndex: 0,
+      submitting: false,
     };
   },
   mounted() {
     this.WithdrawInit();
   },
   methods: {
+    // 只允许正数，最多两位小数
+    onAmountInput(e) {
+      const raw = String(e.target.value || "");
+      const m = raw.replace(/-/g, "").match(/^\d*(\.\d{0,2})?/);
+      const next = m ? m[0] : "";
+      if (next !== raw) {
+        e.target.value = next;
+        this.amount = next;
+      }
+    },
     focusPin() {
       this.$refs.pinInput && this.$refs.pinInput.focus();
     },
@@ -199,16 +212,28 @@ export default {
       this.showSelect = !this.showSelect;
     },
     async submit() {
-      if (this.amount < 1) {
+      if (this.submitting) return;
+      const amount = Number(this.amount);
+      if (!Number.isFinite(amount) || amount < 1) {
         this.$toast({
           message: this.$lang.BankInfo_txt9,
           icon: "info",
         });
+        return;
       }
+      this.amount = amount;
       if (this.passWord.length < 6) {
-        this.errorInfo = "6 Numeros";
-      } else {
-        this.errorInfo = "";
+        this.errorInfo =
+          this.$lang.withdraw_pin_6_digits || "Please enter your 6-digit withdrawal password.";
+        return;
+      }
+      this.errorInfo = "";
+      if (!this.bankCardList[this.selectIndex]) {
+        this.$toast({
+          message: this.$lang.withdraw_no_account || "Please add a payout account first.",
+          icon: "info",
+        });
+        return;
       }
       if (this.balLimit > 0) {
         this.$toast({
@@ -240,7 +265,8 @@ export default {
         return;
       }
 
-      if (this.amount !== 0 && this.passWord.length === 6) {
+      this.submitting = true;
+      try {
         const data = await Withdraw({
           privacyPwd: md5(this.passWord),
           rechargeFees: 1,
@@ -262,6 +288,8 @@ export default {
             icon: "cross",
           });
         }
+      } finally {
+        this.submitting = false;
       }
     },
     getSelect(i, v) {

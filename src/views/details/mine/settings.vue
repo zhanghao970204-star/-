@@ -111,7 +111,7 @@
               alt=""
             />
             <span class="settings-item__name">{{
-              $lang.settings_push || "Push Notifications"
+              $lang.settings_push || "Sound Effects"
             }}</span>
           </div>
           <div
@@ -252,7 +252,7 @@
     <van-popup
       v-model:show="showLogoutPopup"
       round
-      :close-on-click-overlay="true"
+      :close-on-click-overlay="!loggingOut"
       class="logout-popup"
     >
       <div class="logout-popup__content">
@@ -262,15 +262,19 @@
             type="button"
             class="logout-popup__btn logout-popup__btn--cancel"
             @click="showLogoutPopup = false"
+            :disabled="loggingOut"
           >
             {{ $lang.Cancelar }}
           </button>
           <button
             type="button"
             class="logout-popup__btn logout-popup__btn--confirm"
+            :class="{ 'is-loading': loggingOut }"
             @click="confirmLogout"
+            :disabled="loggingOut"
           >
-            {{ $lang.Confirmar }}
+            <span v-if="loggingOut" class="btn-spinner"></span>
+            <template v-else>{{ $lang.Confirmar }}</template>
           </button>
         </div>
       </div>
@@ -280,6 +284,7 @@
 
 <script>
 import { Logout, Init, ChangeMail } from "@/api/common";
+import { reloadAppEntry } from "@/utils/guestAuth";
 import md5 from "@/utils/md5";
 import { getEmailErrorType, isValidEmailFormat } from "@/utils/emailValidate";
 import {
@@ -296,6 +301,7 @@ export default {
   data() {
     return {
       showLogoutPopup: false,
+      loggingOut: false,
       showEmailPopup: false,
       boundMail: "",
       newMailInput: "",
@@ -447,21 +453,22 @@ export default {
       }
     },
     async confirmLogout() {
+      if (this.loggingOut) return;
+      this.loggingOut = true;
       try {
         const data = await Logout();
         if (data.status === "ok") {
-          this.showLogoutPopup = false;
           localStorage.removeItem("token");
-          this.$jumpTo("/home", {}, { replace: true });
-          setTimeout(() => {
-            window.location.reload();
-          }, 200);
-        } else {
-          this.$toast({ message: data.msg, icon: "cross" });
+          localStorage.removeItem("shareCode");
+          // 保持按钮 loading，直接整页刷新一次回到首页
+          reloadAppEntry();
+          return;
         }
+        this.$toast({ message: data.msg, icon: "cross" });
       } catch (e) {
         console.error("Logout error", e);
       }
+      this.loggingOut = false;
     },
   },
 };

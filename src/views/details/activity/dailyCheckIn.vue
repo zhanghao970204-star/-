@@ -111,6 +111,7 @@
             <button
               type="button"
               class="checkin-card__btn checkin-card__btn--gold"
+              :disabled="claiming"
               @click="handleClaim('regular')"
             >
               {{ $lang.reward_claim_coins || "CLAIM" }}
@@ -176,6 +177,7 @@ export default {
   data() {
     return {
       loading: false,
+      claiming: false,
       dayList: [],
     };
   },
@@ -260,6 +262,8 @@ export default {
       }
     },
     async handleClaim(type) {
+      if (this.claiming) return;
+      this.claiming = true;
       try {
         const claimType = type === "regular" ? 0 : 1;
         const res = await SignDaily({ type: claimType });
@@ -277,6 +281,8 @@ export default {
         }
       } catch (e) {
         console.error("handleClaim error:", e);
+      } finally {
+        this.claiming = false;
       }
     },
     handlePremiumTip() {

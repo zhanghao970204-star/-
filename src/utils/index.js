@@ -101,6 +101,7 @@ instance.interceptors.response.use(
     // 对响应数据做点什么
     if (response.data.status === "need_login") {
       localStorage.removeItem("token");
+      localStorage.removeItem("shareCode");
       clearGuestFlags();
       const currentPath =
         router.currentRoute &&
@@ -115,19 +116,9 @@ instance.interceptors.response.use(
         "/dailyCheckIn",
         "/newbieGift",
         "/luckyReferral",
-        "/firstDepositGift",
-        "/seasonPass",
         "/weeklyMissions",
-        "/referFriend",
         "/rewardHistory",
-        "/cashBack",
         "/redPacket",
-        "/signIn",
-        "/activityFistRecharge",
-        "/activityRecharge",
-        "/activityCooperate",
-        "/teamRebates",
-        "/seasonHistory",
       ];
       const stayInPlace = stayPaths.some(
         (p) => pathOnly === p || pathOnly.startsWith(p + "/"),

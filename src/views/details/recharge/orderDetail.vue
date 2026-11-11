@@ -1,7 +1,13 @@
 <template>
   <div class="content-c">
     <title-bar :title="$lang.orderDetail_title"></title-bar>
-    <div>
+    <div v-if="!info.orderNo" class="order-empty t-c">
+      <p>{{ $lang.order_not_found || "Order not found." }}</p>
+      <van-button round class="order-empty__btn" @click="$jumpTo('/recordOrder', {}, { replace: true })">
+        {{ $lang.order_back_records || "Back to Records" }}
+      </van-button>
+    </div>
+    <div v-else>
       <div
         v-if="isFinalStatus"
         class="sqa-top"
@@ -143,7 +149,10 @@ export default {
       );
     },
     displayStatusName() {
-      if (this.info.isReversed || this.info.orderStatus === "pay$success") {
+      if (this.info.isReversed) {
+        return this.$lang.order_reversed || "Reversed";
+      }
+      if (this.info.orderStatus === "pay$success") {
         return this.$lang.recharge_success || "Recharge Successful";
       }
       return this.info.orderStatusName;
@@ -167,6 +176,7 @@ export default {
       return stars + cardNumber.slice(-4); // 返回格式化后的字符串
     },
     copyText() {
+      if (!this.info.orderNo) return;
       const textarea = document.createElement("textarea");
       textarea.value = this.info.orderNo;
       document.body.appendChild(textarea);
@@ -182,6 +192,21 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+.order-empty {
+  padding: 100px 24px 0;
+  font-size: 14px;
+  color: rgba(255, 228, 181, 0.8);
+  p {
+    margin: 0 0 20px;
+  }
+}
+.order-empty__btn {
+  min-width: 160px;
+  border: none;
+  color: #573900;
+  font-weight: 700;
+  background: linear-gradient(180deg, #ffd467 0%, #df8a1b 100%);
+}
 .sqa-top {
   background: #e84c3c;
   border-radius: 50%;

@@ -31,6 +31,7 @@ export function clearTokenIfReloginRequired(prevPlatform, nextPlatform) {
     return false
   }
   localStorage.removeItem('token')
+  localStorage.removeItem('shareCode')
   try {
     sessionStorage.removeItem('payOrderData')
   } catch (e) {

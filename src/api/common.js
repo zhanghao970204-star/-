@@ -1,6 +1,6 @@
 import request from "@/utils/index";
 import { normalizeCountryCode } from "@/utils/country";
-import { cachedRequest } from "@/utils/requestCache";
+import { cachedRequest, dedupeRequest } from "@/utils/requestCache";
 
 // 1.登录接口
 export function Login(data) {
@@ -24,28 +24,33 @@ export function Logout(data) {
 
 //初始化
 export function Init(data) {
-  return request.post("/profile/init", data);
+  return dedupeRequest("Init", data, () =>
+    request.post("/profile/init", data),
+  );
 }
 // 获取banner列表
 export function GetBannerList(data) {
-  return request.post("/home/page/banner/list", data);
+  return dedupeRequest("GetBannerList", data, () =>
+    request.post("/home/page/banner/list", data),
+  );
 }
 // 客服链接：多个组件同时取，合并请求并短时复用
 export function GetCsLink(data) {
   return cachedRequest("getCsLink", () => request.post("/getCsLink", data));
 }
 export function GetHomeGameList(data) {
-  return request.post("/game/getHomeGameList", data);
+  return dedupeRequest("GetHomeGameList", data, () =>
+    request.post("/game/getHomeGameList", data),
+  );
 }
 // 游戏素材/预览图列表 GET
-export function GetGameMaterialList(params) {
-  return request.get("/game/getGameMaterialList", { params });
-}
 export function SystemAnnouncement(data) {
   return request.post("/promo/systemAnnouncement", data);
 }
 export function NoticeList(data) {
-  return request.post("/system/noticeList", data);
+  return dedupeRequest("NoticeList", data, () =>
+    request.post("/system/noticeList", data),
+  );
 }
 export function NoticeDetails(data) {
   return request.post("/noticeDetails", data);
@@ -69,13 +74,17 @@ export function RedPacketReceiveRecord(data) {
   return request.post("/activity/redPacketReceiveRecord", data);
 }
 export function GameBalanceList(data) {
-  return request.post("/gameBalanceList", data);
+  return dedupeRequest("GameBalanceList", data, () =>
+    request.post("/gameBalanceList", data),
+  );
 }
 export function GetSubUserList(data) {
   return request.post("/agent/getSubUserList", data);
 }
 export function GetHomeWinningGameList(data) {
-  return request.post("/game/getHomeWinningGameList", data);
+  return dedupeRequest("GetHomeWinningGameList", data, () =>
+    request.post("/game/getHomeWinningGameList", data),
+  );
 }
 export function GetPromoDailyRelief(data) {
   return request.post("/promo/getPromoDailyRelief", data);
@@ -96,10 +105,14 @@ export function SignDaily(data) {
   return request.post("/activity/signDaily", data);
 }
 export function VnRechargeInitS(data) {
-  return request.post("/recharge/vnRechargeInitS", data);
+  return dedupeRequest("VnRechargeInitS", data, () =>
+    request.post("/recharge/vnRechargeInitS", data),
+  );
 }
 export function WithdrawInit(data) {
-  return request.post("/withdraw/init", data);
+  return dedupeRequest("WithdrawInit", data, () =>
+    request.post("/withdraw/init", data),
+  );
 }
 export function AddBankCardInit(data) {
   return request.post("/profile/addBankCardInit", data);
@@ -121,6 +134,20 @@ export function VipInit(data) {
 }
 export function ChangeLoginPwd(data) {
   return request.post("/security/changeLoginPwd", data);
+}
+/** 找回密码（免登录）：按账号查脱敏手机号 */
+export function ForgotPasswordQuery(data) {
+  return request.post("/profile/forgotPasswordQuery", data);
+}
+/** 找回密码专用短信，phoneNo 格式为「区号-手机号」 */
+export function ForgotPasswordCaptcha(data) {
+  return request.post("/profile/forgotPasswordCaptcha", data);
+}
+export function ForgotPasswordCheck(data) {
+  return request.post("/profile/forgotPasswordCheck", data);
+}
+export function ForgotPasswordReset(data) {
+  return request.post("/profile/forgotPasswordReset", data);
 }
 export function GetCaptcha(data) {
   return request.post("/security/getCaptcha", data);
@@ -166,12 +193,6 @@ export function LuckyRoulette(data) {
 }
 export function GetLuckyRouletteRecord(data) {
   return request.post("/promo/getLuckyRouletteRecord", data);
-}
-export function TreasureReceiveInit(data) {
-  return request.post("/promo/treasureReceiveInit", data);
-}
-export function ReceiveTreasure(data) {
-  return request.post("/promo/receiveTreasure", data);
 }
 export function Pay(data) {
   return request.post("/recharge/pay", data);
@@ -225,51 +246,6 @@ export function ActivityreceiveRegisterAward(data) {
 export function GetUserGameRecordList(data) {
   return request.post("/game/getUserGameRecordList", data);
 }
-export function MainInit(data) {
-  return request.post("/main/init", data);
-}
-export function LotteryInit(data) {
-  return request.post("/lottery/init", data);
-}
-export function LotteryBetV2(data) {
-  return request.post("/lottery/betV2", data);
-}
-export function GetNGNDrawHistory(data) {
-  return request.post("/lottery/getNGNDrawHistory", data);
-}
-export function GetTodayBetRecord(data) {
-  return request.post("/lottery/getTodayBetRecord", data);
-}
-export function GetBetList(data) {
-  return request.post("/lottery/getBetList", data);
-}
-export function BetDetail(data) {
-  return request.post("/betDetail", data);
-}
-export function CancelBet(data) {
-  return request.post("/agent/risk/cancelBet", data);
-}
-export function GetServerDateTime(data) {
-  return request.post("/lottery/getServerDateTime", data);
-}
-export function GetBRDrawHistory(data) {
-  return request.post("/lottery/getBRDrawHistory", data);
-}
-export function FreshIssueInfo(data) {
-  return request.post("/lottery/freshIssueInfo", data);
-}
-export function GetHomeWinningLottoList(data) {
-  return request.post("/game/getHomeWinningLottoList", data);
-}
-export function GetLotteryLatestResults(data) {
-  return request.post("lottery/getLotteryLatestResults", data);
-}
-export function GetLotteryList(data) {
-  return request.post("/main/getLotteryList", data);
-}
-export function LastOrderDetail(data) {
-  return request.post("/lastOrderDetail", data);
-}
 export function RefreshExchangeRate(data) {
   return request.post("/refreshExchangeRate", data);
 }
@@ -277,7 +253,9 @@ export function UpayStatusorderNo(data) {
   return request.post("/recharge/upayStatus", data);
 }
 export function GetPlatformList(data) {
-  return request.post("/getPlatformList", data).then((res) => {
+  return dedupeRequest("GetPlatformList", data, () =>
+    request.post("/getPlatformList", data),
+  ).then((res) => {
     if (res && res.content && Array.isArray(res.content.list)) {
       res.content.list = res.content.list.map((item) => {
         if (!item || item.country == null) return item;
@@ -291,13 +269,17 @@ export function GetInvitationID(data) {
   return request.post("/getInvitationID", data);
 }
 export function NewPlayerGiftPackInit(data) {
-  return request.post("/promo/newPlayerGiftPackInit", data);
+  return dedupeRequest("NewPlayerGiftPackInit", data, () =>
+    request.post("/promo/newPlayerGiftPackInit", data),
+  );
 }
 export function ReceiveNewPlayerGiftPack(data) {
   return request.post("/promo/receiveNewPlayerGiftPack", data);
 }
 export function TreasureBoxInit(data) {
-  return request.post("/promo/treasureBoxInit", data);
+  return dedupeRequest("TreasureBoxInit", data, () =>
+    request.post("/promo/treasureBoxInit", data),
+  );
 }
 export function TaskCenterNewbieInit(data) {
   return request.post("/promo/taskCenterNewbieInit", data);

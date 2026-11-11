@@ -15,7 +15,7 @@
       <template #icon>
         <div
           class="img reward-tab-icon"
-          :class="active !== 0 ? 'img4' : 'img4A'"
+          :class="[active !== 0 ? 'img4' : 'img4A', { 'has-dot': rewardDot }]"
         ></div>
       </template>
     </van-tabbar-item>
@@ -72,7 +72,15 @@ export default {
   data() {
     return {
       active: 2,
+      // 有可领取奖励时由业务方 $bus.emit("rewardDot", true) 点亮
+      rewardDot: false,
     };
+  },
+  mounted() {
+    this.$bus.on("rewardDot", this.setRewardDot);
+  },
+  beforeUnmount() {
+    this.$bus.off("rewardDot", this.setRewardDot);
   },
   computed: {
     routePrefix() {
@@ -97,7 +105,6 @@ export default {
       const path = this.$route.path;
       return (
         !path.includes("/Country") &&
-        !path.includes("/Crowdfunding") &&
         !path.includes("/appDetail") &&
         !path.includes("/Support") &&
         !path.includes("/newbieGift")
@@ -113,6 +120,9 @@ export default {
     },
   },
   methods: {
+    setRewardDot(v) {
+      this.rewardDot = !!v;
+    },
     syncActive(path) {
       if (path.includes("/activity") || path.includes("/bonus")) {
         this.active = 0;
@@ -141,13 +151,32 @@ export default {
         return false;
       }
 
-      if (this.$route.path !== to) {
-        this.$router.push(to);
-      }
+      this.navigateTo(to);
       // 任意底部 Tab 切换都回到顶部，避免首页滑到底再进「我的」停在中间
       this.toTop();
       resetPageScrollAfterRoute();
       return true;
+    },
+    // 上一次切换还没完成时只记下最后一次点击，完成后再跳，避免快速连点时最后一次被吞
+    navigateTo(to) {
+      if (this._navigating) {
+        this._queuedTo = to;
+        return;
+      }
+      if (this.$route.path === to) return;
+      this._navigating = true;
+      Promise.resolve(this.$router.push(to))
+        .catch(() => {})
+        .finally(() => {
+          this._navigating = false;
+          const queued = this._queuedTo;
+          this._queuedTo = null;
+          if (queued && queued !== this.$route.path) {
+            this.navigateTo(queued);
+          } else {
+            this.syncActive(this.$route.path);
+          }
+        });
     },
   },
 };
@@ -254,7 +283,7 @@ export default {
   .reward-tab-icon {
     position: relative;
 
-    &::after {
+    &.has-dot::after {
       content: "";
       position: absolute;
       top: -1px;

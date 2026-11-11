@@ -58,17 +58,47 @@ export function normalizeHomeCategory(item) {
   return { ...item, types: [] };
 }
 
+// 彩票已下线：接口仍可能返回彩票分类（code）与彩票游戏（gid 1~32），前端统一过滤
+const LOTTERY_TYPE_CODES = ["2000701", "2000702"];
+const isLotteryType = (code) => LOTTERY_TYPE_CODES.includes(String(code));
+const isLotteryGame = (g) => {
+  const gid = Number(g && g.gid);
+  return Number.isInteger(gid) && gid >= 1 && gid <= 32;
+};
+const withoutLotteryGames = (games) => games.filter((g) => !isLotteryGame(g));
+
+function stripLottery(item) {
+  return {
+    ...item,
+    types: (item.types || [])
+      .filter((t) => t && !isLotteryType(t.code))
+      .map((t) =>
+        Array.isArray(t.games) ? { ...t, games: withoutLotteryGames(t.games) } : t,
+      ),
+  };
+}
+
 export function normalizeHomeDataList(dataList) {
   if (!Array.isArray(dataList)) return [];
-  return dataList.map(normalizeHomeCategory).filter(Boolean);
+  return dataList
+    .filter((item) => item && !isLotteryType(item.code))
+    .map(normalizeHomeCategory)
+    .filter(Boolean)
+    .map(stripLottery);
 }
 
 /** Hot：兼容第一项直接 games，或树形 types[].games */
 export function getCategoryGames(item) {
   if (!item) return [];
-  if (Array.isArray(item.games) && item.games.length) return item.games;
+  if (Array.isArray(item.games) && item.games.length) {
+    return withoutLotteryGames(item.games);
+  }
   if (Array.isArray(item.types)) {
-    return item.types.flatMap((t) => (t && Array.isArray(t.games) ? t.games : []));
+    return withoutLotteryGames(
+      item.types.flatMap((t) =>
+        t && !isLotteryType(t.code) && Array.isArray(t.games) ? t.games : [],
+      ),
+    );
   }
   return [];
 }
@@ -85,12 +115,21 @@ export function collectHomeGames(dataList, currency) {
       .includes(currency);
   };
 
+  // Hot 与厂商分组会重复返回同一游戏，按 gid 去重
+  const seen = new Set();
   list.forEach((item) => {
     if (item.currency && !matchCurrency(item.currency)) return;
     (item.types || []).forEach((t) => {
       if (!Array.isArray(t.games)) return;
       if (t.currency && !matchCurrency(t.currency)) return;
-      games.push(...t.games);
+      t.games.forEach((g) => {
+        if (!g) return;
+        if (g.gid != null) {
+          if (seen.has(g.gid)) return;
+          seen.add(g.gid);
+        }
+        games.push(g);
+      });
     });
   });
   return games;

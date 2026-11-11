@@ -103,15 +103,24 @@
 
       <p class="pwd-panel__tip">{{ $lang.passwordLogin_txt4 }}</p>
 
-      <button type="button" class="pwd-panel__submit" @click="submit">
-        {{ $lang.Enviar || "SUBMIT" }}
+      <button
+        type="button"
+        class="pwd-panel__submit"
+        :class="{ 'is-loading': submitting }"
+        :disabled="submitting"
+        @click="submit"
+      >
+        <span v-if="submitting" class="btn-spinner"></span>
+        <template v-else>{{ $lang.Enviar || "SUBMIT" }}</template>
       </button>
     </div>
   </div>
 </template>
 
 <script>
-import { ChangeLoginPwd } from "@/api/common";
+import { ChangeLoginPwd, Logout } from "@/api/common";
+import { setOpenLoginAfterReloadFlag } from "@/utils/platformAuth";
+import { reloadAppEntry } from "@/utils/guestAuth";
 import md5 from "@/utils/md5";
 import eyeOn from "@/assets/img/login/eye.png";
 import eyeOff from "@/assets/img/login/eye_off.png";
@@ -134,6 +143,7 @@ export default {
       isSee: false,
       isSee2: false,
       isSee3: false,
+      submitting: false,
     };
   },
   methods: {
@@ -169,15 +179,31 @@ export default {
           this.$lang.pwdConfirm_mismatch || "Passwords do not match";
       }
 
-      if (this.error || this.error2 || this.error3) return;
+      if (this.error || this.error2 || this.error3 || this.submitting) return;
 
-      const data = await ChangeLoginPwd({
-        oldLoginPwd: md5(this.oldLoginPwd),
-        newLoginPwd: md5(this.newLoginPwd),
-      });
+      this.submitting = true;
+      let data;
+      try {
+        data = await ChangeLoginPwd({
+          oldLoginPwd: md5(this.oldLoginPwd),
+          newLoginPwd: md5(this.newLoginPwd),
+        });
+      } catch (e) {
+        data = { msg: this.$lang.network_error || "Network error" };
+      }
       if (data.status === "ok") {
-        this.$jumpTo("/passwordSuccess");
+        try {
+          await Logout();
+        } catch (e) {
+          // token 已失效时登出接口可能失败，忽略
+        }
+        localStorage.removeItem("token");
+        localStorage.removeItem("shareCode");
+        setOpenLoginAfterReloadFlag();
+        // 保持按钮 loading，整页刷新一次后在首页弹出登录框
+        reloadAppEntry();
       } else {
+        this.submitting = false;
         this.$toast({ message: data.msg, icon: "cross" });
       }
     },
@@ -212,6 +238,9 @@ export default {
     .btn-3d-green();
     height: 50px;
     font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 

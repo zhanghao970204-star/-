@@ -3,8 +3,10 @@
     <title-bar :title="$lang.recordOrder_title"></title-bar>
     <van-list
       v-model:loading="loading"
+      v-model:error="loadError"
       :finished="finished"
       loading-text=" "
+      :error-text="$lang.list_load_failed || 'Failed to load. Tap to retry.'"
       @load="loadMore"
       class="order-list"
     >
@@ -29,12 +31,11 @@
             class="order-list__amount"
             :class="{ 'is-wd': item.orderType === 'wd' }"
           >
-            {{ item.orderType === "wd" ? "-" : "+" }}
+            {{ amountSign(item) }}{{ getCurrency }}
             {{ $formatNumberWithCommas(item.orderAmount) }}
           </p>
-          <p v-if="item.isReversed" class="order-list__status is-success">
-            <van-icon name="success" size="12" style="margin-right: 2px" />
-            {{ $lang.recharge_success || "Recharge Successful" }}
+          <p v-if="item.isReversed" class="order-list__status is-pending">
+            {{ $lang.order_reversed || "Reversed" }}
           </p>
           <p
             v-else-if="
@@ -45,7 +46,7 @@
             <van-icon name="success" size="12" style="margin-right: 2px" />
             {{
               item.orderType === "pay"
-                ? $lang.recharge_success || "Recarga bem-sucedida"
+                ? $lang.recharge_success || "Recharge Successful"
                 : item.orderStatusName
             }}
           </p>
@@ -63,7 +64,7 @@
         </div>
       </div>
       <van-empty
-        v-if="!orderList.length && !loading"
+        v-if="!orderList.length && !loading && !loadError"
         :image="require('../../../assets/img/common/img_no_data.png')"
         :description="$lang.noempt"
       />
@@ -81,6 +82,7 @@ export default {
       orderList: [], // 订单列表数据
       loading: false, // 是否正在加载更多数据
       finished: false, // 是否已经加载完所有数据
+      loadError: false,
       // isRefreshing: false, // 是否正在下拉刷新
       page: 0, // 当前页码
     };
@@ -95,6 +97,13 @@ export default {
       const stars = "***"; // 前面用6个*代替
       return stars + cardNumber.slice(-4); // 返回格式化后的字符串
     },
+    amountSign(item) {
+      const done =
+        item.isReversed ||
+        ["withdraw$success", "pay$success"].includes(item.orderStatus);
+      if (!done) return "";
+      return item.orderType === "wd" ? "-" : "+";
+    },
     goToD(v) {
       sessionStorage.setItem("orderDetailData", JSON.stringify(v));
       this.$jumpTo("/orderDetail");
@@ -102,22 +111,32 @@ export default {
     // 获取订单列表数据
     async fetchOrderList() {
       this.loading = true;
-      const data = await GetRWHistory({
-        pageIndex: this.page,
-        orderType: "pay",
-      });
-      // let list = data.content?.capitalDetailsList || []
-      let list = data.content.orderRecordList || [];
-      // 如果没有新数据，表示加载完成
-      if (list.length < 15) {
-        this.finished = true;
+      try {
+        const data = await GetRWHistory({
+          pageIndex: this.page,
+          orderType: "pay",
+        });
+        if (!data || data.status !== "ok" || !data.content) {
+          this.loadError = true;
+          return;
+        }
+        const list = data.content.orderRecordList || [];
+        const total = Number(data.content.total);
+        this.orderList = this.orderList.concat(list);
+        if (
+          list.length === 0 ||
+          (Number.isFinite(total) && total > 0
+            ? this.orderList.length >= total
+            : list.length < 15)
+        ) {
+          this.finished = true;
+        }
+        this.page++;
+      } catch (e) {
+        this.loadError = true;
+      } finally {
+        this.loading = false;
       }
-      // 将新数据添加到列表中
-      this.orderList = this.orderList.concat(list);
-      // 加载状态结束
-      this.loading = false;
-      // 加载下一页
-      this.page++;
     },
     // 加载更多数据
     loadMore() {

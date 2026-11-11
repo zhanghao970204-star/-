@@ -153,7 +153,6 @@
       v-model="showPopup"
       overlay
       :loginType="loginType"
-      @close-key="close"
     ></login>
     <guest-upgrade-popup
       v-if="isNativeApp"
@@ -226,7 +225,6 @@ export default {
       const path = this.$route.path;
       return (
         !path.includes("/Country") &&
-        !path.includes("/Crowdfunding") &&
         !path.includes("/appDetail") &&
         !path.includes("/Support") &&
         !path.includes("/newbieGift")
@@ -246,16 +244,6 @@ export default {
   data() {
     return {
       active: 0,
-      MenList: [
-        {
-          img: require("@/assets/img/home/men_1.png"),
-          name: this.$lang.common_txt138,
-        },
-        {
-          img: require("@/assets/img/home/men_2.png"),
-          name: this.$lang.common_txt139,
-        },
-      ],
       isFjShow: true,
       isFjShow2: true,
       isShowPopup: false,
@@ -284,12 +272,6 @@ export default {
       //     img_a: require('@/assets/img/menu_wallet_click.png')
       //   },
       //   {
-      //     title: this.$lang.common_txt26,
-      //     to: '/Crowdfunding',
-      //     img: require('@/assets/img/menu_agent_original.png'),
-      //     img_a: require('@/assets/img/menu_agent_click.png')
-      //   },
-      //   {
       //     title: this.$lang.common_txt23,
       //     to: '/Support',
       //     img: require('@/assets/img/menu_activity_original.png'),
@@ -303,8 +285,6 @@ export default {
       //     img_a: require('@/assets/img/menu_personal_click.png')
       //   }
       // ],
-      // selectMenIndex: this.$route.path === '/home' ? 1 : 0
-      selectMenIndex: 0,
       currentBannerIndex: 0,
       bannerList: [],
       showNoticePopup: false,
@@ -314,9 +294,7 @@ export default {
         "Mine",
         "Activity",
         "Share",
-        "Lottery",
         "Support",
-        "Crowdfunding",
         "Country",
       ],
     };
@@ -329,6 +307,7 @@ export default {
         }
         if (to.path && to.path.includes("/home")) {
           this.fetchWinTickerList();
+          this.$nextTick(this.resizeBannerSwipe);
         } else {
           this.stopWinTickerScroll();
         }
@@ -355,8 +334,14 @@ export default {
         this.$bus.emit("openLogin");
       }
     });
+    window.addEventListener("resize", this.resizeBannerSwipe);
+    window.addEventListener("orientationchange", this.resizeBannerSwipe);
+    document.addEventListener("visibilitychange", this.resizeBannerSwipe);
   },
   beforeUnmount() {
+    window.removeEventListener("resize", this.resizeBannerSwipe);
+    window.removeEventListener("orientationchange", this.resizeBannerSwipe);
+    document.removeEventListener("visibilitychange", this.resizeBannerSwipe);
     this.stopWinTickerScroll();
     this.$bus.off("openLogin", this.handleOpenLogin);
     this.$bus.off("openGuestUpgrade", this.handleOpenGuestUpgrade);
@@ -380,6 +365,7 @@ export default {
       this.topDownloadHeight = height;
     },
     handleOpenLogin(tab) {
+      consumeOpenLoginAfterPlatformSwitch();
       this.loginType = typeof tab === "number" ? tab : 0;
       this.showPopup = true;
     },
@@ -407,29 +393,14 @@ export default {
         }
       }
     },
-    goToDetail3(i) {
-      if (i === 0) {
-        this.$jumpTo("/Crowdfunding");
-      } else if (i === 1) {
-        this.$jumpTo("/Alliance");
-      } else if (i === 2) {
-        this.$jumpTo("/vipSignIn");
-      } else if (i === 3) {
-        this.$jumpTo("/redPacket");
-      } else if (i === 4) {
-        this.$jumpTo("/referFriend");
-      } else if (i === 5) {
-        this.$jumpTo("/cashBack");
-      } else if (i === 6) {
-        this.$jumpTo("/signIn");
-      } else if (i === 7) {
-        this.$jumpTo("/activityFistRecharge");
-      } else if (i === 8) {
-        this.$jumpTo("/Support");
-      }
-    },
     onBannerChange(index) {
       this.currentBannerIndex = index;
+    },
+    // banner 被 v-show 隐藏或视口变化后，swipe 仍按旧宽度排布，需重新计算
+    resizeBannerSwipe() {
+      if (document.hidden) return;
+      const swipe = this.$refs.bannerSwipe;
+      if (swipe && typeof swipe.resize === "function") swipe.resize();
     },
     bannerPrev() {
       if (this.currentBannerIndex > 0) {
@@ -566,18 +537,9 @@ export default {
         "/dailyCheckIn",
         "/newbieGift",
         "/luckyReferral",
-        "/firstDepositGift",
-        "/seasonPass",
         "/weeklyMissions",
-        "/referFriend",
         "/rewardHistory",
-        "/cashBack",
         "/redPacket",
-        "/signIn",
-        "/activityFistRecharge",
-        "/activityRecharge",
-        "/activityCooperate",
-        "/teamRebates",
         "/rechargeCont",
         "/mine",
         "/share",
@@ -670,23 +632,10 @@ export default {
       path = path.replace(/^\/[A-Za-z]{2}(?=\/)/, "") || path;
       return { type: "route", target: path };
     },
-    goToMen(i) {
-      this.selectMenIndex = i;
-      if (i === 0) {
-        this.$jumpTo("/lottery");
-      } else {
-        this.$jumpTo("/home");
-      }
-    },
     goTofj(i) {
       if (i === 1) {
         window.open("https://t.me/OTgamel");
       }
-      // if (i === 1) {
-      //   this.$router.push('./activityFistRecharge')
-      // } else if (i === 2) {
-      //   this.$router.push('./cashBack')
-      // }
     },
     closeF2(i) {
       if (i === 1) {
@@ -742,7 +691,6 @@ export default {
       const day = String(date.getDate()).padStart(2, "0");
       return `${year}-${month}-${day}`;
     },
-    close() {},
     async GameBalanceList() {
       const data = await GameBalanceList();
       console.log(data);

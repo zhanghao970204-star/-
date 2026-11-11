@@ -7,7 +7,11 @@
         <img src="@/assets/img/mine/mail/eye.png" alt="" />
         <span>{{ $lang.mc_read_all || "Read All" }}</span>
       </button>
-      <button type="button" class="mail-actions__btn" @click="deleteRead">
+      <button
+        type="button"
+        class="mail-actions__btn mail-actions__btn--danger"
+        @click="deleteRead"
+      >
         <img src="@/assets/img/mine/mail/trash.png" alt="" />
         <span>{{ $lang.mc_delete_read || "Delete Read" }}</span>
       </button>
@@ -146,6 +150,17 @@ export default {
     },
     async deleteRead() {
       try {
+        await this.$dialog.confirm({
+          message:
+            this.$lang.mc_delete_read_confirm ||
+            "Delete all read messages? This cannot be undone.",
+          confirmButtonText: this.$lang.mc_delete || "Delete",
+          cancelButtonText: this.$lang.common_cancel || "Cancel",
+        });
+      } catch (e) {
+        return;
+      }
+      try {
         const data = await NoticeDeleteRead({ messageType: "systemNotice" });
         if (data.status === "ok") {
           this.noticeList = this.noticeList.filter((item) => !item.read);
@@ -178,6 +193,11 @@ export default {
   justify-content: space-between;
   gap: 12px;
   padding: 10px 0 14px;
+}
+
+.mail-actions__btn--danger {
+  border-color: rgba(239, 68, 68, 0.6) !important;
+  color: #ff7a7a !important;
 }
 
 .mail-actions__btn {

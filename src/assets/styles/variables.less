@@ -43,7 +43,12 @@ button,
 input,
 textarea,
 select {
-  font-family: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family:
+    "Manrope",
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
 }
 
 // 阿里字体图标设置
@@ -64,6 +69,30 @@ select {
   height: 100%;
   padding-top: 45%;
   background-color: @cont-bg; /* 设置背景颜色 */
+}
+/* 按钮内加载圈（不要用 van-loading，上面的全局样式会把它撑成整页加载） */
+.btn-spinner {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  border-right-color: #ffffff;
+  box-sizing: border-box;
+  vertical-align: middle;
+  animation: btn-spinner-rotate 0.8s linear infinite;
+}
+/* 加载中的按钮：禁用点击但不变暗，保证加载圈清晰 */
+button.is-loading,
+button.is-loading:disabled {
+  opacity: 1 !important;
+  cursor: progress !important;
+}
+@keyframes btn-spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
 }
 @import "./theme-tokens.less";
 

@@ -226,6 +226,26 @@ import {
 import { requestRouteMotion } from "@/utils/routeMotion";
 import RegisterAwardPopup from "@/components/RegisterAwardPopup.vue";
 
+// 营销弹窗每天最多自动弹一次（按本地日期）
+function todayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+}
+function isShownToday(key) {
+  try {
+    return localStorage.getItem(key) === todayKey();
+  } catch (e) {
+    return false;
+  }
+}
+function markShownToday(key) {
+  try {
+    localStorage.setItem(key, todayKey());
+  } catch (e) {
+    /* ignore */
+  }
+}
+
 export default {
   name: "App",
   components: {
@@ -260,12 +280,12 @@ export default {
       homePopupPhase: "boot",
       awardChecked: false,
       frChecked: false,
-      frAutoShown: false,
+      frAutoShown: isShownToday("frPopupShownDate"),
       frNowTs: Math.floor(Date.now() / 1000),
       frTickTimer: null,
       // Lucky referral popup (replaces floating entry)
       lrPopupVisible: false,
-      lrPopupClosed: false,
+      lrPopupClosed: isShownToday("lrPopupShownDate"),
       // Daily check-in promo popup
       checkInPopupVisible: false,
       checkInPopupClosed: false,
@@ -605,6 +625,7 @@ export default {
         if (this.showFirstRechargePopup) return;
         if (this.frVisible && !this.frAutoShown) {
           this.frAutoShown = true;
+          markShownToday("frPopupShownDate");
           this.lrPopupVisible = false;
           this.checkInPopupVisible = false;
           this.showFirstRechargePopup = true;
@@ -650,6 +671,7 @@ export default {
         return;
       }
       this.lrPopupVisible = true;
+      markShownToday("lrPopupShownDate");
     },
     closeLuckySpinPopup() {
       this.lrPopupVisible = false;

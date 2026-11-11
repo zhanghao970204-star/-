@@ -90,7 +90,11 @@
                     alt=""
                   />
                   <span v-if="day.countdown">{{ day.countdown }}</span>
-                  <span v-else>{{ $lang.ng_claim }}</span>
+                  <span v-else>{{
+                    purchased
+                      ? $lang.ng_claim
+                      : $lang.ng_unlock_after_buy || "Buy to Unlock"
+                  }}</span>
                 </button>
               </div>
             </div>

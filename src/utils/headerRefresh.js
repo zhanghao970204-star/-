@@ -8,10 +8,10 @@ export const HEADER_REFRESH_EVENT = "refsh-amount";
  * 排除 Init / List / Record 等查询类，避免与刷新请求互相触发
  */
 const REFRESH_URL_RE =
-  /(?:receive|claim|signDaily|\/signIn(?:$|\?)|\/getVipAward(?:$|\?)|getCashBack|getRedPacket(?:$|\?)|\/recharge\/pay|\/recharge\/upayStatus|\/withdraw\/withdraw|betV2|\/luckyRoulette(?:$|\?)|\/setHeadUrl|notice\/readAll|noticeDetails|\/redPacket(?:$|\?))/i;
+  /(?:receive|claim|signDaily|\/signIn(?:$|\?)|\/getVipAward(?:$|\?)|getCashBack|getRedPacket(?:$|\?)|\/recharge\/pay|\/recharge\/upayStatus|\/withdraw\/withdraw|\/luckyRoulette(?:$|\?)|\/setHeadUrl|notice\/readAll|noticeDetails|\/redPacket(?:$|\?))/i;
 
 const EXCLUDE_URL_RE =
-  /(?:Init|List|Record|History|getSignIn|getSignDaily|getVipAwardInit|getRegisterAward|getLuckyRoulette(?:$|\?)|BalanceList|profile\/init|treasureReceiveInit|redPacketReceiveRecord|getLuckyRouletteLatestAwards|getLuckyRouletteRecord)/i;
+  /(?:Init|List|Record|History|getSignIn|getSignDaily|getVipAwardInit|getRegisterAward|getLuckyRoulette(?:$|\?)|BalanceList|profile\/init|redPacketReceiveRecord|getLuckyRouletteLatestAwards|getLuckyRouletteRecord)/i;
 
 let debounceTimer = null;
 

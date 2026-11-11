@@ -14,7 +14,7 @@
       <div class="top-download__sub">{{ subText }}</div>
     </div>
     <button type="button" class="top-download__cta" @click="installApp">
-      {{ $lang.common_txt64 || "Download" }}
+      {{ $lang.top_download_install || "Install" }}
     </button>
 
     <van-popup
@@ -43,6 +43,18 @@
 </template>
 <script>
 import iosInstallGuideImg from "@/assets/img/pwa/ios-safari-install-guide.png";
+
+const DISMISS_KEY = "topDownloadDismissedAt";
+const DISMISS_MS = 3 * 24 * 60 * 60 * 1000;
+
+function isDismissedRecently() {
+  try {
+    const at = Number(localStorage.getItem(DISMISS_KEY));
+    return !!at && Date.now() - at < DISMISS_MS;
+  } catch (e) {
+    return false;
+  }
+}
 
 function isRunningAsInstalledPwa() {
   if (typeof window === "undefined") return false;
@@ -75,7 +87,7 @@ export default {
   components: {},
   data() {
     return {
-      isShow: true,
+      isShow: !isDismissedRecently(),
       deferredPrompt: null,
       lottieAnim: null,
       inStandaloneMode: isRunningAsInstalledPwa(),
@@ -232,6 +244,11 @@ export default {
     },
     closeDownload() {
       this.isShow = false;
+      try {
+        localStorage.setItem(DISMISS_KEY, String(Date.now()));
+      } catch (e) {
+        /* ignore */
+      }
       this.$nextTick(this.emitLayoutChange);
     },
     emitLayoutChange() {
@@ -253,7 +270,7 @@ export default {
         this.$toast({
           message:
             this.$lang.top_download_no_pwa ||
-            "Add to Home Screen is not available here. Open in Chrome and ensure the app is served over HTTPS with a registered service worker.",
+            'Open your browser menu and tap "Add to Home Screen" to install the app.',
           duration: 3500,
         });
         return;

@@ -200,7 +200,7 @@
     <van-popup
       v-model:show="showLogoutPopup"
       round
-      :close-on-click-overlay="true"
+      :close-on-click-overlay="!loggingOut"
       class="logout-popup"
     >
       <div class="logout-popup__content">
@@ -210,15 +210,19 @@
             class="logout-popup__btn logout-popup__btn--cancel"
             type="button"
             @click="showLogoutPopup = false"
+            :disabled="loggingOut"
           >
             {{ $lang.Cancelar }}
           </button>
           <button
             class="logout-popup__btn logout-popup__btn--confirm"
+            :class="{ 'is-loading': loggingOut }"
             type="button"
             @click="confirmLogout"
+            :disabled="loggingOut"
           >
-            {{ $lang.Confirmar }}
+            <span v-if="loggingOut" class="btn-spinner"></span>
+            <template v-else>{{ $lang.Confirmar }}</template>
           </button>
         </div>
       </div>
@@ -228,7 +232,11 @@
 
 <script>
 import { Init, GameBalanceList, Logout, VipInit } from "@/api/common";
-import { clearGuestFlags, isGuestUser } from "@/utils/guestAuth";
+import {
+  clearGuestFlags,
+  isGuestUser,
+  reloadAppEntry,
+} from "@/utils/guestAuth";
 import { isNativeAppShell } from "@/utils/nativeApp";
 import { avatarImg } from "@/utils/avatarAssets";
 import { resetPageScroll } from "@/utils/scrollReset";
@@ -273,6 +281,7 @@ export default {
   data() {
     return {
       showLogoutPopup: false,
+      loggingOut: false,
       InitDate: {
         inviteCode: "",
         headUrl: null,
@@ -427,22 +436,23 @@ export default {
       this.$toast({ message: this.$lang.Sucesso, icon: "success" });
     },
     async confirmLogout() {
-      this.showLogoutPopup = false;
+      if (this.loggingOut) return;
+      this.loggingOut = true;
       try {
         const data = await Logout();
         if (data.status === "ok") {
           localStorage.removeItem("token");
+          localStorage.removeItem("shareCode");
           clearGuestFlags();
-          this.$jumpTo("/home", {}, { replace: true });
-          setTimeout(() => {
-            window.location.reload();
-          }, 200);
-        } else {
-          this.$toast({ message: data.msg, icon: "cross" });
+          // 保持按钮 loading，直接整页刷新一次回到首页
+          reloadAppEntry();
+          return;
         }
+        this.$toast({ message: data.msg, icon: "cross" });
       } catch (e) {
         this.$toast({ message: e.msg || "Error", icon: "cross" });
       }
+      this.loggingOut = false;
     },
   },
 };

@@ -5,7 +5,7 @@
       :title="$lang.common_txt63"
       :border="false"
       fixed
-      z-index="99999"
+      z-index="1000"
       @click-left="onClickLeft"
     >
       <template #left>
@@ -123,9 +123,6 @@
                   width="20"
                   alt=""
                 />
-                <div class="cot-cont-rbi__name">
-                  {{ item3.gameName }}
-                </div>
               </template>
             </div>
             <div class="cot-cont-empty" v-if="favariteGames.length === 0">
@@ -175,9 +172,7 @@ export default {
       let newArr = item.types.reduce((acc, type) => {
         return acc.concat((type && type.games) || []);
       }, []);
-      this.allGames = newArr.filter((i) =>
-        i.gameName.toLowerCase().includes(this.gameValue.toLowerCase()),
-      );
+      this.allGames = this.filterGames(newArr);
     },
   },
   computed: {
@@ -193,6 +188,19 @@ export default {
   },
   methods: {
     ...mapActions(["addFavorite", "removeFavorite"]),
+    // 按 gid 去重（Hot 与厂商分组会重复返回同一游戏），并按去首尾空格的关键词过滤
+    filterGames(list) {
+      const kw = (this.gameValue || "").trim().toLowerCase();
+      const seen = new Set();
+      return list.filter((g) => {
+        if (!g) return false;
+        if (g.gid != null) {
+          if (seen.has(g.gid)) return false;
+          seen.add(g.gid);
+        }
+        return !kw || (g.gameName || "").toLowerCase().includes(kw);
+      });
+    },
     // 修改：适配分组结构的收藏判断逻辑
     isFavorite(item) {
       // 找到对应currency的分组
@@ -212,8 +220,10 @@ export default {
       };
       if (this.isFavorite(item)) {
         this.removeFavorite(payload);
+        this.$toast(this.$lang.favorite_removed || "Removed from favorites");
       } else {
         this.addFavorite(payload);
+        this.$toast(this.$lang.favorite_added || "Added to favorites");
       }
       // 切换收藏后更新收藏列表展示
       if (this.selectIndex2 === 1) {
@@ -223,29 +233,16 @@ export default {
     onClickLeft() {
       this.$jumpTo("/home", {}, { replace: true });
     },
-    goToGame(v, v2) {
+    goToGame(v) {
       if (this.token) {
-        const lotteryIds = [
-          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-          21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-        ];
-        const game = v2 || { gid: v };
-        const jumpPayload = lotteryIds.includes(v)
-          ? {
-              type: "lottery",
-              lotteryType: game.gameCode,
-              lotteryName: game.gameName,
-              typeCate: 1,
-            }
-          : {
-              type: "hall",
-              gid: v,
-              isDemo: 0,
-              from: "game",
-              typeCate: 1,
-              gameTab: this.$route.query.gameTab,
-            };
-        this.$launchGame(jumpPayload);
+        this.$launchGame({
+          type: "hall",
+          gid: v,
+          isDemo: 0,
+          from: "game",
+          typeCate: 1,
+          gameTab: this.$route.query.gameTab,
+        });
       } else {
         this.showPopup = true;
       }
@@ -261,13 +258,7 @@ export default {
         return acc.concat((type && type.games) || []);
       }, []);
 
-      if (this.gameValue.length > 0) {
-        this.allGames = newArr.filter((i) =>
-          i.gameName.toLowerCase().includes(this.gameValue.toLowerCase()),
-        );
-      } else {
-        this.allGames = newArr;
-      }
+      this.allGames = this.filterGames(newArr);
       this.$nextTick(() => {
         if (this.$refs.targetElement) {
           this.$refs.targetElement.scrollTop = 0;
@@ -561,9 +552,11 @@ export default {
 }
 .cot-cont-rbi__fav {
   position: absolute;
-  right: 5px;
-  top: 5px;
+  right: 0;
+  top: 0;
   z-index: 2;
+  box-sizing: content-box;
+  padding: 5px 5px 14px 14px;
 }
 .cot-cont-rbi__name {
   position: absolute;

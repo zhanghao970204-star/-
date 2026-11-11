@@ -3,12 +3,14 @@
     class="number-scroll"
     :style="{ fontSize: fontSize + 'px', gap: gap + 'px' }"
   >
-    <span v-if="prefix" class="num-symbol">{{ prefix }}</span>
-    <span v-if="showNegative" class="num-symbol">-</span>
+    <!-- 滚动数字每位都含 0~9，读屏与复制只取这里的真实金额 -->
+    <span class="num-sr-only">{{ realText }}</span>
+    <span v-if="prefix" aria-hidden="true" class="num-symbol">{{ prefix }}</span>
+    <span v-if="showNegative" aria-hidden="true" class="num-symbol">-</span>
 
     <template v-for="(item, index) in intParts" :key="`int-${index}`">
-      <span v-if="item.type === 'comma'" class="num-symbol num-comma">,</span>
-      <div v-else class="num-digit">
+      <span v-if="item.type === 'comma'" aria-hidden="true" class="num-symbol num-comma">,</span>
+      <div v-else aria-hidden="true" class="num-digit">
         <div
           class="num-list"
           :style="{ transform: `translateY(-${item.value * 10}%)` }"
@@ -18,10 +20,10 @@
       </div>
     </template>
 
-    <span v-if="hasDecimal" class="num-symbol">.</span>
+    <span v-if="hasDecimal" aria-hidden="true" class="num-symbol">.</span>
 
     <template v-for="(digit, index) in decimalDigits" :key="`dec-${index}`">
-      <div class="num-digit">
+      <div aria-hidden="true" class="num-digit">
         <div
           class="num-list"
           :style="{ transform: `translateY(-${digit * 10}%)` }"
@@ -31,7 +33,7 @@
       </div>
     </template>
 
-    <span v-if="suffix" class="num-symbol">{{ suffix }}</span>
+    <span v-if="suffix" aria-hidden="true" class="num-symbol">{{ suffix }}</span>
   </div>
 </template>
 
@@ -60,6 +62,16 @@ export default {
     },
     absText() {
       return this.formatNum(this.currentValue);
+    },
+    realText() {
+      const text = this.formatNum(this.targetValue);
+      const [intPart, decPart] = text.split(".");
+      const intText = this.thousand
+        ? intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+        : intPart;
+      const sign = this.showNegative ? "-" : "";
+      const body = this.decimals > 0 ? `${intText}.${decPart}` : intText;
+      return `${this.prefix}${sign}${body}${this.suffix}`;
     },
     intParts() {
       const targetStr = this.formatNum(this.targetValue).split(".")[0];
@@ -135,6 +147,24 @@ export default {
 
 .num-comma {
   font-weight: 800;
+}
+
+.num-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.num-symbol,
+.num-digit {
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .num-digit {

@@ -839,18 +839,20 @@ export default {
       return this.currentLevel >= this.totalLevels;
     },
     rechargePercent() {
-      return this.nextRechargeAmount > 0
-        ? Math.min((this.rechargeAmount / this.nextRechargeAmount) * 100, 100)
-        : 100;
+      if (this.nextRechargeAmount > 0) {
+        return Math.min((this.rechargeAmount / this.nextRechargeAmount) * 100, 100);
+      }
+      return this.isMaxVip && this.currentLevel > 0 ? 100 : 0;
     },
     progressKnobLeft() {
       const p = Math.min(Math.max(this.rechargePercent, 0), 100);
       return `${7 + p * 0.87}%`;
     },
     betPercent() {
-      return this.nextBetAmount > 0
-        ? Math.min((this.betAmount / this.nextBetAmount) * 100, 100)
-        : 100;
+      if (this.nextBetAmount > 0) {
+        return Math.min((this.betAmount / this.nextBetAmount) * 100, 100);
+      }
+      return this.isMaxVip && this.currentLevel > 0 ? 100 : 0;
     },
     upgradeStatus() {
       if (!Array.isArray(this.upgradeRuleList)) return 0;
@@ -1144,7 +1146,7 @@ export default {
       if (stringValue.endsWith("%")) return stringValue;
       const n = Number(stringValue);
       if (Number.isNaN(n)) return "--";
-      return `${this.$formatNumberWithCommas(n * 100)}%`;
+      return `${parseFloat((n * 100).toFixed(2))}%`;
     },
     parseRuleList(ruleList) {
       let list = ruleList;

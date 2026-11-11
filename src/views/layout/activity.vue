@@ -76,20 +76,20 @@ export default {
           key: "envelope",
           path: "/redPacket",
           icon: iconEnvelopes,
-          title: L.activity_card_lucky || "LUCKY COMPENSATION",
+          title: L.activity_card_lucky || "RED ENVELOPE RAIN",
           desc:
             L.activity_card_lucky_desc ||
-            "Up to <em>$5000</em> bonus on big deposits",
-          btn: L.activity_spin || "SPIN",
+            "Grab cash red envelopes in every round",
+          btn: L.activity_btn_grab || "GRAB",
         },
         {
           key: "spin",
           path: "/luckyReferral",
           icon: iconSpin,
-          title: L.activity_card_spins || "DAILY FREE SPINS",
+          title: L.activity_card_spins || "LUCKY SPIN",
           desc:
             L.activity_card_spins_desc ||
-            "Get up to <em>100</em> Free Spins every day",
+            "Invite friends to earn spins and win cash rewards",
           btn: L.activity_spin || "SPIN",
         },
         {
@@ -99,28 +99,28 @@ export default {
           title: L.activity_card_deposit || "DEPOSIT BONUS",
           desc:
             L.activity_card_deposit_desc ||
-            "Get up to <em>20%</em> extra free on every top-up",
-          btn: L.activity_spin || "SPIN",
+            "Get extra bonus on your deposits",
+          btn: L.activity_join || "Join",
         },
         {
           key: "checkin",
           path: "/dailyCheckIn",
           icon: iconCheckin,
-          title: L.activity_card_login || "DAILY LOGIN REWARDS",
+          title: L.activity_card_login || "DAILY CHECK-IN",
           desc:
             L.activity_card_login_desc ||
-            "Get up to <em>$3977</em> totally free!",
-          btn: L.activity_spin || "SPIN",
+            "Check in every day to claim rewards",
+          btn: L.activity_checkin_btn || "Check In",
         },
         {
           key: "loss",
           path: "/weeklyMissions",
           icon: iconLoss,
-          title: L.activity_card_loss || "LOSS RESCUE",
+          title: L.activity_card_loss || "MISSION CENTER",
           desc:
             L.activity_card_loss_desc ||
-            "Up to <em>50%</em> cashback on slot losses",
-          btn: L.activity_spin || "SPIN",
+            "Complete missions to earn rewards",
+          btn: L.activity_view || "View",
         },
         {
           key: "vip",
@@ -129,8 +129,8 @@ export default {
           title: L.activity_card_vip || "VIP CLUB",
           desc:
             L.activity_card_vip_desc ||
-            "Up to <em>$10,000</em> exclusive VIP reward",
-          btn: L.activity_spin || "SPIN",
+            "Level up to unlock exclusive VIP rewards",
+          btn: L.activity_view || "View",
         },
       ];
       return cards;

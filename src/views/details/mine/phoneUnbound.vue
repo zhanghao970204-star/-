@@ -107,6 +107,7 @@ export default {
   methods: {
     confirmLogout() {
       localStorage.removeItem('token')
+      localStorage.removeItem('shareCode')
       const prefix = this.$route.params.prefix || localStorage.getItem('country') || ''
       this.$router.replace('/' + prefix + '/home')
       setTimeout(() => { window.location.reload() }, 200)

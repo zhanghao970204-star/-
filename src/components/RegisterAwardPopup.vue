@@ -42,18 +42,19 @@
                 src="@/assets/img/home/registerAward/signup_coin.png"
                 alt=""
               />
-              <p>
-                New Users Receive A
-                <em>{{ amountText }}</em>
-                Sign-Up Bonus.
-              </p>
+              <p v-html="signupBonusHtml"></p>
             </div>
             <div class="ra-popup__row">
               <img
                 src="@/assets/img/home/registerAward/signup_vip.png"
                 alt=""
               />
-              <p>Make Any Deposit To Upgrade To VIP And Unlock Withdrawals.</p>
+              <p>
+                {{
+                  $lang.ra_vip_unlock ||
+                  "Deposit to upgrade your VIP level and unlock withdrawals."
+                }}
+              </p>
             </div>
           </div>
         </div>
@@ -63,7 +64,14 @@
           :disabled="claiming || receiveStatus !== 1"
           @click="claim"
         >
-          {{ claiming ? "loading..." : "Claim " + amountText }}
+          {{
+            claiming
+              ? $lang.common_loading || "Loading..."
+              : ($lang.ra_claim || "Claim {amount}").replace(
+                  "{amount}",
+                  amountText,
+                )
+          }}
         </button>
       </div>
     </div>
@@ -108,6 +116,13 @@ export default {
         : this.awardAmount;
       const c = this.getCurrency || "";
       return c ? `${c} ${n}` : String(n);
+    },
+    signupBonusHtml() {
+      const tpl =
+        this.$lang.ra_signup_bonus ||
+        "New users receive a {amount} sign-up bonus. Bonus funds must be wagered before they can be withdrawn.";
+      const amount = String(this.amountText).replace(/[<>&"]/g, "");
+      return tpl.replace("{amount}", `<em>${amount}</em>`);
     },
   },
   mounted() {
@@ -296,7 +311,7 @@ export default {
     color: #fff;
   }
 
-  em {
+  :deep(em) {
     font-style: normal;
     color: #ffd467;
   }

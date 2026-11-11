@@ -274,12 +274,12 @@ export default {
     ctaText() {
       return this.$lang.fr_recharge_now || "Recharge Now";
     },
-    /** 百分比 = price / originalPrice * 100（与页面 Day1 文案同一套） */
+    /** 折扣 = (originalPrice - price) / originalPrice */
     discountPercent() {
       const p = Number(this.price) || 0;
       const o = Number(this.originalPrice) || 0;
-      if (!o || p <= 0) return 0;
-      return Math.round((p / o) * 100);
+      if (!o || p <= 0 || p >= o) return 0;
+      return Math.round(((o - p) / o) * 100);
     },
     /** 入账金额 = price + immediateBonus + day2Max + day3Max */
     creditTotalAmount() {

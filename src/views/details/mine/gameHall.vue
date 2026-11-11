@@ -74,6 +74,7 @@ export default {
       timer: null,
       isRechargeGame: false,
       isWirthgeGame: false,
+      popupKind: "",
       // 拖动相关数据
       dragTop: 5,
       dragLeft: 5,
@@ -98,10 +99,30 @@ export default {
       this.timer++;
     }
     if (this.token && this.$route.params.from === "game") {
-      this.adjustIframeHeight();
-      this.addEventListeners();
-      window.addEventListener("resize", this.setIframeHeight);
-      this.GetGameBalanceList();
+      if (!this.$route.params.gid) {
+        this.showBlockPopup(
+          this.$lang.game_not_found ||
+            "This game could not be found. Please return to the lobby and try again.",
+        );
+      } else {
+        this.adjustIframeHeight();
+        this.addEventListeners();
+        window.addEventListener("resize", this.setIframeHeight);
+        this.GetGameBalanceList();
+      }
+    } else if (this.$route.params.from === "game") {
+      this.showBlockPopup(
+        this.$lang.game_login_required || "Please log in to play this game.",
+      );
+    } else if (!this.isEmbedHall) {
+      this.$route.params.from = "game";
+      this.timer++;
+      this.$nextTick(() => {
+        this.showBlockPopup(
+          this.$lang.game_not_found ||
+            "This game could not be found. Please return to the lobby and try again.",
+        );
+      });
     }
     // 新增：监听鼠标松开事件（全局，防止鼠标移出元素后无法结束拖动）
     window.addEventListener("mouseup", this.handleDragEnd);
@@ -240,32 +261,26 @@ export default {
         let onlyPg = data.content.onlyPg;
         let wdFirst = data.content.wdFirst;
         if (onlyPg) {
-          this.showPopup = true;
-          this.btn1Text = "isClose";
-          this.btn2Text = "Confirm";
-          this.textContent = this.$lang.common_txt155;
+          this.showBlockPopup(this.$lang.common_txt155);
         } else if (wdFirst) {
-          this.showPopup = true;
-          this.btn1Text = "isClose";
-          this.btn2Text = "Confirm";
-          this.textContent = this.$lang.common_txt156;
+          this.showBlockPopup(this.$lang.common_txt156);
           this.isWirthgeGame = true;
         } else if (needRecharge) {
+          this.popupKind = "recharge";
           this.showPopup = true;
-          this.btn1Text = "isClose";
-          this.btn2Text = "Confirm";
-          this.textContent = this.$lang.common_txt158;
+          this.btn1Text = this.$lang.common_back || "Back";
+          this.btn2Text = this.$lang.common_go_deposit || "Deposit";
+          this.textContent =
+            this.$lang.game_need_first_deposit ||
+            "Bonus funds can't be used to play this game yet. Make your first deposit to unlock all games.";
           this.isRechargeGame = true;
         } else if (vipLevel) {
-          this.showPopup = true;
-          this.btn1Text = "isClose";
-          this.btn2Text = "Confirm";
-          this.textContent = this.$lang.common_txt159;
+          this.showBlockPopup(
+            this.$lang.game_vip_required ||
+              "Your VIP level is not high enough to play this game. Upgrade your VIP level to unlock it.",
+          );
         } else if (closeGame) {
-          this.showPopup = true;
-          this.btn1Text = "isClose";
-          this.btn2Text = "Confirm";
-          this.textContent = this.$lang.common_txt160;
+          this.showBlockPopup(this.$lang.common_txt160);
         } else {
           this.forwardUrl = data.content.forwardUrl || "";
         }
@@ -291,39 +306,52 @@ export default {
         });
       }
     },
+    showBlockPopup(text) {
+      this.popupKind = "block";
+      this.showPopup = true;
+      this.btn1Text = "isClose";
+      this.btn2Text = this.$lang.common_back || "Back";
+      this.textContent = text;
+    },
     goback() {
       if (this.isEmbedHall) {
         this.$router.go(-1);
+        return;
       }
+      this.popupKind = "exit";
       this.showPopup = true;
       this.btn1Text = "Cancel";
       this.btn2Text = "Confirm";
       this.textContent = this.$lang.gameHall_txt5;
     },
-    close() {
-      if (this.btn2Text === "Confirm") {
-        this.showPopup = false;
-      } else {
-        this.$router.go(-1);
-      }
-    },
-    confirm() {
-      // 余额不足 → Recharge 按钮优先跳到充值页
-      if (this.btn2Text === "Recharge" || this.isRechargeGame) {
-        this.$jumpTo("/rechargeCont", {}, { replace: true });
-        return;
-      }
-      if (this.$route.params.typeCate === 1) {
+    // 回到进入游戏前的页面；直接打开（无历史）时回首页
+    leaveGame() {
+      const state = window.history.state;
+      if (state && state.back) {
+        this.$router.back();
+      } else if (this.$route.params.typeCate === 1) {
         this.$jumpTo(
           "/category",
           { gameTab: this.$route.params.gameTab },
           { replace: true },
         );
-      } else if (this.btn2Text === "Confirm") {
-        this.$jumpTo("/home", {}, { replace: true });
       } else {
-        this.$jumpTo("/rechargeCont", {}, { replace: true });
+        this.$jumpTo("/home", {}, { replace: true });
       }
+    },
+    close() {
+      if (this.popupKind === "exit") {
+        this.showPopup = false;
+      } else {
+        this.leaveGame();
+      }
+    },
+    confirm() {
+      if (this.popupKind === "recharge") {
+        this.$jumpTo("/rechargeCont", {}, { replace: true });
+        return;
+      }
+      this.leaveGame();
     },
   },
 };

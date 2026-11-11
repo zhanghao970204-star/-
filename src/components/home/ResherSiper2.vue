@@ -50,7 +50,7 @@
                 <template v-slot:loading>
                   <van-loading size="20" color="#a665d8" vertical />
                 </template>
-                <div class="game-online">
+                <div v-if="onlineCount(item)" class="game-online">
                   <img
                     class="game-online__icon"
                     src="../../assets/img/home/icon_online.png"
@@ -170,36 +170,16 @@ export default {
         this.addFavorite(payload);
       }
     },
+    // 仅展示接口返回的真实在线人数，没有就不显示
     onlineCount(item) {
-      const key = String(
-        (item && (item.gid || item.gameCode || item.gameName)) || "",
-      );
-      let hash = 0;
-      for (let i = 0; i < key.length; i++) {
-        hash = (hash * 31 + key.charCodeAt(i)) >>> 0;
-      }
-      const n = 12000 + (hash % 23001);
+      const raw = item && (item.onlineCount ?? item.online ?? item.playerCount);
+      const n = Number(raw);
+      if (!raw || !Number.isFinite(n) || n <= 0) return "";
       return n.toLocaleString("en-US");
     },
-    goToGame(v, v2) {
+    goToGame(v) {
       if (this.token) {
-        const game = v2 || { gid: v };
-        const lotteryIds = [
-          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-          21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-        ];
-        const isLottery =
-          lotteryIds.includes(v) ||
-          ["2000701", "2000702"].includes(this.siderData.code);
-        const jumpPayload = isLottery
-          ? {
-              type: "lottery",
-              lotteryType: game.gameCode,
-              lotteryName: game.gameName,
-              typeCate: 1,
-            }
-          : { type: "hall", gid: v, isDemo: 0, from: "game" };
-        this.$launchGame(jumpPayload);
+        this.$launchGame({ type: "hall", gid: v, isDemo: 0, from: "game" });
       } else if (this.$bus) {
         this.$bus.emit("openLogin");
       }

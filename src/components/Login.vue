@@ -313,15 +313,19 @@
               <div class="login-popup__submit-wrap">
                 <button
                   class="login-popup__submit button dlzc"
-                  :class="{ 'login-popup__submit--disabled': !isBtnEnable }"
-                  :disabled="!isBtnEnable"
+                  :class="{
+                    'login-popup__submit--disabled': !isBtnEnable && !submitting,
+                    'is-loading': submitting,
+                  }"
+                  :disabled="!isBtnEnable || submitting"
                   @click="LoginBtn"
                 >
-                  {{
+                  <span v-if="submitting" class="btn-spinner"></span>
+                  <template v-else>{{
                     selectIndex === 0
                       ? $lang.Entrar || "LOG IN"
                       : $lang.Registro || "Register"
-                  }}
+                  }}</template>
                 </button>
                 <img
                   v-if="selectIndex === 1"
@@ -336,14 +340,12 @@
                 <button
                   type="button"
                   class="login-popup__google button kj"
+                  :class="{ 'is-loading': guestLoading }"
                   :disabled="guestLoading"
                   @click="handleGuestLogin"
                 >
-                  <span>{{
-                    guestLoading
-                      ? "..."
-                      : $lang.play_as_guest || "Play as Guest"
-                  }}</span>
+                  <span v-if="guestLoading" class="btn-spinner"></span>
+                  <span v-else>{{ $lang.play_as_guest || "Play as Guest" }}</span>
                 </button>
                 <!--
                 <button
@@ -370,8 +372,8 @@
                     />
                   </template>
                   <span class="login-popup__agree-text">
-                    Agree or disagree with the
-                    <em @click.stop="gotoTermsOfUse">Service Policy</em>
+                    I agree to the
+                    <em @click.stop="gotoTermsOfUse">Terms of Service</em>
                     and
                     <em @click.stop="gotoPrivacy">Privacy Policy</em>
                   </span>
@@ -420,10 +422,14 @@
         <button
           class="login-popup__submit button dlzc"
           :disabled="!googlePhoneNo || googleRegLoading"
-          :class="{ 'login-popup__submit--disabled': !googlePhoneNo }"
+          :class="{
+            'login-popup__submit--disabled': !googlePhoneNo && !googleRegLoading,
+            'is-loading': googleRegLoading,
+          }"
           @click="handleGoogleRegister"
         >
-          {{ $lang.Registro || "Register" }}
+          <span v-if="googleRegLoading" class="btn-spinner"></span>
+          <template v-else>{{ $lang.Registro || "Register" }}</template>
         </button>
       </div>
     </van-popup>
@@ -473,7 +479,6 @@ import {
 import { getClientId } from "@/utils/nativeDevice";
 import { reloadAppEntry, saveLoginSession } from "@/utils/guestAuth";
 import { isNativeAppShell } from "@/utils/nativeApp";
-import { openCustomerService } from "@/utils/csLink";
 import { appendAdidToFbExpand, waitForAdjustAdid } from "@/utils/adjust";
 export default {
   components: { Vcode },
@@ -543,6 +548,7 @@ export default {
       // Google login
       googleLoading: false,
       guestLoading: false,
+      submitting: false,
       _guestLoginAt: 0,
       showGoogleRegister: false,
       googlePhoneNo: "",
@@ -728,7 +734,8 @@ export default {
   },
   methods: {
     onForgotPassword() {
-      openCustomerService({ scene: "floating" });
+      this.visible = false;
+      this.$jumpTo("/forgotPassword");
     },
     async fetchSysConfig() {
       try {
@@ -894,9 +901,6 @@ export default {
         reloadAppEntry();
       }, 200);
     },
-    goToActive() {
-      this.$jumpTo("/activityCooperate");
-    },
     onGooglePhoneInput(v) {
       this.googlePhoneNo = this.formatPhoneInput(v);
     },
@@ -1036,7 +1040,7 @@ export default {
     // 用户通过了验证
     success() {
       this.isShow = false; // 通过验证后，需要手动隐藏模态框
-      this.Register();
+      this.runAuth(this.Register);
     },
     // 用户点击遮罩层，应该关闭模态框
     close2() {
@@ -1159,13 +1163,10 @@ export default {
       // this.GetIsFbReport();
       const data = await Register(this.registerParames);
       if (data.status === "ok") {
-        this.visible = false;
         saveLoginSession(data.content || {}, { clearGuest: true });
-        setTimeout(() => {
-          reloadAppEntry();
-        }, 200);
         localStorage.setItem("isRegister", "isRegister");
-        this.$emit("close-key");
+        reloadAppEntry();
+        return true;
       } else {
         this.apiError = data.msg || this.$lang.network_error || "Error";
         this.showFormToast(this.apiError);
@@ -1179,12 +1180,9 @@ export default {
         captcha: this.captcha,
       });
       if (data.status === "ok") {
-        this.visible = false;
         saveLoginSession(data.content || {}, { clearGuest: true });
-        setTimeout(() => {
-          reloadAppEntry();
-        }, 200);
-        this.$emit("close-key");
+        reloadAppEntry();
+        return true;
       } else {
         this.apiError = data.msg || this.$lang.network_error || "Error";
         this.showFormToast(this.apiError);
@@ -1198,12 +1196,9 @@ export default {
         loginType: "account",
       });
       if (data.status === "ok") {
-        this.visible = false;
         saveLoginSession(data.content || {}, { clearGuest: true });
-        setTimeout(() => {
-          reloadAppEntry();
-        }, 200);
-        this.$emit("close-key");
+        reloadAppEntry();
+        return true;
       } else {
         this.apiError = data.msg || this.$lang.network_error || "Error";
         this.showFormToast(this.apiError);
@@ -1232,6 +1227,7 @@ export default {
 
       this.guestLoading = true;
       this.apiError = "";
+      let reloadSucceeded = false;
       try {
         console.log("[GuestLogin] start");
         let uuid = (await getClientId(3000)) || "";
@@ -1260,12 +1256,9 @@ export default {
         const data = await GuestLogin(payload);
         console.log("[GuestLogin] response", data);
         if (data.status === "ok" && data.content && data.content.accessToken) {
-          this.visible = false;
           saveLoginSession(data.content, { uuid });
-          setTimeout(() => {
-            reloadAppEntry();
-          }, 200);
-          this.$emit("close-key");
+          reloadSucceeded = true;
+          reloadAppEntry();
         } else {
           this.apiError = data.msg || this.$lang.network_error || "Error";
           this.showFormToast(this.apiError);
@@ -1278,11 +1271,13 @@ export default {
           "Network error";
         this.showFormToast(this.apiError);
       } finally {
-        this.guestLoading = false;
+        // 成功后保持 loading，直到页面刷新
+        if (!reloadSucceeded) this.guestLoading = false;
       }
     },
     // 登录
     async LoginBtn() {
+      if (this.submitting) return;
       this.apiError = "";
       if (!this.account) {
         this.vError1 = this.$lang.login_txt19;
@@ -1353,7 +1348,7 @@ export default {
       }
 
       if (isCaptchaLogin && !this.vError1 && !this.vErrorCaptcha) {
-        this.LoginCaptchaSubmit();
+        this.runAuth(this.LoginCaptchaSubmit);
       } else if (
         this.selectIndex === 1 &&
         !this.vError1 &&
@@ -1363,15 +1358,27 @@ export default {
         !this.vErrorEmail &&
         this.agree
       ) {
-        this.Register();
+        this.runAuth(this.Register);
       } else if (
         this.selectIndex === 0 &&
         !isCaptchaLogin &&
         !this.vError1 &&
         !this.vError2
       ) {
-        this.Login();
+        this.runAuth(this.Login);
       }
+    },
+    // 登录 / 注册请求期间按钮转圈并禁止重复点击；成功后保持 loading 直到页面刷新
+    async runAuth(task) {
+      if (this.submitting) return;
+      this.submitting = true;
+      try {
+        if (await task()) return;
+      } catch (e) {
+        this.apiError = this.$lang.network_error || "Network error";
+        this.showFormToast(this.apiError);
+      }
+      this.submitting = false;
     },
     // Google Login: Step 1 - get auth URL and redirect
     async handleGoogleLogin() {
@@ -1456,16 +1463,15 @@ export default {
           localStorage.removeItem("googleToUrl");
           this.showGoogleRegister = false;
           localStorage.setItem("isRegister", "isRegister");
-          setTimeout(() => {
-            reloadAppEntry();
-          }, 200);
+          this._googleRegDone = true;
+          reloadAppEntry();
         } else {
           this.googleRegError = data.msg || this.$lang.google_register_failed;
         }
       } catch (e) {
         this.googleRegError = this.$lang.network_error;
       } finally {
-        this.googleRegLoading = false;
+        if (!this._googleRegDone) this.googleRegLoading = false;
       }
     },
     showGoogleRegisterLang() {
@@ -1502,8 +1508,6 @@ export default {
   }
 
   :deep(.van-checkbox__icon) {
-    width: 17px;
-    height: 17px;
     border: none !important;
     background: transparent !important;
     font-size: 0;
@@ -1991,6 +1995,7 @@ export default {
     cursor: not-allowed;
     filter: none;
   }
+
 }
 
 .login-popup__forgot {
@@ -2012,8 +2017,7 @@ export default {
 
   &-icon {
     display: block;
-    width: 19px;
-    height: 19px;
+    width: 17px;
     object-fit: contain;
   }
 
@@ -2035,9 +2039,6 @@ export default {
   }
 
   :deep(.van-checkbox__icon) {
-    width: 17px !important;
-    height: 17px !important;
-    margin-top: 1px;
     border: none !important;
     background: transparent !important;
   }

@@ -4,7 +4,7 @@
       :title="$lang.search_title"
       :border="false"
       fixed
-      z-index="99999"
+      z-index="1000"
       @click-left="onClickLeft"
     >
       <template #left>
@@ -18,6 +18,7 @@
           v-model="searchKeyword"
           :placeholder="$lang.search_placeholder"
           class="search-field"
+          clearable
           @keyup.enter="onSearch"
         >
           <template #left-icon>
@@ -55,8 +56,15 @@
         </div>
       </div>
 
+      <p v-if="showNoResult" class="search-no-result">
+        {{
+          $lang.search_no_result ||
+          "No games found. Try another keyword or check the suggestions below."
+        }}
+      </p>
+
       <div
-        v-if="popularNames.length > 0 && !searchKeyword.trim()"
+        v-if="popularNames.length > 0 && showSuggestions"
         class="section"
       >
         <h3 class="section-title">{{ $lang.search_popular }}</h3>
@@ -73,7 +81,7 @@
       </div>
 
       <div
-        v-if="recommendedGames.length > 0 && !searchKeyword.trim()"
+        v-if="recommendedGames.length > 0 && showSuggestions"
         class="section"
       >
         <h3 class="section-title">{{ $lang.search_recommended }}</h3>
@@ -162,6 +170,16 @@ export default {
         (g.gameName || "").toLowerCase().includes(kw),
       );
     },
+    showNoResult() {
+      return (
+        !this.loading &&
+        !!this.searchKeyword.trim() &&
+        this.searchResult.length === 0
+      );
+    },
+    showSuggestions() {
+      return !this.searchKeyword.trim() || this.showNoResult;
+    },
   },
   created() {
     this.loadSearchHistory();
@@ -181,7 +199,10 @@ export default {
     saveSearchHistory(name) {
       if (!name || !name.trim()) return;
       const nameStr = name.trim();
-      let list = this.searchHistory.filter((s) => s !== nameStr);
+      const lower = nameStr.toLowerCase();
+      let list = this.searchHistory.filter(
+        (s) => String(s).toLowerCase() !== lower,
+      );
       list.unshift(nameStr);
       list = list.slice(0, HISTORY_MAX);
       this.searchHistory = list;
@@ -227,7 +248,7 @@ export default {
     },
     onSearch() {
       const kw = this.searchKeyword.trim();
-      if (kw) this.saveSearchHistory(kw);
+      if (kw && this.searchResult.length > 0) this.saveSearchHistory(kw);
     },
     onHistoryClick(name) {
       this.searchKeyword = name;
@@ -236,22 +257,15 @@ export default {
       this.saveSearchHistory(name);
       this.searchKeyword = name;
     },
-    goToGame(v, v2) {
+    goToGame(v) {
       if (this.token) {
-        const lotteryIds = [
-          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-          21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-        ];
-        const game = v2 || { gid: v };
-        const jumpPayload = lotteryIds.includes(v)
-          ? {
-              type: "lottery",
-              lotteryType: game.gameCode,
-              lotteryName: game.gameName,
-              typeCate: 1,
-            }
-          : { type: "hall", gid: v, isDemo: 0, from: "game", typeCate: 1 };
-        this.$launchGame(jumpPayload);
+        this.$launchGame({
+          type: "hall",
+          gid: v,
+          isDemo: 0,
+          from: "game",
+          typeCate: 1,
+        });
       } else {
         this.showPopup = true;
       }
@@ -369,14 +383,12 @@ export default {
   }
 }
 .game-grid {
-  column-count: 3;
-  column-gap: 8px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  align-items: start;
 }
 .game-item {
-  break-inside: avoid;
-  -webkit-column-break-inside: avoid;
-  page-break-inside: avoid;
-  margin-bottom: 8px;
   width: 100%;
   cursor: pointer;
   position: relative;
@@ -416,5 +428,12 @@ export default {
 }
 .empty-tip {
   padding: 40px 0;
+}
+.search-no-result {
+  margin: 0 0 24px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: @gary-color;
+  text-align: center;
 }
 </style>

@@ -260,6 +260,7 @@ import {
   ReceiveLuckyRouletteBonus,
 } from "@/api/common";
 import { playWheelSound, playWheelResultSound } from "@/utils/sound";
+import { buildInviteUrl, shareLink } from "@/utils/share";
 export default {
   name: "LuckyRoulette",
   props: {
@@ -353,24 +354,9 @@ export default {
       this.GetLuckyRoulette();
     },
     shareContent() {
-      if (navigator.share) {
-        navigator
-          .share({
-            title: "LuckyPlay",
-            text: "LuckyPlay",
-            url:
-              window.location.origin +
-              "/" +
-              localStorage.getItem("country") +
-              "/home?id=" +
-              localStorage.getItem("shareCode"),
-          })
-          .catch((err) => {
-            console.error(err);
-          });
-      } else {
-        alert("Your browser does not support the Web Share API.");
-      }
+      shareLink(buildInviteUrl(), {
+        copiedText: this.$lang.share_link_copied || "Invite link copied",
+      });
     },
     async getJl() {
       const data = await ReceiveLuckyRouletteBonus();

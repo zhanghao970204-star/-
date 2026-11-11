@@ -26,6 +26,8 @@ const POOL_SIZE = 4;
 
 let audioCtx = null;
 const bufferCache = new Map();
+// 同一音效并发加载只发一次请求
+const bufferPending = new Map();
 
 function readVolume() {
   const n = Number(localStorage.getItem(LS_VOLUME));
@@ -57,26 +59,35 @@ function ensureAudioContext() {
   return audioCtx;
 }
 
-async function loadBuffer(fileName) {
-  if (bufferCache.has(fileName)) return bufferCache.get(fileName);
+function loadBuffer(fileName) {
+  if (bufferCache.has(fileName)) {
+    return Promise.resolve(bufferCache.get(fileName));
+  }
+  if (bufferPending.has(fileName)) return bufferPending.get(fileName);
   const ctx = ensureAudioContext();
   const url = SOUND_URLS[fileName];
-  if (!ctx || !url) return null;
-  try {
-    const res = await fetch(url, { cache: "force-cache" });
-    const arr = await res.arrayBuffer();
-    const buf = await ctx.decodeAudioData(arr);
-    bufferCache.set(fileName, buf);
-    return buf;
-  } catch (e) {
-    return null;
-  }
+  if (!ctx || !url) return Promise.resolve(null);
+  const task = (async () => {
+    try {
+      const res = await fetch(url, { cache: "force-cache" });
+      const arr = await res.arrayBuffer();
+      const buf = await ctx.decodeAudioData(arr);
+      bufferCache.set(fileName, buf);
+      return buf;
+    } catch (e) {
+      return null;
+    } finally {
+      bufferPending.delete(fileName);
+    }
+  })();
+  bufferPending.set(fileName, task);
+  return task;
 }
 
 function playWithBuffer(fileName, volume) {
   const ctx = ensureAudioContext();
   const buf = bufferCache.get(fileName);
-  if (!ctx || !buf) return false;
+  if (!ctx || !buf) return null;
   try {
     const source = ctx.createBufferSource();
     source.buffer = buf;
@@ -84,10 +95,35 @@ function playWithBuffer(fileName, volume) {
     gain.gain.value = volume;
     source.connect(gain).connect(ctx.destination);
     source.start();
-    return true;
+    return source;
   } catch (e) {
-    return false;
+    return null;
   }
+}
+
+// playSound 的语义是「同一音效从头重播」，不叠加
+const lastSources = new Map();
+function restartWithBuffer(fileName, volume) {
+  const prev = lastSources.get(fileName);
+  if (prev) {
+    try {
+      prev.stop();
+    } catch (e) {
+      /* already stopped */
+    }
+  }
+  const source = playWithBuffer(fileName, volume);
+  if (source) lastSources.set(fileName, source);
+  return !!source;
+}
+
+// WebAudio 不可用时的兜底：Audio 元素按需创建（每个 new Audio 都会单独发一次请求）
+function createAudio(fileName) {
+  const url = SOUND_URLS[fileName];
+  if (!url) return null;
+  const el = new Audio(url);
+  el.preload = "auto";
+  return el;
 }
 
 function ensurePool(fileName) {
@@ -95,16 +131,6 @@ function ensurePool(fileName) {
   if (!pool) {
     pool = [];
     audioPool.set(fileName, pool);
-  }
-  const url = SOUND_URLS[fileName];
-  if (!url) return pool;
-  while (pool.length < POOL_SIZE) {
-    const el = new Audio(url);
-    el.preload = "metadata";
-    pool.push(el);
-  }
-  if (!audioCache.has(fileName) && pool[0]) {
-    audioCache.set(fileName, pool[0]);
   }
   return pool;
 }
@@ -123,11 +149,9 @@ function playInstant(fileName, baseVol = 0.3) {
     const pool = ensurePool(fileName);
     let audio = pool.find((a) => a.paused || a.ended);
     if (!audio) {
-      if (pool.length < POOL_SIZE + 2) {
-        const el = new Audio(SOUND_URLS[fileName]);
-        el.preload = "metadata";
-        pool.push(el);
-        audio = el;
+      if (pool.length < POOL_SIZE) {
+        audio = createAudio(fileName);
+        if (audio) pool.push(audio);
       } else {
         audio = pool[0];
       }
@@ -149,12 +173,16 @@ function playInstant(fileName, baseVol = 0.3) {
 function playSound(fileName, baseVol = 0.3) {
   const volume = effectiveVolume(baseVol);
   if (volume <= 0) return;
+  const ctx = ensureAudioContext();
+  if (ctx && ctx.state === "suspended") {
+    ctx.resume().catch(() => {});
+  }
+  if (restartWithBuffer(fileName, volume)) return;
+  loadBuffer(fileName).catch(() => {});
   let audio = audioCache.get(fileName);
   if (!audio) {
-    const url = SOUND_URLS[fileName];
-    if (!url) return;
-    audio = new Audio(url);
-    audio.preload = "metadata";
+    audio = createAudio(fileName);
+    if (!audio) return;
     audioCache.set(fileName, audio);
   }
   try {
@@ -254,11 +282,10 @@ export function installGlobalClickSound() {
   );
 }
 
-// 空闲时预解码常用音效
+// 空闲时预解码常用音效（每个文件只请求一次）
 if (typeof window !== "undefined") {
   const preload = () => {
     ["btn_click.mp3", "switch.mp3", "wheel_spin.mp3"].forEach((f) => {
-      ensurePool(f);
       loadBuffer(f).catch(() => {});
     });
   };

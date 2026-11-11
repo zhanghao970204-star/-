@@ -93,219 +93,15 @@
         </div>
       </div>
     </div>
-    <div>
-      <van-popup
-        v-model:show="show"
-        class="custom-popup"
-        position="left"
-        :closeable="false"
-        :style="{ width: '80%', height: '100%' }"
-        :close-on-click-overlay="true"
-      >
-        <div class="content">
-          <div class="sidedrawer">
-            <div class="d-flex">
-              <img
-                @click="show = false"
-                src="../assets/img/otgame/cebianlan_1.png"
-                width="20"
-                height="18"
-              />
-              <img
-                src="../assets/img/common/logo_h.png"
-                height="20"
-                class="m-l-10"
-              />
-              <div class="m-l-20 sidedrawer-top">
-                <img
-                  :src="vipImg(`V${InitDate.vipLevel ? InitDate.vipLevel : 0}`)"
-                  height="22"
-                  style="position: absolute"
-                />
-                <img
-                  src="../assets/img/otgame/vipgif.gif"
-                  height="22"
-                  style="position: absolute"
-                />
-              </div>
-            </div>
-            <div class="d-flex-s m-t-10">
-              <p class="d-flex nav-con-l" @click="gotoActive(0)">
-                <img src="../assets/img/common/home_recharge.png" width="15" />
-                <span class="m-l-5">{{ $lang.Depósito }}</span>
-              </p>
-              <p class="d-flex nav-con-r" @click="gotoActive(1)">
-                <img
-                  src="../assets/img/common/home_withdrawal.png"
-                  width="15"
-                />
-                <span class="m-l-5">{{ $lang.Saque }}</span>
-              </p>
-            </div>
-
-            <p class="m-t-15 m-b-10">{{ $lang.common_txt278 }}</p>
-            <div class="d-flex-s" style="flex-flow: wrap row">
-              <img
-                v-for="(item, index) in [
-                  `https://file.otgame.bet/static/${getCurrency}/5.png`,
-                  `https://file.otgame.bet/static/${getCurrency}/2.png`,
-                  `https://file.otgame.bet/static/${getCurrency}/3.png`,
-                  `https://file.otgame.bet/static/${getCurrency}/4.png`,
-                ]"
-                :key="index"
-                :src="item"
-                width="49%"
-                class="m-b-5"
-                @click="goToAAA(index)"
-              />
-            </div>
-          </div>
-
-          <div style="padding: 0 10px 10px 10px">
-            <div class="d-flex-s">
-              <img
-                v-for="(item, index) in [
-                  require('@/assets/img/otgame/LuckyWheel.png'),
-                  require('@/assets/img/otgame/LuckyDraw.png'),
-                ]"
-                :key="index"
-                :src="item"
-                width="49%"
-                @click="goToBBB(index)"
-              />
-            </div>
-
-            <div
-              style="
-                background: #2d1545;
-                border-radius: 6px;
-                padding: 10px 5px;
-                margin-top: 15px;
-              "
-            >
-              <p>{{ $lang.common_txt279 }}</p>
-              <div class="d-flex m-t-10">
-                <img
-                  style="margin-right: 15px"
-                  v-for="(item, index) in [
-                    require('@/assets/img/otgame/zjm_39.png'),
-                    require('@/assets/img/otgame/pinduoduo_24.png'),
-                    require('@/assets/img/otgame/ins.png'),
-                    require('@/assets/img/otgame/zjm_42.png'),
-                  ]"
-                  :key="index"
-                  :src="item"
-                  width="34"
-                />
-              </div>
-            </div>
-
-            <div
-              style="
-                background: #2d1545;
-                border-radius: 6px;
-                padding: 10px 5px;
-                margin-top: 10px;
-              "
-            >
-              <p>{{ $lang.common_txt280 }}</p>
-              <div class="d-flex m-t-10" style="align-items: flex-start">
-                <div
-                  v-for="(item, index) in [
-                    {
-                      src: require('@/assets/img/otgame/zjm_40.png'),
-                      label: $lang.home_tg_group,
-                    },
-                    {
-                      src: require('@/assets/img/otgame/zjm_40.png'),
-                      label: $lang.home_tg_channel,
-                    },
-                  ]"
-                  :key="index"
-                  style="
-                    margin-right: 15px;
-                    text-align: center;
-                    cursor: pointer;
-                  "
-                  @click="goToDDD(index)"
-                >
-                  <img :src="item.src" width="34" alt="" />
-                  <p style="font-size: 10px; margin-top: 4px; color: #fff">
-                    {{ item.label }}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div
-              style="
-                background: #2d1545;
-                border-radius: 6px;
-                padding: 0 10px;
-                margin-top: 15px;
-              "
-            >
-              <div
-                class="d-flex"
-                v-for="(item, index) in mtList"
-                :key="index"
-                style="padding: 10px 0; border-bottom: 1px solid var(--cont-bg)"
-                :class="{ 'no-border-bottom': index === mtList.length - 1 }"
-                @click="goToCCC(index)"
-              >
-                <img :src="item.icon" width="13" />
-                <span class="m-l-10">{{ item.name }}</span>
-              </div>
-            </div>
-
-            <div
-              class="d-flex-s"
-              style="
-                background: #2d1545;
-                border-radius: 6px;
-                padding: 10px;
-                margin-top: 15px;
-              "
-              @click="isOpen = !isOpen"
-            >
-              <div class="d-flex">
-                <img src="../assets/img/otgame/yuyan.png" width="13" />
-                <span class="m-l-10">{{ GET_COUNTRYNAME }}</span>
-              </div>
-              <van-icon :name="!isOpen ? 'arrow-down' : 'arrow-up'" />
-            </div>
-            <div class="selector-content" v-if="isOpen">
-              <div class="language-item">English</div>
-            </div>
-
-            <div class="foot_img">
-              <img src="../assets/img/otgame/dibeijing.jpg" width="100%" />
-              <p
-                style="
-                  text-align: center;
-                  text-decoration: underline;
-                  color: #72c9d1;
-                  margin-top: -20px;
-                "
-              >
-                {{ $lang.common_txt286 }} LuckyPlay
-              </p>
-            </div>
-          </div>
-        </div>
-      </van-popup>
-    </div>
 
     <login
       v-model="showPopup"
       closeable
       close-icon="cross"
       overlay
-      @close-key="closeValue"
       :loginType="loginType"
     ></login>
     <service-popup v-model="showPopup2" :srcValue="srcValue"></service-popup>
-    <lucky-roulette v-model="isShowPopup" overlay></lucky-roulette>
   </div>
 </template>
 <script>
@@ -316,7 +112,6 @@ import {
   GetHomeGameList,
   // GetIsFbReport,
   // fbReportSuccess,
-  GetLotteryList,
   GetPlatformList,
   NoticeList,
 } from "@/api/common";
@@ -343,36 +138,11 @@ export default {
   },
   data() {
     return {
-      isOpen: false,
-      mtList: [
-        {
-          icon: require("@/assets/img/otgame/cebianlan_15.png"),
-          name: this.$lang.common_txt281,
-        },
-        {
-          icon: require("@/assets/img/otgame/cebianlan_12.png"),
-          name: this.$lang.common_txt282,
-        },
-        {
-          icon: require("@/assets/img/otgame/cebianlan_13.png"),
-          name: this.$lang.common_txt283,
-        },
-        {
-          icon: require("@/assets/img/otgame/cdk.png"),
-          name: this.$lang.common_txt284,
-        },
-        {
-          icon: require("@/assets/img/otgame/hezuo.png"),
-          name: this.$lang.common_txt285,
-        },
-      ],
       showLang: false,
       showCountryDrop: false,
       countryList: [],
-      lotList2: [],
       isShadowVisible: false,
       isShowXl: false,
-      isShowPopup: false,
       selectIndex: 0,
       srcValue: "",
       dataList: [],
@@ -384,13 +154,11 @@ export default {
       InitDate2: {
         balance: 0,
       }, //数据2
-      show: false,
       // closeIcon: require('@/assets/img/common/menu.png'), // 引入本地图片作为关闭图标,
       isRotating: false, // 控制旋转状态
       isService: false,
       whatList: [],
       pgDate: {},
-      selectMenIndex: 0,
       mailBadgeCount: 0,
     };
   },
@@ -571,64 +339,6 @@ export default {
         window.location.reload();
       }, 200);
     },
-    goOpen() {
-      this.show = !this.show;
-      // if (this.show) {
-      //   this.GetLotteryList()
-      // }
-    },
-    async GetLotteryList() {
-      const data = await GetLotteryList();
-      if (data.status === "ok") {
-        this.lotList2 = data.content.allLotteryList.filter((i) =>
-          ["L"].includes(i.freqType),
-        );
-      }
-    },
-    goToLotDetail(i) {
-      this.$jumpTo("/lotteryDetail", {
-        lotteryType: i.lotteryType,
-        lotteryName: i.lotteryName,
-      });
-    },
-    goToLotDetail3(i) {
-      if (i === 0) {
-        this.$jumpTo("/lotteryDetail", {
-          lotteryType: "tron16x660",
-          lotteryName: "TRON 16/6 1min",
-        });
-      } else if (i === 1) {
-        this.$jumpTo("/lotteryDetail", {
-          lotteryType: "eth16x660",
-          lotteryName: "ETH 16/6 1min",
-        });
-      } else if (i === 2) {
-        this.$jumpTo("/lotteryDetail", {
-          lotteryType: "bnb16x660",
-          lotteryName: "BNB 16/6 1min",
-        });
-      }
-    },
-    gotoActive(i) {
-      if (this.token) {
-        if (i === 0) {
-          this.$jumpTo("./rechargeCont");
-        } else {
-          if (isGuestUser()) {
-            this.show = false;
-            if (isNativeAppShell()) {
-              this.$bus.emit("openGuestUpgrade");
-            } else {
-              this.goLogin(0);
-            }
-            return;
-          }
-          this.$jumpTo("./bankAdd");
-        }
-      } else {
-        this.showPopup = true;
-      }
-    },
 
     handleScroll() {
       if (this._scrollRaf) return;
@@ -735,23 +445,6 @@ export default {
     //     this.$router.push('./share')
     //   }
     // },
-    goToDetail(i) {
-      if (i === 0) {
-        this.isShowPopup = true;
-      } else if (i === 1) {
-        this.$jumpTo("/vipSignIn");
-      } else if (i === 2) {
-        this.$jumpTo("/activityFistRecharge");
-      } else if (i === 3) {
-        this.$jumpTo("/referFriend");
-      } else if (i === 4) {
-        this.$jumpTo("/redPacket");
-      } else if (i === 5) {
-        this.$jumpTo("/cashBack");
-      } else if (i === 6) {
-        this.$jumpTo("/signIn");
-      }
-    },
     goHome() {
       if (this.$route.path.includes("/home")) {
         console.log(this.$route.path);
@@ -759,17 +452,6 @@ export default {
       } else {
         this.$jumpTo("/home", {}, { replace: true });
       }
-    },
-    getSelect(v) {
-      this.selectIndex = v;
-      // if (this.$route.path === '/home') {
-      //   this.$bus.emit('message-sent', v)
-      // } else {
-      //   this.$router.push({ path: '/home', query: { gameTab: v } })
-      //   this.$bus.emit('message-sent', v)
-      // }
-      this.$jumpTo("/category", { gameTab: v });
-      this.show = false;
     },
     // async GetHomeGameList() {
     //   const data = await GetHomeGameList()
@@ -793,10 +475,6 @@ export default {
         this.isService = false;
       }
     },
-    closeValue() {
-      this.Init();
-      window.location.reload();
-    },
     // goDetail(i) {
     //   if (i === 0) {
     //     const targetKey3 = 'tg'
@@ -806,60 +484,6 @@ export default {
     //     )
     //   }
     // },
-    goToAAA(i) {
-      if (i === 0) {
-        this.$jumpTo("/referFriend");
-      } else if (i === 1) {
-        this.$jumpTo("/Alliance");
-      } else if (i === 2) {
-        this.$jumpTo("/vipSignIn");
-      } else if (i === 3) {
-        this.$jumpTo("/redPacket");
-      }
-    },
-    goToBBB(i) {
-      if (i === 0) {
-        this.$jumpTo("/Crowdfunding");
-      } else if (i === 1) {
-        this.$jumpTo("/activityFistRecharge");
-      }
-    },
-    goToCCC(i) {
-      if (i === 0) {
-        this.$jumpTo("/myCollection");
-      } else if (i === 1) {
-        this.$jumpTo("/privacy");
-      } else if (i === 2) {
-        this.$jumpTo("/Support");
-      } else if (i === 3) {
-        this.$jumpTo("/redPacket");
-      } else if (i === 4) {
-        this.$jumpTo("/Alliance");
-      }
-    },
-    goToDDD(i) {
-      if (i === 0) {
-        window.open("https://t.me/OTGAME777", "_blank");
-      } else if (i === 1) {
-        window.open("https://t.me/OTgamel", "_blank");
-      }
-    },
-    gotoGame2(i) {
-      if (i === 0) {
-        this.$jumpTo("/activityFistRecharge");
-      } else if (i === 1) {
-        this.$jumpTo("/activityCooperate");
-      } else if (i === 2) {
-        this.$jumpTo("/signIn");
-      } else if (i === 3) {
-        if (!this.token) {
-          this.$emit("getLoging");
-        } else {
-          this.$jumpTo("/vipLevels");
-        }
-      }
-      this.show = false;
-    },
     // gotoGame(i) {
     //   this.$bus.emit('message-sent', i)
     //   this.show = false
@@ -1000,12 +624,6 @@ export default {
       }, 1000); // 动画持续时间
       this.GetGameBalanceList();
       this.timer++;
-    },
-  },
-  watch: {
-    $route() {
-      // 路由变化时关闭弹窗
-      this.show = false;
     },
   },
 };

@@ -30,7 +30,12 @@
         </div>
       </div>
 
-      <button type="button" class="avatar-submit btn-3d-green" @click="Submit">
+      <button
+        type="button"
+        class="avatar-submit btn-3d-green"
+        :disabled="submitting"
+        @click="Submit"
+      >
         {{ $lang.Enviar || "SUBMIT" }}
       </button>
     </div>
@@ -38,17 +43,27 @@
 </template>
 
 <script>
-import { SetHeadUrl } from "@/api/common";
+import { SetHeadUrl, Init } from "@/api/common";
 import { avatarImg, AVATAR_COUNT } from "@/utils/avatarAssets";
+
+function validIndex(raw) {
+  const n = parseInt(raw, 10);
+  return Number.isFinite(n) && n >= 0 && n < AVATAR_COUNT ? n : null;
+}
 
 export default {
   name: "Avatar",
   data() {
-    const queryIdx = parseInt(this.$route.query.headUrl, 10);
+    const queryIdx = validIndex(this.$route.query.headUrl);
     return {
       imgList: Array.from({ length: AVATAR_COUNT }, (_, i) => avatarImg(i)),
-      selectedIndex: Number.isFinite(queryIdx) ? queryIdx : 0,
+      selectedIndex: queryIdx != null ? queryIdx : 0,
+      hasQueryIndex: queryIdx != null,
+      submitting: false,
     };
+  },
+  mounted() {
+    if (!this.hasQueryIndex) this.loadCurrentAvatar();
   },
   computed: {
     previewSrc() {
@@ -59,17 +74,36 @@ export default {
     getAvatar(i) {
       this.selectedIndex = i;
     },
-    async Submit() {
-      const data = await SetHeadUrl({
-        headUrl: this.selectedIndex,
-      });
-      if (data.status === "ok") {
-        this.$router.go(-1);
-        this.$toast({
-          message: this.$lang.Sucesso,
-          icon: "success",
-        });
+    async loadCurrentAvatar() {
+      try {
+        const data = await Init();
+        const idx = data && data.status === "ok" && data.content
+          ? validIndex(data.content.headUrl)
+          : null;
+        if (idx != null) this.selectedIndex = idx;
+      } catch (e) {
+        /* ignore */
       }
+    },
+    async Submit() {
+      if (this.submitting) return;
+      this.submitting = true;
+      try {
+        const data = await SetHeadUrl({
+          headUrl: this.selectedIndex,
+        });
+        if (data.status === "ok") {
+          this.$router.go(-1);
+          this.$toast({
+            message: this.$lang.Sucesso,
+            icon: "success",
+          });
+          return;
+        }
+      } catch (e) {
+        /* ignore */
+      }
+      this.submitting = false;
     },
   },
 };

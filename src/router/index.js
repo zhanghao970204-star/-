@@ -8,6 +8,7 @@ import { isGuestUser } from "@/utils/guestAuth";
 import { isNativeAppShell } from "@/utils/nativeApp";
 import { normalizeCountryCode, readCountryCode } from "@/utils/country";
 import { consumeRouteMotion } from "@/utils/routeMotion";
+import { setOpenLoginAfterReloadFlag } from "@/utils/platformAuth";
 
 // 禁止浏览器自动恢复滚动位置（从长页进二级页停在半截的根因之一）
 try {
@@ -35,18 +36,12 @@ const router = createRouter({
       path: "/:prefix?",
       component: () => import("@/views/layout"),
       children: [
-        {
-          path: "Crowdfunding",
-          name: "Crowdfunding",
-          component: () => import("@/views/layout/Crowdfunding"),
-          meta: { keepAlive: true },
-        },
-        {
-          path: "Country",
-          name: "Country",
-          component: () => import("@/views/layout/Country"),
-          meta: { keepAlive: true },
-        },
+        // {
+        //   path: "Country",
+        //   name: "Country",
+        //   component: () => import("@/views/layout/Country"),
+        //   meta: { keepAlive: true },
+        // },
         {
           path: "home",
           name: "Home",
@@ -74,12 +69,6 @@ const router = createRouter({
           meta: { keepAlive: true },
         },
         {
-          path: "lottery",
-          name: "Lottery",
-          component: () => import("@/views/layout/lottery"),
-          meta: { keepAlive: true },
-        },
-        {
           path: "share",
           name: "Share",
           component: () => import("@/views/layout/share"),
@@ -104,11 +93,6 @@ const router = createRouter({
           meta: { keepAlive: true },
         },
         {
-          path: "firstDepositGift",
-          name: "FirstDepositGift",
-          component: () => import("@/views/details/activity/firstDepositGift"),
-        },
-        {
           path: "newbieGift",
           name: "NewbieGift",
           component: () => import("@/views/details/activity/newbieGift"),
@@ -121,11 +105,6 @@ const router = createRouter({
       component: () => import("@/views/details/bonus/redPacket"),
     },
     {
-      path: "/:prefix?/signIn",
-      name: "SignIn",
-      component: () => import("@/views/details/bonus/signIn"),
-    },
-    {
       path: "/:prefix?/dailyCheckIn",
       name: "DailyCheckIn",
       component: () => import("@/views/details/activity/dailyCheckIn"),
@@ -136,16 +115,6 @@ const router = createRouter({
       component: () => import("@/views/details/activity/rewardHistory"),
     },
     {
-      path: "/:prefix?/seasonPass",
-      name: "SeasonPass",
-      component: () => import("@/views/details/activity/seasonPass"),
-    },
-    {
-      path: "/:prefix?/seasonHistory",
-      name: "SeasonHistory",
-      component: () => import("@/views/details/activity/seasonHistory"),
-    },
-    {
       path: "/:prefix?/weeklyMissions",
       name: "WeeklyMissions",
       component: () => import("@/views/details/activity/weeklyMissions"),
@@ -154,11 +123,6 @@ const router = createRouter({
       path: "/:prefix?/luckyReferral",
       name: "LuckyReferral",
       component: () => import("@/views/details/activity/luckyReferral"),
-    },
-    {
-      path: "/:prefix?/referFriend",
-      name: "ReferFriend",
-      component: () => import("@/views/details/bonus/referFriend"),
     },
     {
       path: "/:prefix?/bankAdd",
@@ -176,14 +140,9 @@ const router = createRouter({
       component: () => import("@/views/details/recharge/setPassWord"),
     },
     {
-      path: "/:prefix?/Alliance",
-      name: "Alliance",
-      component: () => import("@/views/details/mine/Alliance"),
-    },
-    {
-      path: "/:prefix?/profile",
-      name: "Profile",
-      component: () => import("@/views/details/mine/profile"),
+      path: "/:prefix?/forgotPassword",
+      name: "ForgotPassword",
+      component: () => import("@/views/details/mine/forgotPassword"),
     },
     {
       path: "/:prefix?/passwordLogin",
@@ -226,11 +185,6 @@ const router = createRouter({
       component: () => import("@/views/details/mine/payOrder"),
     },
     {
-      path: "/:prefix?/joinUs",
-      name: "JoinUs",
-      component: () => import("@/views/details/bonus/joinUs"),
-    },
-    {
       path: "/:prefix?/recordOrder",
       name: "RecordOrder",
       component: () => import("@/views/details/recharge/recordOrder"),
@@ -261,49 +215,14 @@ const router = createRouter({
       component: () => import("@/views/details/mine/email"),
     },
     {
-      path: "/:prefix?/myCollection",
-      name: "MyCollection",
-      component: () => import("@/views/details/mine/myCollection"),
-    },
-    {
       path: "/:prefix?/category",
       name: "Category",
       component: () => import("@/views/details/home/category"),
     },
     {
-      path: "/:prefix?/messageCenter",
-      name: "MessageCenter",
-      component: () => import("@/views/details/home/messageCenter"),
-    },
-    {
       path: "/:prefix?/searchGame",
       name: "SearchGame",
       component: () => import("@/views/details/home/searchGame"),
-    },
-    {
-      path: "/:prefix?/gameDetail",
-      name: "GameDetail",
-      component: () => import("@/views/details/home/gameDetail"),
-    },
-    {
-      path: "/:prefix?/lotteryDetail",
-      name: "LotteryDetail",
-      component: () => import("@/views/details/lottery/lotteryDetail"),
-    },
-    {
-      path: "/:prefix?/betHistory",
-      name: "BetHistory",
-      component: () => import("@/views/details/lottery/betHistory"),
-    },
-    {
-      path: "/:prefix?/latestResults",
-      name: "LatestResults",
-      component: () => import("@/views/details/lottery/latestResults"),
-    },
-    {
-      path: "/:prefix?/bettingDetails",
-      name: "BettingDetails",
-      component: () => import("@/views/details/lottery/bettingDetails"),
     },
     {
       path: "/:prefix?/settings",
@@ -321,11 +240,6 @@ const router = createRouter({
       component: () => import("@/views/details/mine/vipLevels"),
     },
     {
-      path: "/:prefix?/passwordSuccess",
-      name: "PasswordSuccess",
-      component: () => import("@/views/details/mine/passwordSuccess"),
-    },
-    {
       path: "/:prefix?/transactionRecords",
       name: "TransactionRecords",
       component: () => import("@/views/details/mine/transactionRecords"),
@@ -340,6 +254,11 @@ const router = createRouter({
       name: "GooglePhoneBind",
       component: () => import("@/views/details/mine/googlePhoneBind"),
     },
+    {
+      path: "/:pathMatch(.*)*",
+      name: "NotFound",
+      component: () => import("@/views/details/notFound"),
+    },
   ],
 });
 
@@ -351,6 +270,11 @@ router.beforeEach((to, from, next) => {
     console.log(
       "[Google OAuth] Router guard: Google callback detected, letting App.vue handle it",
     );
+    return next();
+  }
+
+  // 未匹配的路由没有 prefix 参数，下面的前缀修正会重定向回同一地址造成死循环
+  if (to.name === "NotFound") {
     return next();
   }
 
@@ -423,14 +347,12 @@ router.beforeEach((to, from, next) => {
   }
 
   const validSubPaths = [
-    "Crowdfunding",
     "Country",
     "home",
     "appDetail",
     "menu",
     "Support",
     "bonus",
-    "lottery",
     "share",
     "mine",
     "activity",
@@ -491,6 +413,8 @@ router.beforeEach((to, from, next) => {
     const token = localStorage.getItem("token");
     if (!token) {
       const redirectPath = finalPrefix ? `/${finalPrefix}/home` : "/home";
+      // 深链首屏时布局还没挂载、收不到事件；打标后由布局 mounted 补弹
+      setOpenLoginAfterReloadFlag();
       const openLogin = () => {
         setTimeout(() => bus.emit("openLogin"), 0);
       };

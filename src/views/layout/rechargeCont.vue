@@ -640,11 +640,9 @@ export default {
       return list[index] || list[list.length - 1];
     },
     openConfirmPay() {
-      if (!this.amount || Number(this.amount) <= 0) {
-        this.$toast({
-          message: this.$lang.RechargeCont_txt8 || this.$lang.common_txt143,
-          icon: "cross",
-        });
+      const amountError = this.validateAmount();
+      if (amountError) {
+        this.$toast({ message: amountError, icon: "cross" });
         return;
       }
       const keepAmount = this.amount;
@@ -785,6 +783,11 @@ export default {
           });
           return;
         }
+      }
+      const amountError = this.validateAmount();
+      if (amountError) {
+        this.$toast({ message: amountError, icon: "cross" });
+        return;
       }
       this.isLoading = true;
       this.showOverlay = true;
@@ -1056,7 +1059,32 @@ export default {
         : amount;
     },
     handleInput(val) {
-      this.syncTotalsForAmount(val);
+      const raw = String(this.parseAmountInput(val) ?? "");
+      const m = raw.replace(/-/g, "").match(/^\d*(\.\d{0,2})?/);
+      const clean = m ? m[0] : "";
+      if (clean !== raw) {
+        this.$nextTick(() => {
+          this.amount = clean;
+        });
+      }
+      this.syncTotalsForAmount(clean);
+    },
+    // 返回不合法提示文案；合法时返回空串
+    validateAmount() {
+      const n = Number(this.amount);
+      if (!this.amount || !Number.isFinite(n) || n <= 0) {
+        return this.$lang.RechargeCont_txt8 || this.$lang.common_txt143;
+      }
+      const min = Number(this.minAmount);
+      if (Number.isFinite(min) && min > 0 && n < min) {
+        return `${this.$lang.common_txt311 || "Minimum"} ${this.displayMinAmount}`;
+      }
+      const pay = this.paymentList[this.selectIndex] || {};
+      const max = Number(pay.maxAmount ?? pay.maximumAmount ?? pay.maxDeposit);
+      if (Number.isFinite(max) && max > 0 && n > max) {
+        return `${this.$lang.recharge_max_amount || "Maximum"} ${this.$formatNumberWithCommas(max)}`;
+      }
+      return "";
     },
   },
 };

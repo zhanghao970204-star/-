@@ -153,6 +153,12 @@
 <script>
 import VueQr from "qrcode.vue";
 import { Init } from "@/api/common";
+import {
+  buildInviteUrl,
+  copyToClipboard,
+  shareLink,
+  shareToChannel,
+} from "@/utils/share";
 export default {
   name: "ShareOnes",
   // eslint-disable-next-line vue/no-unused-components
@@ -230,34 +236,24 @@ export default {
   },
   methods: {
     shareContent(i) {
+      const url = this.inviteCode || buildInviteUrl();
+      const copiedText = this.$lang.share_link_copied || "Invite link copied";
+      const text = this.$lang.share_invite_text || "Join me on LuckyPlay!";
+      // 顺序对应 shareList：系统分享 / WhatsApp / Telegram / Instagram / YouTube / Facebook / TikTok / X
+      const channels = [
+        null,
+        "whatsapp",
+        "telegram",
+        "instagram",
+        "youtube",
+        "facebook",
+        "tiktok",
+        "twitter",
+      ];
       if (i === 0) {
-        if (navigator.share) {
-          navigator
-            .share({
-              title: "LuckyPlay",
-              text: "LuckyPlay",
-              url: this.inviteCode,
-            })
-            .catch((err) => {
-              console.error(err);
-            });
-        } else {
-          alert("Your browser does not support the Web Share API.");
-        }
-      } else if (i === 1) {
-        window.open(`https://api.whatsapp.com/`, "_blank");
-      } else if (i === 2) {
-        window.open(`https://t.me/`, "_blank");
-      } else if (i === 3) {
-        window.open(`https://www.instagram.com/`, "_blank");
-      } else if (i === 4) {
-        window.open(`https://www.youtube.com/`, "_blank");
-      } else if (i === 5) {
-        window.open(`https://www.facebook.com/`, "_blank");
-      } else if (i === 6) {
-        window.open(`https://www.tiktok.com/`, "_blank");
-      } else if (i === 7) {
-        window.open(`https://x.com/`, "_blank");
+        shareLink(url, { text, copiedText });
+      } else {
+        shareToChannel(channels[i], url, { text, copiedText });
       }
     },
     async Init() {
@@ -272,15 +268,12 @@ export default {
       }
     },
     copyText() {
-      const textarea = document.createElement("textarea");
-      textarea.value = this.inviteCode;
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand("copy");
-      document.body.removeChild(textarea);
-      this.$toast({
-        message: this.$lang.Sucesso,
-        icon: "success",
+      if (!this.inviteCode) return;
+      copyToClipboard(this.inviteCode).then(() => {
+        this.$toast({
+          message: this.$lang.share_link_copied || "Invite link copied",
+          icon: "success",
+        });
       });
     },
   },
@@ -354,14 +347,16 @@ export default {
   flex: 1;
   min-width: 0;
   margin: 0;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  line-height: 1;
+  line-height: 1.25;
   color: #ffffff;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: normal;
+  word-break: break-all;
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
 }
 

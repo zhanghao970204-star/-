@@ -18,18 +18,14 @@
     </p>
 
     <div class="home-support__badges">
-      <a
-        href="https://ton.app/gambling/vpbet?id=4498"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      <span>
         <img
           src="@/assets/img/footer/support-ton.svg"
           alt="TON"
           loading="lazy"
           decoding="async"
         />
-      </a>
+      </span>
       <a
         href="https://cryptogambling.org/"
         target="_blank"

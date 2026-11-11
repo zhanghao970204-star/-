@@ -109,14 +109,6 @@ async function bootstrap() {
 
   app.config.globalProperties.$launchGame = function (jumpPayload) {
     if (!jumpPayload) return;
-    if (jumpPayload.type === "lottery") {
-      this.$jumpTo("/lotteryDetail", {
-        lotteryType: jumpPayload.lotteryType,
-        lotteryName: jumpPayload.lotteryName,
-        typeCate: jumpPayload.typeCate != null ? jumpPayload.typeCate : 1,
-      });
-      return;
-    }
     const prefix = readCountryCode();
     this.$router.push({
       name: "GameHall",
@@ -144,14 +136,6 @@ async function bootstrap() {
   app.component(
     "CommonLang",
     defineAsyncComponent(() => import("./components/CommonLang.vue")),
-  );
-  app.component(
-    "LotteryDayHistory",
-    defineAsyncComponent(() => import("./components/LotteryDayHistory.vue")),
-  );
-  app.component(
-    "LotteryOrder",
-    defineAsyncComponent(() => import("./components/LotteryOrder.vue")),
   );
   app.component(
     "RechargeCont",

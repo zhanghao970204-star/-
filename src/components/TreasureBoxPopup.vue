@@ -122,7 +122,7 @@
             }}</template>
             <template v-else>
               <span class="tb-popup__btn-main">{{
-                $lang.fd_claim_now || "Claim Now"
+                $lang.tb_buy_now || "Buy Now"
               }}</span>
               <span v-if="price" class="tb-popup__btn-sub">
                 <em>{{ liveCurrency }} {{ $formatNumberWithCommas(price) }}</em>
