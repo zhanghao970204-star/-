@@ -212,6 +212,7 @@
 
     <van-dialog
       v-model:show="showDialog"
+      class="dialog-plain"
       title=" "
       style="width: 100%; background: transparent; border-radius: 0px"
       :showConfirmButton="false"

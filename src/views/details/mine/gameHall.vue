@@ -19,7 +19,7 @@
     </div>
 
     <common-popup
-      v-if="$route.params.from === 'game'"
+      v-if="hall.from === 'game'"
       v-model="showPopup"
       :config="{
         isTitle: true,
@@ -32,10 +32,10 @@
       @confirm="confirm"
     ></common-popup>
 
-    <div v-if="$route.params.from === 'game'" class="iframe-wrapper">
+    <div v-if="hall.from === 'game'" class="iframe-wrapper">
       <iframe
         class="iframe-wrapper-s"
-        v-if="$route.params.from === 'game'"
+        v-if="hall.from === 'game'"
         :src="forwardUrl"
         ref="myIframe"
         :style="iframeStyle"
@@ -54,6 +54,27 @@
 
 <script>
 import { GameBalanceList, ForwardGame } from "@/api/common";
+
+// 进游戏参数：优先 query；兼容旧的 params 和 localStorage（刷新 / 旧入口）
+function readHallParams(route) {
+  const q = (route && route.query) || {};
+  const p = (route && route.params) || {};
+  const pick = (k) => (q[k] != null && q[k] !== "" ? q[k] : p[k]);
+  let from = pick("from") || "";
+  let gid = pick("gid") || "";
+  // 内嵌大厅（充值页等进入）不带游戏参数，不能用上次进游戏的缓存兜底
+  if (!from && !gid && !sessionStorage.getItem("gameHallEmbed")) {
+    from = localStorage.getItem("hallFrome") || "";
+    gid = localStorage.getItem("hallGid") || "";
+  }
+  return {
+    from,
+    gid,
+    isDemo: pick("isDemo") || 0,
+    typeCate: pick("typeCate"),
+    gameTab: pick("gameTab"),
+  };
+}
 export default {
   name: "GameHall",
   components: {},
@@ -75,6 +96,7 @@ export default {
       isRechargeGame: false,
       isWirthgeGame: false,
       popupKind: "",
+      hall: readHallParams(this.$route),
       // 拖动相关数据
       dragTop: 5,
       dragLeft: 5,
@@ -93,13 +115,8 @@ export default {
   },
   mounted() {
     this.loadEmbedFromStorage();
-    if (!this.$route.params.from && !this.embedFrom) {
-      this.$route.params.from = localStorage.getItem("hallFrome");
-      this.$route.params.gid = localStorage.getItem("hallGid");
-      this.timer++;
-    }
-    if (this.token && this.$route.params.from === "game") {
-      if (!this.$route.params.gid) {
+    if (this.token && this.hall.from === "game") {
+      if (!this.hall.gid) {
         this.showBlockPopup(
           this.$lang.game_not_found ||
             "This game could not be found. Please return to the lobby and try again.",
@@ -110,13 +127,12 @@ export default {
         window.addEventListener("resize", this.setIframeHeight);
         this.GetGameBalanceList();
       }
-    } else if (this.$route.params.from === "game") {
+    } else if (this.hall.from === "game") {
       this.showBlockPopup(
         this.$lang.game_login_required || "Please log in to play this game.",
       );
     } else if (!this.isEmbedHall) {
-      this.$route.params.from = "game";
-      this.timer++;
+      this.hall.from = "game";
       this.$nextTick(() => {
         this.showBlockPopup(
           this.$lang.game_not_found ||
@@ -253,7 +269,7 @@ export default {
       }
     },
     async ForwardGame() {
-      const data = await ForwardGame({ gid: this.$route.params.gid });
+      const data = await ForwardGame({ gid: this.hall.gid });
       if (data.status === "ok") {
         let closeGame = data.content.closeGame;
         let needRecharge = data.content.needRecharge;
@@ -329,10 +345,10 @@ export default {
       const state = window.history.state;
       if (state && state.back) {
         this.$router.back();
-      } else if (this.$route.params.typeCate === 1) {
+      } else if (Number(this.hall.typeCate) === 1) {
         this.$jumpTo(
           "/category",
-          { gameTab: this.$route.params.gameTab },
+          { gameTab: this.hall.gameTab },
           { replace: true },
         );
       } else {

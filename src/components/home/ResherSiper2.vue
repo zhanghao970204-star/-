@@ -95,6 +95,54 @@
 </template>
 <script>
 import { mapState, mapActions } from "vuex";
+
+const TOP_COUNT = 12;
+const ONLINE_FLOOR = 30;
+
+function hashKey(key) {
+  let hash = 0;
+  for (let i = 0; i < key.length; i++) {
+    hash = (hash * 31 + key.charCodeAt(i)) >>> 0;
+  }
+  // 打散相邻 gid，避免连续 id 得到几乎相同的结果
+  hash = Math.imul(hash ^ (hash >>> 16), 0x45d9f3b) >>> 0;
+  hash = Math.imul(hash ^ (hash >>> 16), 0x45d9f3b) >>> 0;
+  return (hash ^ (hash >>> 16)) >>> 0;
+}
+
+/**
+ * 模拟在线人数：
+ * - 前 12 个：PG 落在 500~2000，其它厂商 500~1000，按排位从高到低
+ * - 12 个以后：从 500 起逐个递减
+ * - 叠加按时间缓慢变化的波动（周期 40 分钟 / 7 分钟），刷新时变化很小
+ */
+function simulateOnline(item, index, isPg, nowTs) {
+  const max = isPg ? 2000 : 1000;
+  const min = 500;
+  const hash = hashKey(String(item.gid || item.gameCode || item.gameName || index));
+  // 每个游戏固定的 ±6% 偏移，避免相邻排位数值过于规整
+  const offset = ((hash % 1000) / 1000 - 0.5) * 0.12;
+
+  let base;
+  if (index < TOP_COUNT) {
+    base = max - ((max - min) * index) / (TOP_COUNT - 1);
+  } else {
+    base = min * Math.pow(0.93, index - TOP_COUNT + 1);
+  }
+  base *= 1 + offset;
+
+  const minutes = nowTs / 60000;
+  const phase = ((hash >>> 10) % 360) * (Math.PI / 180);
+  const wave =
+    0.05 * Math.sin((2 * Math.PI * minutes) / 40 + phase) +
+    0.02 * Math.sin((2 * Math.PI * minutes) / 7 + phase * 2);
+  let value = base * (1 + wave);
+
+  if (index < TOP_COUNT) value = Math.min(max, Math.max(min, value));
+  else value = Math.min(min - 1, Math.max(ONLINE_FLOOR, value));
+  return Math.round(value);
+}
+
 export default {
   name: "ResherSiper",
   components: {},
@@ -110,7 +158,11 @@ export default {
   data() {
     return {
       currentPage2: 0,
+      nowTs: Date.now(),
     };
+  },
+  activated() {
+    this.nowTs = Date.now();
   },
   computed: {
     ...mapState(["favorites"]),
@@ -124,6 +176,15 @@ export default {
         pages.push(games.slice(i, i + 6));
       }
       return pages;
+    },
+    gameIndexMap() {
+      const map = new Map();
+      this.gamesList.forEach((g, i) => map.set(g, i));
+      return map;
+    },
+    isPgType() {
+      const d = this.siderData || {};
+      return /(^|[^a-z])pg([^a-z]|$)|pgsoft/i.test(`${d.name || ""} ${d.code || ""}`);
     },
     favoriteGidSet() {
       const currencyGroup = this.favorites.find(
@@ -177,12 +238,16 @@ export default {
         this._favBusy = false;
       }
     },
-    // 仅展示接口返回的真实在线人数，没有就不显示
+    // 接口有在线人数用接口的，没有则按排位模拟
     onlineCount(item) {
       const raw = item && (item.onlineCount ?? item.online ?? item.playerCount);
       const n = Number(raw);
-      if (!raw || !Number.isFinite(n) || n <= 0) return "";
-      return n.toLocaleString("en-US");
+      if (raw && Number.isFinite(n) && n > 0) return n.toLocaleString("en-US");
+      const index = this.gameIndexMap.get(item);
+      if (index == null) return "";
+      return simulateOnline(item, index, this.isPgType, this.nowTs).toLocaleString(
+        "en-US",
+      );
     },
     goToGame(v) {
       if (this.token) {

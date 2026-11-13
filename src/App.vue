@@ -211,13 +211,13 @@
 <script>
 import { defineAsyncComponent } from "vue";
 import {
-  RedPacket,
+  RedPacketStatus,
   GoogleAuthCodeLogin,
   Init,
   TreasureBoxInit,
   NewPlayerGiftPackInit,
   GetCsLink,
-  GetLuckyRoulette,
+  GetLuckyRouletteStatus,
 } from "@/api/common";
 import {
   openCustomerService,
@@ -501,7 +501,7 @@ export default {
         return;
       }
       try {
-        const res = await RedPacket({});
+        const res = await RedPacketStatus({});
         const c = res && res.status === "ok" ? res.content : null;
         // 有有效活动数据才显示浮标；资格不足进落地页再提示
         this.redPacketVisible = !!(
@@ -683,7 +683,7 @@ export default {
         return;
       }
       // 活动未开启（isOpen!==1）不弹
-      GetLuckyRoulette({})
+      GetLuckyRouletteStatus({})
         .then((res) => {
           const open =
             res && res.status === "ok" && res.content

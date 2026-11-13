@@ -479,30 +479,74 @@ button.is-loading:disabled {
   font-weight: 700;
 }
 
-.van-dialog {
-  background: @popup-bg;
-  border: 1px solid @border-color;
-  border-radius: 8px;
+// 通用确认框（$dialog / van-dialog）：与退出登录等主题弹窗一致
+// 自定义内容的弹窗加 .dialog-plain 不套用
+.van-dialog:not(.dialog-plain) {
+  width: 300px;
+  background: #27033c;
+  border: 1px solid rgba(192, 132, 252, 0.45);
+  border-radius: 16px;
+  overflow: hidden;
 
   .van-dialog__header {
-    color: @info2-color;
+    padding: 24px 20px 0;
+    color: @wihte-color;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.4;
   }
 
   .van-dialog__message {
+    padding: 24px 20px 0;
     color: @wihte-color;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.5;
   }
 
-  .van-button--default {
-    background: @primary-gradient;
-    border: none;
-    border-radius: 20px;
-    color: @black-color;
+  .van-dialog__message--has-title {
+    padding-top: 10px;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 13px;
+    font-weight: 400;
+  }
+
+  .van-dialog__footer {
+    display: flex;
+    gap: 10px;
+    padding: 22px 20px 20px;
+  }
+
+  .van-hairline--top::after,
+  .van-hairline--left::after {
+    display: none;
+  }
+
+  .van-dialog__cancel,
+  .van-dialog__confirm {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    padding: 0 6px;
+    white-space: nowrap;
+
+    &::before {
+      display: none;
+    }
+  }
+
+  .van-dialog__cancel {
+    .btn-3d-yellow();
+    height: 42px;
+    font-size: 14px;
+    color: @primary-text-on !important;
   }
 
   .van-dialog__confirm {
-    background: transparent;
-    color: @border-color;
-    border: 1px solid @border-color;
+    .btn-3d-green();
+    height: 42px;
+    font-size: 14px;
+    color: #fff !important;
   }
 }
 

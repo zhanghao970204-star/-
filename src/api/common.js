@@ -67,6 +67,20 @@ export function GetPromoRule(data) {
 export function RedPacket(data) {
   return request.post("/activity/redPacket", data);
 }
+// 红包雨状态（首页浮标 / 倒计时共用）：短时复用；_fetchedAt 供调用方校正倒计时
+export function RedPacketStatus(data) {
+  const token = localStorage.getItem("token") || "";
+  return cachedRequest(
+    `redPacketStatus|${token}`,
+    () =>
+      request
+        .post("/activity/redPacket", data)
+        .then((res) =>
+          res && typeof res === "object" ? { ...res, _fetchedAt: Date.now() } : res,
+        ),
+    5000,
+  );
+}
 export function GetRedPacket(data) {
   return request.post("/activity/getRedPacket", data);
 }
@@ -200,6 +214,15 @@ export function ReportPromoPanelEvent(data) {
 }
 export function GetLuckyRoulette(data) {
   return request.post("/promo/getLuckyRoulette", data);
+}
+// 只用于判断入口是否显示（isOpen）：首页 / 活动页 / 首页弹窗共用，短时复用
+export function GetLuckyRouletteStatus(data) {
+  const token = localStorage.getItem("token") || "";
+  return cachedRequest(
+    `luckyRouletteStatus|${token}`,
+    () => request.post("/promo/getLuckyRoulette", data),
+    10000,
+  );
 }
 export function LuckyRoulette(data) {
   return request.post("/promo/luckyRoulette", data);

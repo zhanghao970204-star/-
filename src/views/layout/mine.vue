@@ -226,6 +226,36 @@
         </div>
       </div>
     </van-popup>
+
+    <van-popup v-model:show="showRealNamePopup" round class="logout-popup">
+      <div class="logout-popup__content">
+        <p class="logout-popup__title">
+          {{ $lang.authName_title || "Real Name Authentication" }}
+        </p>
+        <p class="logout-popup__desc">
+          {{
+            $lang.authName_txt2 ||
+            "Enter your full legal name exactly as it appears on your payout account. It is used only to verify withdrawals."
+          }}
+        </p>
+        <div class="logout-popup__actions">
+          <button
+            class="logout-popup__btn logout-popup__btn--cancel"
+            type="button"
+            @click="showRealNamePopup = false"
+          >
+            {{ $lang.Cancelar }}
+          </button>
+          <button
+            class="logout-popup__btn logout-popup__btn--confirm"
+            type="button"
+            @click="confirmRealName"
+          >
+            {{ $lang.Confirmar }}
+          </button>
+        </div>
+      </div>
+    </van-popup>
   </div>
 </template>
 
@@ -286,6 +316,7 @@ export default {
   data() {
     return {
       showLogoutPopup: false,
+      showRealNamePopup: false,
       balanceReady: false,
       loggingOut: false,
       InitDate: {
@@ -337,10 +368,7 @@ export default {
     },
   },
   mounted() {
-    resetPageScroll();
-    this.Init();
-    this.GetGameBalanceList();
-    this.loadVipInit();
+    // 页面在 keep-alive 内，首次挂载也会触发 activated，数据统一在 activated 里拉
     this._onHeaderRefresh = () => {
       this.Init();
       this.GetGameBalanceList();
@@ -417,7 +445,7 @@ export default {
         }
         return;
       }
-      // 先校验提现条件，不满足直接告诉用户还差什么，不进入空表单
+      // 提现通道关闭时直接提示；流水不足由提现页展示还差多少
       if (!(await this.checkWithdrawable())) return;
       await this.Init();
       if (this.InitDate.privacyPasswdSetted === "no") {
@@ -441,17 +469,6 @@ export default {
           });
           return false;
         }
-        const diff = Number(c.differenceAmount) || 0;
-        if (diff > 0) {
-          this.$toast({
-            message: `${this.$lang.BankInfo_txt3 || "Wager"} ${this.$formatMoney(
-              diff,
-              this.getCurrency,
-            )} ${this.$lang.BankInfo_txt4 || "more to unlock withdrawals"}`,
-            duration: 3000,
-          });
-          return false;
-        }
       } catch (e) {
         /* 接口失败不拦截，进入提现页由页面再校验 */
       }
@@ -463,17 +480,11 @@ export default {
         return;
       }
       // 跳实名前先说明用途
-      this.$dialog
-        .confirm({
-          title: this.$lang.authName_title || "Real Name Authentication",
-          message:
-            this.$lang.authName_txt2 ||
-            "Enter your full legal name exactly as it appears on your payout account. It is used only to verify withdrawals.",
-          confirmButtonText: this.$lang.Confirmar || "Confirm",
-          cancelButtonText: this.$lang.common_cancel || "Cancel",
-        })
-        .then(() => this.$jumpTo("/authName"))
-        .catch(() => {});
+      this.showRealNamePopup = true;
+    },
+    confirmRealName() {
+      this.showRealNamePopup = false;
+      this.$jumpTo("/authName");
     },
     copyText(value) {
       const text = value == null ? "" : String(value);
@@ -922,6 +933,14 @@ export default {
     color: #fff;
     text-align: center;
     line-height: 1.4;
+  }
+
+  &__desc {
+    margin: -10px 0 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.75);
+    text-align: center;
   }
 
   &__actions {

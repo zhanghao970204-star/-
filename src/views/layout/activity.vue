@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { NewPlayerGiftPackInit, GetLuckyRoulette } from "@/api/common";
+import { NewPlayerGiftPackInit, GetLuckyRouletteStatus } from "@/api/common";
 import iconSpin from "@/assets/img/activity/promo/spin.png";
 import iconEnvelopes from "@/assets/img/activity/promo/envelopes.png";
 import iconGifts from "@/assets/img/activity/promo/gifts.png";
@@ -144,7 +144,7 @@ export default {
   methods: {
     async initActivityStatus() {
       if (this.token) {
-        GetLuckyRoulette({})
+        GetLuckyRouletteStatus({})
           .then((res) => {
             if (res && res.status === "ok" && res.content) {
               this.luckySpinOpen = Number(res.content.isOpen) === 1;

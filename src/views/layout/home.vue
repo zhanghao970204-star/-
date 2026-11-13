@@ -220,7 +220,11 @@
     </div>
 
     <login v-model="showPopup" overlay></login>
-    <lucky-roulette v-model="isShowPopup" overlay></lucky-roulette>
+    <lucky-roulette
+      v-if="isShowPopup"
+      v-model="isShowPopup"
+      overlay
+    ></lucky-roulette>
   </div>
 </template>
 <script>
@@ -230,8 +234,8 @@ import {
   GetPlatformList,
   GetInvitationID,
   GetCsLink,
-  GetLuckyRoulette,
-  RedPacket,
+  GetLuckyRouletteStatus,
+  RedPacketStatus,
 } from "@/api/common";
 import { getCsLinksByScene, getCsItemUrl } from "@/utils/csLink";
 import { logoutIfReloginRequiredWithToken } from "@/utils/platformAuth";
@@ -679,7 +683,7 @@ export default {
     },
     fetchLuckySpinOpen() {
       if (!localStorage.getItem("token")) return;
-      GetLuckyRoulette({})
+      GetLuckyRouletteStatus({})
         .then((res) => {
           if (res && res.status === "ok" && res.content) {
             this.luckySpinOpen = Number(res.content.isOpen) === 1;
@@ -694,11 +698,15 @@ export default {
       localStorage.removeItem("countdownEndTime");
       if (!localStorage.getItem("token")) return;
       try {
-        const res = await RedPacket({});
+        const res = await RedPacketStatus({});
         const c = res && res.status === "ok" ? res.content : null;
         if (!c) return;
+        // 复用的结果要扣掉已经过去的秒数
+        const elapsed = res._fetchedAt
+          ? Math.floor((Date.now() - res._fetchedAt) / 1000)
+          : 0;
         const timeLeft = Number(c.timeLeft) || 0;
-        const next = Number(c.nextTimeLeft) || 0;
+        const next = (Number(c.nextTimeLeft) || 0) - elapsed;
         if (timeLeft <= 0 && next > 0) {
           this._countdownEnd = Date.now() + next * 1000;
           this.totalSeconds = next;

@@ -110,19 +110,17 @@ async function bootstrap() {
   app.config.globalProperties.$launchGame = function (jumpPayload) {
     if (!jumpPayload) return;
     const prefix = readCountryCode();
-    this.$router.push({
-      name: "GameHall",
-      params: {
-        prefix,
-        gid: jumpPayload.gid,
-        isDemo: jumpPayload.isDemo != null ? jumpPayload.isDemo : 0,
-        from: jumpPayload.from || "game",
-        typeCate: jumpPayload.typeCate,
-        gameTab: jumpPayload.gameTab,
-      },
-    });
     localStorage.setItem("hallFrome", "game");
     localStorage.setItem("hallGid", String(jumpPayload.gid));
+    // gameHall 路由只声明了 prefix，其它字段走 query（params 里未声明的字段会被路由丢弃）
+    const query = {
+      gid: jumpPayload.gid,
+      isDemo: jumpPayload.isDemo != null ? jumpPayload.isDemo : 0,
+      from: jumpPayload.from || "game",
+    };
+    if (jumpPayload.typeCate != null) query.typeCate = jumpPayload.typeCate;
+    if (jumpPayload.gameTab != null) query.gameTab = jumpPayload.gameTab;
+    this.$router.push({ name: "GameHall", params: { prefix }, query });
   };
 
   app.use(FacebookPixelPlugin);
