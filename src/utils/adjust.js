@@ -82,11 +82,17 @@ function loadSdk() {
     .then(([appToken, Adjust]) => {
       if (!appToken || !Adjust) return null
       const isDev = import.meta.env.DEV
+      // target=ad 的邀请链接必须走 production，sandbox 归因拿不到 adid
+      const isAdTarget = localStorage.getItem(STORAGE_KEYS.adjustUuidMode) === '1'
+      const environment = isAdTarget || !isDev ? 'production' : 'sandbox'
       Adjust.initSdk({
         appToken,
-        environment: isDev ? 'sandbox' : 'production',
+        environment,
         logLevel: isDev ? 'verbose' : 'error',
       })
+      if (isDev) {
+        console.log('[Adjust] init', { appToken, environment, isAdTarget })
+      }
       Adjust.waitForWebUUID()
         .then((uuid) => {
           if (uuid) localStorage.setItem(WEB_UUID_KEY, uuid)
@@ -135,9 +141,27 @@ export function appendAdidToFbExpand(fbExpand, adid) {
  * 取 adid 传给后端；首次打开时归因可能还没完成，最多等 timeoutMs，超时返回空串
  */
 export function waitForAdjustAdid(timeoutMs = 3000) {
-  if (!isAdjustEnabled()) return Promise.resolve('')
+  if (!isAdjustEnabled()) {
+    if (import.meta.env.DEV) {
+      console.log('[Adjust] waitForAdjustAdid skipped (native app shell)')
+    }
+    return Promise.resolve('')
+  }
   // 先等本次链接的应用识别码确认完（可能清掉旧 adid），再读缓存
-  const task = loadSdk().then(() => getAdjustAdid() || attributionPromise || '')
-  const timeout = new Promise((resolve) => setTimeout(() => resolve(''), timeoutMs))
+  const task = loadSdk()
+    .then(() => getAdjustAdid() || attributionPromise || '')
+    .then((adid) => {
+      console.log('[Adjust] waitForAdjustAdid resolved=', adid || '(empty)', {
+        cached: getAdjustAdid() || '(empty)',
+        timeoutMs,
+      })
+      return adid || ''
+    })
+  const timeout = new Promise((resolve) =>
+    setTimeout(() => {
+      console.log('[Adjust] waitForAdjustAdid timeout', timeoutMs, 'ms, cached=', getAdjustAdid() || '(empty)')
+      resolve('')
+    }, timeoutMs),
+  )
   return Promise.race([task, timeout])
 }

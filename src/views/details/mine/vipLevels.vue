@@ -405,6 +405,7 @@
 </template>
 
 <script>
+import { track, EVENTS } from "@/utils/analytics";
 import {
   VipInit,
   GetVipAwardInit,
@@ -1227,6 +1228,19 @@ export default {
       return map[key] || false;
     },
     claimByKey(key) {
+      if (key === "upgrade") {
+        track(EVENTS.vip_level_reward_claim_click, {
+          vip_level: this.currentViewLevel,
+        });
+      } else if (key === "sign") {
+        track(EVENTS.vip_daily_checkin_click, {});
+      } else if (key === "cashBack") {
+        track(EVENTS.activity_reward_claim_click, {
+          activity_id: "vip_loss_rebate",
+          reward_id: String(this.currentViewLevel || ""),
+          reward_type: "vip_cashback",
+        });
+      }
       const map = {
         upgrade: this.claimUpgrade,
         sign: this.claimSign,

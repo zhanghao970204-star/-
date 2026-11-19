@@ -22,6 +22,7 @@ import { resetPageScrollAfterRoute } from "./utils/scrollReset.js";
 import { ensureClientId } from "./utils/nativeDevice.js";
 import { installGlobalClickSound } from "./utils/sound.js";
 import { initAdjust } from "./utils/adjust.js";
+import { initAnalytics, beginGameSession, track, EVENTS } from "./utils/analytics.js";
 // import VConsole from 'vconsole'
 
 // App / 调试：打开 vConsole（?vconsole=0 可关）
@@ -112,6 +113,14 @@ async function bootstrap() {
     const prefix = readCountryCode();
     localStorage.setItem("hallFrome", "game");
     localStorage.setItem("hallGid", String(jumpPayload.gid));
+    beginGameSession(jumpPayload.gid);
+    track(EVENTS.home_page_game_click, {
+      game_id: jumpPayload.gid,
+      game_name: jumpPayload.gameName || jumpPayload.name || "",
+      game_theme: jumpPayload.gameTheme || "",
+      provider: jumpPayload.provider || jumpPayload.platformName || "",
+      bet_range: jumpPayload.betRange || "",
+    });
     // gameHall 路由只声明了 prefix，其它字段走 query（params 里未声明的字段会被路由丢弃）
     const query = {
       gid: jumpPayload.gid,
@@ -167,6 +176,7 @@ async function bootstrap() {
   installGlobalClickSound();
   app.mount("#app");
   initAdjust();
+  initAnalytics();
 }
 
 bootstrap();

@@ -421,6 +421,7 @@
 </template>
 
 <script>
+import { track, EVENTS, getDepositEntryScene } from "@/utils/analytics";
 import {
   Init,
   Pay,
@@ -811,6 +812,17 @@ export default {
       if (openPayTab) {
         payWin = openUsPayBlankWindow();
       }
+      track(EVENTS.deposit_page_pay_submit, {
+        order_id: "",
+        amount_value: this.amount,
+        goods_type: "recharge",
+        pay_channel: this.paymentKey || "",
+        promo_type:
+          this.showRechargeActivity && this.agree
+            ? this.promoCode || "first_recharge_new_1"
+            : "",
+        entry_scene: getDepositEntryScene() || "direct",
+      });
       const data = await Pay({
         paymentAmount: this.amount,
         paymentId: this.paymentId,
@@ -988,6 +1000,9 @@ export default {
       this.awardRules = this.paymentList[i].awardRules;
       this.paymentIconUrl = this.paymentList[i].paymentIconUrl;
       this.paymentName = this.paymentList[i].paymentName;
+      track(EVENTS.deposit_page_pay_channel_click, {
+        pay_channel: this.paymentKey || this.paymentId || "",
+      });
       if (resetAmount) {
         this.dataList = this.paymentList[i].quickSelect || [];
         this.dataList.forEach((item) => {
@@ -1057,6 +1072,12 @@ export default {
       this.totalMount = this.showActivityBonus
         ? this.truncateTo2(amount + bonus)
         : amount;
+      track(EVENTS.deposit_page_amount_click, {
+        amount_value: amount,
+        bonus_amount: bonus,
+        goods_type: "recharge",
+        activity_id: this.promoCode || "",
+      });
     },
     handleInput(val) {
       const raw = String(this.parseAmountInput(val) ?? "");

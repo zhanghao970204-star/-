@@ -53,6 +53,7 @@
 </template>
 
 <script>
+import { track, EVENTS, getGameSessionId, getGameDurationMs, clearGameSession, setDepositEntryScene } from "@/utils/analytics";
 import { GameBalanceList, ForwardGame } from "@/api/common";
 
 // 进游戏参数：优先 query；兼容旧的 params 和 localStorage（刷新 / 旧入口）
@@ -299,8 +300,18 @@ export default {
           this.showBlockPopup(this.$lang.common_txt160);
         } else {
           this.forwardUrl = data.content.forwardUrl || "";
+          this._gameLoadAt = Date.now();
+          track(EVENTS.game_webview_load_success, {
+            game_id: this.hall.gid,
+            load_duration: 0,
+            load_stage_duration: "",
+          });
         }
       } else {
+        track(EVENTS.game_webview_load_fail, {
+          game_id: this.hall.gid,
+          fail_reason: data.msg || "forward_failed",
+        });
         this.$toast({
           message: data.msg,
           icon: "cross",
@@ -342,6 +353,12 @@ export default {
     },
     // 回到进入游戏前的页面；直接打开（无历史）时回首页
     leaveGame() {
+      track(EVENTS.game_page_exit_click, {
+        game_id: this.hall.gid,
+        game_duration: getGameDurationMs(),
+        game_session_id: getGameSessionId(),
+      });
+      clearGameSession();
       const state = window.history.state;
       if (state && state.back) {
         this.$router.back();
@@ -364,6 +381,7 @@ export default {
     },
     confirm() {
       if (this.popupKind === "recharge") {
+        setDepositEntryScene("game");
         this.$jumpTo("/rechargeCont", {}, { replace: true });
         return;
       }

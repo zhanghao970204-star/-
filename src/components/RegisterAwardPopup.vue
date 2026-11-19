@@ -79,6 +79,7 @@
 </template>
 
 <script>
+import { track, EVENTS } from "@/utils/analytics";
 import {
   ActivitygetRegisterAward,
   ActivityreceiveRegisterAward,
@@ -135,7 +136,7 @@ export default {
     },
     dismiss() {
       this.onPopupShow(false);
-      this.$emit("closed");
+      this.$emit("closed", { claimable: this.receiveStatus === 1 });
     },
     async fetchAward() {
       if (!localStorage.getItem("token")) {
@@ -159,6 +160,9 @@ export default {
       if (this.claiming || this.receiveStatus !== 1) return;
       this.claiming = true;
       try {
+        track(EVENTS.new_player_register_giftpack_popup_click, {
+          trigger_type: "auto_popup",
+        });
         const data = await ActivityreceiveRegisterAward({});
         const content = data && data.content;
         const status = content ? Number(content.receiveStatus) : 0;
@@ -168,14 +172,14 @@ export default {
           this.onPopupShow(false);
           emitHeaderRefresh({ immediate: true });
           await flyCoins(e);
-          this.$emit("closed");
+          this.$emit("closed", { claimable: false });
           this.$toast({
             message: this.$lang.bonus_txt16 || "Success",
             icon: "success",
           });
         } else if (data && data.status === "ok" && status === 0) {
           this.onPopupShow(false);
-          this.$emit("closed");
+          this.$emit("closed", { claimable: false });
         } else {
           this.$toast({
             message: (data && data.msg) || "Failed",

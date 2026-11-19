@@ -247,6 +247,7 @@
 </template>
 
 <script>
+import { track, EVENTS } from "@/utils/analytics";
 import {
   TaskCenterNewbieInit,
   TaskCenterDailyInit,
@@ -460,6 +461,10 @@ export default {
       }
       if (task.status === "claimable") {
         try {
+          track(EVENTS.mission_reward_claim_click, {
+            mission_id: task.code || "",
+            mission_type: this.currentSection.category || this.activeTab || "",
+          });
           const res = await ClaimTaskReward({
             category: this.currentSection.category || this.activeTab,
             taskCode: task.code,
@@ -593,6 +598,11 @@ export default {
       if (!m.canClaim && this.currentSection.currentPoints < m.threshold)
         return;
       try {
+        track(EVENTS.activity_reward_claim_click, {
+          activity_id: "mission_progress",
+          reward_id: m.id || m.threshold || "",
+          reward_type: "progress",
+        });
         const res = await ClaimProgressReward({
           category: this.currentSection.category || this.activeTab,
           threshold: m.threshold,

@@ -36,7 +36,7 @@
           <van-loading v-if="loading" color="#ffa300" vertical> </van-loading>
         </div>
         <div class="home-cat-bar">
-          <div class="home-cat-bar__search" @click="$jumpTo('/searchGame')">
+          <div class="home-cat-bar__search" @click="goSearch">
             <img
               class="home-cat-bar__search-icon"
               src="@/assets/img/home/top_search.png"
@@ -228,6 +228,7 @@
   </div>
 </template>
 <script>
+import { track, EVENTS } from "@/utils/analytics";
 import {
   GetHomeGameList,
   // GetIsFbReport,
@@ -646,11 +647,27 @@ export default {
         this.$bus.emit("openLogin");
         return;
       }
+      const activityId = item.key || "";
+      track(EVENTS.activity_center_activity_click, {
+        activity_id: activityId,
+        activity_type: activityId,
+      });
       if (item.action === "treasure") {
         this.$bus.emit("openTreasureBox");
         return;
       }
-      if (item.path) this.$jumpTo(item.path);
+      if (item.path) {
+        track(EVENTS.activity_detail_join_click, {
+          activity_id: activityId,
+          activity_type: activityId,
+          entry_scene: "home",
+        });
+        this.$jumpTo(item.path);
+      }
+    },
+    goSearch() {
+      track(EVENTS.home_page_search_click, { search_keyword: "" });
+      this.$jumpTo("/searchGame");
     },
     goWeeklyMissions() {
       if (!this.token) {
@@ -768,8 +785,18 @@ export default {
     tabSelect() {
       this.allOpen = false;
       this.resetVisibleTypes();
+      const tab =
+        this.pgDate.dataList && this.pgDate.dataList[this.activeTab];
+      track(EVENTS.home_page_category_click, {
+        category_type: (tab && tab.sortType) || "",
+        category_name: (tab && tab.name) || "",
+      });
     },
     goVendor(vendor) {
+      track(EVENTS.home_page_category_click, {
+        category_type: "vendor",
+        category_name: (vendor && (vendor.name || vendor.code)) || "",
+      });
       this.$jumpTo("/category", { vendorCode: vendor.code });
     },
     hotWinSrc(text) {
@@ -782,12 +809,19 @@ export default {
     },
     goToHotGame(game) {
       if (!game) return;
+      const rank =
+        this.hotGames.findIndex((g) => g && g.gid === game.gid) + 1;
+      track(EVENTS.game_recommend_click, {
+        game_id: game.gid,
+        rank: rank > 0 ? rank : 1,
+      });
       if (this.token || localStorage.getItem("token")) {
         this.$launchGame({
           type: "hall",
           gid: game.gid,
           isDemo: 0,
           from: "game",
+          gameName: game.gameName,
         });
       } else if (this.$bus) {
         this.$bus.emit("openLogin");

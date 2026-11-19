@@ -66,6 +66,7 @@ import {
   resetPageScrollAfterRoute,
 } from "@/utils/scrollReset";
 import { setAfterLoginPath } from "@/utils/guestAuth";
+import { track, EVENTS, setDepositEntryScene, setLoginEntryScene } from "@/utils/analytics";
 
 export default {
   name: "Y7Tabbar",
@@ -143,6 +144,9 @@ export default {
     onBeforeChange(index) {
       const to = this.routerArr[index];
       if (!to) return false;
+      const tabNames = ["Reward", "Invite", "Game", "Deposit", "Account"];
+      track(EVENTS.home_page_tab_click, { tab_name: tabNames[index] || String(index) });
+      if (index === 3) setDepositEntryScene("tabbar");
 
       if (
         this.needLoginIndexes.includes(index) &&
@@ -150,7 +154,10 @@ export default {
       ) {
         // 登录成功后直接进入点的 Tab；充值入口登录弹窗显示对应文案
         setAfterLoginPath(to);
-        if (index === 3) sessionStorage.setItem("loginScene", "deposit");
+        if (index === 3) {
+          sessionStorage.setItem("loginScene", "deposit");
+          setLoginEntryScene("deposit");
+        }
         this.$emit("need-login");
         return false;
       }

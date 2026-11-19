@@ -41,7 +41,7 @@
                 radius="10"
                 v-for="item in page"
                 :key="item.gid || item.gameCode || item.gameName"
-                @click="goToGame(item.gid, item)"
+                @click="goToGame(item)"
                 class="item"
                 style="position: relative"
                 :src="item.gameIcon"
@@ -94,6 +94,7 @@
   </div>
 </template>
 <script>
+import { track, EVENTS } from "@/utils/analytics";
 import { mapState, mapActions } from "vuex";
 
 const TOP_COUNT = 12;
@@ -161,9 +162,6 @@ export default {
       nowTs: Date.now(),
     };
   },
-  activated() {
-    this.nowTs = Date.now();
-  },
   computed: {
     ...mapState(["favorites"]),
     gamesList() {
@@ -196,7 +194,13 @@ export default {
       return new Set(currencyGroup.list.map((fav) => Number(fav.gid)));
     },
   },
-  mounted() {},
+  mounted() {
+    this.$nextTick(() => this.reportVisibleGameViews());
+  },
+  activated() {
+    this.nowTs = Date.now();
+    this.$nextTick(() => this.reportVisibleGameViews());
+  },
   methods: {
     ...mapActions(["addFavorite", "removeFavorite"]),
     isFavorite(item) {
@@ -209,6 +213,29 @@ export default {
     },
     onChange(index) {
       this.currentPage2 = index;
+      this.$nextTick(() => this.reportVisibleGameViews());
+    },
+    reportVisibleGameViews() {
+      const page = this.pages[this.currentPage2] || [];
+      const provider = (this.siderData && (this.siderData.name || this.siderData.code)) || "";
+      page.forEach((item, i) => {
+        if (!item || item.__phViewed) return;
+        item.__phViewed = true;
+        track(EVENTS.home_page_game_view, {
+          game_id: item.gid,
+          game_name: item.gameName || "",
+          game_theme: item.gameTheme || "",
+          provider,
+          bet_range: item.betRange || "",
+        });
+        // 推荐位：首页第一个分类的前几张也记曝光
+        if (this.siderIndex === 0) {
+          track(EVENTS.game_recommend_exposure, {
+            game_id: item.gid,
+            rank: this.currentPage2 * 6 + i + 1,
+          });
+        }
+      });
     },
     prevPage() {
       if (this.currentPage2 > 0 && this.$refs.swipe) {
@@ -228,12 +255,17 @@ export default {
         currency: this.getCurrency,
         item: item,
       };
+      const removing = this.isFavorite(item);
       try {
-        if (this.isFavorite(item)) {
+        if (removing) {
           await this.removeFavorite(payload);
         } else {
           await this.addFavorite(payload);
         }
+        track(EVENTS.home_page_favorite_click, {
+          game_id: item && item.gid,
+          action_type: removing ? "remove" : "add",
+        });
       } finally {
         this._favBusy = false;
       }
@@ -249,9 +281,25 @@ export default {
         "en-US",
       );
     },
-    goToGame(v) {
+    goToGame(item) {
+      const gid = item && typeof item === "object" ? item.gid : item;
+      const meta =
+        item && typeof item === "object"
+          ? {
+              gameName: item.gameName,
+              gameTheme: item.gameTheme,
+              provider: (this.siderData && this.siderData.name) || item.platformName,
+              betRange: item.betRange,
+            }
+          : {};
       if (this.token) {
-        this.$launchGame({ type: "hall", gid: v, isDemo: 0, from: "game" });
+        this.$launchGame({
+          type: "hall",
+          gid,
+          isDemo: 0,
+          from: "game",
+          ...meta,
+        });
       } else if (this.$bus) {
         sessionStorage.setItem("loginScene", "game");
         this.$bus.emit("openLogin");

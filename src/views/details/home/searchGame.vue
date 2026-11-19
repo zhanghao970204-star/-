@@ -131,6 +131,7 @@
 </template>
 
 <script>
+import { track, EVENTS } from "@/utils/analytics";
 import { GetHomeGameList } from "@/api/common";
 import { collectHomeGames } from "@/utils/homeGameList";
 
@@ -258,6 +259,7 @@ export default {
     },
     onSearch() {
       const kw = this.searchKeyword.trim();
+      track(EVENTS.home_page_search_click, { search_keyword: kw });
       if (kw && this.searchResult.length > 0) this.saveSearchHistory(kw);
     },
     onHistoryClick(name) {

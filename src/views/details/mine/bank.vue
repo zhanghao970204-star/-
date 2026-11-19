@@ -240,6 +240,7 @@
 </template>
 
 <script>
+import { track, EVENTS } from "@/utils/analytics";
 import bankEye from "@/assets/img/mine/bank_eye.svg";
 import bankEyeOff from "@/assets/img/mine/bank_eye_off.svg";
 import {
@@ -458,6 +459,9 @@ export default {
       }
       this.addSubmitting = true;
       try {
+        track(EVENTS.withdraw_account_bind_submit, {
+          account_type: this.addBankName || this.addBankId || "bank",
+        });
         const data = await AddBankCard(
           buildAddBankCardPayload({
             bankName: this.addBankName,

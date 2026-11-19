@@ -85,7 +85,7 @@
     </div>
 
     <div class="mine-records">
-      <div class="mine-records__item" @click="$jumpTo('/recordOrder')">
+      <div class="mine-records__item" @click="goWalletTab('deposit_record', '/recordOrder')">
         <div class="mine-records__tile">
           <img
             class="mine-records__icon"
@@ -97,7 +97,7 @@
           </div>
         </div>
       </div>
-      <div class="mine-records__item" @click="$jumpTo('/transactionRecords')">
+      <div class="mine-records__item" @click="goWalletTab('withdraw_record', '/transactionRecords')">
         <div class="mine-records__tile">
           <img
             class="mine-records__icon"
@@ -109,7 +109,7 @@
           </div>
         </div>
       </div>
-      <div class="mine-records__item" @click="$jumpTo('/billGame')">
+      <div class="mine-records__item" @click="goWalletTab('game_record', '/billGame')">
         <div class="mine-records__tile">
           <img
             class="mine-records__icon"
@@ -260,6 +260,7 @@
 </template>
 
 <script>
+import { track, EVENTS, setDepositEntryScene, setWithdrawEntryScene, resetAnalyticsUser } from "@/utils/analytics";
 import {
   Init,
   GameBalanceList,
@@ -396,6 +397,10 @@ export default {
     goEditProfile() {
       this.$jumpTo("/editProfile");
     },
+    goWalletTab(tabType, path) {
+      track(EVENTS.wallet_page_tab_click, { tab_type: tabType });
+      this.$jumpTo(path);
+    },
     async Init() {
       try {
         const data = await Init();
@@ -434,9 +439,13 @@ export default {
     },
     async goToDesposit(i) {
       if (i === 0) {
+        setDepositEntryScene("mine");
+        track(EVENTS.deposit_entry_click, { entry_scene: "mine", activity_id: "" });
         this.$jumpTo("/rechargeCont");
         return;
       }
+      setWithdrawEntryScene("mine");
+      track(EVENTS.withdraw_entry_click, { entry_scene: "mine" });
       if (isGuestUser()) {
         if (isNativeAppShell()) {
           this.$bus.emit("openGuestUpgrade");

@@ -131,6 +131,7 @@ import { applyCountryLanguage } from "@/utils/locale";
 import { isGuestUser } from "@/utils/guestAuth";
 import { isH5WebClient, isNativeAppShell } from "@/utils/nativeApp";
 import BalanceRoll from "@/components/BalanceRoll.vue";
+import { syncAnalyticsFromInit, syncAnalyticsBalance, track, EVENTS, setDepositEntryScene } from "@/utils/analytics";
 
 export default {
   name: "TopNav",
@@ -499,6 +500,7 @@ export default {
       if (data.status === "ok") {
         this.InitDate2 = data.content;
         this.balanceReady = true;
+        syncAnalyticsBalance(data.content);
       }
     },
     // 像素上报已停用，归因统一走 Adjust
@@ -540,6 +542,7 @@ export default {
       const data = await Init();
       if (data.status === "ok") {
         this.InitDate = data.content;
+        syncAnalyticsFromInit(data.content);
         localStorage.setItem("shareCode", data.content.inviteCode);
 
         // 像素上报已停用，归因统一走 Adjust（事件由后端上报）
@@ -616,6 +619,8 @@ export default {
         this.goLogin(0);
         return;
       }
+      setDepositEntryScene("topnav");
+      track(EVENTS.deposit_entry_click, { entry_scene: "topnav", activity_id: "" });
       this.$jumpTo("/rechargeCont");
     },
     toggleRotation() {

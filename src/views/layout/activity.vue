@@ -47,6 +47,7 @@
 </template>
 
 <script>
+import { track, EVENTS } from "@/utils/analytics";
 import { NewPlayerGiftPackInit, GetLuckyRouletteStatus } from "@/api/common";
 import iconSpin from "@/assets/img/activity/promo/spin.png";
 import iconEnvelopes from "@/assets/img/activity/promo/envelopes.png";
@@ -165,6 +166,16 @@ export default {
       this.bannerIndex = index;
     },
     onCardClick(card) {
+      const activityId = (card && card.key) || "";
+      track(EVENTS.activity_center_activity_click, {
+        activity_id: activityId,
+        activity_type: activityId,
+      });
+      track(EVENTS.activity_detail_join_click, {
+        activity_id: activityId,
+        activity_type: activityId,
+        entry_scene: "activity_list",
+      });
       this.goTo(card.path);
     },
     goTo(path) {

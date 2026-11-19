@@ -1,3 +1,4 @@
+import { track, EVENTS } from "@/utils/analytics";
 import { GetCsLink } from "@/api/common";
 
 export function getCsItemUrl(item) {
@@ -108,6 +109,7 @@ export async function openCustomerService(options = {}) {
 
   if (csOpening) return false;
   csOpening = true;
+  try { track(EVENTS.cs_click, { entry_scene: scene || "default" }); } catch (e) {}
 
   try {
     // 已有预取链接：完全在用户手势内同步打开

@@ -133,6 +133,7 @@
 </template>
 
 <script>
+import { track, EVENTS } from "@/utils/analytics";
 import { VnRechargeInitS, Pay } from "@/api/common";
 import { reportPromoPanel } from "@/utils/common";
 import {
@@ -243,6 +244,10 @@ export default {
     },
     async claimTreasureBox() {
       if (this.tbPaying) return;
+      track(EVENTS.treasure_box_buy_click, {
+        chest_level: "",
+        price_amount: this.price || 0,
+      });
       this.tbPaying = true;
       const isUsRedirect = isUsPayRedirect();
       const payWin = isUsRedirect ? openUsPayBlankWindow() : null;

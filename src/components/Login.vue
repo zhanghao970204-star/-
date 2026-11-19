@@ -456,6 +456,7 @@
 </template>
 
 <script>
+import { track, EVENTS, getLoginEntryScene, setLoginEntryScene } from "@/utils/analytics";
 import Vcode from "vue3-puzzle-vcode";
 
 import {
@@ -748,6 +749,17 @@ export default {
         // 登录来源场景（充值 / 游戏），用于头图文案；读一次即清
         this.loginScene = sessionStorage.getItem("loginScene") || "";
         sessionStorage.removeItem("loginScene");
+        if (this.loginScene) setLoginEntryScene(this.loginScene);
+        const entry = getLoginEntryScene() || this.loginScene || "manual";
+        track(
+          this.selectIndex === 1
+            ? EVENTS.register_page_page_view
+            : EVENTS.login_page_page_view,
+          {
+            entry_scene: entry,
+            invite_code: localStorage.getItem("id") || "",
+          },
+        );
         const pending = readAfterLoginPath();
         if (!pending || Date.now() - pending.at > 3000) {
           setAfterLoginPath(this.$route.fullPath);
@@ -1180,6 +1192,10 @@ export default {
       this.registerParames.loginType = "account";
       this.registerParames.passwd = md5(this.passwd);
       const adid = await waitForAdjustAdid();
+      console.log("[Adjust] register adid=", adid || "(empty)", {
+        cached: localStorage.getItem("adjust_adid") || "(empty)",
+        fbExpandBefore: localStorage.getItem("fbExpand") || "(empty)",
+      });
       if (localStorage.getItem("id")) {
         this.registerParames.id = localStorage.getItem("id");
         this.registerParames.fbExpand = appendAdidToFbExpand(
@@ -1194,9 +1210,21 @@ export default {
           delete this.registerParames.fbExpand;
         }
       }
+      console.log(
+        "[Adjust] register fbExpand=",
+        this.registerParames.fbExpand || "(empty)",
+      );
       // this.GetIsFbReport();
+      track(EVENTS.register_page_register_submit, {
+        register_type: "account",
+        invite_code: localStorage.getItem("id") || "",
+      });
       const data = await Register(this.registerParames);
       if (data.status === "ok") {
+        track(EVENTS.register_page_register_success, {
+          register_type: "account",
+          invite_code: localStorage.getItem("id") || "",
+        });
         saveLoginSession(data.content || {}, { clearGuest: true });
         localStorage.setItem("isRegister", "isRegister");
         reloadAppEntry();
@@ -1208,33 +1236,45 @@ export default {
     },
     async LoginCaptchaSubmit() {
       this.apiError = "";
+      track(EVENTS.login_page_login_submit, { login_type: "captcha" });
       const data = await LoginCaptcha({
         areaCode: this.GET_AREACODE,
         phoneNo: this.account,
         captcha: this.captcha,
       });
       if (data.status === "ok") {
+        track(EVENTS.login_page_login_success, { login_type: "captcha" });
         saveLoginSession(data.content || {}, { clearGuest: true });
         reloadAppEntry();
         return true;
       } else {
         this.apiError = data.msg || this.$lang.network_error || "Error";
+        track(EVENTS.login_page_login_fail, {
+          fail_reason: this.apiError,
+          login_type: "captcha",
+        });
         this.showFormToast(this.apiError);
       }
     },
     async Login() {
       this.apiError = "";
+      track(EVENTS.login_page_login_submit, { login_type: "account" });
       const data = await Login({
         account: this.account,
         passwd: md5(this.passwd),
         loginType: "account",
       });
       if (data.status === "ok") {
+        track(EVENTS.login_page_login_success, { login_type: "account" });
         saveLoginSession(data.content || {}, { clearGuest: true });
         reloadAppEntry();
         return true;
       } else {
         this.apiError = data.msg || this.$lang.network_error || "Error";
+        track(EVENTS.login_page_login_fail, {
+          fail_reason: this.apiError,
+          login_type: "account",
+        });
         this.showFormToast(this.apiError);
       }
     },
@@ -1289,12 +1329,18 @@ export default {
         console.log("[GuestLogin] request", payload);
         const data = await GuestLogin(payload);
         console.log("[GuestLogin] response", data);
+        track(EVENTS.login_page_login_submit, { login_type: "guest" });
         if (data.status === "ok" && data.content && data.content.accessToken) {
+          track(EVENTS.login_page_login_success, { login_type: "guest" });
           saveLoginSession(data.content, { uuid });
           reloadSucceeded = true;
           reloadAppEntry();
         } else {
           this.apiError = data.msg || this.$lang.network_error || "Error";
+          track(EVENTS.login_page_login_fail, {
+            fail_reason: this.apiError,
+            login_type: "guest",
+          });
           this.showFormToast(this.apiError);
         }
       } catch (e) {

@@ -224,6 +224,7 @@
 </template>
 
 <script>
+import { track, EVENTS } from "@/utils/analytics";
 import { ReceiveNewPlayerGiftPack } from "@/api/common";
 import { reportPromoPanel } from "@/utils/common";
 import { goPayUrl, closePayWindow } from "@/utils/payRedirect";
@@ -426,6 +427,9 @@ export default {
     },
     buyGiftPack() {
       if (!this.price || this.showPaySheet) return;
+      track(EVENTS.new_player_giftpack_buy_click, {
+        price_amount: this.price || 0,
+      });
       this.showPaySheet = true;
     },
     onGiftPaySuccess({ url, payWin, isUsRedirect }) {

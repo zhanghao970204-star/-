@@ -39,7 +39,7 @@
         <span
           class="global-floater-close"
           @pointerdown.stop
-          @click.stop="redPacketClosed = true"
+          @click.stop="closeRedPacketFloater"
         >
           <van-icon name="cross" size="12" color="var(--wihte-color)" />
         </span>
@@ -64,7 +64,7 @@
         <span
           class="global-floater-close"
           @pointerdown.stop
-          @click.stop="tbClosed = true"
+          @click.stop="closeTreasureFloater"
         >
           <van-icon name="cross" size="12" color="var(--wihte-color)" />
         </span>
@@ -93,6 +93,30 @@
           class="global-floater-close"
           @pointerdown.stop
           @click.stop="frClosed = true"
+        >
+          <van-icon name="cross" size="12" color="var(--wihte-color)" />
+        </span>
+      </div>
+
+      <!-- Register award floater：未领取则回首页持续弹；关闭弹窗后出浮标 -->
+      <div
+        v-if="raVisible && !raClosed && !showRegisterAward && isHomePage"
+        class="global-register-award"
+        :class="floaterClass('ra')"
+        :style="floaterStyle('ra', { bottom: raBottom + 'px' })"
+        @pointerdown="onFloaterDown('ra', $event)"
+        @click="onFloaterClick(openRegisterAward)"
+      >
+        <img
+          src="./assets/img/home/registerAward/signup_bonus_badge.png"
+          class="global-register-award__img"
+          draggable="false"
+          alt=""
+        />
+        <span
+          class="global-floater-close"
+          @pointerdown.stop
+          @click.stop="closeRegisterAwardFloater"
         >
           <van-icon name="cross" size="12" color="var(--wihte-color)" />
         </span>
@@ -209,6 +233,7 @@
   </div>
 </template>
 <script>
+import { track, EVENTS } from "@/utils/analytics";
 import { defineAsyncComponent } from "vue";
 import {
   RedPacketStatus,
@@ -278,6 +303,8 @@ export default {
       frPackData: null,
       showFirstRechargePopup: false,
       showRegisterAward: false,
+      raVisible: false,
+      raClosed: false,
       homePopupPhase: "boot",
       awardChecked: false,
       frChecked: false,
@@ -293,7 +320,7 @@ export default {
       tgVisible: false,
       tgClosed: false,
       tgUrl: "",
-      floaterXY: { red: null, tb: null, fr: null, tg: null },
+      floaterXY: { red: null, tb: null, fr: null, ra: null, tg: null },
       floaterDrag: null,
       floaterSkipClick: false,
       routeSwipe: null,
@@ -370,6 +397,13 @@ export default {
       let base = 100;
       if (this.redPacketVisible && this.isHomePage) base += 80;
       if (this.tbVisible && this.isHomePage) base += 80;
+      if (this.raVisible && !this.raClosed && this.isHomePage) base += 80;
+      return base;
+    },
+    raBottom() {
+      let base = 100;
+      if (this.redPacketVisible && this.isHomePage) base += 80;
+      if (this.tbVisible && this.isHomePage) base += 80;
       return base;
     },
   },
@@ -439,7 +473,7 @@ export default {
     isRouteSwipeIgnored(target) {
       if (!target || !target.closest) return true;
       return !!target.closest(
-        "input, textarea, select, button, a, [role='button'], [data-route-swipe-ignore], .van-swipe, .van-slider, .van-tabs, .van-popup, .van-overlay, .van-picker, .van-action-sheet, .global-red-envelope, .global-treasure-box, .global-first-recharge, .global-tg-float",
+        "input, textarea, select, button, a, [role='button'], [data-route-swipe-ignore], .van-swipe, .van-slider, .van-tabs, .van-popup, .van-overlay, .van-picker, .van-action-sheet, .global-red-envelope, .global-treasure-box, .global-first-recharge, .global-register-award, .global-tg-float",
       );
     },
     onRouteSwipeStart(event) {
@@ -509,6 +543,9 @@ export default {
           typeof c === "object" &&
           (c.roundKey != null || c.nextTimeLeft != null || c.timeLeft != null)
         );
+        if (this.redPacketVisible) {
+          track(EVENTS.red_packet_popup_view, { activity_id: "red_packet" });
+        }
       } catch (e) {
         this.redPacketVisible = false;
       }
@@ -553,7 +590,14 @@ export default {
         this.tbTickTimer = null;
       }
     },
+    closeTreasureFloater() {
+      this.tbClosed = true;
+    },
     openTreasureBox() {
+      track(EVENTS.treasure_box_popup_view, {
+        trigger_type: "active_enter",
+        chest_level: "",
+      });
       this.showTreasureBoxPopup = true;
     },
     async checkFirstRecharge() {
@@ -612,23 +656,61 @@ export default {
         return;
       }
       if (show) {
+        this.raVisible = true;
+        this.raClosed = false;
         this.homePopupPhase = "award";
         this.showFirstRechargePopup = false;
         this.lrPopupVisible = false;
         this.checkInPopupVisible = false;
+        track(EVENTS.new_player_register_giftpack_popup_view, {
+          trigger_type: "auto_popup",
+        });
         this.showRegisterAward = true;
         return;
       }
       this.showRegisterAward = false;
+      this.raVisible = false;
       if (this.homePopupPhase === "boot" || this.homePopupPhase === "award") {
         this.homePopupPhase = "first";
         this.openFirstOrRest();
       }
     },
-    onAwardClosed() {
+    onAwardClosed(payload) {
+      const claimable = !!(payload && payload.claimable);
       this.showRegisterAward = false;
+      if (claimable) {
+        this.raVisible = true;
+        if (!this.raClosed) {
+          track(EVENTS.new_player_register_giftpack_floating_window_view, {
+            trigger_type: "after_popup_close",
+          });
+        }
+      } else {
+        this.raVisible = false;
+        this.raClosed = false;
+      }
       this.homePopupPhase = "first";
       this.openFirstOrRest();
+    },
+    openRegisterAward() {
+      if (!this.raVisible || this.showRegisterAward) return;
+      track(EVENTS.new_player_register_giftpack_floating_window_click, {
+        trigger_type: "floating_window",
+      });
+      track(EVENTS.new_player_register_giftpack_popup_view, {
+        trigger_type: "floating_window",
+      });
+      this.homePopupPhase = "award";
+      this.showFirstRechargePopup = false;
+      this.lrPopupVisible = false;
+      this.checkInPopupVisible = false;
+      this.showRegisterAward = true;
+    },
+    closeRegisterAwardFloater() {
+      track(EVENTS.new_player_register_giftpack_floating_window_close, {
+        trigger_type: "floating_window",
+      });
+      this.raClosed = true;
     },
     openFirstOrRest() {
       if (!this.awardChecked || !this.frChecked || !this.isHomePage) return;
@@ -640,6 +722,9 @@ export default {
           markShownToday("frPopupShownDate");
           this.lrPopupVisible = false;
           this.checkInPopupVisible = false;
+          track(EVENTS.new_player_giftpack_popup_view, {
+            trigger_type: "auto_popup",
+          });
           this.showFirstRechargePopup = true;
           return;
         }
@@ -664,9 +749,17 @@ export default {
       }
     },
     openFirstRecharge() {
+      track(EVENTS.new_player_giftpack_popup_view, {
+        trigger_type: "active_enter",
+      });
       this.showFirstRechargePopup = true;
     },
+    closeRedPacketFloater() {
+      this.redPacketClosed = true;
+      track(EVENTS.red_packet_popup_close, { activity_id: "red_packet" });
+    },
     goToRedPacket() {
+      track(EVENTS.red_packet_popup_click, { activity_id: "red_packet" });
       this.$jumpTo("/redPacket");
     },
     checkLuckyReferral() {
@@ -691,6 +784,7 @@ export default {
               : false;
           if (!open || this.homePopupPhase !== "rest" || !this.isHomePage) return;
           this.lrPopupVisible = true;
+          track(EVENTS.lucky_roulette_popup_view, { trigger_type: "auto_popup" });
           markShownToday("lrPopupShownDate");
         })
         .catch(() => {});
@@ -701,6 +795,7 @@ export default {
       this.checkDailyCheckInPopup();
     },
     onLuckySpinClick() {
+      track(EVENTS.lucky_roulette_popup_click, { trigger_type: "auto_popup" });
       this.closeLuckySpinPopup();
       this.$jumpTo("/luckyReferral");
     },
@@ -833,7 +928,7 @@ export default {
       if (typeof handler === "function") handler();
     },
     onFloaterResize() {
-      ["red", "tb", "fr", "tg"].forEach((key) => {
+      ["red", "tb", "fr", "ra", "tg"].forEach((key) => {
         const pos = this.floaterXY[key];
         if (!pos) return;
         this.floaterXY[key] = this.clampFloater(pos.left, pos.top, 56, 68);
@@ -1482,6 +1577,37 @@ h3 {
   }
 }
 
+/* ====== Register Award Floater ====== */
+.global-register-award {
+  position: fixed;
+  right: 16px;
+  z-index: 80;
+  width: 56px;
+  height: 56px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  animation: ra-float 2s ease-in-out infinite;
+  transition: bottom 0.3s ease;
+}
+.global-register-award__img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  filter: drop-shadow(0 4px 10px rgba(46, 204, 113, 0.4));
+}
+@keyframes ra-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
 /* ====== Lucky Spin Popup ====== */
 .lucky-spin-popup {
   background: transparent !important;
@@ -1612,6 +1738,7 @@ h3 {
 .global-red-envelope.is-dragging,
 .global-treasure-box.is-dragging,
 .global-first-recharge.is-dragging,
+.global-register-award.is-dragging,
 .global-tg-float.is-dragging {
   animation: none !important;
   transition: none !important;
@@ -1621,6 +1748,7 @@ h3 {
 .global-red-envelope.is-dragged,
 .global-treasure-box.is-dragged,
 .global-first-recharge.is-dragged,
+.global-register-award.is-dragged,
 .global-tg-float.is-dragged {
   animation: none;
   transition: none;

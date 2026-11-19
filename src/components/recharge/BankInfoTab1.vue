@@ -156,6 +156,7 @@
 </template>
 
 <script>
+import { track, EVENTS } from "@/utils/analytics";
 import { WithdrawInit, Withdraw } from "@/api/common";
 import md5 from "@/utils/md5";
 
@@ -249,6 +250,10 @@ export default {
         return;
       }
       if (this.balLimit > 0) {
+        track(EVENTS.withdraw_balance_limit_tip_view, {
+          required_bet_amount: this.balLimit,
+          current_bet_progress: this.balWdl || 0,
+        });
         this.$toast({
           message: `${this.$lang.BankInfo_txt3} ${this.$formatMoney(this.balLimit, this.getCurrency)} ${this.$lang.BankInfo_txt4}`,
           icon: "cross",
@@ -278,6 +283,10 @@ export default {
         return;
       }
 
+      track(EVENTS.withdraw_page_submit_click, {
+        withdraw_amount: this.amount || this.withdrawAmount || "",
+        account_type: this.accountType || this.bankType || "",
+      });
       this.submitting = true;
       try {
         const data = await Withdraw({

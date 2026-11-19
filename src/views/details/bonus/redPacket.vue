@@ -315,6 +315,7 @@
 </template>
 
 <script>
+import { track, EVENTS } from "@/utils/analytics";
 import { RedPacket, GetRedPacket, RedPacketReceiveRecord } from "@/api/common";
 import { reportPromoPanel } from "@/utils/common";
 
@@ -558,6 +559,7 @@ export default {
       if (this.clickedTimes >= this.maxClickTimes) {
         this.grabbing = true;
         try {
+          track(EVENTS.red_packet_claim_click, { activity_id: "red_packet" });
           const res = await GetRedPacket({ roundKey: this.roundKey });
           if (res && res.status === "ok" && res.content) {
             const c = res.content;

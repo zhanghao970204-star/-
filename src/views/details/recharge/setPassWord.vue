@@ -135,6 +135,7 @@
 </template>
 
 <script>
+import { track, EVENTS } from "@/utils/analytics";
 import { ChangePrivacyPwd, Init } from "@/api/common";
 import md5 from "@/utils/md5";
 
@@ -212,6 +213,7 @@ export default {
       }
     },
     async ChangePrivacyPwd(params) {
+      track(EVENTS.withdraw_password_set_submit, {});
       const data = await ChangePrivacyPwd(params);
       if (data.status === "ok") {
         if (this.$route.query.from === "profile") {

@@ -3,6 +3,7 @@ import {
   resetPageScroll,
   resetPageScrollAfterRoute,
 } from "@/utils/scrollReset";
+import { trackRoutePageView } from "@/utils/analytics";
 import bus from "@/utils/eventBus";
 import { isGuestUser } from "@/utils/guestAuth";
 import { isNativeAppShell } from "@/utils/nativeApp";

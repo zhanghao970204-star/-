@@ -187,6 +187,7 @@
 </template>
 
 <script>
+import { track, EVENTS } from "@/utils/analytics";
 import { GetSignDaily, SignDaily } from "@/api/common";
 import { reportPromoPanel } from "@/utils/common";
 
@@ -289,6 +290,19 @@ export default {
       this.claiming = true;
       try {
         const claimType = type === "regular" ? 0 : 1;
+        const dayItem = (this.list || []).find((i) => i && i.status === "today") || {};
+        track(
+          claimType === 0
+            ? EVENTS.checkin_page_free_checkin_click
+            : EVENTS.checkin_page_pay_checkin_click,
+          {
+            checkin_day: dayItem.day || dayItem.index || "",
+            reward_amount:
+              claimType === 0
+                ? dayItem.regularAmount || dayItem.freeSignReward || 0
+                : dayItem.premiumAmount || dayItem.paySignReward || 0,
+          },
+        );
         const res = await SignDaily({ type: claimType });
         if (res.status === "ok") {
           this.$toast({

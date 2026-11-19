@@ -222,6 +222,7 @@
 </template>
 
 <script>
+import { track, EVENTS } from "@/utils/analytics";
 import {
   GetLuckyRoulette,
   LuckyRoulette,
@@ -335,6 +336,9 @@ export default {
         this.showNoSpins = true;
         return;
       }
+      track(EVENTS.lucky_roulette_spin_click, {
+        spin_type: this.remainingSpins > 0 ? "free" : "invite",
+      });
       this.isSpinning = true;
       this._pendingSpinResult = null;
       try {

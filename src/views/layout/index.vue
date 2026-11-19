@@ -193,6 +193,7 @@ import {
   GetHomeWinningGameList,
 } from "@/api/common";
 import { consumeOpenLoginAfterPlatformSwitch } from "@/utils/platformAuth";
+import { track, EVENTS } from "@/utils/analytics";
 
 export default {
   components: {
@@ -395,6 +396,37 @@ export default {
     },
     onBannerChange(index) {
       this.currentBannerIndex = index;
+      this.trackBannerView(index);
+    },
+    bannerTrackProps(item, index) {
+      const idx = Number(index) || 0;
+      const row = item || this.bannerList[idx] || {};
+      return {
+        banner_id:
+          row.id ||
+          row.bannerId ||
+          row.advertisementId ||
+          row.advertisementImg ||
+          String(idx),
+        banner_position: idx,
+        banner_url: row.advertisementImg || "",
+      };
+    },
+    trackBannerView(index) {
+      const idx = Number(index) || 0;
+      const item = this.bannerList[idx];
+      if (!item) return;
+      const key = String(
+        item.id ||
+          item.bannerId ||
+          item.advertisementId ||
+          item.advertisementImg ||
+          idx,
+      );
+      if (!this._bannerViewed) this._bannerViewed = Object.create(null);
+      if (this._bannerViewed[key]) return;
+      this._bannerViewed[key] = true;
+      track(EVENTS.home_page_banner_view, this.bannerTrackProps(item, idx));
     },
     // banner 被 v-show 隐藏或视口变化后，swipe 仍按旧宽度排布，需重新计算
     resizeBannerSwipe() {
@@ -423,6 +455,8 @@ export default {
           this.bannerList = data.content.bannerList
             .filter((item) => item && item.advertisementImg)
             .sort((a, b) => b.ordered - a.ordered);
+          this._bannerViewed = Object.create(null);
+          this.$nextTick(() => this.trackBannerView(this.currentBannerIndex));
         }
       } catch (e) {
         console.error("fetchBannerList error", e);
@@ -515,6 +549,11 @@ export default {
       if (e && e.target) e.target.style.display = "none";
     },
     onBannerClick(item) {
+      const idx = this.bannerList.indexOf(item);
+      track(
+        EVENTS.home_page_banner_click,
+        this.bannerTrackProps(item, idx >= 0 ? idx : this.currentBannerIndex),
+      );
       const jump = this.resolveBannerJump(item);
       if (!jump) return;
       if (jump.type === "route") {

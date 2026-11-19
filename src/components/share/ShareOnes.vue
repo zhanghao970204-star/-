@@ -151,6 +151,7 @@
   </div>
 </template>
 <script>
+import { track, EVENTS } from "@/utils/analytics";
 import VueQr from "qrcode.vue";
 import { Init } from "@/api/common";
 import {
@@ -219,6 +220,7 @@ export default {
   },
   methods: {
     shareContent(key) {
+      track(EVENTS.invite_page_share_click, { share_channel: key || "" });
       const url = this.inviteCode || buildInviteUrl();
       const copiedText = this.$lang.share_link_copied || "Invite link copied";
       const text = this.$lang.share_invite_text || "Join me on LuckyPlay!";
@@ -241,6 +243,9 @@ export default {
     },
     copyText() {
       if (!this.inviteCode) return;
+      track(EVENTS.invite_page_copy_link_click, {
+        invite_code: this.inviteCode || "",
+      });
       copyToClipboard(this.inviteCode).then(() => {
         this.$toast({
           message: this.$lang.share_link_copied || "Invite link copied",
