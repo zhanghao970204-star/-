@@ -31,12 +31,14 @@
           :loop="false"
           :touchable="true"
           :autoplay="0"
+          :duration="280"
           :indicator-color="'#1baeae'"
           @change="onChange"
           ref="swipe"
         >
+          <!-- 每页都渲染内容：邻近页用 placeholder 会导致滑入空白再回填，手机上像「回闪」 -->
           <van-swipe-item v-for="(page, index) in pages" :key="index">
-            <div v-if="Math.abs(index - currentPage2) <= 1" class="swipe-item">
+            <div class="swipe-item">
               <van-image
                 radius="10"
                 v-for="item in page"
@@ -86,7 +88,6 @@
                 </div>
               </van-image>
             </div>
-            <div v-else class="swipe-item swipe-item--placeholder"></div>
           </van-swipe-item>
         </van-swipe>
       </div>
@@ -310,25 +311,30 @@ export default {
 </script>
 <style lang="less" scoped>
 .my-swipe {
+  --game-gap: 8px;
   width: 100%;
-  container-type: inline-size;
-  // height: 300px; /* 根据实际需求调整高度 */
   /* 隐藏指示器 */
   :deep(.van-swipe__indicators) {
     display: none;
+  }
+  :deep(.van-swipe__track) {
+    will-change: transform;
+  }
+  /* 页与页贴边时，滑动过程中接缝会比页内 gap 小一截；右侧留出同等间距 */
+  :deep(.van-swipe-item) {
+    box-sizing: border-box;
+    padding-right: var(--game-gap);
   }
 }
 
 .swipe-item {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 2.4cqw;
+  gap: var(--game-gap);
   margin: 0;
+  padding: 0;
   min-height: 120px;
   box-sizing: border-box;
-}
-.swipe-item--placeholder {
-  min-height: 120px;
 }
 .game-online {
   position: absolute;

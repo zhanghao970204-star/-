@@ -269,7 +269,7 @@ import {
   WithdrawInit,
 } from "@/api/common";
 import { isGuestUser, clearAuthAndReload } from "@/utils/guestAuth";
-import { isNativeAppShell } from "@/utils/nativeApp";
+// import { isNativeAppShell } from "@/utils/nativeApp"; // 暂关游客升级
 import { avatarImg } from "@/utils/avatarAssets";
 import { resetPageScroll } from "@/utils/scrollReset";
 
@@ -443,11 +443,12 @@ export default {
       setWithdrawEntryScene("mine");
       track(EVENTS.withdraw_entry_click, { entry_scene: "mine" });
       if (isGuestUser()) {
-        if (isNativeAppShell()) {
-          this.$bus.emit("openGuestUpgrade");
-        } else {
-          this.$bus.emit("openLogin", 0);
-        }
+        // 暂关 App 升级账号弹窗，统一走登录
+        // if (isNativeAppShell()) {
+        //   this.$bus.emit("openGuestUpgrade");
+        // } else {
+        this.$bus.emit("openLogin", 0);
+        // }
         return;
       }
       // 提现通道关闭时直接提示；流水不足由提现页展示还差多少

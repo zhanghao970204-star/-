@@ -933,23 +933,20 @@ export default {
       if (this.currentViewLevel >= this.maxViewLevel) return "";
       return resolveVipPairCard(this.currentViewLevel + 1);
     },
+    // 全量渲染 0..max，避免每次切级重建 DOM 导致「滑完回闪」
     carouselLevels() {
-      const cur = this.currentViewLevel;
+      const max = this.maxViewLevel;
       const levels = [];
-      if (cur > 0) levels.push(cur - 1);
-      levels.push(cur);
-      if (cur < this.maxViewLevel) levels.push(cur + 1);
+      for (let i = 0; i <= max; i++) levels.push(i);
       return levels;
     },
     slideStep() {
       return this.slideW + this.slideGap;
     },
     trackStyle() {
-      const idx = Math.max(
-        0,
-        this.carouselLevels.indexOf(this.currentViewLevel),
-      );
-      const x = -(idx * this.slideStep + this.slideW / 2) + this.animX;
+      const x =
+        -(this.currentViewLevel * this.slideStep + this.slideW / 2) +
+        this.animX;
       return {
         gap: this.slideGap + "px",
         transform: `translate3d(${x}px, 0, 0)`,
@@ -1132,12 +1129,8 @@ export default {
       return "Locked";
     },
     slideStyle(lv) {
-      const idx = this.carouselLevels.indexOf(lv);
-      const curIdx = Math.max(
-        0,
-        this.carouselLevels.indexOf(this.currentViewLevel),
-      );
-      const offset = (idx - curIdx) * this.slideStep + this.animX;
+      const offset =
+        (lv - this.currentViewLevel) * this.slideStep + this.animX;
       const dist = Math.min(Math.abs(offset) / this.slideStep, 1);
       const scale = 1 - dist * 0.26;
       const bright = 1 - dist * 0.3;
@@ -1154,7 +1147,8 @@ export default {
       const w = el.clientWidth || 0;
       if (!w) return;
       this.slideW = Math.min(w * 0.58, 218);
-      this.slideGap = Math.round(Math.max(12, w * 0.045));
+      // 侧卡有 scale，视觉会吃掉间距；给足 gap 避免贴死
+      this.slideGap = Math.round(Math.max(18, w * 0.06));
       if (this.trackInstant && !this.slideLock && !this.swipeDragging) {
         this.$nextTick(() => {
           requestAnimationFrame(() => {

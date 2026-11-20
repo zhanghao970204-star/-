@@ -6,7 +6,7 @@ import {
 import { trackRoutePageView } from "@/utils/analytics";
 import bus from "@/utils/eventBus";
 import { isGuestUser } from "@/utils/guestAuth";
-import { isNativeAppShell } from "@/utils/nativeApp";
+// import { isNativeAppShell } from "@/utils/nativeApp"; // 暂关游客升级
 import { normalizeCountryCode, readCountryCode } from "@/utils/country";
 import { consumeRouteMotion } from "@/utils/routeMotion";
 import { setOpenLoginAfterReloadFlag } from "@/utils/platformAuth";
@@ -411,8 +411,10 @@ router.beforeEach((to, from, next) => {
     const redirectPath = finalPrefix ? `/${finalPrefix}/home` : "/home";
     const openGate = () => {
       setTimeout(() => {
-        if (isNativeAppShell()) bus.emit("openGuestUpgrade");
-        else bus.emit("openLogin", 0);
+        // 暂关 App 升级账号弹窗
+        // if (isNativeAppShell()) bus.emit("openGuestUpgrade");
+        // else bus.emit("openLogin", 0);
+        bus.emit("openLogin", 0);
       }, 0);
     };
     if (!from.fullPath || from.fullPath === "/") {

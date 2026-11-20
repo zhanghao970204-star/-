@@ -157,11 +157,13 @@
       overlay
       :loginType="loginType"
     ></login>
+    <!-- 暂关：App 游客升级账号
     <guest-upgrade-popup
       v-if="isNativeApp"
       v-model="showGuestUpgradePopup"
       @success="handleGuestUpgradeSuccess"
     />
+    -->
     <!-- <lucky-roulette
       v-model="isShowPopup"
       @login-key="LoginKey"
@@ -184,7 +186,7 @@
 import TopDownload from "../../components/TopDownload.vue"; //顶部下载
 import TopNav from "../../components/TopNav.vue"; //顶部导航栏
 import Tabbar from "../../components/Tabbar.vue";
-import GuestUpgradePopup from "../../components/GuestUpgradePopup.vue";
+// import GuestUpgradePopup from "../../components/GuestUpgradePopup.vue"; // 暂关
 import { isNativeAppShell } from "@/utils/nativeApp";
 import {
   Init,
@@ -203,7 +205,7 @@ export default {
     TopDownload,
     TopNav,
     Tabbar,
-    GuestUpgradePopup,
+    // GuestUpgradePopup, // 暂关
   },
   name: "LayoutIndex",
   computed: {
@@ -423,16 +425,16 @@ export default {
       this.showPopup = true;
     },
     handleOpenGuestUpgrade() {
-      // 游客升级弹窗仅 iOS App / Android APK
-      if (!isNativeAppShell()) {
-        this.handleOpenLogin(0);
-        return;
-      }
-      this.showGuestUpgradePopup = true;
+      // 暂关：游客升级 → 改弹登录
+      this.handleOpenLogin(0);
+      // if (!isNativeAppShell()) {
+      //   this.handleOpenLogin(0);
+      //   return;
+      // }
+      // this.showGuestUpgradePopup = true;
     },
     handleGuestUpgradeSuccess() {
-      // GuestUpgradePopup 已 saveLoginSession + setOpenLoginAfterReloadFlag + reloadAppEntry
-      // 此处仅作未刷新时的兜底弹登录
+      // 暂关升级账号
       this.$nextTick(() => {
         this.handleOpenLogin(0);
       });

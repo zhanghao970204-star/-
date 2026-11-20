@@ -344,7 +344,7 @@
                 />
               </div>
 
-              <!-- 仅 App 内登录页：游客登录（deviceId 由 Flutter 注入）；H5 不展示 -->
+              <!-- 暂关：App 游客登录（需要时恢复 showGuestLogin 区块）
               <div v-if="selectIndex === 0 && showGuestLogin" class="sg">
                 <button
                   type="button"
@@ -358,16 +358,8 @@
                     $lang.play_as_guest || "Play as Guest"
                   }}</span>
                 </button>
-                <!--
-                <button
-                  class="login-popup__google button kj"
-                  @click="handleGoogleLogin"
-                  :disabled="googleLoading"
-                >
-                  <span>{{ $lang.google_login || "Sign in with Google" }}</span>
-                </button>
-                -->
               </div>
+              -->
 
               <div class="login-popup__agree">
                 <van-checkbox v-model="agree" icon-size="17px">
@@ -596,9 +588,10 @@ export default {
       }
       return style;
     },
-    /** 游客登录仅 iOS App / Android APK */
+    /** 游客登录仅 iOS App / Android APK（暂关） */
     showGuestLogin() {
-      return isNativeAppShell();
+      return false;
+      // return isNativeAppShell();
     },
     isGhsCurrency() {
       return localStorage.getItem("currency") === "GHS";

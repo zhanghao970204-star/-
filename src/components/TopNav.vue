@@ -129,7 +129,8 @@ import { avatarImg } from "@/utils/avatarAssets";
 import { normalizeHomeDataList } from "@/utils/homeGameList";
 import { applyCountryLanguage } from "@/utils/locale";
 import { isGuestUser } from "@/utils/guestAuth";
-import { isH5WebClient, isNativeAppShell } from "@/utils/nativeApp";
+import { isH5WebClient } from "@/utils/nativeApp";
+// import { isNativeAppShell } from "@/utils/nativeApp"; // 暂关游客升级
 import BalanceRoll from "@/components/BalanceRoll.vue";
 import { syncAnalyticsFromInit, syncAnalyticsBalance, track, EVENTS, setDepositEntryScene } from "@/utils/analytics";
 
@@ -438,11 +439,12 @@ export default {
     },
     goToSaque() {
       if (isGuestUser()) {
-        if (isNativeAppShell()) {
-          this.$bus.emit("openGuestUpgrade");
-        } else {
-          this.goLogin(0);
-        }
+        // 暂关 App 升级账号弹窗，统一走登录
+        // if (isNativeAppShell()) {
+        //   this.$bus.emit("openGuestUpgrade");
+        // } else {
+        this.goLogin(0);
+        // }
         return;
       }
       this.$jumpTo("/bankAdd");
