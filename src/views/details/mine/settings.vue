@@ -98,7 +98,7 @@
           </div>
           <div class="settings-item__right">
             <span class="settings-item__hint">English</span>
-            <van-icon name="arrow" size="14" color="#d4c4ee" />
+            <!-- <van-icon name="arrow" size="14" color="#d4c4ee" /> -->
           </div>
         </div>
 
@@ -284,7 +284,7 @@
 
 <script>
 import { Logout, Init, ChangeMail } from "@/api/common";
-import { reloadAppEntry } from "@/utils/guestAuth";
+import { clearAuthAndReload } from "@/utils/guestAuth";
 import md5 from "@/utils/md5";
 import { getEmailErrorType, isValidEmailFormat } from "@/utils/emailValidate";
 import {
@@ -458,10 +458,7 @@ export default {
       try {
         const data = await Logout();
         if (data.status === "ok") {
-          localStorage.removeItem("token");
-          localStorage.removeItem("shareCode");
-          // 保持按钮 loading，直接整页刷新一次回到首页
-          reloadAppEntry();
+          clearAuthAndReload();
           return;
         }
         this.$toast({ message: data.msg, icon: "cross" });

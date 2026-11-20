@@ -84,6 +84,7 @@
 
 <script>
 import { BindPhone, GetPlatformList } from '@/api/common'
+import { clearAuthAndReload, reloadAppEntry } from '@/utils/guestAuth'
 
 export default {
   name: 'PhoneUnbound',
@@ -106,11 +107,7 @@ export default {
   },
   methods: {
     confirmLogout() {
-      localStorage.removeItem('token')
-      localStorage.removeItem('shareCode')
-      const prefix = this.$route.params.prefix || localStorage.getItem('country') || ''
-      this.$router.replace('/' + prefix + '/home')
-      setTimeout(() => { window.location.reload() }, 200)
+      clearAuthAndReload()
     },
     toggleCountry() {
       this.showCountryDrop = !this.showCountryDrop
@@ -155,9 +152,7 @@ export default {
         if (data.status === 'ok') {
           this.$toast({ message: this.$lang.Sucesso || 'Success', icon: 'success' })
           if (this.isFromGoogle) {
-            const prefix = this.$route.params.prefix || localStorage.getItem('country') || ''
-            this.$router.replace('/' + prefix + '/home')
-            setTimeout(() => { window.location.reload() }, 200)
+            reloadAppEntry()
           } else {
             this.$router.go(-1)
           }

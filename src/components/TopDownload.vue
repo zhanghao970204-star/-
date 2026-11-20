@@ -43,6 +43,7 @@
 </template>
 <script>
 import iosInstallGuideImg from "@/assets/img/pwa/ios-safari-install-guide.png";
+import { isNativeAppShell } from "@/utils/nativeApp";
 
 const DISMISS_KEY = "topDownloadDismissedAt";
 const DISMISS_MS = 3 * 24 * 60 * 60 * 1000;
@@ -99,11 +100,13 @@ export default {
     isVisible() {
       const path = (this.$route && this.$route.path) || "";
       const isHome = /\/home\/?$/.test(path) || path.endsWith("/home");
+      // 仅 H5 浏览器且未装 PWA 时展示；Flutter App / 已安装 PWA 不展示
       return (
         this.isShow &&
         isHome &&
         !this.$route.query.app &&
-        !this.inStandaloneMode
+        !this.inStandaloneMode &&
+        !isNativeAppShell()
       );
     },
     titleText() {
@@ -149,6 +152,10 @@ export default {
       this.checkInstalledRelatedApps();
     });
     window.addEventListener("resize", this.emitLayoutChange);
+  },
+  activated() {
+    // keep-alive 恢复后重新上报高度，避免 TopNav topOffset 错位成「黑条」
+    this.$nextTick(() => this.emitLayoutChange());
   },
   beforeUnmount() {
     window.removeEventListener("resize", this.emitLayoutChange);

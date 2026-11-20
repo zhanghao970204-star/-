@@ -120,7 +120,7 @@
 <script>
 import { ChangeLoginPwd, Logout } from "@/api/common";
 import { setOpenLoginAfterReloadFlag } from "@/utils/platformAuth";
-import { reloadAppEntry } from "@/utils/guestAuth";
+import { clearAuthAndReload } from "@/utils/guestAuth";
 import md5 from "@/utils/md5";
 import eyeOn from "@/assets/img/login/eye.png";
 import eyeOff from "@/assets/img/login/eye_off.png";
@@ -197,11 +197,9 @@ export default {
         } catch (e) {
           // token 已失效时登出接口可能失败，忽略
         }
-        localStorage.removeItem("token");
-        localStorage.removeItem("shareCode");
         setOpenLoginAfterReloadFlag();
-        // 保持按钮 loading，整页刷新一次后在首页弹出登录框
-        reloadAppEntry();
+        // 保持按钮 loading；App 先清原生 token 再刷新，首页再弹登录
+        clearAuthAndReload();
       } else {
         this.submitting = false;
         this.$toast({ message: data.msg, icon: "cross" });

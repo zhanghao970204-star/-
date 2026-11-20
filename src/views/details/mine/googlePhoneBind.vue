@@ -83,6 +83,7 @@
 
 <script>
 import { GoogleRegister, GetPlatformList } from '@/api/common'
+import { clearAuthAndReload, reloadAppEntry, saveLoginSession } from '@/utils/guestAuth'
 
 export default {
   name: 'GooglePhoneBind',
@@ -109,12 +110,12 @@ export default {
       this.showCloseConfirm = true
     },
     confirmLogout() {
-      localStorage.removeItem('googleThirdUuid')
-      localStorage.removeItem('token')
-      localStorage.removeItem('shareCode')
-      const prefix = this.$route.params.prefix || localStorage.getItem('country') || ''
-      this.$router.replace('/' + prefix + '/home')
-      setTimeout(() => { window.location.reload() }, 200)
+      try {
+        localStorage.removeItem('googleThirdUuid')
+      } catch (_) {
+        /* ignore */
+      }
+      clearAuthAndReload()
     },
     toggleCountry() {
       this.showCountryDrop = !this.showCountryDrop
@@ -165,13 +166,11 @@ export default {
         }
         const data = await GoogleRegister(params)
         if (data.status === 'ok' && data.content) {
-          localStorage.setItem('token', data.content.accessToken)
+          saveLoginSession(data.content, { clearGuest: true })
           localStorage.removeItem('googleThirdUuid')
           localStorage.setItem('isRegister', 'isRegister')
           this.$toast({ message: this.$lang.Sucesso || 'Success', icon: 'success' })
-          const prefix = this.$route.params.prefix || localStorage.getItem('country') || ''
-          this.$router.replace('/' + prefix + '/home')
-          setTimeout(() => { window.location.reload() }, 200)
+          reloadAppEntry()
         } else {
           this.errorMsg = data.msg || this.$lang.google_register_failed || 'Registration failed'
         }

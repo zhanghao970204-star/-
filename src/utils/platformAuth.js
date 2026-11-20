@@ -2,6 +2,8 @@
  * 各系统（platform）登录互斥：切换为不同 platform 时须重新登录。
  * 不写死任何平台名，仅比较 localStorage 中的 platform 与即将写入的目标 platform（大小写不敏感）。
  */
+import { clearAuthLocalAndNative } from '@/utils/guestAuth'
+
 var OPEN_LOGIN_FLAG = 'otgame_openLoginAfterPlatformSwitch'
 
 function equalsPlatformId(a, b) {
@@ -21,7 +23,7 @@ export function shouldRequireReloginOnPlatformChange(prevPlatform, nextPlatform)
 }
 
 /**
- * 若应重登且存在 token：清除 token 与未支付暂存
+ * 若应重登且存在 token：清除 H5 + App 原生登录态与未支付暂存
  */
 export function clearTokenIfReloginRequired(prevPlatform, nextPlatform) {
   if (!shouldRequireReloginOnPlatformChange(prevPlatform, nextPlatform)) {
@@ -30,8 +32,7 @@ export function clearTokenIfReloginRequired(prevPlatform, nextPlatform) {
   if (!localStorage.getItem('token')) {
     return false
   }
-  localStorage.removeItem('token')
-  localStorage.removeItem('shareCode')
+  clearAuthLocalAndNative({ reload: false })
   try {
     sessionStorage.removeItem('payOrderData')
   } catch (e) {

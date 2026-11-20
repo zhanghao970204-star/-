@@ -2,7 +2,7 @@
   <div class="game-records-page">
     <title-bar :title="$lang.billGame_title || 'GAME RECORDS'" />
 
-    <!-- Balance + Filter Header -->
+    <!-- 固定在标题下，不参与列表滚动，避免吸顶叠层把卡片挡住 -->
     <div class="gr-subheader">
       <div class="gr-balance">
         <span class="gr-balance__label">{{ getCurrency }}</span>
@@ -19,62 +19,65 @@
       </div>
     </div>
 
-    <!-- Game List -->
-    <van-list
-      v-model:loading="loading"
-      :finished="finished"
-      loading-text=" "
-      @load="loadMore"
-      class="gr-list"
-    >
-      <template v-for="(group, gIdx) in groupedList" :key="'d' + gIdx">
-        <div class="gr-date">{{ group.label }}</div>
-        <div
-          v-for="(item, idx) in group.items"
-          :key="'g' + gIdx + '-' + idx"
-          class="gr-card"
-        >
-          <div class="gr-card__left">
-            <div class="gr-card__thumb">
-              <img
-                class="gr-card__icon"
-                src="@/assets/img/mine/game_pad.png"
-                alt=""
-              />
+    <!-- 仅列表区域滚动；日期在本容器内吸顶 -->
+    <div class="gr-scroll" ref="grScroll">
+      <van-list
+        v-model:loading="loading"
+        :finished="finished"
+        loading-text=" "
+        :scroller="scrollParent"
+        @load="loadMore"
+        class="gr-list"
+      >
+        <template v-for="(group, gIdx) in groupedList" :key="'d' + gIdx">
+          <div class="gr-date">{{ group.label }}</div>
+          <div
+            v-for="(item, idx) in group.items"
+            :key="'g' + gIdx + '-' + idx"
+            class="gr-card"
+          >
+            <div class="gr-card__left">
+              <div class="gr-card__thumb">
+                <img
+                  class="gr-card__icon"
+                  src="@/assets/img/mine/game_pad.png"
+                  alt=""
+                />
+              </div>
+              <div class="gr-card__info">
+                <p class="gr-card__name">{{ item.gameName }}</p>
+                <p class="gr-card__meta">
+                  <span class="gr-card__bet"
+                    >{{ $lang.billGame_txt2 || "Bet:" }} {{ getCurrency
+                    }}{{ $formatNumberWithCommas(item.betAmount) }}</span
+                  >
+                </p>
+                <p class="gr-card__time">{{ formatTime(item.createDate) }}</p>
+              </div>
             </div>
-            <div class="gr-card__info">
-              <p class="gr-card__name">{{ item.gameName }}</p>
-              <p class="gr-card__meta">
-                <span class="gr-card__bet"
-                  >{{ $lang.billGame_txt2 || "Bet:" }} {{ getCurrency
-                  }}{{ $formatNumberWithCommas(item.betAmount) }}</span
-                >
+            <div class="gr-card__right">
+              <p
+                class="gr-card__profit"
+                :class="
+                  getProfit(item) >= 0
+                    ? 'gr-card__profit--win'
+                    : 'gr-card__profit--loss'
+                "
+              >
+                {{ getCurrency }} {{ profitSign(item)
+                }}{{ $formatNumberWithCommas(Math.abs(getProfit(item))) }}
               </p>
-              <p class="gr-card__time">{{ formatTime(item.createDate) }}</p>
             </div>
           </div>
-          <div class="gr-card__right">
-            <p
-              class="gr-card__profit"
-              :class="
-                getProfit(item) >= 0
-                  ? 'gr-card__profit--win'
-                  : 'gr-card__profit--loss'
-              "
-            >
-              {{ getCurrency }} {{ profitSign(item)
-              }}{{ $formatNumberWithCommas(Math.abs(getProfit(item))) }}
-            </p>
-          </div>
-        </div>
-      </template>
+        </template>
 
-      <van-empty
-        v-if="!userList.length && !loading"
-        :image="require('../../../assets/img/common/img_no_data.png')"
-        :description="$lang.noempt"
-      />
-    </van-list>
+        <van-empty
+          v-if="!userList.length && !loading"
+          :image="require('../../../assets/img/common/img_no_data.png')"
+          :description="$lang.noempt"
+        />
+      </van-list>
+    </div>
   </div>
 </template>
 
@@ -91,6 +94,7 @@ export default {
       finished: false,
       page: 0,
       filterValue: 6,
+      scrollParent: null,
       filterOptions: [
         { text: this.$lang.billGame_txt4 || "Today", value: 0 },
         { text: this.$lang.billGame_txt5 || "Yesterday", value: 1 },
@@ -122,6 +126,7 @@ export default {
     },
   },
   mounted() {
+    this.scrollParent = this.$refs.grScroll || null;
     this.getBalance();
   },
   methods: {
@@ -202,22 +207,36 @@ export default {
 @border-grad: linear-gradient(90deg, #e93dfe 0%, #3245a2 100%);
 
 .game-records-page {
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
   background: @bg;
-  padding-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
-// ====== SUB HEADER ======
+// ====== SUB HEADER（固定，不随列表滚）======
 .gr-subheader {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   padding: 10px 16px;
-  position: sticky;
-  top: 46px;
-  z-index: 10;
+  position: relative;
+  z-index: 20;
   background: @bg;
+}
+
+.gr-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 20px;
+  overscroll-behavior: contain;
 }
 
 .gr-balance {
@@ -256,7 +275,7 @@ export default {
   }
 }
 
-// ====== DATE HEADER ======
+// ====== DATE HEADER（仅在列表滚动容器内吸顶）======
 .gr-date {
   padding: 12px 16px 6px;
   font-size: 12px;
@@ -265,7 +284,7 @@ export default {
   letter-spacing: 1px;
   color: #ffffff;
   position: sticky;
-  top: 90px;
+  top: 0;
   background: @bg;
   z-index: 5;
 }

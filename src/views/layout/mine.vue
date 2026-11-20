@@ -268,11 +268,7 @@ import {
   VipInit,
   WithdrawInit,
 } from "@/api/common";
-import {
-  clearGuestFlags,
-  isGuestUser,
-  reloadAppEntry,
-} from "@/utils/guestAuth";
+import { isGuestUser, clearAuthAndReload } from "@/utils/guestAuth";
 import { isNativeAppShell } from "@/utils/nativeApp";
 import { avatarImg } from "@/utils/avatarAssets";
 import { resetPageScroll } from "@/utils/scrollReset";
@@ -512,11 +508,8 @@ export default {
       try {
         const data = await Logout();
         if (data.status === "ok") {
-          localStorage.removeItem("token");
-          localStorage.removeItem("shareCode");
-          clearGuestFlags();
-          // 保持按钮 loading，直接整页刷新一次回到首页
-          reloadAppEntry();
+          // App：先清原生 token 再刷新首页，避免旧 token 被写回导致弹登录且登不进去
+          clearAuthAndReload();
           return;
         }
         this.$toast({ message: data.msg, icon: "cross" });

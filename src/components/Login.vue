@@ -322,7 +322,8 @@
                 <button
                   class="login-popup__submit button dlzc"
                   :class="{
-                    'login-popup__submit--disabled': !isBtnEnable && !submitting,
+                    'login-popup__submit--disabled':
+                      !isBtnEnable && !submitting,
                     'is-loading': submitting,
                   }"
                   :disabled="!isBtnEnable || submitting"
@@ -353,7 +354,9 @@
                   @click="handleGuestLogin"
                 >
                   <span v-if="guestLoading" class="btn-spinner"></span>
-                  <span v-else>{{ $lang.play_as_guest || "Play as Guest" }}</span>
+                  <span v-else>{{
+                    $lang.play_as_guest || "Play as Guest"
+                  }}</span>
                 </button>
                 <!--
                 <button
@@ -431,7 +434,8 @@
           class="login-popup__submit button dlzc"
           :disabled="!googlePhoneNo || googleRegLoading"
           :class="{
-            'login-popup__submit--disabled': !googlePhoneNo && !googleRegLoading,
+            'login-popup__submit--disabled':
+              !googlePhoneNo && !googleRegLoading,
             'is-loading': googleRegLoading,
           }"
           @click="handleGoogleRegister"
@@ -456,7 +460,12 @@
 </template>
 
 <script>
-import { track, EVENTS, getLoginEntryScene, setLoginEntryScene } from "@/utils/analytics";
+import {
+  track,
+  EVENTS,
+  getLoginEntryScene,
+  setLoginEntryScene,
+} from "@/utils/analytics";
 import Vcode from "vue3-puzzle-vcode";
 
 import {
@@ -2075,7 +2084,6 @@ export default {
     cursor: not-allowed;
     filter: none;
   }
-
 }
 
 .login-popup__scene {

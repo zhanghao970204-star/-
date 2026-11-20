@@ -1,5 +1,7 @@
 import { track, EVENTS } from "@/utils/analytics";
 import { GetCsLink } from "@/api/common";
+import { openExternalUrl } from "@/utils/openExternal";
+import { isNativeAppShell } from "@/utils/nativeApp";
 
 export function getCsItemUrl(item) {
   if (!item) return "";
@@ -64,6 +66,9 @@ export async function fetchCsUrl(preferredScene) {
 
 function openUrlSync(url) {
   if (!url) return false;
+  if (isNativeAppShell()) {
+    return openExternalUrl(url);
+  }
   const win = window.open(url, "_blank");
   if (win) {
     try {
@@ -79,6 +84,16 @@ function openUrlSync(url) {
 }
 
 function navigateOpenedWindow(win, url) {
+  if (isNativeAppShell()) {
+    if (win) {
+      try {
+        win.close();
+      } catch (e) {
+        /* ignore */
+      }
+    }
+    return openExternalUrl(url);
+  }
   if (win) {
     try {
       win.opener = null;

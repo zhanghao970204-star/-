@@ -2,11 +2,14 @@
   <div class="content" :class="{ 'has-tabbar': showTabbarSafeGap }">
     <div class="content-main">
       <div id="md-hddb"></div>
-      <top-download @layout-change="handleTopDownloadLayout"></top-download>
+      <top-download
+        ref="topDownload"
+        @layout-change="handleTopDownloadLayout"
+      ></top-download>
       <top-nav
         ref="topNav"
         v-if="isTopNavVisible"
-        :key="timer"
+        :key="'tn-' + topNavKey"
         :top-offset="topDownloadHeight"
         @getLoging="getLoging"
       ></top-nav>
@@ -289,6 +292,8 @@ export default {
       currentBannerIndex: 0,
       bannerList: [],
       showNoticePopup: false,
+      // 进内页返回后强制重建顶栏，避免 fixed + transition 空白
+      topNavKey: 0,
       keepAliveViews: [
         "Home",
         "RechargeCont",
@@ -302,19 +307,41 @@ export default {
   },
   watch: {
     $route: {
-      handler(to) {
+      handler(to, from) {
         if (to.query.isValue === "isLogin") {
           this.showPopup = true;
         }
         if (to.path && to.path.includes("/home")) {
           this.fetchWinTickerList();
           this.$nextTick(this.resizeBannerSwipe);
+          // 从非首页回到首页：刷新顶栏（余额/头像），游戏列表仍走缓存
+          if (from && from.path && !String(from.path).includes("/home")) {
+            this.refreshHomeTopNav();
+          }
         } else {
           this.stopWinTickerScroll();
         }
       },
       immediate: true,
     },
+  },
+  activated() {
+    // keep-alive 从内页恢复布局壳：顶栏要刷新，列表不重拉；中奖条重开滚动
+    if (this._layoutWasDeactivated) {
+      this._layoutWasDeactivated = false;
+      if ((this.$route.path || "").includes("/home")) {
+        this.refreshHomeTopNav();
+        this.$nextTick(() => this.startWinTickerScroll());
+      }
+    }
+  },
+  deactivated() {
+    this._layoutWasDeactivated = true;
+    this.stopWinTickerScroll();
+    if (this._topNavRefreshTimer) {
+      clearTimeout(this._topNavRefreshTimer);
+      this._topNavRefreshTimer = null;
+    }
   },
   mounted() {
     this.$nextTick(() => {
@@ -340,6 +367,10 @@ export default {
     document.addEventListener("visibilitychange", this.resizeBannerSwipe);
   },
   beforeUnmount() {
+    if (this._topNavRefreshTimer) {
+      clearTimeout(this._topNavRefreshTimer);
+      this._topNavRefreshTimer = null;
+    }
     window.removeEventListener("resize", this.resizeBannerSwipe);
     window.removeEventListener("orientationchange", this.resizeBannerSwipe);
     document.removeEventListener("visibilitychange", this.resizeBannerSwipe);
@@ -365,6 +396,27 @@ export default {
     handleTopDownloadLayout({ height }) {
       this.topDownloadHeight = height;
     },
+    /** 返回首页：重测下载条高度 + 重建并刷新 TopNav（不要动游戏列表） */
+    refreshHomeTopNav() {
+      if (this._topNavRefreshTimer) {
+        clearTimeout(this._topNavRefreshTimer);
+      }
+      // 等路由过渡 transform 结束，再重建 fixed 顶栏，否则会错位/空白
+      this._topNavRefreshTimer = setTimeout(() => {
+        this._topNavRefreshTimer = null;
+        const dl = this.$refs.topDownload;
+        if (dl && typeof dl.emitLayoutChange === "function") {
+          dl.emitLayoutChange();
+        }
+        this.topNavKey += 1;
+        this.$nextTick(() => {
+          const nav = this.$refs.topNav;
+          if (nav && typeof nav.refreshHeaderInfo === "function") {
+            nav.refreshHeaderInfo();
+          }
+        });
+      }, 220);
+    },
     handleOpenLogin(tab) {
       consumeOpenLoginAfterPlatformSwitch();
       this.loginType = typeof tab === "number" ? tab : 0;
@@ -379,7 +431,8 @@ export default {
       this.showGuestUpgradePopup = true;
     },
     handleGuestUpgradeSuccess() {
-      // 绑定接口的新 Token 已保存；按产品流程继续打开登录页。
+      // GuestUpgradePopup 已 saveLoginSession + setOpenLoginAfterReloadFlag + reloadAppEntry
+      // 此处仅作未刷新时的兜底弹登录
       this.$nextTick(() => {
         this.handleOpenLogin(0);
       });
@@ -464,12 +517,23 @@ export default {
     },
     async fetchWinTickerList() {
       if (!(this.$route.path || "").includes("/home")) return;
+      const TTL = 5 * 60 * 1000;
+      if (
+        this.winTickerList &&
+        this.winTickerList.length &&
+        this._winTickerAt &&
+        Date.now() - this._winTickerAt < TTL
+      ) {
+        this.$nextTick(() => this.startWinTickerScroll());
+        return;
+      }
       try {
         const data = await GetHomeWinningGameList({});
         if (data.status === "ok" && data.content) {
           const list = data.content.dataList || data.content.list || [];
           this.winTickerList = Array.isArray(list) ? list : [];
           this.winTickerOffsetX = 0;
+          this._winTickerAt = Date.now();
           this.$nextTick(() => this.startWinTickerScroll());
         }
       } catch (e) {
@@ -519,14 +583,29 @@ export default {
         cancelAnimationFrame(this.winTickerRafId);
         this.winTickerRafId = null;
       }
+      if (this._winTickerRetryTimer) {
+        clearTimeout(this._winTickerRetryTimer);
+        this._winTickerRetryTimer = null;
+      }
     },
     startWinTickerScroll() {
       this.stopWinTickerScroll();
       if (!this.winTickerList.length) return;
-      this.$nextTick(() => {
+      if (!(this.$route.path || "").includes("/home")) return;
+      // 返回首页时 v-show 刚显示，scrollWidth 常为 0，需重试测量后再开 RAF
+      const tryStart = (attempt = 0) => {
+        if (!(this.$route.path || "").includes("/home")) return;
+        if (!this.winTickerList.length) return;
         this.measureWinTickerWidth();
-        if (!this.winTickerSetWidth) return;
-        // 初始落在中间副本，便于左右无缝回绕
+        if (!this.winTickerSetWidth || this.winTickerSetWidth < 10) {
+          if (attempt < 12) {
+            this._winTickerRetryTimer = setTimeout(
+              () => tryStart(attempt + 1),
+              50,
+            );
+          }
+          return;
+        }
         this.winTickerOffsetX = -this.winTickerSetWidth;
         let frame = 0;
         const tick = () => {
@@ -534,7 +613,6 @@ export default {
             this.measureWinTickerWidth();
           }
           if (this.winTickerSetWidth) {
-            // 从左到右：内容向右移动
             this.winTickerOffsetX += 0.6;
             this.wrapWinTickerOffset();
             frame += 1;
@@ -543,7 +621,8 @@ export default {
           this.winTickerRafId = requestAnimationFrame(tick);
         };
         this.winTickerRafId = requestAnimationFrame(tick);
-      });
+      };
+      this.$nextTick(() => tryStart(0));
     },
     onBannerImgError(e) {
       if (e && e.target) e.target.style.display = "none";
@@ -568,7 +647,9 @@ export default {
         this.$jumpTo(jump.target);
         return;
       }
-      window.open(jump.target, "_blank");
+      import("@/utils/openExternal").then(({ openExternalUrl }) => {
+        openExternalUrl(jump.target);
+      });
     },
     isBannerAuthRoute(path) {
       const p = String(path || "").replace(/^\/[A-Za-z]{2}(?=\/)/, "") || path;
@@ -673,7 +754,9 @@ export default {
     },
     goTofj(i) {
       if (i === 1) {
-        window.open("https://t.me/OTgamel");
+        import("@/utils/openExternal").then(({ openExternalUrl }) => {
+          openExternalUrl("https://t.me/OTgamel", { kind: "telegram" });
+        });
       }
     },
     closeF2(i) {
@@ -760,7 +843,7 @@ export default {
         const data = await Init();
         if (data.status === "need_login") {
           this.showPopup = true;
-          this.timer++;
+          this.topNavKey++;
         }
       }
       // this.$nextTick(() => {

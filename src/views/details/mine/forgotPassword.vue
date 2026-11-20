@@ -194,6 +194,7 @@ import {
   normalizeUsPhoneInput,
 } from "@/utils/phoneValidate";
 import { setOpenLoginAfterReloadFlag } from "@/utils/platformAuth";
+import { clearAuthAndReload } from "@/utils/guestAuth";
 import eyeOn from "@/assets/img/login/eye.png";
 import eyeOff from "@/assets/img/login/eye_off.png";
 
@@ -373,11 +374,10 @@ export default {
         this.loading = false;
       }
     },
-    // 登录弹窗挂在首页布局上：回首页并打开登录
+    // 重置成功：清 H5+App 登录态后回首页弹登录（与改密退出一致）
     backToLogin() {
       setOpenLoginAfterReloadFlag();
-      this.$jumpTo("/home", {}, { replace: true });
-      setTimeout(() => this.$bus.emit("openLogin", 0), 300);
+      clearAuthAndReload();
     },
     backToStep1() {
       this.stopCountdown();

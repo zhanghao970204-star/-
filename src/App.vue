@@ -11,14 +11,22 @@
           :name="route.meta.routeTransition || 'route-motion-forward'"
           mode="out-in"
         >
-          <keep-alive v-if="Component && isRootKeepAlive(route)">
-            <component :is="Component" :key="rootKeepAliveKey(route)" />
+          <!--
+            keep-alive 必须常驻：以前用 v-if 包住，进 category/search 等内页时
+            keep-alive 整棵卸载，LayoutIndex/Home 被销毁，返回首页就重拉列表。
+            include 只缓存布局壳，内页不进缓存。
+          -->
+          <keep-alive include="LayoutIndex">
+            <component
+              :is="Component"
+              v-if="Component"
+              :key="
+                isRootKeepAlive(route)
+                  ? rootKeepAliveKey(route)
+                  : route.fullPath
+              "
+            />
           </keep-alive>
-          <component
-            :is="Component"
-            v-else-if="Component"
-            :key="route.fullPath"
-          />
         </transition>
       </router-view>
 
@@ -250,6 +258,7 @@ import {
   getCsItemUrl,
 } from "@/utils/csLink";
 import { requestRouteMotion } from "@/utils/routeMotion";
+import { saveLoginSession } from "@/utils/guestAuth";
 import RegisterAwardPopup from "@/components/RegisterAwardPopup.vue";
 
 // 营销弹窗每天最多自动弹一次（按本地日期）
@@ -434,13 +443,13 @@ export default {
         this.checkDailyCheckInPopup();
       }
     },
-    // 切换路由到首页时重新拉宝箱 / 转盘入口状态
+    // 切回首页：浮标/礼包带 TTL，避免每次进出都打一串接口
     $route(to, from) {
       this.historyNavigationPending = false;
       if (to.path !== from.path && to.path.includes("/home")) {
-        this.checkTreasureBox();
-        this.checkCsFloatLink();
-        this.onEnterHome();
+        this.checkTreasureBox({ soft: true });
+        this.checkCsFloatLink({ soft: true });
+        this.onEnterHome({ soft: true });
       } else if (to.path !== from.path) {
         this.showRegisterAward = false;
         this.lrPopupVisible = false;
@@ -550,9 +559,17 @@ export default {
         this.redPacketVisible = false;
       }
     },
-    async checkTreasureBox() {
+    async checkTreasureBox({ soft = false } = {}) {
       // Only show the treasure box float to logged-in users (mirrors red envelope behavior)
       if (!localStorage.getItem("token")) return;
+      const TTL = 10 * 60 * 1000;
+      if (
+        soft &&
+        this._tbFetchedAt &&
+        Date.now() - this._tbFetchedAt < TTL
+      ) {
+        return;
+      }
       try {
         const res = await TreasureBoxInit({});
         if (res && res.status === "ok" && res.content) {
@@ -569,6 +586,7 @@ export default {
           const cd = Number(c.countdownSeconds);
           this.tbCountdownSeconds = Number.isFinite(cd) && cd > 0 ? cd : null;
           if (this.tbVisible && this.tbCountdownSeconds) this.startTbTick();
+          this._tbFetchedAt = Date.now();
         }
       } catch (e) {
         // silent
@@ -600,10 +618,20 @@ export default {
       });
       this.showTreasureBoxPopup = true;
     },
-    async checkFirstRecharge() {
+    async checkFirstRecharge({ soft = false } = {}) {
       if (!localStorage.getItem("token")) {
         this.frChecked = true;
         this.frVisible = false;
+        return;
+      }
+      const TTL = 10 * 60 * 1000;
+      if (
+        soft &&
+        this._frFetchedAt &&
+        Date.now() - this._frFetchedAt < TTL
+      ) {
+        this.frChecked = true;
+        this.openFirstOrRest();
         return;
       }
       try {
@@ -613,6 +641,7 @@ export default {
           this.frVisible = Number(c.visible) === 1;
           this.frRedDot = Number(c.showRedDot) === 1;
           this.frPackData = c;
+          this._frFetchedAt = Date.now();
           if (this.frVisible) {
             this.startFrTick();
           } else {
@@ -637,16 +666,26 @@ export default {
         this.openFirstOrRest();
       }
     },
-    async onEnterHome() {
+    async onEnterHome({ soft = false } = {}) {
       if (!this.isHomePage) return;
+      // 返回首页：10 分钟内不重跑弹窗链路，避免反复打礼包/奖励接口
+      const TTL = 10 * 60 * 1000;
+      if (
+        soft &&
+        this._homeEnterAt &&
+        Date.now() - this._homeEnterAt < TTL
+      ) {
+        return;
+      }
       this.awardChecked = false;
       this.homePopupPhase = "boot";
       this.lrPopupVisible = false;
       this.checkInPopupVisible = false;
-      await this.checkFirstRecharge();
+      await this.checkFirstRecharge({ soft });
       this.$nextTick(() => {
         if (this.$refs.awardPopup) this.$refs.awardPopup.fetchAward();
         else this.onAwardSettled(false);
+        this._homeEnterAt = Date.now();
       });
     },
     onAwardSettled(show) {
@@ -810,20 +849,35 @@ export default {
       this.closeCheckInPopup();
       this.$jumpTo("/dailyCheckIn");
     },
-    async checkCsFloatLink() {
+    async checkCsFloatLink({ soft = false } = {}) {
+      const TTL = 10 * 60 * 1000;
+      if (
+        soft &&
+        this._csFloatAt &&
+        Date.now() - this._csFloatAt < TTL &&
+        (this.tgUrl || this.tgVisible === false)
+      ) {
+        return;
+      }
       try {
         const data = await GetCsLink();
         const content = data && data.content ? data.content : data;
         const item = getFirstCsLinkByScene(content, "floating");
         this.tgUrl = getCsItemUrl(item);
         this.tgVisible = !!this.tgUrl;
+        this._csFloatAt = Date.now();
       } catch (e) {
-        this.tgVisible = false;
-        this.tgUrl = "";
+        if (!soft) {
+          this.tgVisible = false;
+          this.tgUrl = "";
+        }
       }
     },
     openTgFloat() {
-      if (this.tgUrl) window.open(this.tgUrl, "_blank");
+      if (!this.tgUrl) return;
+      import("@/utils/openExternal").then(({ openExternalUrl }) => {
+        openExternalUrl(this.tgUrl, { kind: "telegram" });
+      });
     },
     openCs() {
       openCustomerService();
@@ -994,8 +1048,8 @@ export default {
           const prefix =
             localStorage.getItem("country") || this.$route.params.prefix || "";
           if (!data.content.needBindPhone) {
-            // Already registered, login success
-            localStorage.setItem("token", data.content.accessToken);
+            // Already registered, login success（走统一写入，App 同步 prefs/boot）
+            saveLoginSession(data.content, { clearGuest: true });
             localStorage.removeItem("googleToUrl");
             console.log(
               "[Google OAuth] Login success, token set, checking phone bind...",

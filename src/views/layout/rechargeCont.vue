@@ -436,6 +436,7 @@ import {
   closePayWindow,
 } from "@/utils/payRedirect";
 import { fetchCsUrl, openCustomerService } from "@/utils/csLink";
+import { isNativeAppShell } from "@/utils/nativeApp";
 const vipPairModules = import.meta.glob("@/assets/img/vip/*_*.png", {
   eager: true,
   import: "default",
@@ -860,7 +861,8 @@ export default {
           }
           this.$jumpTo("/payOrder", { orderNo: data.content.orderNo });
         } else if (payUrl) {
-          if (isUsRedirect) {
+          // App：一律系统浏览器打开支付；H5 美国新窗口，其他 iframe
+          if (isUsRedirect || isNativeAppShell()) {
             goPayUrl(payWin, payUrl);
           } else {
             closePayWindow(payWin);

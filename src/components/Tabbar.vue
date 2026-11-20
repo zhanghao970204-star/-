@@ -66,7 +66,12 @@ import {
   resetPageScrollAfterRoute,
 } from "@/utils/scrollReset";
 import { setAfterLoginPath } from "@/utils/guestAuth";
-import { track, EVENTS, setDepositEntryScene, setLoginEntryScene } from "@/utils/analytics";
+import {
+  track,
+  EVENTS,
+  setDepositEntryScene,
+  setLoginEntryScene,
+} from "@/utils/analytics";
 
 export default {
   name: "Y7Tabbar",
@@ -145,7 +150,9 @@ export default {
       const to = this.routerArr[index];
       if (!to) return false;
       const tabNames = ["Reward", "Invite", "Game", "Deposit", "Account"];
-      track(EVENTS.home_page_tab_click, { tab_name: tabNames[index] || String(index) });
+      track(EVENTS.home_page_tab_click, {
+        tab_name: tabNames[index] || String(index),
+      });
       if (index === 3) setDepositEntryScene("tabbar");
 
       if (
@@ -216,6 +223,10 @@ export default {
 }
 
 .y7-tabbar {
+  --tabbar-safe-bottom: max(
+    env(safe-area-inset-bottom, 0px),
+    var(--flutter-safe-bottom, 0px)
+  );
   position: fixed;
   left: 0;
   right: 0;
@@ -225,19 +236,31 @@ export default {
   max-width: 450px;
   margin: 0 auto;
   z-index: 999;
-  height: calc(
-    var(--tabbar-bar-height, 66px) + env(safe-area-inset-bottom, 0px)
-  );
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  height: calc(var(--tabbar-bar-height, 66px) + var(--tabbar-safe-bottom));
+  padding-bottom: var(--tabbar-safe-bottom);
   box-sizing: border-box;
   text-align: center;
   border-top: none;
+  /* 底色必须透明：tabbar.png 中间挖空要透出页面，不能整层铺紫 */
   background-color: transparent !important;
   background-image: url(@/assets/img/tabbar/tabbar.png);
   background-repeat: no-repeat;
   background-position: center top;
   background-size: 100% var(--tabbar-bar-height, 66px);
   overflow: visible;
+
+  /* 仅底部安全区补色，不盖住中间镂空 */
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: var(--tabbar-safe-bottom);
+    background: #430063;
+    pointer-events: none;
+    z-index: 0;
+  }
 
   :deep(.van-tabbar-item) {
     position: relative;

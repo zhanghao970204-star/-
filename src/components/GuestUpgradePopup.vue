@@ -150,8 +150,10 @@ import { BindGuest, GetCaptcha, GetSysConfig } from "@/api/common";
 import {
   getGuestUuid,
   isGuestUser,
+  reloadAppEntry,
   saveLoginSession,
 } from "@/utils/guestAuth";
+import { setOpenLoginAfterReloadFlag } from "@/utils/platformAuth";
 import {
   isUsAreaCode,
   isValidUsPhone,
@@ -386,8 +388,8 @@ export default {
           response.content &&
           response.content.accessToken
         ) {
-          // 文档要求：绑定成功后必须立即用新 Token 替换旧 Token。
-          saveLoginSession(response.content);
+          // 绑定成功：立刻用新 Token 替换游客态（App hook 会 sync prefs/boot）
+          saveLoginSession(response.content, { clearGuest: true });
           const boundAccount = response.content.account || this.phoneNo;
           this.visible = false;
           this.$toast({
@@ -397,6 +399,9 @@ export default {
             icon: "success",
           });
           this.$emit("success", { account: boundAccount });
+          // 刷新入口让非游客态生效，并弹登录确认账号密码
+          setOpenLoginAfterReloadFlag();
+          reloadAppEntry();
           return;
         }
         this.errorText =

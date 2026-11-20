@@ -230,7 +230,6 @@
 <script>
 import { track, EVENTS } from "@/utils/analytics";
 import {
-  GetHomeGameList,
   // GetIsFbReport,
   GetPlatformList,
   GetInvitationID,
@@ -242,7 +241,13 @@ import { getCsLinksByScene, getCsItemUrl } from "@/utils/csLink";
 import { logoutIfReloginRequiredWithToken } from "@/utils/platformAuth";
 import { normalizeCountryCode } from "@/utils/country";
 import { applyCountryLanguage } from "@/utils/locale";
-import { normalizeHomeDataList, getCategoryGames } from "@/utils/homeGameList";
+import {
+  getHomeGameListCache,
+  setHomeGameListCache,
+  isHomeGameListCacheFresh,
+  refreshHomeGameListCache,
+} from "@/utils/homeGameList";
+import { openExternalUrl } from "@/utils/openExternal";
 import ResherSiper2 from "../../components/home/ResherSiper2.vue";
 import HomeSupportFooter from "../../components/home/HomeSupportFooter.vue";
 import actEntrySpin from "@/assets/img/home/act/entry_spin.png";
@@ -388,8 +393,12 @@ export default {
   created() {
     this.fetchLuckySpinOpen();
     this.GetInvitationID();
-    this.GetHomeGameList();
+    // 全局缓存优先（磁盘/内存）；没有再拉。登出登录不清理该缓存
+    if (!this.restoreHomeGameListFromCache()) {
+      this.GetHomeGameList();
+    }
     this.fetchCsHomeLinks();
+    this.$bus.on("home-game-list-updated", this.onHomeGameListUpdated);
   },
   async mounted() {
     this.GetPlatformList();
@@ -401,10 +410,15 @@ export default {
   },
   activated() {
     if (this._homeAlive) this.initCountdown();
-    this.$nextTick(() => this.startHotAutoScroll());
+    this.$nextTick(() => {
+      this.startHotAutoScroll();
+      // 离开页时 stopTypeReveal 会停掉渐进展开，返回必须续上，否则只剩前几组像「没加载」
+      this.scheduleRevealTypes();
+    });
+    // 返回首页：不重拉游戏列表；客服链接带 TTL
     if (this._homeAlive) {
-      this.GetHomeGameList();
-      this.fetchCsHomeLinks();
+      this.fetchCsHomeLinks({ soft: true });
+      if (!this.hasHomeGameList()) this.restoreHomeGameListFromCache();
     }
     this._homeAlive = true;
   },
@@ -413,13 +427,16 @@ export default {
     this.stopCountdown();
     this.stopHotAutoScroll();
     this.clearHotResumeTimer();
+    this.persistHomeGameListCache();
   },
   beforeUnmount() {
     this.stopTypeReveal();
     this.stopCountdown();
     this.stopHotAutoScroll();
     this.clearHotResumeTimer();
+    this.persistHomeGameListCache();
     this.$bus.off("message-sent");
+    this.$bus.off("home-game-list-updated", this.onHomeGameListUpdated);
   },
   methods: {
     clearHotResumeTimer() {
@@ -577,18 +594,72 @@ export default {
         this.typeRevealTimer = setTimeout(expand, 450);
       }
     },
-    async fetchCsHomeLinks() {
+    async fetchCsHomeLinks({ soft = false } = {}) {
+      const TTL = 10 * 60 * 1000;
+      if (
+        soft &&
+        this.csHomeLinks &&
+        this.csHomeLinks.length &&
+        this._csHomeLinksAt &&
+        Date.now() - this._csHomeLinksAt < TTL
+      ) {
+        return;
+      }
       try {
         const data = await GetCsLink();
         const content = data && data.content ? data.content : data;
         this.csHomeLinks = getCsLinksByScene(content, "home");
+        this._csHomeLinksAt = Date.now();
       } catch (e) {
-        this.csHomeLinks = [];
+        if (!soft) this.csHomeLinks = [];
       }
     },
     openLink(url) {
       if (!url) return;
-      window.open(url, "_blank");
+      openExternalUrl(url);
+    },
+    onHomeGameListUpdated(cache) {
+      if (!cache || !cache.pgDate) return;
+      this.applyHomeGameListCache(cache, { silent: true });
+    },
+    applyHomeGameListCache(c, { silent = false } = {}) {
+      if (!c || !c.pgDate) return false;
+      const keepTab = this.activeTab;
+      const prevVisible = this.visibleTypeCount;
+      const dataList = Array.isArray(c.pgDate.dataList)
+        ? c.pgDate.dataList.map((item, idx) => {
+            if (idx === 0 && item && item.sortType === 0) {
+              return {
+                ...item,
+                icon:
+                  item.icon ||
+                  require("@/assets/img/common/all_home.png"),
+              };
+            }
+            return item;
+          })
+        : [];
+      this.pgDate = { ...c.pgDate, dataList };
+      this.hotGames = c.hotGames || [];
+      this._homeGameListAt = c.at || Date.now();
+      this.$nextTick(() => this.startHotAutoScroll());
+      if (silent) {
+        this.activeTab = Math.min(
+          keepTab,
+          Math.max(0, dataList.length - 1),
+        );
+        this.visibleTypeCount = Math.max(
+          prevVisible,
+          c.visibleTypeCount || 3,
+          3,
+        );
+        this.$nextTick(() => this.scheduleRevealTypes());
+      } else {
+        this.activeTab = c.activeTab || 0;
+        this.visibleTypeCount = Math.max(c.visibleTypeCount || 3, 3);
+        this.$nextTick(() => this.scheduleRevealTypes());
+      }
+      return true;
     },
     async GetInvitationID() {
       const data = await GetInvitationID({
@@ -827,38 +898,41 @@ export default {
         this.$bus.emit("openLogin");
       }
     },
-    async GetHomeGameList() {
-      const data = await GetHomeGameList();
-      if (data.status === "ok") {
-        this.pgDate = data.content || {};
-        const rawList = Array.isArray(this.pgDate.dataList)
-          ? this.pgDate.dataList
-          : [];
-        // Hot 取数组第一项；兼容扁平 games / 树形 types
-        const hotList = getCategoryGames(rawList[0]);
-        this.hotGames = hotList;
-        this.$nextTick(() => this.startHotAutoScroll());
-        // 过滤掉第一项 Hot、以及 sortType === 2
-        // 兼容 partType=1 扁平列表 与 partType=3 树形：统一成 types[].games
-        const rest = normalizeHomeDataList(
-          rawList.slice(1).filter((item) => item && item.sortType !== 2),
-        );
-
-        const typesArr = rest
-          .filter((item) => item.sortType !== 1)
-          .flatMap((item) => item.types || [])
-          .filter((type) => type && Array.isArray(type.games));
-
-        this.pgDate.dataList = [
-          {
-            name: "Lobby",
-            icon: require("@/assets/img/common/all_home.png"),
-            types: typesArr,
-            sortType: 0,
-          },
-          ...rest,
-        ];
-        this.resetVisibleTypes();
+    hasHomeGameList() {
+      const list = this.pgDate && this.pgDate.dataList;
+      const lobby = Array.isArray(list) && list[0];
+      const lobbyTypes =
+        lobby && Array.isArray(lobby.types) ? lobby.types.length : 0;
+      return !!(list && list.length && lobbyTypes > 0);
+    },
+    restoreHomeGameListFromCache() {
+      // 过期也先展示缓存，后台由全局 30 分钟任务换新，避免空白
+      const c = getHomeGameListCache();
+      if (!c || !c.pgDate) return false;
+      return this.applyHomeGameListCache(c, { silent: false });
+    },
+    persistHomeGameListCache() {
+      if (!this.hasHomeGameList()) return;
+      setHomeGameListCache({
+        pgDate: this.pgDate,
+        hotGames: this.hotGames,
+        activeTab: this.activeTab,
+        visibleTypeCount: this.visibleTypeCount,
+        at: this._homeGameListAt || Date.now(),
+      });
+    },
+    async GetHomeGameList({ silent = false } = {}) {
+      if (this._homeGameListLoading) return;
+      this._homeGameListLoading = true;
+      try {
+        const cache = await refreshHomeGameListCache({
+          force: !isHomeGameListCacheFresh(),
+        });
+        if (cache) this.applyHomeGameListCache(cache, { silent });
+      } catch (e) {
+        console.error("GetHomeGameList error", e);
+      } finally {
+        this._homeGameListLoading = false;
       }
     },
   },

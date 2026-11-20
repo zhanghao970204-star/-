@@ -195,12 +195,20 @@ export default {
     this.$bus.on("refsh-amount", this._onHeaderRefresh);
     this.$bus.on("mailBadgeRefresh", this.fetchMailBadge);
 
+    // mixin token 只在创建时读一次，返回首页以 localStorage 为准
+    this.token = localStorage.getItem("token");
     if (this.token) {
       this.refreshHeaderInfo();
     }
     this.ensureCountryInfo();
     document.addEventListener("click", this.handleOutsideClick);
     document.addEventListener("visibilitychange", this._onVisibilityRefresh);
+  },
+  activated() {
+    this.token = localStorage.getItem("token");
+    if (this.token) {
+      this.refreshHeaderInfo();
+    }
   },
   beforeUnmount() {
     window.removeEventListener("scroll", this.handleScroll);

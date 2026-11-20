@@ -230,9 +230,13 @@ export function initAnalytics() {
       api_host: host,
       person_profiles: "identified_only",
       capture_pageview: false,
-      capture_pageleave: true,
+      capture_pageleave: false,
       persistence: "localStorage+cookie",
       autocapture: false,
+      disable_session_recording: true,
+      // 关掉 /flags·/decide 轮询，避免 Network 里一直刷统计接口
+      advanced_disable_flags: true,
+      advanced_disable_feature_flags: true,
       // 首页多分类 game_view 瞬时爆发，默认 10/s·burst100 会丢事件并刷红
       rate_limiting: {
         events_per_second: 50,
@@ -350,17 +354,25 @@ export function getAnalyticsPage() {
 
 export function track(event, props = {}) {
   if (!event) return;
-  if (!ready) initAnalytics();
-  const payload = { ...buildCommonProps(), ...(props || {}) };
-  try {
-    if (hasPosthogKey()) {
-      posthog.capture(event, payload);
-    } else if (import.meta.env.DEV) {
-      // eslint-disable-next-line no-console
-      console.debug("[analytics]", event, payload);
+  // 埋点延后到下一宏任务 / idle，避免和首页游戏列表抢主线程
+  const run = () => {
+    try {
+      if (!ready) initAnalytics();
+      const payload = { ...buildCommonProps(), ...(props || {}) };
+      if (hasPosthogKey()) {
+        posthog.capture(event, payload);
+      } else if (import.meta.env.DEV) {
+        // eslint-disable-next-line no-console
+        console.debug("[analytics]", event, payload);
+      }
+    } catch (e) {
+      /* ignore */
     }
-  } catch (e) {
-    /* ignore */
+  };
+  if (typeof window !== "undefined" && typeof window.requestIdleCallback === "function") {
+    window.requestIdleCallback(run, { timeout: 1500 });
+  } else {
+    setTimeout(run, 0);
   }
 }
 
@@ -538,10 +550,21 @@ export const EVENTS = {
   cs_click: "cs_click",
 };
 
+let lastPageViewKey = "";
+let lastPageViewAt = 0;
+
 export function trackRoutePageView(route) {
   if (!route) return;
   const name = route.name || "";
-  setAnalyticsPage(name || route.path || "");
+  const path = route.path || "";
+  const key = `${name}|${path}`;
+  const now = Date.now();
+  // 同页短时间重复 afterEach（keep-alive / 重定向）不重复上报
+  if (key === lastPageViewKey && now - lastPageViewAt < 1500) return;
+  lastPageViewKey = key;
+  lastPageViewAt = now;
+
+  setAnalyticsPage(name || path || "");
   const event = PAGE_VIEW_EVENTS[name];
 
   if (event) {

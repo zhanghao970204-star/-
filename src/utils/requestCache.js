@@ -30,9 +30,16 @@ const inflight = new Map();
 function cloneResponse(res) {
   if (res == null || typeof res !== "object") return res;
   try {
-    return typeof structuredClone === "function"
-      ? structuredClone(res)
-      : JSON.parse(JSON.stringify(res));
+    // 游戏列表等大体量：structuredClone/JSON 深拷会卡主线程数秒，像「列表不加载」
+    // 只浅拷贝外壳；content 引用共享。调用方应把 content 赋给本地再改，勿原地 mutually 污染
+    if (res.content && typeof res.content === "object") {
+      const content = res.content;
+      if (Array.isArray(content.dataList) && content.dataList.length > 20) {
+        return { ...res, content: { ...content, dataList: content.dataList.slice() } };
+      }
+      return { ...res, content: { ...content } };
+    }
+    return { ...res };
   } catch (e) {
     return res;
   }

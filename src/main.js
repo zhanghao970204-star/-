@@ -20,9 +20,11 @@ import { DEFAULT_LOCALE, STORAGE_KEYS } from "./utils/appConstants.js";
 import { LOCALE_LOADERS, LOCAL_LOCALES } from "./utils/locale.js";
 import { resetPageScrollAfterRoute } from "./utils/scrollReset.js";
 import { ensureClientId } from "./utils/nativeDevice.js";
-import { installGlobalClickSound } from "./utils/sound.js";
+import { installGlobalClickSound, ensureSoundDefaults } from "./utils/sound.js";
 import { initAdjust } from "./utils/adjust.js";
 import { initAnalytics, beginGameSession, track, EVENTS } from "./utils/analytics.js";
+import { startHomeGameListGlobalCache } from "./utils/homeGameList.js";
+import { installNativeOpenExternalFailHandler } from "./utils/openExternal.js";
 // import VConsole from 'vconsole'
 
 // App / 调试：打开 vConsole（?vconsole=0 可关）
@@ -173,7 +175,11 @@ async function bootstrap() {
     defineAsyncComponent(() => import("./components/ServicePopup.vue")),
   );
 
+  ensureSoundDefaults();
   installGlobalClickSound();
+  installNativeOpenExternalFailHandler();
+  // 首页游戏列表/图：打开即用磁盘缓存，30 分钟全局刷新（与登录无关）
+  startHomeGameListGlobalCache();
   app.mount("#app");
   initAdjust();
   initAnalytics();

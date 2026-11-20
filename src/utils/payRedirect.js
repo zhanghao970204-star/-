@@ -1,4 +1,6 @@
 import { normalizeCountryCode, readCountryCode } from '@/utils/country'
+import { isNativeAppShell } from '@/utils/nativeApp'
+import { openExternalUrl } from '@/utils/openExternal'
 
 /** 仅美国走新窗口跳转支付，其他国家用弹窗嵌入 iframe */
 export function isUsPayRedirect() {
@@ -12,6 +14,8 @@ export function isUsPayRedirect() {
 
 /** 美国提前打开空白页，避免异步下单后被浏览器拦截弹窗 */
 export function openUsPayBlankWindow() {
+  // App 内支付走系统浏览器，无需预开空白页
+  if (isNativeAppShell()) return null
   if (!isUsPayRedirect()) return null
   try {
     return window.open('about:blank', '_blank')
@@ -23,6 +27,12 @@ export function openUsPayBlankWindow() {
 export function goPayUrl(payWin, url) {
   if (!url) {
     closePayWindow(payWin)
+    return
+  }
+  // Flutter App：支付链接用系统浏览器打开
+  if (isNativeAppShell()) {
+    closePayWindow(payWin)
+    openExternalUrl(url, { kind: 'payment' })
     return
   }
   if (payWin && !payWin.closed) {

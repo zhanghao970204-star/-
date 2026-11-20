@@ -93,7 +93,8 @@
         };
       })();
     </script>
-    <!-- App 内：旧包外域 API 兜底改写为同源 /a/（iOS 必走代理，避免 WKWebView 跨域） -->
+    <!-- 暂关闭：App 内把 us/api.luckyhubx.cc 改写为同源 /a/；接口已写死 https://us.luckyhubx.cc -->
+    <!--
     <script>
       (function () {
         try {
@@ -103,7 +104,6 @@
           );
           if (!isLoopback) return;
           var port = String(location.port || "");
-          // Vite 本地开发不要改写，否则会打回坏掉的 /a 代理
           if (!port || port === "8080" || port === "5173" || port === "3000") {
             if (!window.__IN_FLUTTER_APP__ && !window.__FLUTTER_APP__) return;
           }
@@ -135,6 +135,7 @@
         } catch (e) {}
       })();
     </script>
+    -->
     <meta
       name="keywords"
       content="LuckyPlay,slots,casino,fishing games,card games,pg,jili,fc,spade,spribe,jdb,tada,cq9"

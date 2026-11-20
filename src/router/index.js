@@ -452,8 +452,14 @@ router.beforeEach((to, from, next) => {
 });
 
 // Tab 切换 / 进二级页：强制滚到顶部（修复停在上一页半截的问题）
-router.afterEach(() => {
+router.afterEach((to) => {
   resetPageScrollAfterRoute();
+  // 页面曝光埋点延后，不挡列表首屏
+  if (typeof window !== "undefined" && typeof window.requestIdleCallback === "function") {
+    window.requestIdleCallback(() => trackRoutePageView(to), { timeout: 2000 });
+  } else {
+    setTimeout(() => trackRoutePageView(to), 0);
+  }
 });
 
 export default router;

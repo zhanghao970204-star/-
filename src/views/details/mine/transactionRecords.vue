@@ -1,8 +1,8 @@
 <template>
   <div class="tx-records-page">
-    <title-bar :title="$lang.txRecords_title || 'TRANSACTION RECORDS'" />
+    <title-bar :title="$lang.txRecords_title || 'Withdrawal Records'" />
 
-    <!-- Filter -->
+    <!-- 固定筛选，不随列表滚，避免叠层遮挡 -->
     <div class="tx-filter">
       <common-gradient-select
         v-model="filterValue"
@@ -11,70 +11,74 @@
       />
     </div>
 
-    <!-- Transaction List -->
-    <van-list
-      v-model:loading="loading"
-      :finished="finished"
-      loading-text=" "
-      @load="loadMore"
-      class="tx-list"
-    >
-      <template v-for="(group, gIdx) in groupedList" :key="'h' + gIdx">
-        <div class="tx-date-header">{{ group.date }}</div>
-        <div
-          v-for="(item, idx) in group.items"
-          :key="'t' + gIdx + '-' + idx"
-          class="tx-item"
-          @click="goToDetail(item)"
-        >
-          <div class="tx-item__info">
-            <p v-if="item.orderType === 'pay'" class="tx-item__type">
-              {{ $lang.Recarregar || "Deposit" }}
-            </p>
-            <p v-else class="tx-item__type">
-              <span
-                >{{ $lang.recordOrder_txt || "Withdraw" }}
-                {{ $lang.account || "Account" }}</span
-              >({{ item.bankName }} {{ formatCardNumber(item.bankCard) }})
-            </p>
-            <p class="tx-item__time">{{ item.createDate }}</p>
-          </div>
-          <div class="tx-item__right">
-            <p
-              class="tx-item__amount"
-              :class="
-                item.orderType === 'wd'
-                  ? 'tx-item__amount--red'
-                  : 'tx-item__amount--green'
-              "
-            >
-              {{ item.orderType === "wd" ? "-" : "+" }}
-              {{ $formatNumberWithCommas(item.orderAmount) }}
-            </p>
-            <span
-              class="tx-item__status"
-              :class="getStatusClass(item.orderStatus)"
-            >
-              {{ item.orderStatusName }}
-            </span>
-          </div>
-        </div>
-      </template>
-
-      <van-empty
-        v-if="!list.length && !loading"
-        :image="require('../../../assets/img/common/img_no_data.png')"
-        :description="$lang.noempt"
+    <div class="tx-scroll" ref="txScroll">
+      <van-list
+        v-model:loading="loading"
+        v-model:error="loadError"
+        :finished="finished"
+        loading-text=" "
+        :error-text="$lang.list_load_failed || 'Failed to load. Tap to retry.'"
+        :scroller="scrollParent"
+        @load="loadMore"
+        class="tx-list"
       >
-        <button
-          type="button"
-          class="empty-action"
-          @click="$jumpTo('/home')"
+        <template v-for="(group, gIdx) in groupedList" :key="'h' + gIdx">
+          <div class="tx-date-header">{{ group.date }}</div>
+          <div
+            v-for="(item, idx) in group.items"
+            :key="'t' + gIdx + '-' + idx"
+            class="tx-item"
+            @click="goToDetail(item)"
+          >
+            <div class="tx-item__info">
+              <p v-if="item.orderType === 'pay'" class="tx-item__type">
+                {{ $lang.Recarregar || "Deposit" }}
+              </p>
+              <p v-else class="tx-item__type">
+                <span
+                  >{{ $lang.recordOrder_txt || "Withdraw" }}
+                  {{ $lang.account || "Account" }}</span
+                >({{ item.bankName }} {{ formatCardNumber(item.bankCard) }})
+              </p>
+              <p class="tx-item__time">{{ item.createDate }}</p>
+            </div>
+            <div class="tx-item__right">
+              <p
+                class="tx-item__amount"
+                :class="
+                  item.orderType === 'wd'
+                    ? 'tx-item__amount--red'
+                    : 'tx-item__amount--green'
+                "
+              >
+                {{ item.orderType === "wd" ? "-" : "+" }}
+                {{ $formatNumberWithCommas(item.orderAmount) }}
+              </p>
+              <span
+                class="tx-item__status"
+                :class="getStatusClass(item.orderStatus)"
+              >
+                {{ item.orderStatusName }}
+              </span>
+            </div>
+          </div>
+        </template>
+
+        <van-empty
+          v-if="!list.length && !loading && !loadError"
+          :image="require('../../../assets/img/common/img_no_data.png')"
+          :description="$lang.noempt"
         >
-          {{ $lang.empty_go_home || "Back to Home" }}
-        </button>
-      </van-empty>
-    </van-list>
+          <button
+            type="button"
+            class="empty-action"
+            @click="$jumpTo('/home')"
+          >
+            {{ $lang.empty_go_home || "Back to Home" }}
+          </button>
+        </van-empty>
+      </van-list>
+    </div>
   </div>
 </template>
 
@@ -88,8 +92,10 @@ export default {
       list: [],
       loading: false,
       finished: false,
+      loadError: false,
       page: 0,
       filterValue: 6,
+      scrollParent: null,
       filterOptions: [
         { text: this.$lang.billGame_txt4 || "Today", value: 0 },
         { text: this.$lang.billGame_txt5 || "Yesterday", value: 1 },
@@ -99,7 +105,7 @@ export default {
         { text: this.$lang.billGame_txt9 || "Last Month", value: 5 },
         { text: this.$lang.billGame_txt10 || "All", value: 6 },
       ],
-      params: {},
+      range: { startDate: "", endDate: "" },
     };
   },
   computed: {
@@ -112,6 +118,17 @@ export default {
       });
       return Object.values(groups);
     },
+  },
+  mounted() {
+    this.scrollParent = this.$refs.txScroll || null;
+    this.applyFilterRange(this.filterValue);
+  },
+  activated() {
+    // keep-alive 返回时若列表空，重新拉一次
+    if (!this.list.length && !this.loading) {
+      this.resetList();
+      this.$nextTick(() => this.loadMore());
+    }
   },
   methods: {
     formatCardNumber(cardNumber) {
@@ -131,74 +148,77 @@ export default {
         return "tx-item__status--failed";
       return "tx-item__status--pending";
     },
-    onFilterChange(i) {
-      this.resetList();
-      if (i === 0) {
-        let startDate = this.$getTodayRange().slice(0, 19);
-        let endDate = this.$getTodayRange().slice(20, 40);
-        this.fetchData(startDate, endDate);
-      } else if (i === 1) {
-        let startDate = this.$getYesterdayRange().slice(0, 19);
-        let endDate = this.$getYesterdayRange().slice(20, 40);
-        this.fetchData(startDate, endDate);
-      } else if (i === 2) {
-        let startDate = this.$getThisWeekRange().slice(0, 19);
-        let endDate = this.$getThisWeekRange().slice(20, 40);
-        this.fetchData(startDate, endDate);
-      } else if (i === 3) {
-        let startDate = this.$getLastWeekRange().slice(0, 19);
-        let endDate = this.$getLastWeekRange().slice(20, 40);
-        this.fetchData(startDate, endDate);
-      } else if (i === 4) {
-        let startDate = this.$getThisMonthRange().slice(0, 19);
-        let endDate = this.$getThisMonthRange().slice(20, 40);
-        this.fetchData(startDate, endDate);
-      } else if (i === 5) {
-        let startDate = this.$getLastMonthRange().slice(0, 19);
-        let endDate = this.$getLastMonthRange().slice(20, 40);
-        this.fetchData(startDate, endDate);
-      } else if (i === 6) {
-        this.fetchData("", "");
+    applyFilterRange(i) {
+      const rangeMap = {
+        0: () => this.$getTodayRange(),
+        1: () => this.$getYesterdayRange(),
+        2: () => this.$getThisWeekRange(),
+        3: () => this.$getLastWeekRange(),
+        4: () => this.$getThisMonthRange(),
+        5: () => this.$getLastMonthRange(),
+      };
+      if (rangeMap[i]) {
+        const raw = rangeMap[i]();
+        this.range = {
+          startDate: raw.slice(0, 19),
+          endDate: raw.slice(20, 40),
+        };
+      } else {
+        this.range = { startDate: "", endDate: "" };
       }
+    },
+    onFilterChange(i) {
+      this.applyFilterRange(i);
+      this.resetList();
+      this.$nextTick(() => this.loadMore());
     },
     resetList() {
       this.list = [];
       this.page = 0;
       this.finished = false;
+      this.loadError = false;
     },
-    async fetchData(startDate, endDate) {
-      this.params = {
-        startDate: startDate,
-        endDate: endDate,
-        pageIndex: this.page,
-        orderType: "wd",
-      };
+    async fetchData() {
+      if (this.finished) return;
       this.loading = true;
+      this.loadError = false;
       try {
-        const data = await GetRWHistory(this.params);
-        if (data.status === "ok") {
-          let items = data.content.orderRecordList || [];
-          if (items.length < 20) {
-            this.finished = true;
+        const params = {
+          pageIndex: this.page,
+          orderType: "wd",
+        };
+        if (this.range.startDate) params.startDate = this.range.startDate;
+        if (this.range.endDate) params.endDate = this.range.endDate;
+
+        const data = await GetRWHistory(params);
+        if (!data || data.status !== "ok" || !data.content) {
+          this.loadError = true;
+          if (data && data.msg) {
+            this.$toast({ message: data.msg, icon: "cross" });
           }
-          this.list = this.list.concat(items);
-          this.loading = false;
-          this.page++;
-        } else {
-          this.loading = false;
-          this.$toast({
-            message: data.msg,
-            icon: "cross",
-          });
+          return;
         }
+        const items = data.content.orderRecordList || [];
+        const total = Number(data.content.total);
+        this.list = this.list.concat(items);
+        if (
+          items.length === 0 ||
+          (Number.isFinite(total) && total > 0
+            ? this.list.length >= total
+            : items.length < 20)
+        ) {
+          this.finished = true;
+        }
+        this.page++;
       } catch (e) {
-        this.loading = false;
+        this.loadError = true;
         console.error(e);
+      } finally {
+        this.loading = false;
       }
     },
     loadMore() {
-      const { startDate, endDate } = this.params;
-      this.fetchData(startDate || "", endDate || "");
+      this.fetchData();
     },
   },
 };
@@ -206,31 +226,40 @@ export default {
 
 <style lang="less" scoped>
 .tx-records-page {
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
+  background: #1a0a28;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.tx-filter {
+  flex-shrink: 0;
+  z-index: 20;
+  padding: 10px 16px 12px;
   background: #1a0a28;
 }
 
-/* ===== Filter ===== */
-.tx-filter {
-  position: sticky;
-  top: 46px;
-  z-index: 10;
-  padding: 10px 16px 12px;
-  background: #1a0a28;
+.tx-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding-bottom: 20px;
 }
 
 :deep(.van-loading) {
   background: transparent;
 }
 
-/* ===== Transaction List ===== */
 .tx-list {
-  height: calc(100vh - 100px);
-  overflow-y: auto;
-  padding: 0 0 20px;
+  min-height: 100%;
 }
 
-/* ===== Date Header ===== */
 .tx-date-header {
   position: sticky;
   top: 0;
@@ -241,82 +270,85 @@ export default {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: #b8a8d4;
-  /* 与页面/筛选区同色，避免旧主题棕灰底 */
   background: #1a0a28;
 }
 
-/* ===== Transaction Item ===== */
 .tx-item {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
   margin: 0 12px 8px;
-  padding: 14px 16px;
+  padding: 12px 14px;
   .record-list-card();
+  border-radius: 10px;
+  cursor: pointer;
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__type {
+    font-size: 14px;
+    font-weight: 600;
+    color: #d7a2fa;
+    line-height: 1.3;
+  }
+
+  &__time {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #9b7ab8;
+  }
+
+  &__right {
+    flex-shrink: 0;
+    text-align: right;
+  }
+
+  &__amount {
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffee00;
+
+    &--red {
+      color: #ff5b5b;
+    }
+    &--green {
+      color: #38de98;
+    }
+  }
+
+  &__status {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 11px;
+    font-weight: 700;
+
+    &--success {
+      color: #38de98;
+    }
+    &--failed {
+      color: #ff5b5b;
+    }
+    &--pending {
+      color: #ffd467;
+    }
+  }
+}
+
+.empty-action {
+  margin-top: 12px;
+  min-width: 160px;
+  height: 44px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(180deg, #38de98 0%, #02a460 100%);
   cursor: pointer;
 }
-
-/* Info */
-.tx-item__info {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 0;
-}
-
-.tx-item__type {
-  font-size: 14px;
-  font-weight: 700;
-  color: @wihte-color;
-  margin: 0;
-}
-
-.tx-item__time {
-  font-size: 12px;
-  color: #b8a8d4;
-  margin: 4px 0 0;
-}
-
-/* Right */
-.tx-item__right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  flex-shrink: 0;
-}
-
-.tx-item__amount {
-  font-size: 15px;
-  font-weight: 700;
-  margin: 0;
-}
-
-.tx-item__amount--green {
-  color: #ffa300;
-}
-
-.tx-item__amount--red {
-  color: #ef4444;
-}
-
-/* Status Badge */
-.tx-item__status {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-top: 4px;
-}
-
-.tx-item__status--success {
-  color: #ffa300;
-}
-
-.tx-item__status--pending {
-  color: #ffa300;
-}
-
-.tx-item__status--failed {
-  color: #ef4444;
-}
-
 </style>

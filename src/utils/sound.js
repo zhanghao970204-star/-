@@ -30,15 +30,19 @@ const bufferCache = new Map();
 const bufferPending = new Map();
 
 function readVolume() {
-  const n = Number(localStorage.getItem(LS_VOLUME));
+  const raw = localStorage.getItem(LS_VOLUME);
+  // null/空串时 Number(null)===0，不能当已设置
+  if (raw == null || raw === "") return 50;
+  const n = Number(raw);
   if (Number.isFinite(n)) return Math.min(100, Math.max(0, n));
   // 未设置时：默认开音乐、音量一半
   return 50;
 }
 
 function readMute() {
-  // 总开关关闭则无声；音量滑到 0 也无声
-  return localStorage.getItem(LS_MUTE) === "1" || readVolume() <= 0;
+  // 总开关未写入时默认开；仅显式 "1" 才关
+  if (localStorage.getItem(LS_MUTE) === "1") return true;
+  return readVolume() <= 0;
 }
 
 function effectiveVolume(base = 0.3) {
@@ -204,13 +208,24 @@ export function setSoundVolume(vol) {
   localStorage.setItem(LS_VOLUME, String(n));
 }
 
-/** 总开关：true=开（有声音），false=关 */
+/** 总开关：true=开（有声音），false=关；未设置默认开 */
 export function isSoundEnabled() {
   return localStorage.getItem(LS_MUTE) !== "1";
 }
 
 export function setSoundEnabled(enabled) {
   localStorage.setItem(LS_MUTE, enabled ? "0" : "1");
+}
+
+/** 首次进入：写入默认开 + 音量 50，避免 Number(null) 被当成 0 */
+export function ensureSoundDefaults() {
+  if (typeof localStorage === "undefined") return;
+  if (localStorage.getItem(LS_MUTE) == null) {
+    localStorage.setItem(LS_MUTE, "0");
+  }
+  if (localStorage.getItem(LS_VOLUME) == null) {
+    localStorage.setItem(LS_VOLUME, "50");
+  }
 }
 
 export function setMute(mute) {

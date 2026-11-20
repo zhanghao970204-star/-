@@ -3,7 +3,7 @@ import bus from "@/utils/eventBus";
 import router from "../router";
 import { emitHeaderRefresh, shouldRefreshHeader } from "@/utils/headerRefresh";
 import { ensureClientId, resolveClientIdSync } from "@/utils/nativeDevice";
-import { clearGuestFlags, setAfterLoginPath } from "@/utils/guestAuth";
+import { clearAuthLocalAndNative, setAfterLoginPath } from "@/utils/guestAuth";
 import toast from "@/utils/toast";
 import {
   API_ORIGIN, API_PATH, API_TIMEOUT_MS, DEFAULT_LOCALE,
@@ -11,34 +11,10 @@ import {
 } from './appConstants';
 
 /**
- * App（含 iOS WKWebView）必须同源 `/a/`，由 Flutter 反代，避免跨域 Network Error。
- * Vite 本地开发直连业务域名。
+ * 接口地址写死：https://us.luckyhubx.cc/a/
+ * （原 App WebView 同源 `/a/` 分支暂不用）
  */
-function isFlutterAppWebView() {
-  try {
-    if (typeof window !== "undefined") {
-      if (window.__IN_FLUTTER_APP__ || window.__FLUTTER_APP__) return true;
-    }
-    if (typeof location === "undefined") return false;
-    const origin = location.origin || "";
-    if (!/^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/i.test(origin)) {
-      return false;
-    }
-    const port = String(location.port || "");
-    // Vite / 常见前端 dev 端口不算 App
-    if (!port || port === "8080" || port === "5173" || port === "3000") {
-      return false;
-    }
-    return true;
-  } catch (_) {
-    return false;
-  }
-}
-
 function resolveApiBase() {
-  if (isFlutterAppWebView()) {
-    return API_PATH;
-  }
   return API_ORIGIN + API_PATH;
 }
 
@@ -101,9 +77,8 @@ instance.interceptors.response.use(
   (response) => {
     // 对响应数据做点什么
     if (response.data.status === "need_login") {
-      localStorage.removeItem("token");
-      localStorage.removeItem("shareCode");
-      clearGuestFlags();
+      // 账号被挤 / token 失效：清 H5 + 原生，不强制原生跳首页（由下方 H5 弹登录/跳转）
+      clearAuthLocalAndNative({ reload: false });
       const currentPath =
         router.currentRoute &&
         (router.currentRoute.value
