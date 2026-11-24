@@ -1,6 +1,7 @@
 /** 游客登录态本地标记（与 /login/guestLogin、/profile/bindGuest 对齐） */
 
 import { isNativeAppShell } from "@/utils/nativeApp";
+import { resetAnalyticsUser } from "@/utils/analytics";
 
 const IS_GUEST_KEY = "isGuest";
 const GUEST_UUID_KEY = "guestUuid";
@@ -82,6 +83,12 @@ export function clearAuthSession() {
     }
   });
   clearGuestFlags();
+  // 退出后 PostHog 换新匿名 Distinct ID，避免把下一访客并到上一账号
+  try {
+    resetAnalyticsUser();
+  } catch (_) {
+    /* ignore */
+  }
 }
 
 /**

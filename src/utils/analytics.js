@@ -179,11 +179,24 @@ function hasPosthogKey() {
   return !!resolvePosthogKey();
 }
 
+function resolveDistinctIdForProps() {
+  const known = storageGet("ph_user_id");
+  if (known) return String(known);
+  try {
+    if (hasPosthogKey() && posthog && typeof posthog.get_distinct_id === "function") {
+      const id = posthog.get_distinct_id();
+      if (id) return String(id);
+    }
+  } catch (_) {
+    /* ignore */
+  }
+  return getAnonId();
+}
+
 function buildCommonProps() {
-  const token = storageGet("token");
-  const uid = storageGet("ph_user_id") || (token ? "" : getAnonId());
   return {
-    user_id: uid || getAnonId(),
+    // 与 PostHog Distinct ID 对齐：登录后业务 uid；登录前 SDK 匿名 id
+    user_id: resolveDistinctIdForProps(),
     session_id: getOrCreateSessionId(),
     platform: detectPlatform(),
     app_version: profile.app_version || storageGet("app_version") || "h5",
@@ -243,11 +256,12 @@ export function initAnalytics() {
         events_burst_limit: 500,
       },
     });
+    // 已登录：用业务 uid；未登录：不要 identify 匿名 ID。
+    // 若登录前 identify(anon)，登录后再 identify(uid)，PostHog 会当成两个用户 → UV 虚高。
+    // 正确做法：匿名用 SDK 自带 distinct_id，登录时 identify(uid) 自动合并前后行为。
     const knownId = storageGet("ph_user_id");
     if (knownId) {
       posthog.identify(String(knownId));
-    } else {
-      posthog.identify(getAnonId());
     }
     ready = true;
     track(EVENTS.app_launch_event, {
@@ -318,9 +332,19 @@ export function syncAnalyticsBalance(content) {
 
 export function identifyAnalyticsUser(userId) {
   if (!userId) return;
-  storageSet("ph_user_id", String(userId));
+  const id = String(userId);
+  const prev = storageGet("ph_user_id");
+  // 同一 uid 重复 identify 无意义；避免刷 identify
+  if (prev && prev === id) {
+    storageSet("ph_user_id", id);
+    return;
+  }
+  storageSet("ph_user_id", id);
   try {
-    if (hasPosthogKey()) posthog.identify(String(userId));
+    if (hasPosthogKey()) {
+      // 从匿名 distinct_id 切到业务 uid，SDK 会合并为同一人
+      posthog.identify(id);
+    }
   } catch (e) {
     /* ignore */
   }
@@ -334,8 +358,8 @@ export function resetAnalyticsUser() {
   }
   try {
     if (hasPosthogKey()) {
+      // 退出后换新的匿名 distinct_id，避免把下一位访客并到上一账号
       posthog.reset();
-      posthog.identify(getAnonId());
     }
   } catch (e) {
     /* ignore */
@@ -359,6 +383,10 @@ export function track(event, props = {}) {
     try {
       if (!ready) initAnalytics();
       const payload = { ...buildCommonProps(), ...(props || {}) };
+      // PostHog：game_id 固定字符串（如 "2213"），避免 number 导致类型分裂
+      if (payload.game_id != null && payload.game_id !== "") {
+        payload.game_id = String(payload.game_id);
+      }
       if (hasPosthogKey()) {
         posthog.capture(event, payload);
       } else if (import.meta.env.DEV) {
@@ -582,7 +610,9 @@ export function trackRoutePageView(route) {
     } else if (name === "SetPassWord") {
       extra.entry_scene = getWithdrawEntryScene() || "withdraw";
     } else if (name === "GameHall") {
-      const gid = (route.query && route.query.gid) || sessionGet("ph_game_id");
+      const gid = String(
+        (route.query && route.query.gid) || sessionGet("ph_game_id") || "",
+      );
       let sid = getGameSessionId();
       if (!sid) sid = beginGameSession(gid);
       extra.game_id = gid;

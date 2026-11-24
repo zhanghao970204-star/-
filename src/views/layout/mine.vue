@@ -260,7 +260,7 @@
 </template>
 
 <script>
-import { track, EVENTS, setDepositEntryScene, setWithdrawEntryScene, resetAnalyticsUser } from "@/utils/analytics";
+import { track, EVENTS, setDepositEntryScene, setWithdrawEntryScene } from "@/utils/analytics";
 import {
   Init,
   GameBalanceList,

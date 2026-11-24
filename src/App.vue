@@ -116,8 +116,8 @@
         @click="onFloaterClick(openRegisterAward)"
       >
         <img
-          src="./assets/img/home/registerAward/signup_bonus_badge.png"
-          class="global-register-award__img"
+          src="./assets/img/home/registerAward/signup_coin.png"
+          class="global-register-award__coin"
           draggable="false"
           alt=""
         />
@@ -563,11 +563,7 @@ export default {
       // Only show the treasure box float to logged-in users (mirrors red envelope behavior)
       if (!localStorage.getItem("token")) return;
       const TTL = 10 * 60 * 1000;
-      if (
-        soft &&
-        this._tbFetchedAt &&
-        Date.now() - this._tbFetchedAt < TTL
-      ) {
+      if (soft && this._tbFetchedAt && Date.now() - this._tbFetchedAt < TTL) {
         return;
       }
       try {
@@ -625,11 +621,7 @@ export default {
         return;
       }
       const TTL = 10 * 60 * 1000;
-      if (
-        soft &&
-        this._frFetchedAt &&
-        Date.now() - this._frFetchedAt < TTL
-      ) {
+      if (soft && this._frFetchedAt && Date.now() - this._frFetchedAt < TTL) {
         this.frChecked = true;
         this.openFirstOrRest();
         return;
@@ -670,11 +662,7 @@ export default {
       if (!this.isHomePage) return;
       // 返回首页：10 分钟内不重跑弹窗链路，避免反复打礼包/奖励接口
       const TTL = 10 * 60 * 1000;
-      if (
-        soft &&
-        this._homeEnterAt &&
-        Date.now() - this._homeEnterAt < TTL
-      ) {
+      if (soft && this._homeEnterAt && Date.now() - this._homeEnterAt < TTL) {
         return;
       }
       this.awardChecked = false;
@@ -821,9 +809,12 @@ export default {
             res && res.status === "ok" && res.content
               ? Number(res.content.isOpen) === 1
               : false;
-          if (!open || this.homePopupPhase !== "rest" || !this.isHomePage) return;
+          if (!open || this.homePopupPhase !== "rest" || !this.isHomePage)
+            return;
           this.lrPopupVisible = true;
-          track(EVENTS.lucky_roulette_popup_view, { trigger_type: "auto_popup" });
+          track(EVENTS.lucky_roulette_popup_view, {
+            trigger_type: "auto_popup",
+          });
           markShownToday("lrPopupShownDate");
         })
         .catch(() => {});
@@ -1330,19 +1321,27 @@ h3 {
     bottom: -30px;
   }
 
-  /* 右侧活动浮动按钮贴在 450 内容右侧内 */
+  /*
+   * 浮动按钮 position:fixed 相对视口；PC 内容列 450 居中。
+   * 一律锚到内容列内侧，避免落在两侧黑边。
+   */
   .global-red-envelope:not(.is-dragged),
   .global-treasure-box:not(.is-dragged),
   .global-first-recharge:not(.is-dragged),
   .global-cs-btn {
     right: auto !important;
-    left: calc(50% + 225px - 72px) !important;
+    left: calc(50% + 225px - 68px) !important;
   }
 
-  /* TG 保持在内容区左侧 */
+  .global-register-award:not(.is-dragged) {
+    right: auto !important;
+    left: calc(50% + 225px - 68px) !important;
+  }
+
+  /* 客服 / TG：内容区左侧内 12px */
   .global-tg-float:not(.is-dragged) {
     right: auto !important;
-    left: calc(50% - 225px + 16px) !important;
+    left: calc(50% - 225px + 12px) !important;
   }
 }
 /* ====== Global Red Envelope ====== */
@@ -1631,7 +1630,7 @@ h3 {
   }
 }
 
-/* ====== Register Award Floater ====== */
+/* ====== Register Award Floater：透明底，仅金币图 ====== */
 .global-register-award {
   position: fixed;
   right: 16px;
@@ -1641,16 +1640,20 @@ h3 {
   cursor: grab;
   touch-action: none;
   user-select: none;
+  background: transparent;
+  border: none;
+  box-shadow: none;
   animation: ra-float 2s ease-in-out infinite;
   transition: bottom 0.3s ease;
 }
-.global-register-award__img {
+.global-register-award__coin {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: contain;
   pointer-events: none;
   -webkit-user-drag: none;
-  filter: drop-shadow(0 4px 10px rgba(46, 204, 113, 0.4));
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.45));
 }
 @keyframes ra-float {
   0%,

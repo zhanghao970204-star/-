@@ -196,14 +196,35 @@ export default {
     },
   },
   mounted() {
-    this.$nextTick(() => this.reportVisibleGameViews());
+    this.$nextTick(() => {
+      this.resizeSwipe();
+      this.reportVisibleGameViews();
+    });
+    if (typeof window !== "undefined") {
+      window.addEventListener("resize", this.resizeSwipe);
+    }
   },
   activated() {
     this.nowTs = Date.now();
-    this.$nextTick(() => this.reportVisibleGameViews());
+    this.$nextTick(() => {
+      this.resizeSwipe();
+      this.reportVisibleGameViews();
+    });
+  },
+  beforeUnmount() {
+    if (typeof window !== "undefined") {
+      window.removeEventListener("resize", this.resizeSwipe);
+    }
   },
   methods: {
     ...mapActions(["addFavorite", "removeFavorite"]),
+    /** PC 预览 / 容器宽度变化后重算 swipe，避免页宽错位导致左右边距不对称 */
+    resizeSwipe() {
+      const swipe = this.$refs.swipe;
+      if (swipe && typeof swipe.resize === "function") {
+        swipe.resize();
+      }
+    },
     isFavorite(item) {
       return this.favoriteGidSet.has(Number(item.gid));
     },
@@ -320,10 +341,14 @@ export default {
   :deep(.van-swipe__track) {
     will-change: transform;
   }
-  /* 页与页贴边时，滑动过程中接缝会比页内 gap 小一截；右侧留出同等间距 */
+  /*
+   * 左右各留半个 gap：静止时左右边距对称；
+   * 滑动时两页接缝 = 半+半，与页内 gap 一致（PC/H5 同理）。
+   */
   :deep(.van-swipe-item) {
     box-sizing: border-box;
-    padding-right: var(--game-gap);
+    padding-left: calc(var(--game-gap) / 2);
+    padding-right: calc(var(--game-gap) / 2);
   }
 }
 
@@ -333,6 +358,7 @@ export default {
   gap: var(--game-gap);
   margin: 0;
   padding: 0;
+  width: 100%;
   min-height: 120px;
   box-sizing: border-box;
 }
