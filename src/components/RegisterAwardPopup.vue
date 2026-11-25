@@ -139,8 +139,13 @@ export default {
       this.$emit("closed", { claimable: this.receiveStatus === 1 });
     },
     async fetchAward() {
+      // 未登录：仍弹注册送奖励（引导注册）；登录后按领取状态决定是否弹
       if (!localStorage.getItem("token")) {
-        this.$emit("settled", false);
+        // 未登录不调 getRegisterAward：该接口会回 need_login，拦截器会误弹登录框
+        this.receiveStatus = 1;
+        const cached = Number(localStorage.getItem("ra_preview_amount")) || 0;
+        this.awardAmount = cached || 3;
+        this.$emit("settled", true);
         return;
       }
       try {
@@ -151,6 +156,10 @@ export default {
         }
         this.receiveStatus = Number(data.content.receiveStatus) || 0;
         this.awardAmount = Number(data.content.awardAmount) || 0;
+        if (this.awardAmount > 0) {
+          localStorage.setItem("ra_preview_amount", String(this.awardAmount));
+        }
+        // 已领取(≠1)则不弹，逻辑不变
         this.$emit("settled", this.receiveStatus === 1 && this.awardAmount > 0);
       } catch (e) {
         this.$emit("settled", false);
@@ -158,6 +167,16 @@ export default {
     },
     async claim(e) {
       if (this.claiming || this.receiveStatus !== 1) return;
+      // 未登录点领取 → 打开注册 Tab，浮标保留
+      if (!localStorage.getItem("token")) {
+        track(EVENTS.new_player_register_giftpack_popup_click, {
+          trigger_type: "auto_popup",
+        });
+        this.onPopupShow(false);
+        this.$emit("closed", { claimable: true });
+        if (this.$bus) this.$bus.emit("openLogin", 1);
+        return;
+      }
       this.claiming = true;
       try {
         track(EVENTS.new_player_register_giftpack_popup_click, {

@@ -161,6 +161,11 @@ export default {
     return {
       currentPage2: 0,
       nowTs: Date.now(),
+      /** 当前分类块是否在视口内 */
+      _inViewport: false,
+      /** 已上报过曝光的 swipe 页下标 */
+      _phViewedPages: null,
+      _io: null,
     };
   },
   computed: {
@@ -196,9 +201,10 @@ export default {
     },
   },
   mounted() {
+    if (!this._phViewedPages) this._phViewedPages = new Set();
     this.$nextTick(() => {
       this.resizeSwipe();
-      this.reportVisibleGameViews();
+      this.setupViewportObserver();
     });
     if (typeof window !== "undefined") {
       window.addEventListener("resize", this.resizeSwipe);
@@ -208,10 +214,12 @@ export default {
     this.nowTs = Date.now();
     this.$nextTick(() => {
       this.resizeSwipe();
-      this.reportVisibleGameViews();
+      if (!this._io) this.setupViewportObserver();
+      else if (this._inViewport) this.reportVisibleGameViews();
     });
   },
   beforeUnmount() {
+    this.teardownViewportObserver();
     if (typeof window !== "undefined") {
       window.removeEventListener("resize", this.resizeSwipe);
     }
@@ -223,6 +231,41 @@ export default {
       const swipe = this.$refs.swipe;
       if (swipe && typeof swipe.resize === "function") {
         swipe.resize();
+      }
+    },
+    setupViewportObserver() {
+      const el = this.$el;
+      if (!el || typeof el.nodeType !== "number") return;
+      this.teardownViewportObserver();
+      if (typeof IntersectionObserver === "undefined") {
+        // 无 IO 时退化为挂载即报（仍按页批量拼接，不再逐游戏打点）
+        this._inViewport = true;
+        this.reportVisibleGameViews();
+        return;
+      }
+      this._io = new IntersectionObserver(
+        (entries) => {
+          const entry = entries && entries[0];
+          const visible = !!(
+            entry &&
+            entry.isIntersecting &&
+            entry.intersectionRatio > 0
+          );
+          this._inViewport = visible;
+          if (visible) this.reportVisibleGameViews();
+        },
+        { root: null, threshold: 0.2, rootMargin: "0px" },
+      );
+      this._io.observe(el);
+    },
+    teardownViewportObserver() {
+      if (this._io) {
+        try {
+          this._io.disconnect();
+        } catch (e) {
+          /* ignore */
+        }
+        this._io = null;
       }
     },
     isFavorite(item) {
@@ -237,27 +280,45 @@ export default {
       this.currentPage2 = index;
       this.$nextTick(() => this.reportVisibleGameViews());
     },
+    /**
+     * 当前可视分类块 + 当前 swipe 页：整页只打 1 次，字段逗号拼接。
+     * 翻到新页 / 滚动露出新分类时同样批量报，避免逐游戏 capture 拖慢首屏。
+     */
     reportVisibleGameViews() {
-      const page = this.pages[this.currentPage2] || [];
-      const provider = (this.siderData && (this.siderData.name || this.siderData.code)) || "";
-      page.forEach((item, i) => {
-        if (!item || item.__phViewed) return;
-        item.__phViewed = true;
-        track(EVENTS.home_page_game_view, {
-          game_id: item.gid,
-          game_name: item.gameName || "",
-          game_theme: item.gameTheme || "",
-          provider,
-          bet_range: item.betRange || "",
+      if (!this._inViewport) return;
+      if (!this._phViewedPages) this._phViewedPages = new Set();
+      const pageIdx = this.currentPage2;
+      if (this._phViewedPages.has(pageIdx)) return;
+
+      const page = this.pages[pageIdx] || [];
+      const items = page.filter(Boolean);
+      if (!items.length) return;
+      this._phViewedPages.add(pageIdx);
+
+      const join = (pick) => items.map((item) => pick(item)).join(",");
+      const provider =
+        (this.siderData && (this.siderData.name || this.siderData.code)) || "";
+
+      const gameViewPayload = {
+        game_id: join((item) => (item.gid != null ? item.gid : "")),
+        game_name: join((item) => item.gameName || ""),
+        game_theme: join((item) => item.gameTheme || ""),
+        provider,
+        bet_range: join((item) => item.betRange || ""),
+      };
+      // eslint-disable-next-line no-console
+      console.log("[home_page_game_view]", gameViewPayload);
+      track(EVENTS.home_page_game_view, gameViewPayload);
+
+      // 推荐位：首页第一个分类的当前可视页，同样批量拼接
+      if (this.siderIndex === 0) {
+        track(EVENTS.game_recommend_exposure, {
+          game_id: join((item) => (item.gid != null ? item.gid : "")),
+          rank: items
+            .map((_, i) => pageIdx * 6 + i + 1)
+            .join(","),
         });
-        // 推荐位：首页第一个分类的前几张也记曝光
-        if (this.siderIndex === 0) {
-          track(EVENTS.game_recommend_exposure, {
-            game_id: item.gid,
-            rank: this.currentPage2 * 6 + i + 1,
-          });
-        }
-      });
+      }
     },
     prevPage() {
       if (this.currentPage2 > 0 && this.$refs.swipe) {
